@@ -1,0 +1,54 @@
+/*
+ * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package top.wyhao.starter.captcha.graphic.core;
+
+import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ReflectUtil;
+import com.wf.captcha.base.Captcha;
+import top.wyhao.starter.captcha.graphic.autoconfigure.GraphicCaptchaProperties;
+
+import java.awt.*;
+
+/**
+ * 图形验证码服务接口
+ *
+ * @author Charles7c
+ * @since 1.4.0
+ */
+public class GraphicCaptchaService {
+
+    private final GraphicCaptchaProperties properties;
+
+    public GraphicCaptchaService(GraphicCaptchaProperties properties) {
+        this.properties = properties;
+    }
+
+    /**
+     * 获取验证码实例
+     *
+     * @return 验证码实例
+     */
+    public Captcha createCaptchaImage() {
+        Captcha captcha = ReflectUtil.newInstance(properties.getType().getCaptchaImpl(), properties
+            .getWidth(), properties.getHeight());
+        captcha.setLen(properties.getLength());
+        if (CharSequenceUtil.isNotBlank(properties.getFontName())) {
+            captcha.setFont(new Font(properties.getFontName(), Font.PLAIN, properties.getFontSize()));
+        }
+        return captcha;
+    }
+}

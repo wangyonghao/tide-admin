@@ -1,0 +1,7 @@
+{
+  "top.wyhao.starter.ratelimiter.annotation.RateLimiter@key":{
+    "method":{
+      "parameters": true
+    }
+  }
+}

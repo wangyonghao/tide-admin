@@ -1,0 +1,85 @@
+/*
+ * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package top.wyhao.admin;
+
+import cn.dev33.satoken.annotation.SaIgnore;
+import cn.hutool.core.net.NetUtil;
+import cn.hutool.core.util.URLUtil;
+import cn.hutool.extra.spring.SpringUtil;
+import io.swagger.v3.oas.annotations.Hidden;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.dromara.x.file.storage.spring.EnableFileStorage;
+import org.springframework.boot.ApplicationArguments;
+import org.springframework.boot.ApplicationRunner;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.autoconfigure.web.ServerProperties;
+import org.springframework.cloud.openfeign.EnableFeignClients;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.scheduling.annotation.EnableAsync;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RestController;
+import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
+
+/**
+ * 启动程序
+ *
+ * @author Charles7c
+ * @since 2022/12/8 23:15
+ */
+@Slf4j
+@EnableAsync(proxyTargetClass = true)
+@ComponentScan(basePackages = {"top.wyhao"})
+@EnableFileStorage
+@EnableFeignClients(basePackages = {"top.wyhao"})
+@RestController
+@SpringBootApplication
+@RequiredArgsConstructor
+public class AdminApplication implements ApplicationRunner {
+
+    private final ApplicationProperties applicationProperties;
+    private final ServerProperties serverProperties;
+
+    public static void main(String[] args) {
+        SpringApplication.run(AdminApplication.class, args);
+    }
+
+    @Hidden
+    @SaIgnore
+    @GetMapping("/")
+    public ApplicationProperties index() {
+        return applicationProperties;
+    }
+
+    @Override
+    public void run(ApplicationArguments args) {
+        String hostAddress = NetUtil.getLocalhostStr();
+        Integer port = serverProperties.getPort();
+        String contextPath = serverProperties.getServlet().getContextPath();
+        String baseUrl = URLUtil.normalize("%s:%s%s".formatted(hostAddress, port, contextPath));
+        log.info("--------------------------------------------------------");
+        log.info("{} server started successfully.", applicationProperties.getName());
+        log.info("当前版本: v{} (Profile: {})", applicationProperties.getVersion(), SpringUtil
+            .getProperty("spring.profiles.active"));
+        log.info("服务地址: {}", baseUrl);
+        log.info("接口文档: {}/doc.html", baseUrl);
+        log.info("Wyhao Admin: 持续迭代优化的，高质量多租户中后台管理系统框架");
+        log.info("Spring Boot: v{}", SpringUtil.getProperty("spring.boot.version"));
+        log.info("--------------------------------------------------------");
+    }
+}

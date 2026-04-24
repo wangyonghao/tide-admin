@@ -1,0 +1,71 @@
+/*
+ * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package top.wyhao.admin.system.controller;
+
+import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.dev33.satoken.annotation.SaMode;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import top.wyhao.admin.system.domain.bo.SettingsRequest;
+import top.wyhao.admin.system.domain.bo.SettingsResetRequest;
+import top.wyhao.admin.system.domain.query.SettingsQuery;
+import top.wyhao.admin.system.domain.vo.SettingsResult;
+import top.wyhao.admin.system.service.SettingsService;
+
+import java.util.List;
+
+/**
+ * 参数管理 API
+ *
+ * @author Bull-BCLS
+ * @since 2023/8/26 19:38
+ */
+@Tag(name = "参数管理 API")
+@RestController
+@RequiredArgsConstructor
+@RequestMapping("/system/settings")
+public class SettingsController {
+
+    private final SettingsService settingsService;
+
+    @Operation(summary = "查询参数列表", description = "查询参数列表")
+    @SaCheckPermission(value = {"system:siteConfig:get", "system:securityConfig:get", "system:loginConfig:get",
+        "system:mailConfig:get"}, mode = SaMode.OR)
+    @GetMapping
+    public List<SettingsResult> list(@Valid SettingsQuery query) {
+        return settingsService.list(query);
+    }
+
+    @Operation(summary = "修改参数", description = "修改参数")
+    @SaCheckPermission(value = {"system:siteConfig:update", "system:securityConfig:update", "system:loginConfig:update",
+        "system:mailConfig:update"}, mode = SaMode.OR)
+    @PutMapping
+    public void update(@RequestBody @Valid List<SettingsRequest> configs) {
+        settingsService.update(configs);
+    }
+
+    @Operation(summary = "重置参数", description = "重置参数")
+    @SaCheckPermission(value = {"system:siteConfig:update", "system:securityConfig:update", "system:loginConfig:update",
+        "system:mailConfig:update"}, mode = SaMode.OR)
+    @PatchMapping("/value")
+    public void resetValue(@RequestBody @Valid SettingsResetRequest req) {
+        settingsService.resetValue(req);
+    }
+}

@@ -1,0 +1,160 @@
+/*
+ * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package top.wyhao.starter.data.autoconfigure;
+
+import cn.hutool.extra.spring.SpringUtil;
+import com.baomidou.mybatisplus.autoconfigure.MybatisPlusPropertiesCustomizer;
+import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
+import com.baomidou.mybatisplus.core.incrementer.IdentifierGenerator;
+import com.baomidou.mybatisplus.extension.parser.JsqlParserGlobal;
+import com.baomidou.mybatisplus.extension.parser.cache.JdkSerialCaffeineJsqlParseCache;
+import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
+import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
+import com.baomidou.mybatisplus.extension.plugins.inner.*;
+import jakarta.annotation.PostConstruct;
+import org.mybatis.spring.annotation.MapperScan;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
+import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.starter.core.util.GeneralPropertySourceFactory;
+import top.wyhao.starter.data.autoconfigure.idgenerator.CosIdGenerator;
+import top.wyhao.starter.data.datapermission.handler.DefaultDataPermissionHandler;
+import top.wyhao.starter.data.handler.CompositeBaseEnumTypeHandler;
+import top.wyhao.starter.data.handler.MyBatisPlusMetaObjectHandler;
+
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
+
+/**
+ * MyBatis Plus 自动配置
+ *
+ * @author Charles7c
+ * @since 1.0.0
+ */
+@AutoConfiguration
+@MapperScan("${mybatis-plus.extension.mapper-package}")
+@EnableTransactionManagement(proxyTargetClass = true)
+@EnableConfigurationProperties(MyBatisPlusExtensionProperties.class)
+@ConditionalOnProperty(prefix = "mybatis-plus.extension", name = PropertiesConstants.ENABLED, havingValue = "true")
+@PropertySource(value = "classpath:default-data-mybatis-plus.yml", factory = GeneralPropertySourceFactory.class)
+public class MybatisPlusAutoConfiguration {
+
+    private static final Logger log = LoggerFactory.getLogger(MybatisPlusAutoConfiguration.class);
+
+    /**
+     * MyBatis Plus 配置
+     *
+     * @since 2.4.0
+     */
+    @Bean
+    public MybatisPlusPropertiesCustomizer mybatisPlusPropertiesCustomizer() {
+        return properties -> properties.getConfiguration()
+            .setDefaultEnumTypeHandler(CompositeBaseEnumTypeHandler.class);
+    }
+
+    /**
+     * MyBatis Plus 插件配置
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public MybatisPlusInterceptor mybatisPlusInterceptor(MyBatisPlusExtensionProperties properties) {
+        MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
+        // 其他拦截器
+        Map<String, InnerInterceptor> innerInterceptors = SpringUtil.getBeansOfType(InnerInterceptor.class);
+        if (!innerInterceptors.isEmpty()) {
+            innerInterceptors.values().forEach(interceptor::addInnerInterceptor);
+        }
+        // 分页插件
+        MyBatisPlusExtensionProperties.PaginationProperties paginationProperties = properties.getPagination();
+        if (paginationProperties != null && paginationProperties.isEnabled()) {
+            interceptor.addInnerInterceptor(this.paginationInnerInterceptor(paginationProperties));
+        }
+        // 乐观锁插件
+        if (properties.isOptimisticLockerEnabled()) {
+            interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
+        }
+        // 防全表更新与删除插件
+        if (properties.isBlockAttackPluginEnabled()) {
+            interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
+        }
+        return interceptor;
+    }
+
+    /**
+     * ID 生成器配置
+     */
+    @Bean
+    public IdentifierGenerator identifierGenerator() {
+        return new CosIdGenerator();
+    }
+
+    /**
+     * 分页插件配置（<a href="https://baomidou.com/pages/97710a/#paginationinnerinterceptor">PaginationInnerInterceptor</a>）
+     */
+    private PaginationInnerInterceptor paginationInnerInterceptor(MyBatisPlusExtensionProperties.PaginationProperties paginationProperties) {
+        // 对于单一数据库类型来说，都建议配置该值，避免每次分页都去抓取数据库类型
+        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(paginationProperties
+            .getDbType());
+        paginationInnerInterceptor.setOverflow(paginationProperties.isOverflow());
+        paginationInnerInterceptor.setMaxLimit(paginationProperties.getMaxLimit());
+        return paginationInnerInterceptor;
+    }
+
+    /**
+     * 数据权限拦截器
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public DataPermissionInterceptor dataPermissionInterceptor(DataPermissionHandler dataPermissionHandler) {
+        return new DataPermissionInterceptor(dataPermissionHandler);
+    }
+
+    /**
+     * 数据权限处理器
+     */
+    @Bean
+    @ConditionalOnMissingBean
+    public DataPermissionHandler dataPermissionHandler() {
+        return new DefaultDataPermissionHandler();
+    }
+
+    // SQL 解析本地缓存
+    static {
+        JsqlParserGlobal.setJsqlParseCache(new JdkSerialCaffeineJsqlParseCache(cache -> cache.maximumSize(1024)
+                .expireAfterWrite(5, TimeUnit.SECONDS)));
+    }
+
+    /**
+     * 元对象处理器配置（插入或修改时自动填充）
+     */
+    @Bean
+    public MetaObjectHandler metaObjectHandler() {
+        return new MyBatisPlusMetaObjectHandler();
+    }
+
+    @PostConstruct
+    public void postConstruct() {
+        log.debug("[ContiNew Starter] - Auto Configuration 'MyBatis Plus' completed initialization.");
+    }
+}

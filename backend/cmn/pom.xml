@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <parent>
+    <groupId>top.wyhao</groupId>
+    <artifactId>wyh-admin</artifactId>
+    <version>${revision}</version>
+  </parent>
+
+  <artifactId>cmn</artifactId>
+  <packaging>pom</packaging>
+  <name>${project.artifactId}</name>
+  <description>WYH Admin Commons Modules</description>
+
+  <modules>
+    <!-- 所有业务模块的通用能力 -->
+    <module>biz-base</module>
+    <!-- Starter 模块 -->
+    <module>cmn-apidoc</module>
+    <!-- 集成认证能力 -->
+    <module>cmn-security</module>
+    <module>cmn-justauth</module>
+    <module>cmn-redis</module>
+    <module>cmn-springcache</module>
+    <module>cmn-jetcache</module>
+    <module>cmn-captcha-graphic</module>
+    <module>cmn-captcha-behavior</module>
+    <module>cmn-base</module>
+    <module>cmn-mybatis-plus</module>
+    <module>cmn-encrypt-core</module>
+    <module>cmn-encrypt-field</module>
+    <module>cmn-encrypt-api</module>
+    <module>cmn-fastexcel</module>
+    <module>cmn-poi</module>
+    <module>cmn-tenant</module>
+    <module>cmn-json</module>
+    <module>cmn-license</module>
+    <module>cmn-mail</module>
+    <module>cmn-websocket</module>
+    <module>cmn-storage</module>
+    <module>cmn-trace</module>
+    <module>cmn-web</module>
+  </modules>
+</project>

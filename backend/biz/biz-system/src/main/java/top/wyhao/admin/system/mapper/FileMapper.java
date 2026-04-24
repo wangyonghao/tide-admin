@@ -1,0 +1,47 @@
+/*
+ * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package top.wyhao.admin.system.mapper;
+
+import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Select;
+import top.wyhao.admin.system.domain.entity.FileDO;
+import top.wyhao.admin.system.domain.vo.file.FileStatisticsResp;
+import top.wyhao.starter.data.mapper.BaseMapper;
+
+import java.util.List;
+
+/**
+ * 文件 Mapper
+ *
+ * @author Charles7c
+ * @since 2023/12/23 10:38
+ */
+@Mapper
+public interface FileMapper extends BaseMapper<FileDO> {
+
+    /**
+     * 查询文件资源统计信息
+     *
+     * @return 文件资源统计信息
+     */
+    @Select("SELECT type, COUNT(1) number, SUM(size) size FROM sys_file WHERE type != 0 GROUP BY type")
+    List<FileStatisticsResp> statistics();
+
+    default Long countByStorageIds(List<Long> fileStorageIds) {
+        return this.lambdaQuery().in(FileDO::getStorageId, fileStorageIds).count();
+    }
+}

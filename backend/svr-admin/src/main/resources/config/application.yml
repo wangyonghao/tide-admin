@@ -1,0 +1,261 @@
+### 应用配置
+application:
+  id: wyhao-admin
+  # 名称
+  name: wyhao-admin
+  # 描述
+  description: 持续迭代优化的前后端分离中后台管理系统框架，开箱即用，持续提供舒适的开发体验。
+  # 版本
+  version: 4.1.0-SNAPSHOT
+  # 基本包
+  base-package: top.wyhao
+  # 作者信息配置
+  contact:
+    name: wangyonghao
+    email: wangyonghao@163.com
+    url: https://wyhao.top
+  # 许可协议信息配置
+  license:
+    name: Apache-2.0
+    url: https://github.com/wangyonghao/wyh-admin/blob/dev/LICENSE
+
+### 服务器配置
+server:
+  servlet:
+    # 应用访问路径
+    context-path: /
+  ## Undertow 服务器配置
+  undertow:
+    # HTTP POST 请求内容的大小上限（默认 -1，不限制）
+    max-http-post-size: -1
+    # 以下的配置会影响 buffer，这些 buffer 会用于服务器连接的 IO 操作，有点类似 Netty 的池化内存管理
+    # 每块 buffer的空间大小（越小的空间被利用越充分，不要设置太大，以免影响其他应用，合适即可）
+    buffer-size: 512
+    # 是否分配的直接内存（NIO 直接分配的堆外内存）
+    direct-buffers: true
+    threads:
+      # 设置 IO 线程数，它主要执行非阻塞的任务，它们会负责多个连接（默认每个 CPU 核心一个线程）
+      io: 8
+      # 阻塞任务线程池，当执行类似 Servlet 请求阻塞操作，Undertow 会从这个线程池中取得线程（它的值设置取决于系统的负载）
+      worker: 256
+
+### Spring 项目配置
+spring:
+  application:
+    name: ${application.id}
+  ## 环境配置
+  profiles:
+    # 启用的环境
+    active: dev
+    include:
+      - generator
+  main:
+    # 允许定义重名的 bean 对象覆盖原有的 bean
+    allow-bean-definition-overriding: true
+    # 允许循环依赖
+    allow-circular-references: true
+
+### 线程池配置（默认启用扩展配置，如未指定 corePoolSize、maxPoolSize 则根据机器配置自动设置）
+spring.task:
+  # 异步任务
+  execution:
+    thread-name-prefix: task-pool
+    # 任务拒绝策略（默认 ABORT，不执行新任务，直接抛出 RejectedExecutionException 异常）
+    # CALLER_RUNS：提交的任务在执行被拒绝时，会由提交任务的线程去执行
+    rejected-policy: CALLER_RUNS
+    pool:
+      keep-alive: 300s
+    shutdown:
+      # 是否等待任务执行完成再关闭线程池（默认 false）
+      await-termination: true
+      # 等待时间
+      await-termination-period: 30s
+  # 定时任务
+  scheduling:
+    thread-name-prefix: schedule-pool
+    # 任务拒绝策略（默认 ABORT，不执行新任务，直接抛出 RejectedExecutionException 异常）
+    # CALLER_RUNS：提交的任务在执行被拒绝时，会由提交任务的线程去执行
+    rejected-policy: CALLER_RUNS
+    shutdown:
+      # 是否等待任务执行完成再关闭线程池（默认 false）
+      await-termination: true
+      # 等待时间
+      await-termination-period: 30s
+
+### 文件上传配置
+spring.servlet.multipart:
+  enabled: true
+  # 单文件上传大小限制
+  max-file-size: 10MB
+  # 单次总上传文件大小限制
+  max-request-size: 20MB
+### 头像配置
+avatar:
+  # 存储路径
+  path: user/avatar/
+  # 支持的后缀
+  support-suffix: jpg,jpeg,png,gif
+
+### 存储配置
+wyhao:
+  storage:
+    # 默认存储平台
+    default-platform: local
+    # 默认存储配置来源 (CONFIG: 配置文件, DYNAMIC: 动态配置)
+    default-storage-source: DYNAMIC
+
+### 接口文档配置
+springdoc:
+  api-docs:
+    enabled: true
+    path: /v3/api-docs
+  swagger-ui:
+    enabled: true
+    path: /swagger-ui
+  # 设置对象型参数的展示形式（设为 true 表示将对象型参数平展开，即对象内的属性直接作为参数展示而不是嵌套在对象内，默认 false）
+  # 如果不添加该全局配置，可以在需要如此处理的对象参数类上使用 @ParameterObject
+  default-flat-param-object: true
+  ## 组件配置
+  components:
+    # 鉴权配置
+    security-schemes:
+      Authorization:
+        type: HTTP
+        in: HEADER
+        name: ${sa-token.token-name}
+        scheme: ${sa-token.token-prefix}
+### 项目日志配置
+logging:
+  config: classpath:logback-spring.xml
+
+### 链路追踪配置
+wyhao-starter.trace:
+  enabled: true
+  trace-id-name: X-Trace-Id
+  ## TLog 配置
+  tlog:
+    enable-invoke-time-print: false
+    pattern: '[$spanId][$traceId]'
+    mdc-enable: false
+
+### CRUD 配置
+wyhao-starter.crud:
+  ## 树型字典结构映射配置（简单树，对应前端 UI）
+  tree-dict-model:
+    id-key: key
+    name-key: title
+    weight-key: sort
+
+### 租户配置
+wyhao-starter.tenant:
+  enabled: true
+  # 请求头中租户 ID 键名
+  tenant-id-header: X-Tenant-Id
+  # 默认租户 ID：超级管理员用户所在租户（默认：0）
+  default-tenant-id: 0
+  # 忽略菜单 ID（租户不能使用的菜单）
+  ignore-menus:
+    - 1050 # 菜单管理
+    - 1130 # 字典管理
+    - 1140 # 字典项管理
+    - 1150 # 系统配置
+    - 2050 # 短信日志
+    - 3000 # 租户管理
+    - 7000 # 能力开放
+    - 8000 # 任务调度
+    - 9000 # 开发工具
+
+wyhao-starter:
+  # 启用限流器
+  rate-limiter.enabled: true
+
+### Sa-Token 配置 文档地址：https://sa-token.cc/doc.html#/use/config
+sa-token:
+  # Token 名称（同时也是 cookie 名称）
+  token-name: Authorization
+  # 是否启用动态 activeTimeout 功能
+  dynamic-active-timeout: true
+  ## 提示：请通过页面功能 [系统管理/系统配置/客户端配置] 动态调整 timeout、active-timeout 配置项
+  ## 如果不需要动态配置，请将 dynamic-active-timeout 设为 false，并取消下方 timeout 和 active-timeout 配置的注释，最好再移除相关登录处理代码
+  # Token 有效期（单位：秒，默认 30 天，-1 代表永不过期）
+  timeout: 86400
+  # Token 最低活跃频率 30分钟（单位：秒，默认 -1，代表不限制，永不冻结。如果 token 超过此时间没有访问系统就会被冻结）
+  active-timeout: 1800
+  # 是否打开自动续签（如果此值为 true，框架会在每次直接或间接调用 getLoginId() 时进行一次过期检查与续签操作）
+  auto-renew: true
+  # 是否允许同一账号多地同时登录（为 true 时允许一起登录，为 false 时新登录挤掉旧登录）
+  is-concurrent: true
+  # 在多人登录同一账号时，是否共用一个 Token（为 true 时所有登录共用一个 Token，为 false 时每次登录新建一个 Token）
+  is-share: false
+  # 是否输出操作日志
+  is-log: false
+  # JWT 秘钥
+  jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+  is-read-body: true
+  is-read-header: true
+  is-read-cookie: false
+  token-prefix: Bearer
+
+
+### MyBatis Plus 配置
+mybatis-plus:
+  # Mapper XML 文件目录配置
+  mapper-locations: classpath*:/mapper/**/*Mapper.xml
+  ## MyBatis 配置
+  configuration:
+    # MyBatis 自动映射策略
+    # NONE：不启用 PARTIAL：只对非嵌套 resultMap 自动映射 FULL：对所有 resultMap 自动映射
+    auto-mapping-behavior: PARTIAL
+    # database-id: mysql
+    database-id: pgsql
+  ## 全局配置
+  global-config:
+    banner: true
+    db-config:
+      # 主键类型（默认 assign_id，表示自行赋值）
+      # auto 代表使用数据库自增策略（需要在表中设置好自增约束）
+      id-type: ASSIGN_ID
+  ## 扩展配置
+  extension:
+    enabled: true
+    # Mapper 接口扫描包配置
+    mapper-package: ${application.base-package}.**.mapper
+    # 分页插件配置
+    pagination:
+      enabled: true
+      # db-type: MYSQL
+      db-type: POSTGRE_SQL
+
+### CosId 配置
+cosid:
+  namespace: ${spring.application.name}
+  machine:
+    enabled: true
+    # 机器号分配器
+    distributor:
+      type: REDIS
+    guarder:
+      # 开启机器号守护
+      enabled: true
+  snowflake:
+    enabled: true
+    zone-id: Asia/Shanghai
+    epoch: 1577203200000
+    share:
+      # 开启时钟回拨同步
+      clock-sync: true
+      converter:
+        friendly:
+          pad-start: true
+    provider:
+      safe-js:
+        machine-bit: 7
+        sequence-bit: 9
+      # 租户编码
+      tenant-code:
+        converter:
+          type: RADIX
+          prefix: T
+          radix:
+            char-size: 11
+            pad-start: true

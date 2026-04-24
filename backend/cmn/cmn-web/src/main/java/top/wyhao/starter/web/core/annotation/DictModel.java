@@ -1,0 +1,51 @@
+/*
+ * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package top.wyhao.starter.web.core.annotation;
+
+import java.lang.annotation.*;
+
+/**
+ * 字典结构映射
+ *
+ * <p>用于查询字典列表 API（下拉选项等场景）</p>
+ */
+@Target(ElementType.TYPE)
+@Retention(RetentionPolicy.RUNTIME)
+@Documented
+public @interface DictModel {
+
+    /**
+     * 标签字段名
+     *
+     * @return 标签字段名
+     */
+    String labelKey() default "name";
+
+    /**
+     * 值字段名
+     *
+     * @return 值字段名
+     */
+    String valueKey() default "id";
+
+    /**
+     * 额外信息字段名
+     *
+     * @return 额外信息字段名
+     */
+    String[] extraKeys() default {};
+}

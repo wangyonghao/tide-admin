@@ -1,0 +1,19 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/postgresql/system/schema.sql
+  - include:
+      file: db/changelog/postgresql/system/data.sql
+  - include:
+      file: db/changelog/postgresql/generator/schema.sql
+  - include:
+      file: db/changelog/postgresql/generator/data.sql
+  - include:
+      file: db/changelog/postgresql/schedule/data.sql
+  - include:
+      file: db/changelog/postgresql/openapi/schema.sql
+  - include:
+      file: db/changelog/postgresql/openapi/data.sql
+#  - include:
+#      file: db/changelog/postgresql/tenant/schema.sql
+#  - include:
+#      file: db/changelog/postgresql/tenant/data.sql
