@@ -1,14 +1,14 @@
 <script setup lang="ts">
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { LogResp } from '#/api/monitor/log';
+import type { OperationLogResp } from '#/api/monitor/log';
 
 import { $t } from '@vben/locales';
 
 import { Badge } from '@vben-core/shadcn-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { listLog } from '#/api/monitor/log';
+import { logApi } from '#/api/monitor/log';
 import { dateRangeShortcuts } from '#/utils/dateTools';
 
 function usePackageGridSearchFormSchema(): VbenFormSchema[] {
@@ -107,7 +107,7 @@ const [TableGrid] = useVbenVxeGrid({
       },
       ajax: {
         query: async ({ page }, formValues) => {
-          const res = await listLog({
+          const res = await logApi.list({
             page: page.currentPage,
             size: page.pageSize,
             ...formValues,
@@ -133,7 +133,7 @@ const [TableGrid] = useVbenVxeGrid({
       zoom: true,
       zoomOptions: {},
     },
-  } as VxeTableGridOptions<LogResp>,
+  } as VxeTableGridOptions<OperationLogResp>,
 });
 </script>
 

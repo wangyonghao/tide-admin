@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.starter.core.exception;
 
@@ -36,7 +21,7 @@ public class BusinessException extends RuntimeException {
     }
 
     public BusinessException(String code, String defaultMessage) {
-        this(null, null, defaultMessage);
+        this(code, null, defaultMessage);
     }
 
     public BusinessException(String code, Object[] args, String defaultMessage) {
@@ -67,15 +52,28 @@ public class BusinessException extends RuntimeException {
         return this;
     }
 
+
     @Override
     public String getMessage() {
-        String message = null;
         if (code != null) {
-            message = I18nUtils.message(code, args);
+            return I18nUtils.message(code, args);
         }
-        if (message == null) {
-            message = defaultMessage;
-        }
-        return message;
+        return defaultMessage;
+    }
+
+    public static BusinessException of(String code){
+        return of(code, null);
+    }
+
+    public static BusinessException of(String code, String defaultMessage){
+        return of(code, null, defaultMessage);
+    }
+
+    public static BusinessException of(String code, Object[] args,String defaultMessage){
+        BusinessException ex = new BusinessException(code, args, defaultMessage);
+        ex.setCode(code);
+        ex.setArgs(args);
+        ex.setDefaultMessage(defaultMessage);
+        return ex;
     }
 }

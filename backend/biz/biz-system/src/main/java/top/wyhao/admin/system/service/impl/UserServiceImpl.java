@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package top.wyhao.admin.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
@@ -20,7 +5,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.lang.UUID;
-import cn.hutool.core.map.MapUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
@@ -47,6 +31,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.modules.common.util.RsaUtils;
+import top.wyhao.admin.system.mapper.DeptMapper;
+import top.wyhao.admin.system.mapper.MenuMapper;
+import top.wyhao.admin.system.mapper.UserRoleMapper;
+import top.wyhao.admin.system.mapper.user.UserMapper;
+import top.wyhao.admin.system.mapper.user.UserPasswordHistoryMapper;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.bo.user.*;
 import top.wyhao.admin.system.model.entity.DeptDO;
@@ -54,17 +43,12 @@ import top.wyhao.admin.system.model.entity.RoleDO;
 import top.wyhao.admin.system.model.entity.UserRoleDO;
 import top.wyhao.admin.system.model.entity.user.UserDO;
 import top.wyhao.admin.system.model.entity.user.UserPasswordHistoryDO;
-import top.wyhao.admin.system.model.enums.ConfigCategory;
 import top.wyhao.admin.system.model.query.UserQuery;
+import top.wyhao.admin.system.model.vo.config.SecurityConfigVO;
 import top.wyhao.admin.system.model.vo.user.UserDetailResult;
 import top.wyhao.admin.system.model.vo.user.UserImportParseResp;
 import top.wyhao.admin.system.model.vo.user.UserImportResp;
 import top.wyhao.admin.system.model.vo.user.UserResult;
-import top.wyhao.admin.system.mapper.DeptMapper;
-import top.wyhao.admin.system.mapper.MenuMapper;
-import top.wyhao.admin.system.mapper.UserRoleMapper;
-import top.wyhao.admin.system.mapper.user.UserMapper;
-import top.wyhao.admin.system.mapper.user.UserPasswordHistoryMapper;
 import top.wyhao.admin.system.service.*;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
@@ -111,7 +95,6 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserPasswordHistoryService userPasswordHistoryService;
     private final UserSocialService userSocialService;
-    private final SettingsService settingsService;
     private final RoleService roleService;
     private final FileService fileService;
     private final FileStorageService fileStorageService;
@@ -120,6 +103,7 @@ public class UserServiceImpl implements UserService {
     private final UserPasswordHistoryMapper passwordHistoryMapper;
     private final UserRoleMapper userRoleMapper;
     private final MenuMapper menuMapper;
+    private final ConfigService configService;
 
     @Value("${avatar.support-suffix}")
     private String[] avatarSupportSuffix;
@@ -136,7 +120,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResult<UserResult> page(UserQuery query, PageQuery pageQuery) {
         QueryWrapper<UserDO> queryWrapper = this.buildQueryWrapper(query);
-        QueryWrapperUtil.applySort(queryWrapper, pageQuery.getSort(), UserDO.class);
+        QueryWrapperUtil.applySort(queryWrapper, query.getSort(), UserDO.class);
         IPage<UserResult> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
         return PageResult.build(page);
     }
@@ -158,7 +142,8 @@ public class UserServiceImpl implements UserService {
 
         /* 执行业务 */
         newUser.setPassword(passwordEncoder.encode(rawPassword));
-        newUser.setPwdExpireDate(LocalDate.now().plusDays(settingsService.getPasswordExpireDays()));
+        SecurityConfigVO loginConfig = configService.getSecurityConfig();
+        newUser.setPwdExpireDate(LocalDate.now().plusDays(loginConfig.getPasswordExpireDays()));
         userMapper.insert(newUser);
 
         // 保存用户和角色关联
@@ -229,11 +214,6 @@ public class UserServiceImpl implements UserService {
         userMapper.deleteByIds(ids);
         // 踢出在线用户
         ids.forEach(LoginUtil::kickout);
-    }
-
-    @Override
-    public List<LabelValueResp> dict(UserQuery query, SortQuery sortQuery) {
-        return List.of(); // todo
     }
 
     @Override
@@ -374,21 +354,82 @@ public class UserServiceImpl implements UserService {
         // 构建查询条件
         QueryWrapper<UserDO> queryWrapper = this.buildQueryWrapper(query);
         QueryWrapperUtil.applySort(queryWrapper, sortQuery.getSort(), UserDO.class);
-        
+
         // 查询用户列表
         List<UserDetailResult> userList = userMapper.selectUserList(queryWrapper);
-        
+
         // 导出Excel
         ExcelUtils.export(userList, "用户数据", UserDetailResult.class, response);
     }
 
     @Override
-    public void resetPassword(UserPasswordResetRequest passwordResetBO, Long id) {
+    public void resetPassword(UserPasswordResetRequest resetRequest, Long id) {
+        String rawPassword = resetRequest.getNewPassword();
+
+        SecurityConfigVO loginConfig = configService.getSecurityConfig();
         userMapper.lambdaUpdate()
-                .set(UserDO::getPassword, passwordResetBO.getNewPassword())
-                .set(UserDO::getPwdExpireDate, LocalDateTime.now().plusDays(settingsService.getPasswordExpireDays()))
+                .set(UserDO::getPassword, passwordEncoder.encode(rawPassword))
+                .set(UserDO::getPwdExpireDate, LocalDateTime.now().plusDays(loginConfig.getPasswordExpireDays()))
                 .eq(UserDO::getId, id)
                 .update();
+    }
+
+    @Override
+    public String resetPassword(Long id) {
+        UserDO userDO = userMapper.selectById(id);
+        if (userDO == null) {
+            throw new BusinessException("USER_NOT_FOUND", "用户不存在");
+        }
+        // 生成12位安全随机密码
+        String newPassword = generateSecurePassword(12);
+
+        // 重置密码
+        UserPasswordResetRequest req = new UserPasswordResetRequest();
+        req.setNewPassword(newPassword);
+        this.resetPassword(req, id);
+
+        String retryKey = "login:retry:" + userDO.getUsername() + ":*";
+        RedisUtils.deleteByPattern(retryKey);
+        return newPassword;
+    }
+
+    /**
+     * 生成安全的随机密码
+     *
+     * @param length 密码长度
+     * @return 随机密码
+     */
+    private String generateSecurePassword(int length) {
+        String upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCase = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String specialChars = "!@#$%^&*";
+        String allChars = upperCase + lowerCase + digits + specialChars;
+
+        java.security.SecureRandom random = new java.security.SecureRandom();
+        StringBuilder password = new StringBuilder(length);
+
+        // 确保至少包含一个大写字母、小写字母、数字和特殊字符
+        password.append(upperCase.charAt(random.nextInt(upperCase.length())));
+        password.append(lowerCase.charAt(random.nextInt(lowerCase.length())));
+        password.append(digits.charAt(random.nextInt(digits.length())));
+        password.append(specialChars.charAt(random.nextInt(specialChars.length())));
+
+        // 填充剩余字符
+        for (int i = 4; i < length; i++) {
+            password.append(allChars.charAt(random.nextInt(allChars.length())));
+        }
+
+        // 打乱字符顺序
+        char[] passwordArray = password.toString().toCharArray();
+        for (int i = passwordArray.length - 1; i > 0; i--) {
+            int j = random.nextInt(i + 1);
+            char temp = passwordArray[i];
+            passwordArray[i] = passwordArray[j];
+            passwordArray[j] = temp;
+        }
+
+        return new String(passwordArray);
     }
 
     @Override
@@ -677,18 +718,16 @@ public class UserServiceImpl implements UserService {
      * @return 密码允许重复使用次数
      */
     private int checkPassword(String password, UserDO user) {
-        Map<String, String> passwordPolicy = settingsService.getByCategory(ConfigCategory.PASSWORD);
+        SecurityConfigVO securityConfig = configService.getSecurityConfig();
         // 密码最小长度
-        PASSWORD_MIN_LENGTH.validate(password, MapUtil.getInt(passwordPolicy, PASSWORD_MIN_LENGTH.name()), user);
+        PASSWORD_MIN_LENGTH.validate(password, securityConfig.getPasswordMinLength(), user);
         // 密码是否必须包含特殊字符
-        PASSWORD_REQUIRE_SYMBOLS.validate(password, MapUtil.getInt(passwordPolicy, PASSWORD_REQUIRE_SYMBOLS
-                .name()), user);
+        PASSWORD_REQUIRE_SYMBOLS.validate(password, securityConfig.getPasswordRequireSpecial() ? 1 : 0, user);
         // 密码是否允许包含正反序账号名
-        PASSWORD_ALLOW_CONTAIN_USERNAME.validate(password, MapUtil
-                .getInt(passwordPolicy, PASSWORD_ALLOW_CONTAIN_USERNAME.name()), user);
+        PASSWORD_ALLOW_CONTAIN_USERNAME.validate(password, securityConfig.getPasswordAllowContainUsername() ? 1 : 0, user);
         // 密码重复使用次数
-        int passwordRepetitionTimes = MapUtil.getInt(passwordPolicy, PASSWORD_REPETITION_TIMES.name());
-        PASSWORD_REPETITION_TIMES.validate(password, passwordRepetitionTimes, user);
+        int passwordRepetitionTimes = securityConfig.getPasswordRepetitionTimes();
+        PASSWORD_REPETITION_TIMES.validate(password, securityConfig.getPasswordRepetitionTimes(), user);
         return passwordRepetitionTimes;
     }
 

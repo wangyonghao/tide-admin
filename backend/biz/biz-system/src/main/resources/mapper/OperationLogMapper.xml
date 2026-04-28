@@ -1,27 +1,23 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="top.wyhao.admin.system.mapper.OperationLogMapper">
-    <select id="selectLogPage" resultType="top.wyhao.admin.system.model.vo.log.LogResp">
+    <select id="selectLogPage" resultType="top.wyhao.admin.system.model.vo.log.OperationLogResult">
         SELECT
             t1.id,
-            t1.description,
-            t1.module,
-            t1.time_taken,
-            t1.ip,
-            t1.address,
-            t1.browser,
-            t1.os,
+            t1.object_type,
+            t1.object_id,
+            t1.operation,
+            t1.operator_id,
+            t1.operator_name,
+            t1.operator_ip,
+            t1.operate_time,
             t1.status,
-            t1.error_msg,
-            t1.create_user,
-            t1.create_time,
-            t2.nickname AS createUserString
+            t1.remark,
         FROM sys_operation_log AS t1
-        LEFT JOIN sys_user AS t2 ON t2.id = t1.create_user
         ${ew.customSqlSegment}
     </select>
 
-    <select id="selectLogList" resultType="top.wyhao.admin.system.model.vo.log.LogResp">
+    <select id="selectLogList" resultType="top.wyhao.admin.system.model.vo.log.OperationLogResult">
         SELECT
             t1.id,
             t1.description,

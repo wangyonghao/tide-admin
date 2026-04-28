@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.admin.exception;
 
@@ -53,6 +38,7 @@ public class GlobalExceptionHandler {
      * 属于业务逻辑分支流程，应提供用户友好、清晰的提示，由用户自行处理
      */
     @ExceptionHandler(BusinessException.class)
+    @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public R<Void> handleBusinessException(BusinessException e, HttpServletRequest request) {
         log.debug("业务阻断：request={} {} code={}, message={}", request.getMethod(), request.getRequestURI(), e.getCode(), e.getMessage());
         return R.fail(e.getCode(), e.getMessage());
@@ -120,6 +106,7 @@ public class GlobalExceptionHandler {
      * </p>
      */
     @ExceptionHandler(HttpMessageNotReadableException.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R<Void> handleHttpMessageNotReadableException(HttpMessageNotReadableException e, HttpServletRequest request) {
         log.warn(CharSequenceUtil.format("[{}] {}", request.getMethod(), request.getRequestURI()), e);
         // @RequestBody 实体内参数类型不匹配
@@ -134,6 +121,7 @@ public class GlobalExceptionHandler {
      * 文件上传异常-超过上传大小限制
      */
     @ExceptionHandler(MultipartException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R<Void> handleMultipartException(MultipartException e, HttpServletRequest request) {
         log.error("[{}] {}", request.getMethod(), request.getRequestURI(), e);
         String msg = e.getMessage();
@@ -172,6 +160,7 @@ public class GlobalExceptionHandler {
      * 不支持的 HTTP 请求方法异常
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R<Void> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e,
                                                           HttpServletRequest request) {
         log.error(CharSequenceUtil.format("[{}] {}", request.getMethod(), request.getRequestURI()), e);
@@ -182,6 +171,7 @@ public class GlobalExceptionHandler {
      * 系统故障（兜底）
      */
     @ExceptionHandler(Exception.class)
+    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public R<Void> handleSystemException(Exception e, HttpServletRequest request) {
         log.error(CharSequenceUtil.format("系统故障：request={} {} type={}, message={}", request.getMethod(), request.getRequestURI(), e.getClass().getName(), e.getMessage()),e);
         return R.fail("SYSTEM_ERROR", "系统繁忙");

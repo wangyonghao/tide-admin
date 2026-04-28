@@ -44,8 +44,8 @@ export const userApi = {
     return http.post('/system/user/import', data);
   },
   /** 重置密码 */
-  resetPassword: (data: any, id: string) => {
-    return http.put(`/system/user/${id}/password`, data);
+  resetPassword: (id: string) => {
+    return http.put<string>(`/system/user/${id}/password/reset`);
   },
   /** 分配角色 */
   updateRole: (data: { roleIds: Array<number | string> }, id: string) => {

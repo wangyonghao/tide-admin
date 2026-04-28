@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.admin.system.model.enums;
 
@@ -23,11 +8,12 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import top.wyhao.starter.core.constant.RegexConstants;
-import top.wyhao.starter.core.constant.GlobalConstants;
 import top.wyhao.admin.system.model.entity.user.UserDO;
-import top.wyhao.admin.system.service.SettingsService;
+import top.wyhao.admin.system.model.vo.config.SecurityConfigVO;
+import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.UserPasswordHistoryService;
+import top.wyhao.starter.core.constant.GlobalConstants;
+import top.wyhao.starter.core.constant.RegexConstants;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
 
 import java.util.Map;
@@ -66,9 +52,9 @@ public enum PasswordPolicies {
                 super.validateRange(value, policyMap);
                 return;
             }
+            SecurityConfigVO securityConfigVO = SpringUtil.getBean(ConfigService.class).getSecurityConfig();
             Integer passwordExpirationDays = ObjectUtil.defaultIfNull(Convert.toInt(policyMap
-                .get(PASSWORD_EXPIRATION_DAYS.name())), SpringUtil.getBean(SettingsService.class)
-                    .getInt(PASSWORD_EXPIRATION_DAYS.name(),90));
+                .get(PASSWORD_EXPIRATION_DAYS.name())), securityConfigVO.getPasswordExpireDays());
             if (passwordExpirationDays > GlobalConstants.Boolean.NO) {
                 ValidationUtils.throwIf(value >= passwordExpirationDays, "密码到期提醒时间应小于密码有效期");
                 return;

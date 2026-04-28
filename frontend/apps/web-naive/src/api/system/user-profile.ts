@@ -1,4 +1,4 @@
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 绑定三方账号信息 */
 export interface BindSocialAccountRes {

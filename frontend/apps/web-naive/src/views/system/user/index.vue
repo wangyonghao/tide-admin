@@ -11,7 +11,7 @@ import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
 import { Page } from '@Vben/common-ui'
-import { NButton, NDataTable, NDropdown, NIcon, NInput, NSpace, NSplit, NTag, NTree, useDialog, useMessage, } from 'naive-ui';
+import { NButton, NDataTable, NDropdown, NIcon, NInput, NModal, NSpace, NSplit, NTag, NTree, useDialog, useMessage, } from 'naive-ui';
 
 import { deptApi,roleApi,userApi } from '#/api/system';
 
@@ -314,23 +314,39 @@ function handleEditSuccess() {
   loadUserData();
 }
 
-// function handleResetPassword(row: UserResp) {
-//   dialog.info({
-//     title: '重置密码',
-//     content: `确定要重置用户"${row.username}"的密码吗？`,
-//     positiveText: '确定',
-//     negativeText: '取消',
-//     onPositiveClick: async () => {
-//       try {
-//         await userApi.resetPassword({ password: '123456' }, row.id);
-//         message.success('密码重置成功，新密码为: 123456');
-//       } catch (error) {
-//         console.error('重置密码失败:', error);
-//         message.error('重置密码失败');
-//       }
-//     },
-//   });
-// }
+// 重置密码
+const resetPasswordDialogVisible = ref(false);
+const newPassword = ref('');
+
+function handleResetPassword(row: UserResp) {
+  dialog.warning({
+    title: '重置密码',
+    content: `确定要重置用户"${row.username}"的密码吗？`,
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        const password = await userApi.resetPassword(row.id);
+        newPassword.value = password;
+        resetPasswordDialogVisible.value = true;
+      } catch (error) {
+        console.error('重置密码失败:', error);
+        message.error('重置密码失败');
+      }
+    },
+  });
+}
+
+// 复制密码
+async function handleCopyPassword() {
+  try {
+    await navigator.clipboard.writeText(newPassword.value);
+    message.success('密码已复制到剪贴板');
+  } catch (error) {
+    console.error('复制失败:', error);
+    message.error('复制失败');
+  }
+}
 
 function handleDelete(row: UserResp) {
   dialog.warning({
@@ -363,6 +379,10 @@ function handleDropdownSelect(key: string, row: UserResp) {
     }
     case 'edit': {
       handleEdit(row);
+      break;
+    }
+    case 'resetPwd': {
+      handleResetPassword(row);
       break;
     }
   }
@@ -485,5 +505,34 @@ onMounted(() => {
       :default-dept-id="selectedDeptId"
       @success="handleEditSuccess"
     />
+
+    <!-- 重置密码对话框 -->
+    <NModal
+      v-model:show="resetPasswordDialogVisible"
+      preset="dialog"
+      title="密码重置成功"
+      positive-text="确定"
+      @positive-click="resetPasswordDialogVisible = false"
+    >
+      <div class="space-y-4">
+        <div class="text-orange-500 flex items-center gap-2">
+          <IconifyIcon icon="lucide:alert-triangle" class="text-lg" />
+          <span class="font-medium">新密码只显示一次，请妥善保管！</span>
+        </div>
+        <div class="flex items-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded">
+          <span class="flex-1 font-mono text-lg select-all">{{ newPassword }}</span>
+          <NButton
+            type="primary"
+            size="small"
+            @click="handleCopyPassword"
+          >
+            <template #icon>
+              <IconifyIcon icon="lucide:copy" />
+            </template>
+            复制
+          </NButton>
+        </div>
+      </div>
+    </NModal>
   </Page>
 </template>

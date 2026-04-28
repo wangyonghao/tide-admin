@@ -231,31 +231,6 @@ COMMENT ON COLUMN "sys_role_dept"."role_id" IS '角色ID';
 COMMENT ON COLUMN "sys_role_dept"."dept_id" IS '部门ID';
 COMMENT ON TABLE "sys_role_dept" IS '角色和部门关联表';
 
-CREATE TABLE IF NOT EXISTS "sys_settings"
-(
-    "id"            int8         NOT NULL,
-    "category"      varchar(50)  NOT NULL,
-    "name"          varchar(50)  NOT NULL,
-    "code"          varchar(100) NOT NULL,
-    "value"         text         DEFAULT NULL,
-    "default_value" text         DEFAULT NULL,
-    "description"   varchar(200) DEFAULT NULL,
-    "update_user"   int8         DEFAULT NULL,
-    "update_time"   timestamp    DEFAULT NULL,
-    PRIMARY KEY ("id")
-);
-CREATE UNIQUE INDEX "uk_option_category_code" ON sys_settings ("category", "code");
-COMMENT ON COLUMN sys_settings."id" IS 'ID';
-COMMENT ON COLUMN sys_settings."category" IS '类别';
-COMMENT ON COLUMN sys_settings."name" IS '名称';
-COMMENT ON COLUMN sys_settings."code" IS '键';
-COMMENT ON COLUMN sys_settings."value" IS '值';
-COMMENT ON COLUMN sys_settings."default_value" IS '默认值';
-COMMENT ON COLUMN sys_settings."description" IS '描述';
-COMMENT ON COLUMN sys_settings."update_user" IS '修改人';
-COMMENT ON COLUMN sys_settings."update_time" IS '修改时间';
-COMMENT ON TABLE sys_settings IS '参数表';
-
 -- 删除旧的字典表
 DROP TABLE IF EXISTS "sys_dict";
 

@@ -1,6 +1,7 @@
 import type { Recordable } from '@vben/types';
 
 import type { UserProfile } from '#/api/auth';
+import type { Menu } from '#/api/system/menu';
 
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -30,11 +31,11 @@ export const useUserStore = defineStore(
 
     // 状态
     const token = ref<string>();
-    const tokenExpireTime = ref<null | number>(null);
-    const user = ref<null | UserProfile>(null);
+    const tokenExpireTime = ref<number>();
+    const user = ref<UserProfile>();
     const roles = ref<string[]>([]);
     const permissions = ref<string[]>([]);
-    const menus = ref<MenuResp[]>([]);
+    const menus = ref<Menu[]>([]);
     const isRouteAdded = ref<boolean>(false);
     const loginLoading = ref(false);
 
@@ -98,7 +99,7 @@ export const useUserStore = defineStore(
         // 不做任何处理
       }
       resetAllStores();
-      accessStore.setLoginExpired(false);
+      accessStore.setLoginExpired(true);
 
       // 回登录页带上当前路由地址
       await router.replace({
@@ -123,6 +124,13 @@ export const useUserStore = defineStore(
     }
 
     function $reset() {
+      token.value = undefined;
+      tokenExpireTime.value = undefined;
+      user.value = undefined;
+      roles.value = [];
+      permissions.value = [];
+      menus.value = [];
+      isRouteAdded.value = false;
       loginLoading.value = false;
     }
     /** 检查权限 */

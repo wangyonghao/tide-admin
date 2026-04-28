@@ -1,4 +1,4 @@
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 export const menuApi = {
   /** 查询菜单列表 */
@@ -19,7 +19,7 @@ export const menuApi = {
   },
   /** 删除菜单 */
   delete(id: string) {
-    return http.delete(`/system/menu`, { data: { ids: [id] } });
+    return http.delete(`/system/menu/${id}`);
   },
   /** 清除菜单缓存 */
   clearMenuCache() {

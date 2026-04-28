@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.common.security.config;
 
@@ -59,11 +44,10 @@ public class SaTokenConfig {
         config.setTimeout(30 * 24 * 60 * 60); // token 有效期（单位：秒），默认30天，-1代表永不过期
         config.setActiveTimeout(-1); // token 最低活跃频率（单位：秒），如果 token 超过此时间没有访问系统就会被冻结，默认-1 代表不限制，永不冻结
         config.setIsConcurrent(false); // 是否允许同一账号多地同时登录（为 true 时允许一起登录，为 false 时新登录挤掉旧登录）
-        config.setIsShare(false); // 在多人登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token，为 false 时每次登录新建一个 token）
+        config.setIsShare(false); // 在多端登录同一账号时，是否共用一个 token （为 true 时所有登录共用一个 token，为 false 时每次登录新建一个 token）
         config.setTokenStyle("uuid"); // token 风格
-        config.setIsLog(false); // 是否输出操作日志
+        config.setIsLog(false); // 是否输出日志
     }
-
 
     /**
      * 整合 JWT（简单模式）

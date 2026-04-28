@@ -1,4 +1,5 @@
-import { baseRequestClient, requestClient as http } from '#/api/request';
+import http from '#/api/http';
+import type { Menu } from './system';
 
 /* ==================== API 定义 ==================== */
 export const authApi = {
@@ -59,7 +60,7 @@ export interface AuthInfo {
   user: UserProfile;
   roles: string[];
   permissions: string[];
-  menus: RouteItem[];
+  menus: Menu[];
 }
 
 /** 用户类型 */

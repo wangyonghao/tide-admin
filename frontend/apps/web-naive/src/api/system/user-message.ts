@@ -1,8 +1,8 @@
 import type { NoticePageQuery, NoticeResp } from './notice';
 
-import type { PageQuery, PageRes } from '#/types/api';
+import type { PageQuery, PageResult } from '#/types/api';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 系统消息类型 */
 export interface MessageResp {
@@ -33,7 +33,7 @@ export function getUnreadMessageCount() {
 
 /** 查询消息列表 */
 export function listMessage(query: MessagePageQuery) {
-  return http.get<PageRes<MessageResp[]>>(`/user/message`, {
+  return http.get<PageResult<MessageResp[]>>(`/user/message`, {
     params: query,
   });
 }
@@ -70,7 +70,7 @@ export function getUnreadNoticeIds(method: string) {
 
 /** 分页查询用户公告 */
 export function listUserNotice(query: NoticePageQuery) {
-  return http.get<PageRes<NoticeResp[]>>(`/user/message/notice`, {
+  return http.get<PageResult<NoticeResp[]>>(`/user/message/notice`, {
     params: query,
   });
 }

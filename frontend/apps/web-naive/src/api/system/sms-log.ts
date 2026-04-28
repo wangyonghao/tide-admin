@@ -1,6 +1,6 @@
-import type { PageQuery, PageRes } from '#/types/api';
+import type { PageQuery, PageResult } from '#/types/api';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 短信日志类型 */
 export interface SmsLogResp {
@@ -27,7 +27,7 @@ export interface SmsLogPageQuery extends PageQuery, SmsLogQuery {}
 
 /** 查询短信日志列表 */
 export function listSmsLog(query: SmsLogPageQuery) {
-  return http.get<PageRes<SmsLogResp[]>>(`/system/sms/log`, { params: query });
+  return http.get<PageResult<SmsLogResp[]>>(`/system/sms/log`, { params: query });
 }
 
 /** 查询短信日志详情 */

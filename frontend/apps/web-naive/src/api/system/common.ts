@@ -1,6 +1,6 @@
 import type { Option } from '#/types/global';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 查询字典列表 */
 export function listCommonDict(code: string) {

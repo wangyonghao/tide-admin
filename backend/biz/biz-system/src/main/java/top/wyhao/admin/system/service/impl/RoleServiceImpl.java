@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.admin.system.service.impl;
 
@@ -31,6 +16,10 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.admin.system.mapper.MenuMapper;
+import top.wyhao.admin.system.mapper.RoleMapper;
+import top.wyhao.admin.system.mapper.UserRoleMapper;
+import top.wyhao.admin.system.mapper.user.UserMapper;
 import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
 import top.wyhao.admin.system.model.bo.RoleRequest;
 import top.wyhao.admin.system.model.entity.MenuDO;
@@ -43,10 +32,6 @@ import top.wyhao.admin.system.model.vo.MenuVO;
 import top.wyhao.admin.system.model.vo.role.RoleDetailResult;
 import top.wyhao.admin.system.model.vo.role.RoleResp;
 import top.wyhao.admin.system.model.vo.role.RoleUserResult;
-import top.wyhao.admin.system.mapper.MenuMapper;
-import top.wyhao.admin.system.mapper.RoleMapper;
-import top.wyhao.admin.system.mapper.UserRoleMapper;
-import top.wyhao.admin.system.mapper.user.UserMapper;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.RoleMenuService;
 import top.wyhao.admin.system.service.RoleService;
@@ -88,7 +73,7 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, RoleDO> implements 
 
     @Override
     public PageResult<RoleResp> page(RoleQuery query, PageQuery pageQuery) {
-        QueryWrapper<RoleDO> wrapper = QueryWrapperUtil.build(query, pageQuery.getSort());
+        QueryWrapper<RoleDO> wrapper = QueryWrapperUtil.build(query, query.getSort());
         IPage<RoleDO> page = roleMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), wrapper);
         return PageResult.build(page, RoleResp.class);
     }

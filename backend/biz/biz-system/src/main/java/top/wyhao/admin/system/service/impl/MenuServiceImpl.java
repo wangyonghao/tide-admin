@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.admin.system.service.impl;
 
@@ -166,14 +151,15 @@ public class MenuServiceImpl implements MenuService {
      */
     @Override
     public void delete(Long id) {
-        menuMapper.deleteById(id);
+        List<Long> pendingDeleteIds = this.listDescendantIds(List.of(id));
+        menuMapper.deleteByIds(pendingDeleteIds);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(List<Long> ids) {
         // 级联删除菜单（包含子菜单）
-        List<Long> allDeleteIdList = this.listCascadingDeleteMenuIds(ids);
+        List<Long> allDeleteIdList = this.listDescendantIds(ids);
         menuMapper.deleteByIds(allDeleteIdList);
         RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
     }
@@ -196,7 +182,7 @@ public class MenuServiceImpl implements MenuService {
      * @param ids ID 列表
      * @return 待删除菜单 ID 列表（包含自身及所有子菜单）
      */
-    private List<Long> listCascadingDeleteMenuIds(List<Long> ids) {
+    private List<Long> listDescendantIds(List<Long> ids) {
         List<Long> menuIds = new ArrayList<>(ids);
         List<Long> childIdList = menuMapper.lambdaQuery()
                 .select(MenuDO::getId)
@@ -208,7 +194,7 @@ public class MenuServiceImpl implements MenuService {
         if (childIdList.isEmpty()) {
             return menuIds;
         }
-        menuIds.addAll(this.listCascadingDeleteMenuIds(childIdList));
+        menuIds.addAll(this.listDescendantIds(childIdList));
         return menuIds;
     }
 

@@ -1,4 +1,4 @@
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /* ==================== API 定义 ==================== */
 export const deptApi = {

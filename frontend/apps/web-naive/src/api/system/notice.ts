@@ -1,6 +1,6 @@
-import type { BaseEntity, PageQuery, PageRes } from '#/types/api';
+import type { BaseEntity, PageQuery, PageResult } from '#/types/api';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 export interface NoticeResp extends BaseEntity {
   /** ID */
@@ -65,7 +65,7 @@ export interface NoticePageQuery extends NoticeQuery, PageQuery {}
 
 /** 查询公告列表 */
 export function listNotice(query: NoticePageQuery) {
-  return http.get<PageRes<NoticeResp[]>>('/system/notice', {
+  return http.get<PageResult<NoticeResp[]>>('/system/notice', {
     params: query,
   });
 }

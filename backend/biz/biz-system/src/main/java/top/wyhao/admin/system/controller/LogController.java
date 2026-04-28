@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.admin.system.controller;
 
@@ -29,8 +14,8 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.admin.system.model.query.LogQuery;
-import top.wyhao.admin.system.model.vo.log.LogDetailResp;
-import top.wyhao.admin.system.model.vo.log.LogResp;
+import top.wyhao.admin.system.model.vo.log.OperationLogDetailResult;
+import top.wyhao.admin.system.model.vo.log.OperationLogResult;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -53,7 +38,7 @@ public class LogController {
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @SaCheckPermission("monitor:log:list")
     @GetMapping
-    public PageResult<LogResp> page(@Valid LogQuery query, @Valid PageQuery pageQuery) {
+    public PageResult<OperationLogResult> page(@Valid LogQuery query, @Valid PageQuery pageQuery) {
         return operationLogService.page(query, pageQuery);
     }
 
@@ -61,21 +46,21 @@ public class LogController {
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @SaCheckPermission("monitor:log:get")
     @GetMapping("/{id}")
-    public LogDetailResp get(@PathVariable Long id) {
+    public OperationLogDetailResult get(@PathVariable Long id) {
         return operationLogService.get(id);
     }
 
     @Operation(summary = "导出登录日志", description = "导出登录日志")
     @SaCheckPermission("monitor:log:export")
     @GetMapping("/export/login")
-    public void exportLoginLog(@Valid LogQuery query, @Valid SortQuery sortQuery, HttpServletResponse response) {
-        operationLogService.exportLoginLog(query, sortQuery, response);
+    public void exportLoginLog(@Valid LogQuery query, HttpServletResponse response) {
+        operationLogService.exportLoginLog(query, response);
     }
 
     @Operation(summary = "导出操作日志", description = "导出操作日志")
     @SaCheckPermission("monitor:log:export")
     @GetMapping("/export/operation")
     public void exportOperationLog(@Valid LogQuery query, @Valid SortQuery sortQuery, HttpServletResponse response) {
-        operationLogService.exportOperationLog(query, sortQuery, response);
+        operationLogService.exportOperationLog(query, response);
     }
 }

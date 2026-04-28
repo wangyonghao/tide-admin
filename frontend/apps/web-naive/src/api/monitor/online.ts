@@ -1,34 +1,41 @@
-import type { PageQuery, PageRes } from '#/types/api';
+import type { PageQuery, PageResult } from '#/types/api';
+import http from '#/api/http';
 
-import { requestClient as http } from '#/api/request';
+/* ==================== API 定义 ==================== */
+export const onlineApi = {
+  /** 查询在线用户列表 */
+  list: (query: OnlineUserPageQuery) => {
+    return http.get<PageResult<OnlineUser[]>>('/monitor/online', {
+      params: query,
+    });
+  },
 
-/** 在线用户类型 */
-export interface OnlineUserResp {
-  id: string;
+  /** 强退在线用户 */
+  kickout: (token: string) => {
+    return http.delete(`/monitor/online/${token}`);
+  },
+
+  /** 批量强退在线用户 */
+  batchKickout: (tokens: string[]) => {
+    return http.delete('/monitor/online', { data: tokens });
+  },
+};
+
+/* ==================== Schema 定义 ==================== */
+/** 在线用户 */
+export interface OnlineUser {
+  sessionId: string;
+  token: string;
+  loginName: string;
   ip: string;
-  address: string;
+  location: string;
   browser: string;
   os: string;
-  clientType: string;
-  createTime: string;
-  nickname?: string;
-  token?: string;
+  loginTime: string;
+  lastActiveTime: string;
 }
 export interface OnlineUserQuery {
-  nickname?: string;
-  loginTime?: string;
-  sort: Array<string>;
+  keyword?: string;
+  sort?: Array<string>;
 }
 export interface OnlineUserPageQuery extends OnlineUserQuery, PageQuery {}
-
-/** 查询在线用户列表 */
-export function listOnlineUser(query: OnlineUserPageQuery) {
-  return http.get<PageRes<OnlineUserResp[]>>(`/monitor/online`, {
-    params: query,
-  });
-}
-
-/** 强退在线用户 */
-export function kickout(token: string) {
-  return http.delete(`/monitor/online/${token}`);
-}

@@ -1,6 +1,6 @@
 import type { PageQuery } from '#/types/api';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 字典类型 */
 export interface DictResp {

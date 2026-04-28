@@ -122,7 +122,7 @@ public class LoginUtil {
      * @param ascend 升序
      * @return 登录用户信息
      */
-    public static List<LoginUser> pageUser(String keyword, int pageNum, int pageSize,boolean ascend){
+    public static List<LoginUser> pageUser(String keyword, int pageNum, int pageSize, boolean ascend){
         // 1. 计算起始索引
         int start = (pageNum - 1) * pageSize;
         // 2. 分页查询会话id

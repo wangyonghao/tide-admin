@@ -1,18 +1,3 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.admin.system.service.impl;
 
@@ -20,7 +5,6 @@ import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.json.JSONUtil;
-import cn.idev.excel.FastExcelFactory;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -44,7 +28,6 @@ import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -64,7 +47,7 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public PageResult<ConfigResult> page(ConfigQuery query, PageQuery pageQuery) {
         QueryWrapper<ConfigDO> queryWrapper = this.buildQueryWrapper(query);
-        QueryWrapperUtil.applySort(queryWrapper, pageQuery.getSort(), ConfigDO.class);
+        QueryWrapperUtil.applySort(queryWrapper, query.getSort(), ConfigDO.class);
         IPage<ConfigResult> page = configMapper.selectConfigPage(
                 new Page<>(pageQuery.getPage(), pageQuery.getSize()),
                 queryWrapper
@@ -208,7 +191,6 @@ public class ConfigServiceImpl implements ConfigService {
         configDO.setId(existConfig.getId());
         configDO.setConfigValue(request.getConfigValue());
         configDO.setDescription(request.getDescription());
-        configDO.setVersion(request.getVersion());
 
         int updated = configMapper.updateById(configDO);
         BizAssert.isTrue(updated > 0, "更新失败，配置可能已被修改，请刷新后重试");
@@ -246,9 +228,7 @@ public class ConfigServiceImpl implements ConfigService {
      * @return 配置对象
      */
     private <T> T getConfig(String configKey, Class<T> clazz) {
-        QueryWrapper<ConfigDO> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("config_key", configKey);
-        ConfigDO configDO = configMapper.selectOne(queryWrapper);
+        ConfigDO configDO = configMapper.lambdaQuery().eq(ConfigDO::getConfigKey, configKey).one();
 
         if (configDO == null || CharSequenceUtil.isBlank(configDO.getConfigValue())) {
             try {

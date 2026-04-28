@@ -1,22 +1,6 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 package top.wyhao.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
-import cn.hutool.core.util.StrUtil;
 import com.alicp.jetcache.anno.Cached;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -28,15 +12,12 @@ import org.dromara.x.file.storage.core.FileInfo;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import top.wyhao.starter.core.constant.CacheConstants;
-import top.wyhao.admin.system.model.enums.ConfigCategory;
-import top.wyhao.admin.system.model.query.SettingsQuery;
 import top.wyhao.admin.system.model.vo.file.FileUploadResp;
 import top.wyhao.admin.system.service.DictService;
 import top.wyhao.admin.system.service.FileService;
-import top.wyhao.admin.system.service.SettingsService;
-import top.wyhao.starter.tenant.context.TenantContextHolder;
+import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
+import top.wyhao.starter.tenant.context.TenantContextHolder;
 import top.wyhao.starter.web.core.model.resp.LabelValueResp;
 
 import java.io.IOException;
@@ -57,7 +38,6 @@ public class CommonController {
 
     private final FileService fileService;
     private final DictService dictService;
-    private final SettingsService settingsService;
 
     @Operation(summary = "上传文件", description = "上传文件")
     @Parameter(name = "parentPath", description = "上级目录", example = "/", in = ParameterIn.QUERY)
@@ -79,20 +59,6 @@ public class CommonController {
     @GetMapping("/dict/{dictType}")
     public List<LabelValueResp<String>> listDict(@PathVariable String dictType) {
         return dictService.listByDictType(dictType);
-    }
-
-    @SaIgnore
-    @Operation(summary = "查询系统配置参数", description = "查询系统配置参数")
-    @GetMapping("/dict/option/site")
-    @Cached(key = "'SITE'", name = CacheConstants.CONFIG_KEY_PREFIX)
-    public List<LabelValueResp<String>> listSiteConfigDict() {
-        SettingsQuery settingsQuery = new SettingsQuery();
-        settingsQuery.setCategory(ConfigCategory.SITE.name());
-        return settingsService.list(settingsQuery)
-            .stream()
-            .map(config -> new LabelValueResp<>(config.getCode(), StrUtil.nullToDefault(config.getValue(), config
-                .getDefaultValue())))
-            .toList();
     }
 
     @SaIgnore

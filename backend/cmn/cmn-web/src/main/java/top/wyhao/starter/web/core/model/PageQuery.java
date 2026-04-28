@@ -1,35 +1,21 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.starter.web.core.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.validator.constraints.Range;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Sort;
-
-import java.io.Serial;
 
 /**
  * 分页查询条件
  */
+@Setter
+@Getter
 @ParameterObject
 @Schema(description = "分页查询条件")
-public class PageQuery extends SortQuery {
+public class PageQuery {
     /**
      * 默认页码：1
      */
@@ -70,120 +56,6 @@ public class PageQuery extends SortQuery {
      */
     public PageQuery(Integer page, Integer size) {
         this.page = page;
-        this.size = size;
-    }
-
-    /**
-     * 构造方法
-     *
-     * <p>
-     * 示例：{@code new PageQuery(1, 10, "createTime,desc", "name,asc")}
-     * </p>
-     *
-     * @param page 页码
-     * @param size 每页条数
-     * @param sort 排序
-     * @since 2.12.0
-     */
-    public PageQuery(Integer page, Integer size, String... sort) {
-        super(sort);
-        this.page = page;
-        this.size = size;
-    }
-
-    /**
-     * 构造方法
-     *
-     * <p>
-     * 示例：{@code new PageQuery("createTime,desc", "name,asc")}
-     * </p>
-     *
-     * @param sort 排序
-     * @since 2.12.0
-     */
-    public PageQuery(String... sort) {
-        super(sort);
-    }
-
-    /**
-     * 构造方法
-     *
-     * <p>
-     * 示例：{@code new PageQuery("createTime", Sort.Direction.DESC)}
-     * </p>
-     *
-     * @param field     字段
-     * @param direction 排序方向
-     * @since 2.12.0
-     */
-    public PageQuery(String field, Sort.Direction direction) {
-        super(field, direction);
-    }
-
-    /**
-     * 构造方法
-     *
-     * <p>
-     * 示例：{@code new PageQuery(Sort.by(Sort.Direction.DESC, "createTime"))}
-     * </p>
-     *
-     * @param sort 排序
-     * @since 2.12.0
-     */
-    public PageQuery(Sort sort) {
-        super(sort);
-    }
-
-    /**
-     * 构造方法
-     *
-     * <p>
-     * 示例：{@code new PageQuery(1, 10, "createTime", Sort.Direction.DESC)}
-     * </p>
-     *
-     * @param page      页码
-     * @param size      每页条数
-     * @param field     字段
-     * @param direction 排序方向
-     * @since 2.12.0
-     */
-    public PageQuery(Integer page, Integer size, String field, Sort.Direction direction) {
-        super(field, direction);
-        this.page = page;
-        this.size = size;
-    }
-
-    /**
-     * 构造方法
-     *
-     * <p>
-     * 示例：{@code new PageQuery(1, 10, Sort.by(Sort.Direction.DESC, "createTime"))}
-     * </p>
-     *
-     * @param page 页码
-     * @param size 每页条数
-     * @param sort 排序
-     * @since 2.12.0
-     */
-    public PageQuery(Integer page, Integer size, Sort sort) {
-        super(sort);
-        this.page = page;
-        this.size = size;
-    }
-
-    public Integer getPage() {
-        return page;
-    }
-
-    public void setPage(Integer page) {
-        this.page = page;
-    }
-
-    public Integer getSize() {
-        return size;
-    }
-
-    public void setSize(Integer size) {
         this.size = size;
     }
 }

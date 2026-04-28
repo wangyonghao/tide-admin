@@ -1,23 +1,10 @@
-/*
- * Copyright (c) 2022-present wangyonghao Authors. All Rights Reserved.
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- *     http://www.apache.org/licenses/LICENSE-2.0
- *
- * Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
 
 package top.wyhao.admin.auth.handler;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.bean.BeanUtil;
+import cn.hutool.core.util.StrUtil;
+import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
@@ -26,9 +13,10 @@ import top.wyhao.admin.auth.model.vo.LoginResult;
 import top.wyhao.admin.modules.common.util.RsaUtils;
 import top.wyhao.admin.system.model.entity.DeptDO;
 import top.wyhao.admin.system.model.entity.user.UserDO;
+import top.wyhao.admin.system.model.vo.config.LoginConfigVO;
+import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.admin.system.service.OperationLogService;
-import top.wyhao.admin.system.service.SettingsService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
@@ -52,16 +40,16 @@ import java.util.Objects;
  */
 @Component
 @RequiredArgsConstructor
-public class AccountLoginHandler implements LoginHandler<AccountLoginRequest>{
+public class AccountLoginHandler implements LoginHandler<AccountLoginRequest> {
 
-    private static final String LOGIN_RETRY_KEY="login:retry:";
+    private static final String LOGIN_RETRY_KEY = "login:retry:";
     private static final String CAPTCHA_KEY = "login:captcha:";
 
     private final PasswordEncoder passwordEncoder;
-    private final SettingsService settingsService;
     private final UserService userService;
     private final OperationLogService operationLogService;
     private final DeptService deptService;
+    private final ConfigService configService;
 
     public LoginResult login(AccountLoginRequest req) {
         // 解密密码
@@ -72,25 +60,26 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest>{
         validateCaptcha(req);
 
         // 2. 重试次数检查
-        String retryKey = LOGIN_RETRY_KEY + req.getUsername() +":"+ ip;
+        String retryKey = LOGIN_RETRY_KEY + req.getUsername() + ":" + ip;
         checkRetryLimit(retryKey);
 
         // 3. 用户验证
         UserDO user = userService.getByUsername(req.getUsername());
 
-        if(Objects.isNull(user)) {
+        if (Objects.isNull(user)) {
             incrementRetry(retryKey);
             // 防止用户名探测，统一提示：用户名或密码错误
             throw new BusinessException("USERNAME_PASSWORD_ERROR", "用户名或密码错误");
         }
 
         // 4. 校验用户密码
-        if(!passwordEncoder.matches(password, user.getPassword())){
+        if (!passwordEncoder.matches(password, user.getPassword())) {
             incrementRetry(retryKey);
-            int remaining = settingsService.getMaxRetryCount() - getRetryCount(retryKey);
+            LoginConfigVO loginConfig = configService.getLoginConfig();
+            int remaining = loginConfig.getMaxRetry() - getRetryCount(retryKey);
             String msg = remaining > 0 ? "用户名或密码错误，还剩" + remaining + "次机会" : "用户名或密码错误，账号已锁定";
-            throw new BusinessException("USERNAME_PASSWORD_ERROR",msg);
-        }else{
+            throw new BusinessException("USERNAME_PASSWORD_ERROR", msg);
+        } else {
             // 如账号密码匹配，清除错误次数
             clearRetryCount(retryKey);
         }
@@ -99,7 +88,7 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest>{
         checkUserStatus(user);
 
         // 6. 密码过期时，强制用户修改密码
-        if(user.getPwdExpireDate() != null && LocalDate.now().isAfter(user.getPwdExpireDate())){
+        if (user.getPwdExpireDate() != null && LocalDate.now().isAfter(user.getPwdExpireDate())) {
             String tempToken = SaTempUtil.createToken(user.getId(), 600); // 10分钟
             return LoginResult.builder().code("PASSWORD_EXPIRED").token(tempToken).build();
         }
@@ -121,21 +110,31 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest>{
 
     private void validateCaptcha(AccountLoginRequest req) {
         // 校验验证码
-        boolean loginCaptchaEnabled = settingsService.isLoginCaptchaEnabled();
+        LoginConfigVO configVO = configService.getLoginConfig();
+        boolean loginCaptchaEnabled = configVO.getCaptchaEnabled();
         if (!loginCaptchaEnabled) {
             return;
         }
-        ValidationUtils.throwIfBlank(req.getCaptcha(), "验证码不能为空");
-        ValidationUtils.throwIfBlank(req.getUuid(), "验证码标识不能为空");
-        String captcha = RedisUtils.get(CAPTCHA_KEY + req.getUuid());
-        ValidationUtils.throwIfBlank(captcha, "验证码已失效");
-        RedisUtils.delete(CAPTCHA_KEY + req.getUuid());
-        ValidationUtils.throwIfNotEqualIgnoreCase(req.getCaptcha(), captcha, "验证码不正确");
+        if (StrUtil.isBlank(req.getCaptcha())) {
+            throw new BusinessException("CAPTCHA_IS_REQUIRED", "验证码不能为空");
+        }
+        if (StrUtil.isBlank(req.getUuid())) {
+            throw new BusinessException("CAPTCHA_UUID_IS_REQUIRED", "验证码标识不能为空");
+        }
+        String captcha = RedisUtils.getAndDelete(CAPTCHA_KEY + req.getUuid());
+        if (StrUtil.isBlank(req.getUuid())) {
+            throw new BusinessException("CAPTCHA_EXPIRED", "验证码已失效");
+        }
+        if (!StrUtil.equalsIgnoreCase(req.getCaptcha(), captcha)) {
+            throw new BusinessException("CAPTCHA_ERROR", "验证码不正确");
+        }
+
     }
 
     private void incrementRetry(String retryKey) {
         RedisUtils.incr(retryKey);
-        RedisUtils.expire(retryKey, Duration.ofMinutes(settingsService.getLockMinutes()));
+        LoginConfigVO configVO = configService.getLoginConfig();
+        RedisUtils.expire(retryKey, Duration.ofMinutes(configVO.getLockTime()));
     }
 
     private int getRetryCount(String retryKey) {
@@ -145,22 +144,25 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest>{
 
     /**
      * 清除密码错误次数
+     *
      * @param retryKey 密码错误次数缓存的Key
      */
-    private void clearRetryCount(String retryKey){
+    private void clearRetryCount(String retryKey) {
         RedisUtils.delete(retryKey);
     }
 
     /**
      * 密码错误次数超过限制则锁定账号
+     *
      * @param retryKey 密码错误次数缓存的Key
      */
-    private void checkRetryLimit(String retryKey){
+    private void checkRetryLimit(String retryKey) {
         int retryCount = getRetryCount(retryKey);
-        int maxRetry = settingsService.getMaxRetryCount();
-        if(retryCount >= maxRetry){
+        LoginConfigVO loginConfig = configService.getLoginConfig();
+        int maxRetry = loginConfig.getMaxRetry();
+        if (retryCount >= maxRetry) {
             long ttl = RedisUtils.getTimeToLive(retryKey);
-            throw new BusinessException("ACCOUNT_LOCKED","账号已锁定, %s 分钟后可重试".formatted(ttl / 60));
+            throw new BusinessException("ACCOUNT_LOCKED", "账号已锁定, %s 分钟后可重试".formatted(ttl / 60));
         }
     }
 
