@@ -9,6 +9,7 @@ import cn.idev.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import top.wyhao.starter.core.exception.SystemException;
 import top.wyhao.starter.excel.converter.ExcelBigNumberConverter;
 
 import java.util.Collections;
@@ -73,8 +74,9 @@ public class ExcelUtils {
                 .doWrite(list);
         } catch (Exception e) {
             log.error("Export excel occurred an error: {}. fileName: {}.", e.getMessage(), fileName, e);
+            response.setContentType(null);
             response.reset();
-            throw new RuntimeException("导出 Excel 出现错误");
+            throw new SystemException("导出 Excel 出现错误", e);
         }
     }
 }

@@ -16,15 +16,15 @@ import top.wyhao.admin.system.model.query.NoticeQuery;
 import top.wyhao.admin.system.model.vo.message.MessageDetailResp;
 import top.wyhao.admin.system.model.vo.message.MessageResp;
 import top.wyhao.admin.system.model.vo.message.MessageUnreadResp;
-import top.wyhao.admin.system.model.vo.notice.NoticeDetailResp;
-import top.wyhao.admin.system.model.vo.notice.NoticeResp;
-import top.wyhao.admin.system.model.vo.notice.NoticeUnreadCountResp;
+import top.wyhao.admin.system.model.vo.NoticeDetailResult;
+import top.wyhao.admin.system.model.vo.NoticeResult;
+import top.wyhao.admin.system.model.vo.NoticeUnreadCountResult;
 import top.wyhao.admin.system.service.MessageService;
 import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.req.IdsReq;
+import top.wyhao.starter.web.core.model.req.IdsRequest;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.Collections;
@@ -73,13 +73,13 @@ public class UserMessageController {
 
     @Operation(summary = "删除消息", description = "删除消息")
     @DeleteMapping
-    public void delete(@RequestBody @Valid IdsReq req) {
+    public void delete(@RequestBody @Valid IdsRequest req) {
         messageService.delete(req.getIds());
     }
 
     @Operation(summary = "消息标记为已读", description = "将消息标记为已读状态")
     @PatchMapping("/read")
-    public void read(@RequestBody @Valid IdsReq req) {
+    public void read(@RequestBody @Valid IdsRequest req) {
         messageService.readMessage(req.getIds(), LoginUtil.getUserId());
     }
 
@@ -91,30 +91,30 @@ public class UserMessageController {
 
     @Operation(summary = "查询未读公告数量", description = "查询当前用户的未读公告数量")
     @GetMapping("/notice/unread")
-    public NoticeUnreadCountResp countUnreadNotice() {
+    public NoticeUnreadCountResult countUnread() {
         List<Long> list = noticeService.listUnreadIdsByUserId(null, LoginUtil.getUserId());
-        return new NoticeUnreadCountResp(list.size());
+        return new NoticeUnreadCountResult(list.size());
     }
 
     @Operation(summary = "查询未读公告", description = "查询当前用户的未读公告")
     @Parameter(name = "method", description = "通知方式", example = "LOGIN_POPUP", in = ParameterIn.PATH)
     @GetMapping("/notice/unread/{method}")
-    public List<Long> listUnreadNotice(@PathVariable String method) {
+    public List<Long> listUnread(@PathVariable String method) {
         return noticeService.listUnreadIdsByUserId(NoticeMethods.valueOf(method), LoginUtil.getUserId());
     }
 
     @Operation(summary = "分页查询公告列表", description = "分页查询公告列表")
     @GetMapping("/notice")
-    public PageResult<NoticeResp> pageNotice(@Valid NoticeQuery query, @Valid PageQuery pageQuery) {
+    public PageResult<NoticeResult> pageNotice(@Valid NoticeQuery query, @Valid PageQuery pageQuery) {
         query.setUserId(LoginUtil.getUserId());
-        return noticeService.findPage(query, pageQuery);
+        return noticeService.page(query, pageQuery);
     }
 
     @Operation(summary = "查询公告", description = "查询公告详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/notice/{id}")
-    public NoticeDetailResp getNotice(@PathVariable Long id) {
-        NoticeDetailResp detail = noticeService.get(id);
+    public NoticeDetailResult getNotice(@PathVariable Long id) {
+        NoticeDetailResult detail = noticeService.detail(id);
         BizAssert.isTrue(detail == null || (NoticeScopes.USER.equals(detail.getNoticeScope()) && !detail
             .getNoticeUsers()
             .contains(LoginUtil.getUserId().toString())), "公告不存在或无权限访问");

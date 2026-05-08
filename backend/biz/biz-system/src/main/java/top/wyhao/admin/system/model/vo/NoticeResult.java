@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.vo.notice;
+package top.wyhao.admin.system.model.vo;
 
 import cn.crane4j.annotation.Assemble;
 import cn.crane4j.annotation.Mapping;
@@ -25,7 +25,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "公告响应参数")
-public class NoticeResp implements Serializable {
+public class NoticeResult implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

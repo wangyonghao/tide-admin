@@ -28,7 +28,7 @@ export const authApi = {
   },
   /** 退出登录 */
   logout() {
-    return baseRequestClient.post('/auth/logout');
+    return http.post('/auth/logout');
   },
   /** 获取用户简介、菜单、权限信息 */
   getAuthInfo() {

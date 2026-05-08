@@ -17,11 +17,10 @@ import top.wyhao.admin.system.model.entity.SysOperationLog;
 import top.wyhao.admin.system.model.query.LogQuery;
 import top.wyhao.admin.system.model.vo.log.OperationLogDetailResult;
 import top.wyhao.admin.system.model.vo.log.OperationLogResult;
-import top.wyhao.admin.system.model.vo.log.LoginLogExportResp;
+import top.wyhao.admin.system.model.vo.log.LoginLogExportResult;
 import top.wyhao.admin.system.model.vo.log.OperationLogExportResp;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.starter.core.model.LoginUser;
-import top.wyhao.starter.core.util.IpUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.data.util.QueryWrapperUtil;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -90,8 +89,8 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     @Override
     public void exportLoginLog(LogQuery query, HttpServletResponse response) {
-        List<LoginLogExportResp> list = BeanUtil.copyToList(this.list(query), LoginLogExportResp.class);
-        ExcelUtils.export(list, "导出登录日志数据", LoginLogExportResp.class, response);
+        List<LoginLogExportResult> list = BeanUtil.copyToList(this.list(query), LoginLogExportResult.class);
+        ExcelUtils.export(list, "导出登录日志数据", LoginLogExportResult.class, response);
     }
 
     @Override

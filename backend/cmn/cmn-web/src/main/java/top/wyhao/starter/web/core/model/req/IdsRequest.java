@@ -13,7 +13,7 @@ import java.util.List;
  * @author Charles7c
  * @since 2.11.0
  */
-public class IdsReq implements Serializable {
+public class IdsRequest implements Serializable {
 
     /**
      * ID

@@ -4,6 +4,7 @@ package top.wyhao.admin.auth.handler;
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -16,6 +17,7 @@ import top.wyhao.admin.system.model.entity.user.UserDO;
 import top.wyhao.admin.system.model.vo.config.LoginConfigVO;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.DeptService;
+import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
@@ -48,6 +50,7 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest> {
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
     private final OperationLogService operationLogService;
+    private final LoginLogService loginLogService;
     private final DeptService deptService;
     private final ConfigService configService;
 
@@ -55,57 +58,80 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest> {
         // 解密密码
         String password = RsaUtils.decryptPasswordByRsaPrivateKey(req.getPassword(), "密码解密失败");
         String ip = ServletUtils.getRequestIp();
+        HttpServletRequest request = ServletUtils.getRequest();
+        String userAgent = request != null ? request.getHeader("User-Agent") : null;
 
-        // 1. 校验图片验证码
-        validateCaptcha(req);
+        try {
+            // 1. 校验图片验证码
+            validateCaptcha(req);
 
-        // 2. 重试次数检查
-        String retryKey = LOGIN_RETRY_KEY + req.getUsername() + ":" + ip;
-        checkRetryLimit(retryKey);
+            // 2. 重试次数检查
+            String retryKey = LOGIN_RETRY_KEY + req.getUsername() + ":" + ip;
+            checkRetryLimit(retryKey);
 
-        // 3. 用户验证
-        UserDO user = userService.getByUsername(req.getUsername());
+            // 3. 用户验证
+            UserDO user = userService.getByUsername(req.getUsername());
 
-        if (Objects.isNull(user)) {
-            incrementRetry(retryKey);
-            // 防止用户名探测，统一提示：用户名或密码错误
-            throw new BusinessException("USERNAME_PASSWORD_ERROR", "用户名或密码错误");
+            if (Objects.isNull(user)) {
+                incrementRetry(retryKey);
+                // 记录登录失败日志
+                loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", "用户不存在");
+                // 防止用户名探测，统一提示：用户名或密码错误
+                throw new BusinessException("USERNAME_PASSWORD_ERROR", "用户名或密码错误");
+            }
+
+            // 4. 校验用户密码
+            if (!passwordEncoder.matches(password, user.getPassword())) {
+                incrementRetry(retryKey);
+                LoginConfigVO loginConfig = configService.getLoginConfig();
+                int remaining = loginConfig.getMaxRetry() - getRetryCount(retryKey);
+                String msg = remaining > 0 ? "用户名或密码错误，还剩" + remaining + "次机会" : "用户名或密码错误，账号已锁定";
+                // 记录登录失败日志
+                loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", "密码错误");
+                throw new BusinessException("USERNAME_PASSWORD_ERROR", msg);
+            } else {
+                // 如账号密码匹配，清除错误次数
+                clearRetryCount(retryKey);
+            }
+
+            // 5. 检查用户状态
+            checkUserStatus(user);
+
+            // 6. 密码过期时，强制用户修改密码
+            if (user.getPwdExpireDate() != null && LocalDate.now().isAfter(user.getPwdExpireDate())) {
+                String tempToken = SaTempUtil.createToken(user.getId(), 600); // 10分钟
+                // 记录登录失败日志（密码过期）
+                loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", "密码已过期");
+                return LoginResult.builder().code("PASSWORD_EXPIRED").token(tempToken).build();
+            }
+
+            // 8. 生成Token，缓存登录用户信息
+            LoginUser loginUser = BeanUtil.copyProperties(user, LoginUser.class);
+            loginUser.setUserId(user.getId());
+            loginUser.setDeviceType("PC");
+            LoginUtil.doLogin(loginUser);
+
+            // 9. 记录操作日志
+            operationLogService.recordLoginLog(loginUser);
+
+            // 10. 记录登录成功日志
+            loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "SUCCESS", null);
+
+            return LoginResult.builder()
+                    .code("200")
+                    .token(LoginUtil.getTokenValue())
+                    .build();
+        } catch (BusinessException e) {
+            // 如果是业务异常且还没记录日志，记录失败日志
+            if (!"USERNAME_PASSWORD_ERROR".equals(e.getCode())) {
+                loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", e.getMessage());
+            }
+            throw e;
+        } catch (Exception e) {
+            // 其他异常也记录失败日志
+            loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", "系统异常: " + e.getMessage());
+            throw e;
         }
-
-        // 4. 校验用户密码
-        if (!passwordEncoder.matches(password, user.getPassword())) {
-            incrementRetry(retryKey);
-            LoginConfigVO loginConfig = configService.getLoginConfig();
-            int remaining = loginConfig.getMaxRetry() - getRetryCount(retryKey);
-            String msg = remaining > 0 ? "用户名或密码错误，还剩" + remaining + "次机会" : "用户名或密码错误，账号已锁定";
-            throw new BusinessException("USERNAME_PASSWORD_ERROR", msg);
-        } else {
-            // 如账号密码匹配，清除错误次数
-            clearRetryCount(retryKey);
-        }
-
-        // 5. 检查用户状态
-        checkUserStatus(user);
-
-        // 6. 密码过期时，强制用户修改密码
-        if (user.getPwdExpireDate() != null && LocalDate.now().isAfter(user.getPwdExpireDate())) {
-            String tempToken = SaTempUtil.createToken(user.getId(), 600); // 10分钟
-            return LoginResult.builder().code("PASSWORD_EXPIRED").token(tempToken).build();
-        }
-
-        // 8. 生成Token，缓存登录用户信息
-        LoginUser loginUser = BeanUtil.copyProperties(user, LoginUser.class);
-        loginUser.setUserId(user.getId());
-        loginUser.setDeviceType("PC");
-        LoginUtil.doLogin(loginUser);
-
-        // 9. 记录登录日志
-        operationLogService.recordLoginLog(loginUser);
-
-        return LoginResult.builder()
-                .code("200")
-                .token(LoginUtil.getTokenValue())
-                .build();
     }
 
     private void validateCaptcha(AccountLoginRequest req) {

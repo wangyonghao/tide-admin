@@ -1,8 +1,6 @@
 
-package top.wyhao.admin.system.model.vo.notice;
+package top.wyhao.admin.system.model.vo;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Mapping;
 import cn.crane4j.annotation.condition.ConditionOnPropertyNotNull;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
@@ -10,14 +8,11 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.admin.system.model.enums.NoticeScopes;
 import top.wyhao.admin.system.model.enums.NoticeStatus;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 import top.wyhao.starter.web.excel.DictExcelProperty;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -30,11 +25,7 @@ import java.util.List;
 @Data
 @ExcelIgnoreUnannotated
 @Schema(description = "公告详情响应参数")
-public class NoticeDetailResp implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class NoticeDetailResult {
     /**
      * ID
      */
@@ -46,7 +37,6 @@ public class NoticeDetailResp implements Serializable {
      * 创建人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "createUserString"))
     private Long createUser;
 
     /**
@@ -75,7 +65,6 @@ public class NoticeDetailResp implements Serializable {
      */
     @JsonIgnore
     @ConditionOnPropertyNotNull
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "updateUserString"))
     private Long updateUser;
 
     /**

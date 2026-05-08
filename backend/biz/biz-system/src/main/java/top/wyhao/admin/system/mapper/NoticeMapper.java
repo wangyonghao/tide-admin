@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.model.entity.NoticeDO;
 import top.wyhao.admin.system.model.query.NoticeQuery;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardNoticeResp;
-import top.wyhao.admin.system.model.vo.notice.NoticeResp;
+import top.wyhao.admin.system.model.vo.NoticeResult;
 import top.wyhao.starter.data.mapper.BaseMapper;
 
 import java.util.List;
@@ -29,7 +29,7 @@ public interface NoticeMapper extends BaseMapper<NoticeDO> {
      * @param query 查询条件
      * @return 公告列表
      */
-    IPage<NoticeResp> selectNoticePage(@Param("page") Page<NoticeDO> page, @Param("query") NoticeQuery query);
+    IPage<NoticeResult> selectNoticePage(@Param("page") Page<NoticeDO> page, @Param("query") NoticeQuery query);
 
     /**
      * 查询未读公告 ID 列表

@@ -16,7 +16,7 @@ import top.wyhao.admin.system.service.SmsConfigService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsReq;
+import top.wyhao.starter.web.core.model.req.IdsRequest;
 import top.wyhao.starter.web.core.model.resp.IdResp;
 import top.wyhao.starter.web.core.model.resp.LabelValueResp;
 
@@ -132,7 +132,7 @@ public class SmsConfigController {
      */
     @Operation(summary = "批量删除数据", description = "批量删除数据")
     @DeleteMapping
-    public void batchDelete(@RequestBody @Valid IdsReq req) {
+    public void batchDelete(@RequestBody @Valid IdsRequest req) {
         smsConfigService.delete(req.getIds());
     }
 

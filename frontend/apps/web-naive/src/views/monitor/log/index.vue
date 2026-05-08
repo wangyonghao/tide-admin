@@ -3,18 +3,22 @@ import { Page } from '@vben/common-ui';
 
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@vben-core/shadcn-ui';
 
-import LoginLogList from './login/index.vue';
-import OperationLogList from './operation/index.vue';
+import LoginLogList from './login-log.vue';
+import OperationLogList from './operation-log.vue';
+import SmsLogList from './sms-log.vue';
 </script>
 <template>
-  <Page>
+  <Page h-full bg-background p-4>
     <Tabs default-value="login" class="w-full">
-      <TabsList class="mb-4">
+      <TabsList>
         <TabsTrigger value="login">
           {{ $t('monitor.loginLog.title') }}
         </TabsTrigger>
         <TabsTrigger value="operation">
           {{ $t('monitor.operationLog.title') }}
+        </TabsTrigger>
+        <TabsTrigger value="sms">
+          {{ $t('system.smsLog.listTitle') }}
         </TabsTrigger>
       </TabsList>
       <TabsContent value="login">
@@ -22,6 +26,9 @@ import OperationLogList from './operation/index.vue';
       </TabsContent>
       <TabsContent value="operation">
         <OperationLogList />
+      </TabsContent>
+      <TabsContent value="sms">
+        <SmsLogList />
       </TabsContent>
     </Tabs>
   </Page>

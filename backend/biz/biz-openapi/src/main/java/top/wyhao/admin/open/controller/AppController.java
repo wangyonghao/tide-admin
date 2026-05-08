@@ -14,7 +14,7 @@ import top.wyhao.admin.open.model.resp.AppResp;
 import top.wyhao.admin.open.service.AppService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsReq;
+import top.wyhao.starter.web.core.model.req.IdsRequest;
 import top.wyhao.starter.web.core.model.resp.IdResp;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -104,7 +104,7 @@ public class AppController {
      */
     @Operation(summary = "批量删除数据", description = "批量删除数据")
     @DeleteMapping
-    public void batchDelete(@RequestBody @Valid IdsReq req) {
+    public void batchDelete(@RequestBody @Valid IdsRequest req) {
         appService.delete(req.getIds());
     }
 

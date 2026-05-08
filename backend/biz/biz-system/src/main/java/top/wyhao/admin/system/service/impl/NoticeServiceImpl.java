@@ -14,10 +14,10 @@ import top.wyhao.admin.system.mapper.NoticeMapper;
 import top.wyhao.admin.system.model.entity.NoticeDO;
 import top.wyhao.admin.system.model.query.NoticeQuery;
 import top.wyhao.admin.system.model.bo.MessageReq;
-import top.wyhao.admin.system.model.bo.NoticeReq;
+import top.wyhao.admin.system.model.bo.NoticeRequest;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardNoticeResp;
-import top.wyhao.admin.system.model.vo.notice.NoticeDetailResp;
-import top.wyhao.admin.system.model.vo.notice.NoticeResp;
+import top.wyhao.admin.system.model.vo.NoticeDetailResult;
+import top.wyhao.admin.system.model.vo.NoticeResult;
 import top.wyhao.admin.system.service.MessageService;
 import top.wyhao.admin.system.service.NoticeLogService;
 import top.wyhao.admin.system.service.NoticeService;
@@ -27,8 +27,6 @@ import top.wyhao.starter.core.exception.SystemException;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.data.util.QueryWrapperUtil;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.time.LocalDateTime;
@@ -53,20 +51,20 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     @Override
-    public PageResult<NoticeResp> findPage(NoticeQuery query, PageQuery pageQuery) {
-        IPage<NoticeResp> page = noticeMapper.selectNoticePage(new Page<>(pageQuery.getPage(), pageQuery
+    public PageResult<NoticeResult> page(NoticeQuery query, PageQuery pageQuery) {
+        IPage<NoticeResult> page = noticeMapper.selectNoticePage(new Page<>(pageQuery.getPage(), pageQuery
             .getSize()), query);
-        PageResult<NoticeResp> pageResult = PageResult.build(page);
+        PageResult<NoticeResult> pageResult = PageResult.build(page);
         pageResult.getList().forEach(this::fill);
         return pageResult;
     }
 
     @Override
-    public List<NoticeResp> list(NoticeQuery query, SortQuery sortQuery) {
+    public List<NoticeResult> list(NoticeQuery query) {
         // 实现列表查询逻辑
         QueryWrapper<NoticeDO> wrapper = QueryWrapperUtil.build(query);
         // 应用排序
-        QueryWrapperUtil.applySort(wrapper, sortQuery.getSort(), NoticeDO.class);
+        QueryWrapperUtil.applySort(wrapper, query.getSort(), NoticeDO.class);
 
         List<NoticeDO> entities = noticeMapper.selectList(wrapper);
         // 将 NoticeDO 转换为 NoticeResp
@@ -76,7 +74,7 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public NoticeDetailResp get(Long id) {
+    public NoticeDetailResult detail(Long id) {
         NoticeDO entity = noticeMapper.selectById(id);
         if (entity == null) {
             throw new BadRequestException("NOTICE_NOT_FOUND","公告不存在");
@@ -86,8 +84,17 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public Long create(NoticeReq req) {
-        beforeCreate(req);
+    public Long create(NoticeRequest req) {
+        if (!NoticeStatus.DRAFT.equals(req.getStatus())) {
+            if (Boolean.TRUE.equals(req.getIsTiming())) {
+                // 待发布
+                req.setStatus(NoticeStatus.PENDING);
+            } else {
+                // 已发布
+                req.setStatus(NoticeStatus.PUBLISHED);
+                req.setPublishTime(LocalDateTime.now());
+            }
+        }
         NoticeDO entity = new NoticeDO();
         // 设置实体属性
         updateEntityFromReq(entity, req);
@@ -95,12 +102,15 @@ public class NoticeServiceImpl implements NoticeService {
         if (result <= 0) {
             throw new SystemException("创建失败");
         }
-        afterCreate(req, entity);
+        // 发送消息
+        if (NoticeStatus.PUBLISHED.equals(entity.getStatus())) {
+            this.publish(entity);
+        }
         return entity.getId();
     }
 
     @Override
-    public void update(NoticeReq req, Long id) {
+    public void update(NoticeRequest req, Long id) {
         beforeUpdate(req, id);
         NoticeDO entity = noticeMapper.selectById(id);
         if (entity == null) {
@@ -112,7 +122,15 @@ public class NoticeServiceImpl implements NoticeService {
         if (result <= 0) {
             throw new SystemException("更新失败");
         }
-        afterUpdate(req, entity);
+        // 重置定时发布时间
+        if (!NoticeStatus.PUBLISHED.equals(entity.getStatus()) && Boolean.FALSE.equals(entity
+                .getIsTiming()) && entity.getPublishTime() != null) {
+            noticeMapper.lambdaUpdate().set(NoticeDO::getPublishTime, null).eq(NoticeDO::getId, entity.getId()).update();
+        }
+        // 发送消息
+        if (Boolean.FALSE.equals(entity.getIsTiming()) && NoticeStatus.PUBLISHED.equals(entity.getStatus())) {
+            this.publish(entity);
+        }
     }
 
     @Override
@@ -129,43 +147,21 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void export(NoticeQuery query, SortQuery sortQuery, HttpServletResponse response) {
+    public void export(NoticeQuery query, HttpServletResponse response) {
         // 实现导出逻辑
-        List<NoticeResp> list = list(query, sortQuery);
+        List<NoticeResult> list = list(query);
         // 使用Excel工具导出数据到response
     }
 
-    @Override
-    public List<LabelValueResp> dict(NoticeQuery query, SortQuery sortQuery) {
-        // 实现字典查询逻辑
-        List<NoticeResp> list = list(query, sortQuery);
-        // 将列表转换为 LabelValueResp 格式
-        return list.stream()
-                .map(item -> new LabelValueResp(item.getTitle(), item.getId()))
-                .toList();
+    private void beforeCreate(NoticeRequest req) {
+
     }
 
-    private void beforeCreate(NoticeReq req) {
-        if (!NoticeStatus.DRAFT.equals(req.getStatus())) {
-            if (Boolean.TRUE.equals(req.getIsTiming())) {
-                // 待发布
-                req.setStatus(NoticeStatus.PENDING);
-            } else {
-                // 已发布
-                req.setStatus(NoticeStatus.PUBLISHED);
-                req.setPublishTime(LocalDateTime.now());
-            }
-        }
+    private void afterCreate(NoticeRequest req, NoticeDO entity) {
+
     }
 
-    private void afterCreate(NoticeReq req, NoticeDO entity) {
-        // 发送消息
-        if (NoticeStatus.PUBLISHED.equals(entity.getStatus())) {
-            this.publish(entity);
-        }
-    }
-
-    private void beforeUpdate(NoticeReq req, Long id) {
+    private void beforeUpdate(NoticeRequest req, Long id) {
         NoticeDO oldNotice = noticeMapper.selectById(id);
         switch (oldNotice.getStatus()) {
             case PUBLISHED -> {
@@ -201,16 +197,8 @@ public class NoticeServiceImpl implements NoticeService {
         }
     }
 
-    private void afterUpdate(NoticeReq req, NoticeDO entity) {
-        // 重置定时发布时间
-        if (!NoticeStatus.PUBLISHED.equals(entity.getStatus()) && Boolean.FALSE.equals(entity
-            .getIsTiming()) && entity.getPublishTime() != null) {
-            noticeMapper.lambdaUpdate().set(NoticeDO::getPublishTime, null).eq(NoticeDO::getId, entity.getId()).update();
-        }
-        // 发送消息
-        if (Boolean.FALSE.equals(entity.getIsTiming()) && NoticeStatus.PUBLISHED.equals(entity.getStatus())) {
-            this.publish(entity);
-        }
+    private void afterUpdate(NoticeRequest req, NoticeDO entity) {
+
     }
 
     private void afterDelete(List<Long> ids) {
@@ -265,8 +253,8 @@ public class NoticeServiceImpl implements NoticeService {
         return wrapper;
     }
 
-    private NoticeResp convertToNoticeResp(NoticeDO entity) {
-        NoticeResp resp = new NoticeResp();
+    private NoticeResult convertToNoticeResp(NoticeDO entity) {
+        NoticeResult resp = new NoticeResult();
         resp.setId(entity.getId());
         resp.setTitle(entity.getTitle());
         resp.setStatus(entity.getStatus());
@@ -274,8 +262,8 @@ public class NoticeServiceImpl implements NoticeService {
         return resp;
     }
 
-    private NoticeDetailResp convertToNoticeDetailResp(NoticeDO entity) {
-        NoticeDetailResp resp = new NoticeDetailResp();
+    private NoticeDetailResult convertToNoticeDetailResp(NoticeDO entity) {
+        NoticeDetailResult resp = new NoticeDetailResult();
         resp.setId(entity.getId());
         resp.setTitle(entity.getTitle());
         resp.setContent(entity.getContent());
@@ -286,7 +274,7 @@ public class NoticeServiceImpl implements NoticeService {
         return resp;
     }
 
-    private void updateEntityFromReq(NoticeDO entity, NoticeReq req) {
+    private void updateEntityFromReq(NoticeDO entity, NoticeRequest req) {
         entity.setTitle(req.getTitle());
         entity.setContent(req.getContent());
         entity.setStatus(req.getStatus());
@@ -298,7 +286,7 @@ public class NoticeServiceImpl implements NoticeService {
         // 设置其他属性...
     }
 
-    private void fill(NoticeResp noticeResp) {
+    private void fill(NoticeResult noticeResult) {
         // 填充额外信息的逻辑
     }
 }

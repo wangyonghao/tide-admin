@@ -3,10 +3,16 @@
     "account": "用户账号",
     "address": "登录地点",
     "browser": "浏览器",
-    "createTime": "登录时间",
-    "createUserString": "用户昵称",
     "description": "登录行为",
-    "ip": "登录 IP",
+    "deviceType": "登录客户端",
+    "failure": "失败",
+    "failureReason": "失败原因",
+    "ipAddress": "登录 IP",
+    "ipAddressPlaceholder": "请输入IP地址",
+    "location": "登录位置",
+    "loginStatus": "登录状态",
+    "loginStatusPlaceholder": "请选择登录状态",
+    "loginTime": "登录时间",
     "os": "终端系统",
     "searchForm": {
       "account": "用户账号",
@@ -14,7 +20,10 @@
       "status": "登录状态"
     },
     "status": "登录状态",
-    "title": "登录日志"
+    "success": "成功",
+    "title": "登录日志",
+    "username": "用户名",
+    "usernamePlaceholder": "请输入用户名"
   },
   "onlineUser": {
     "address": "登录地点",

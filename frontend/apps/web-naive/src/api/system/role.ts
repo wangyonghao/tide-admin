@@ -1,7 +1,7 @@
 import type { BaseEntity, PageQuery, PageResult } from '#/types/api';
 import type { Option } from '#/types/global';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /* ==================== API 定义 ==================== */
 export const roleApi = {

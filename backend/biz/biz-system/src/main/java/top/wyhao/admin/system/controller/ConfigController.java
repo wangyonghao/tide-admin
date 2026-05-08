@@ -17,7 +17,7 @@ import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsReq;
+import top.wyhao.starter.web.core.model.req.IdsRequest;
 import top.wyhao.starter.web.core.model.resp.IdResp;
 
 import java.util.List;
@@ -254,7 +254,7 @@ public class ConfigController {
     @Operation(summary = "批量删除")
     @SaCheckPermission("system:config:delete")
     @DeleteMapping
-    public void batchDelete(@RequestBody @Valid IdsReq req) {
+    public void batchDelete(@RequestBody @Valid IdsRequest req) {
         configService.delete(req.getIds());
     }
 

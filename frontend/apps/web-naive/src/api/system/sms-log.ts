@@ -2,45 +2,72 @@ import type { PageQuery, PageResult } from '#/types/api';
 
 import http from '#/api/http';
 
-/** 短信日志类型 */
+/* ==================== API 定义 ==================== */
+export const smsLogApi = {
+  /** 分页查询短信日志列表 */
+  list: (query: SmsLogPageQuery) => {
+    return http.get<PageResult<SmsLogResp>>(`/system/sms/log`, {
+      params: query,
+    });
+  },
+
+  /** 查询短信日志详情 */
+  detail: (id: string) => {
+    return http.get<SmsLogResp>(`/system/sms/log/${id}`);
+  },
+
+  /** 删除短信日志 */
+  delete: (id: string) => {
+    return http.delete(`/system/sms/log`, { data: { ids: [id] } });
+  },
+
+  /** 导出短信日志 */
+  export: (query: SmsLogQuery) => {
+    return http.download(`/system/sms/log/export`, { params: query });
+  },
+};
+
+/* ==================== Schema 定义 ==================== */
+
+/** 短信日志响应 */
 export interface SmsLogResp {
+  /** ID */
   id: string;
+  /** 配置ID */
   configId: string;
+  /** 手机号 */
   phone: string;
+  /** 参数配置 */
   params: string;
+  /** 发送状态 */
   status: number;
+  /** 返回数据 */
   resMsg: string;
+  /** 创建人 */
   createUser: string;
+  /** 创建时间 */
   createTime: string;
+  /** 更新人 */
   updateUser: string;
+  /** 更新时间 */
   updateTime: string;
+  /** 创建人名称 */
   createUserString: string;
+  /** 更新人名称 */
   updateUserString: string;
 }
+
+/** 短信日志查询条件 */
 export interface SmsLogQuery {
-  configId: string | undefined;
-  phone: string | undefined;
-  status: number | undefined;
-  sort: Array<string>;
+  /** 配置ID */
+  configId?: string;
+  /** 手机号 */
+  phone?: string;
+  /** 发送状态 */
+  status?: number;
+  /** 排序 */
+  sort?: Array<string>;
 }
+
+/** 短信日志分页查询 */
 export interface SmsLogPageQuery extends PageQuery, SmsLogQuery {}
-
-/** 查询短信日志列表 */
-export function listSmsLog(query: SmsLogPageQuery) {
-  return http.get<PageResult<SmsLogResp[]>>(`/system/sms/log`, { params: query });
-}
-
-/** 查询短信日志详情 */
-export function getSmsLog(id: string) {
-  return http.get<SmsLogResp>(`/system/sms/log/${id}`);
-}
-
-/** 删除短信日志 */
-export function deleteSmsLog(id: string) {
-  return http.delete(`/system/sms/log`, { data: { ids: [id] } });
-}
-
-/** 导出短信日志 */
-export function exportSmsLog(query: SmsLogQuery) {
-  return http.download(`/system/sms/log/export`, { params: query });
-}

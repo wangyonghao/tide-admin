@@ -117,14 +117,14 @@ public class LoginUtil {
 
     /**
      * 查询已登录用户信息
-     * @param pageNum 页码
+     * @param page 页码
      * @param pageSize 每页数量
      * @param ascend 升序
      * @return 登录用户信息
      */
-    public static List<LoginUser> pageUser(String keyword, int pageNum, int pageSize, boolean ascend){
+    public static List<LoginUser> pageUser(String keyword, int page, int pageSize, boolean ascend){
         // 1. 计算起始索引
-        int start = (pageNum - 1) * pageSize;
+        int start = (page - 1) * pageSize;
         // 2. 分页查询会话id
         List<String> sessionIdList = StpUtil.searchTokenSessionId(keyword, start, pageSize, ascend);
         // 3. 根据会话ID 获取用户信息
@@ -155,6 +155,11 @@ public class LoginUtil {
 
     public static String getTokenValue() {
         return StpUtil.getTokenValue();
+    }
+
+    public static Long getTenantId() {
+        SaSession session = StpUtil.getTokenSession();
+        return session.getLong("tenantId");
     }
 
     /**

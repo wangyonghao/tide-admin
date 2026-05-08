@@ -26,7 +26,7 @@ import top.wyhao.starter.core.util.FileUploadUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsReq;
+import top.wyhao.starter.web.core.model.req.IdsRequest;
 import top.wyhao.starter.web.core.model.resp.IdResp;
 
 import java.io.IOException;
@@ -111,7 +111,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:delete")
     @DeleteMapping
-    public void batchDelete(@RequestBody @Valid IdsReq req) {
+    public void batchDelete(@RequestBody @Valid IdsRequest req) {
         userService.delete(req.getIds());
     }
 

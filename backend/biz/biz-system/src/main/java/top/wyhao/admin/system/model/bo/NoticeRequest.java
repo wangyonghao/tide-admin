@@ -27,7 +27,7 @@ import java.util.List;
 @Data
 @SpelValid
 @Schema(description = "公告创建或修改请求参数")
-public class NoticeReq implements Serializable {
+public class NoticeRequest implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

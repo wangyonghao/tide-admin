@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.vo.notice;
+package top.wyhao.admin.system.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -17,7 +17,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @Schema(description = "未读公告数量响应参数")
-public class NoticeUnreadCountResp implements Serializable {
+public class NoticeUnreadCountResult implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -28,7 +28,7 @@ public class NoticeUnreadCountResp implements Serializable {
     @Schema(description = "未读公告数量", example = "1")
     private Integer total;
 
-    public NoticeUnreadCountResp(Integer total) {
+    public NoticeUnreadCountResult(Integer total) {
         this.total = total;
     }
 }

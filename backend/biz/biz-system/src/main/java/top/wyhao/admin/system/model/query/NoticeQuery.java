@@ -3,6 +3,7 @@ package top.wyhao.admin.system.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -15,10 +16,7 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "公告查询条件")
-public class NoticeQuery implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class NoticeQuery extends SortQuery {
 
     /**
      * 标题

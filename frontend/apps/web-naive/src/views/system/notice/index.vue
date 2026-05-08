@@ -1,36 +1,37 @@
 <script setup lang="ts">
-import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { NoticeQuery, NoticeResp } from '#/api/system/notice';
+import type { DataTableColumns } from 'naive-ui';
+import type { NoticeResp, NoticeDetailResp } from '#/api/system/notice';
 
-import { useRouter } from 'vue-router';
+import { h, onMounted, ref } from 'vue';
 
-import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
+import { SearchOutline } from '@vicons/ionicons5';
 import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogFooter,
-  DialogHeader,
-  DialogTitle,
-  VbenButton,
-} from '@vben-core/shadcn-ui';
+  NButton,
+  NDataTable,
+  NDatePicker,
+  NDrawer,
+  NDrawerContent,
+  NIcon,
+  NInput,
+  NPopconfirm,
+  NSelect,
+  NSpace,
+  NTag,
+  useMessage,
+} from 'naive-ui';
 
-import { useMessage } from 'naive-ui';
-
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteNotice, exportNotice, listNotice } from '#/api/system/notice';
+import { noticeApi } from '#/api/system/notice';
 import { useDict } from '#/hooks';
-import { useDownload } from '#/hooks/app/useDownload';
 
-import {
-  useNoticeGridFieldColumns,
-  useNoticeGridSearchFormSchema,
-} from './NoticeData';
+import NoticeForm from './components/NoticeForm.vue';
+import NoticeView from './components/NoticeView.vue';
 
-const router = useRouter();
+const message = useMessage();
+
+// ==================== 字典数据 ====================
 const {
   notice_type,
   notice_scope_enum,
@@ -43,180 +44,467 @@ const {
   'notice_status_enum',
 );
 
-const [TableGrid, tableGridApi] = useVbenVxeGrid({
-  formOptions: {
-    schema: useNoticeGridSearchFormSchema(notice_type),
-    submitOnChange: true,
-    showCollapseButton: false,
-    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4',
-  },
-  gridOptions: {
-    columns: useNoticeGridFieldColumns(
-      notice_type,
-      notice_scope_enum,
-      notice_method_enum,
-      notice_status_enum,
-    ),
-    border: true,
-    height: 'auto',
-    keepSource: true,
-    columnConfig: {
-      resizable: true,
-    },
-    proxyConfig: {
-      response: {
-        list: 'list',
-      },
-      ajax: {
-        query: async ({ page }, formValues) => {
-          const res = await listNotice({
-            page: page.currentPage,
-            size: page.pageSize,
-            ...formValues,
-          });
-          return res;
-        },
-        querySuccess: ({ $grid }) => {
-          $grid?.setAllTreeExpand(true);
-        },
-      },
-    },
-    rowConfig: {
-      keyField: 'id',
-      isHover: true,
-      isCurrent: true,
-    },
-
-    toolbarConfig: {
-      custom: true,
-      export: false,
-      refresh: true,
-      refreshOptions: {
-        code: 'query',
-      },
-      search: true,
-      zoom: true,
-      zoomOptions: {},
-    },
-  } as VxeTableGridOptions<NoticeResp>,
+// ==================== 搜索表单 ====================
+const searchForm = ref({
+  title: '',
+  type: null as string | null,
+  publishTime: null as [number, number] | null,
+  status: null as string | null,
 });
 
-// 预览
-const handlePreview = (record: NoticeResp) => {
-  router.push({ path: '/system/notice/view', query: { id: record.id } });
-};
+// ==================== 表格数据 ====================
+const tableData = ref<NoticeResp[]>([]);
+const tableLoading = ref(false);
+const tablePagination = ref({
+  page: 1,
+  pageSize: 10,
+  itemCount: 0,
+  showSizePicker: true,
+  pageSizes: [10, 20, 50, 100],
+  onChange: (page: number) => {
+    tablePagination.value.page = page;
+    loadTableData();
+  },
+  onUpdatePageSize: (pageSize: number) => {
+    tablePagination.value.pageSize = pageSize;
+    tablePagination.value.page = 1;
+    loadTableData();
+  },
+});
 
-// 编辑
-const handleEdit = (record: NoticeResp) => {
-  router.push({
-    path: '/system/notice/add',
-    query: { id: record.id },
-  });
-};
+// ==================== 抽屉状态 ====================
+const showFormDrawer = ref(false);
+const showViewDrawer = ref(false);
+const currentNoticeId = ref<string>();
+const currentNoticeDetail = ref<NoticeDetailResp>();
 
-// 新增
-const handleAdd = () => {
-  router.push({ name: 'SystemNoticeAdd' });
-};
+// ==================== 表格列定义 ====================
+const tableColumns: DataTableColumns<NoticeResp> = [
+  {
+    title: '序号',
+    key: 'index',
+    width: 60,
+    render: (_row, index) =>
+      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
+      index +
+      1,
+  },
+  {
+    title: $t('system.notice.title'),
+    key: 'title',
+    minWidth: 200,
+  },
+  {
+    title: $t('system.notice.createUser'),
+    key: 'createUserString',
+    minWidth: 120,
+  },
+  {
+    title: $t('system.notice.type'),
+    key: 'type',
+    minWidth: 100,
+    render(row) {
+      const typeItem = notice_type?.value?.find((item) => String(item.value) === row.type);
+      if (!typeItem) return row.type;
+      return h(
+        NTag,
+        { type: (typeItem as any).tagType || 'default', size: 'small' },
+        { default: () => typeItem.label },
+      );
+    },
+  },
+  {
+    title: $t('system.notice.noticeScope'),
+    key: 'noticeScope',
+    minWidth: 120,
+    render(row) {
+      const scopeItem = notice_scope_enum?.value?.find(
+        (item) => String(item.value) === row.noticeScope,
+      );
+      if (!scopeItem) return row.noticeScope;
+      return h(
+        NTag,
+        { type: (scopeItem as any).tagType || 'default', size: 'small' },
+        { default: () => scopeItem.label },
+      );
+    },
+  },
+  {
+    title: $t('system.notice.noticeMethods'),
+    key: 'noticeMethods',
+    minWidth: 150,
+    render(row) {
+      const methods = row.noticeMethods?.split(',') || [];
+      return h(
+        NSpace,
+        { size: 'small' },
+        {
+          default: () =>
+            methods.map((method) => {
+              const methodItem = notice_method_enum?.value?.find(
+                (item) => String(item.value) === method,
+              );
+              if (!methodItem) return null;
+              return h(
+                NTag,
+                { type: (methodItem as any).tagType || 'default', size: 'small' },
+                { default: () => methodItem.label },
+              );
+            }),
+        },
+      );
+    },
+  },
+  {
+    title: $t('system.notice.isTiming'),
+    key: 'isTiming',
+    minWidth: 100,
+    render(row) {
+      return h(
+        NTag,
+        {
+          type: row.isTiming === 'true' ? 'success' : 'default',
+          size: 'small',
+        },
+        { default: () => (row.isTiming === 'true' ? '是' : '否') },
+      );
+    },
+  },
+  {
+    title: $t('system.notice.isTop'),
+    key: 'isTop',
+    minWidth: 100,
+    render(row) {
+      return h(
+        NTag,
+        {
+          type: row.isTop === 'true' ? 'warning' : 'default',
+          size: 'small',
+        },
+        { default: () => (row.isTop === 'true' ? '是' : '否') },
+      );
+    },
+  },
+  {
+    title: $t('system.notice.status'),
+    key: 'status',
+    minWidth: 100,
+    render(row) {
+      const statusItem = notice_status_enum?.value?.find(
+        (item) => Number(item.value) === row.status,
+      );
+      if (!statusItem) return row.status;
+      return h(
+        NTag,
+        { type: (statusItem as any).tagType || 'default', size: 'small' },
+        { default: () => statusItem.label },
+      );
+    },
+  },
+  {
+    title: $t('system.notice.publishTime'),
+    key: 'publishTime',
+    minWidth: 160,
+  },
+  {
+    title: $t('common.operation'),
+    key: 'action',
+    width: 180,
+    fixed: 'right',
+    render(row) {
+      return h(
+        NSpace,
+        { size: 'small' },
+        {
+          default: () => [
+            h(
+              NButton,
+              {
+                size: 'small',
+                type: 'info',
+                text: true,
+                onClick: () => handlePreview(row),
+              },
+              {
+                icon: () => h(IconifyIcon, { icon: 'lucide:eye' }),
+                default: () => '预览',
+              },
+            ),
+            h(
+              NButton,
+              {
+                size: 'small',
+                type: 'primary',
+                text: true,
+                onClick: () => handleEdit(row),
+              },
+              {
+                icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }),
+                default: () => '编辑',
+              },
+            ),
+            h(
+              NPopconfirm,
+              {
+                onPositiveClick: () => handleDelete(row),
+              },
+              {
+                trigger: () =>
+                  h(
+                    NButton,
+                    {
+                      size: 'small',
+                      type: 'error',
+                      text: true,
+                    },
+                    {
+                      icon: () => h(IconifyIcon, { icon: 'lucide:trash-2' }),
+                      default: () => '删除',
+                    },
+                  ),
+                default: () => `确定删除公告"${row.title}"吗？`,
+              },
+            ),
+          ],
+        },
+      );
+    },
+  },
+];
 
-const deleteDialogVisible = ref(false);
-const deleteRow = ref<NoticeResp | null>(null);
-const message = useMessage();
-
-const showDeleteDialog = (row: NoticeResp) => {
-  deleteRow.value = row;
-  deleteDialogVisible.value = true;
-};
-
-const handleDelete = async () => {
-  if (!deleteRow.value) return;
-
+// ==================== 加载数据 ====================
+async function loadTableData() {
+  tableLoading.value = true;
   try {
-    await deleteNotice(deleteRow.value.id);
-    message.success($t('pages.common.deleteSuccess'));
-    await tableGridApi.query();
-    deleteDialogVisible.value = false;
-    deleteRow.value = null;
-    return true;
-  } catch {
-    return false;
-  }
-};
+    let publishTime: string | undefined;
 
-const handleExport = () => {
-  useDownload(async () =>
-    exportNotice(await tableGridApi.formApi.getValues<NoticeQuery>()),
-  );
-};
+    if (searchForm.value.publishTime) {
+      const start = new Date(searchForm.value.publishTime[0])
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
+      const end = new Date(searchForm.value.publishTime[1])
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
+      publishTime = `${start},${end}`;
+    }
+
+    const res = await noticeApi.list({
+      page: tablePagination.value.page,
+      size: tablePagination.value.pageSize,
+      title: searchForm.value.title || undefined,
+      type: searchForm.value.type || undefined,
+      publishTime,
+      status: searchForm.value.status || undefined,
+    });
+
+    tableData.value = res.list;
+    tablePagination.value.itemCount = res.total;
+  } catch (error) {
+    console.error('加载公告列表失败:', error);
+    message.error('加载数据失败');
+  } finally {
+    tableLoading.value = false;
+  }
+}
+
+// ==================== 搜索 ====================
+function handleSearch() {
+  tablePagination.value.page = 1;
+  loadTableData();
+}
+
+// ==================== 重置 ====================
+function handleReset() {
+  searchForm.value = {
+    title: '',
+    type: null,
+    publishTime: null,
+    status: null,
+  };
+  handleSearch();
+}
+
+// ==================== 新增 ====================
+function handleAdd() {
+  currentNoticeId.value = undefined;
+  showFormDrawer.value = true;
+}
+
+// ==================== 预览 ====================
+async function handlePreview(record: NoticeResp) {
+  try {
+    const detail = await noticeApi.detail(record.id);
+    currentNoticeDetail.value = detail;
+    showViewDrawer.value = true;
+  } catch (error) {
+    console.error('加载公告详情失败:', error);
+    message.error('加载数据失败');
+  }
+}
+
+// ==================== 编辑 ====================
+function handleEdit(record: NoticeResp) {
+  currentNoticeId.value = record.id;
+  showFormDrawer.value = true;
+}
+
+// ==================== 删除 ====================
+async function handleDelete(row: NoticeResp) {
+  try {
+    await noticeApi.delete(row.id);
+    message.success($t('pages.common.deleteSuccess'));
+    await loadTableData();
+  } catch (error) {
+    console.error('删除公告失败:', error);
+    message.error('删除失败');
+  }
+}
+
+// ==================== 导出 ====================
+function handleExport() {
+  let publishTime: string | undefined;
+
+  if (searchForm.value.publishTime) {
+    const start = new Date(searchForm.value.publishTime[0])
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ');
+    const end = new Date(searchForm.value.publishTime[1])
+      .toISOString()
+      .slice(0, 19)
+      .replace('T', ' ');
+    publishTime = `${start},${end}`;
+  }
+
+  noticeApi.export({
+    title: searchForm.value.title || undefined,
+    type: searchForm.value.type || undefined,
+    publishTime,
+    status: searchForm.value.status || undefined,
+  });
+}
+
+// ==================== 表单提交成功 ====================
+function handleFormSuccess() {
+  showFormDrawer.value = false;
+  loadTableData();
+}
+
+// ==================== 初始化 ====================
+onMounted(() => {
+  loadTableData();
+});
 </script>
 
 <template>
-  <Page auto-content-height>
-    <TableGrid :table-title="$t('system.notice.listTitle')">
-      <template #toolbar-tools>
-        <div class="flex items-center gap-2">
-          <span v-access:code="['system:notice:create']">
-            <VbenButton @click="handleAdd">
-              {{ $t('pages.common.add') }}
-            </VbenButton>
-          </span>
-          <span v-access:code="['system:notice:export']">
-            <VbenButton variant="destructive" @click="handleExport">
-              {{ $t('pages.common.export') }}
-            </VbenButton>
-          </span>
+  <div class="h-full bg-background p-4">
+    <!-- 搜索和操作栏 -->
+    <div class="mb-4">
+      <!-- 搜索表单 - 响应式网格布局 -->
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3"
+      >
+        <NInput
+          v-model:value="searchForm.title"
+          :placeholder="$t('system.notice.title')"
+          clearable
+          @keyup.enter="handleSearch"
+        >
+          <template #prefix>
+            <NIcon><SearchOutline /></NIcon>
+          </template>
+        </NInput>
+        <NSelect
+          v-model:value="searchForm.type"
+          :options="notice_type as any"
+          :placeholder="$t('system.notice.type')"
+          clearable
+        />
+        <NSelect
+          v-model:value="searchForm.status"
+          :options="notice_status_enum as any"
+          :placeholder="$t('system.notice.status')"
+          clearable
+        />
+        <div class="sm:col-span-2 lg:col-span-1 xl:col-span-1">
+          <NDatePicker
+            v-model:value="searchForm.publishTime"
+            type="datetimerange"
+            clearable
+            class="w-full"
+            format="yyyy-MM-dd HH:mm:ss"
+          />
         </div>
-      </template>
-      <template #action="{ row }">
-        <div class="flex items-center gap-2">
-          <span v-access:code="['system:notice:view']">
-            <VbenButton variant="ghost" size="icon" @click="handlePreview(row)">
-              <IconifyIcon icon="lucide:eye" class="w-4 h-4" />
-            </VbenButton>
-          </span>
-          <span v-access:code="['system:notice:update']">
-            <VbenButton variant="ghost" size="icon" @click="handleEdit(row)">
-              <IconifyIcon icon="lucide:pencil" class="w-4 h-4" />
-            </VbenButton>
-          </span>
-          <span v-access:code="['system:notice:delete']">
-            <VbenButton
-              variant="ghost"
-              size="icon"
-              @click="showDeleteDialog(row)"
-            >
-              <IconifyIcon
-                icon="lucide:trash-2"
-                class="w-4 h-4 text-destructive"
-              />
-            </VbenButton>
-          </span>
-        </div>
-      </template>
-    </TableGrid>
+      </div>
 
-    <!-- Delete Confirmation Dialog -->
-    <Dialog
-      :open="deleteDialogVisible"
-      @update:open="(val) => (deleteDialogVisible = val)"
+      <!-- 操作按钮 -->
+      <div class="flex items-center gap-2 flex-wrap">
+        <NButton type="primary" @click="handleSearch">
+          <template #icon><IconifyIcon icon="lucide:search" /></template>
+          {{ $t('pages.common.search') }}
+        </NButton>
+        <NButton @click="handleReset">
+          <template #icon><IconifyIcon icon="lucide:rotate-ccw" /></template>
+          {{ $t('pages.common.reset') }}
+        </NButton>
+        <NButton type="success" @click="handleAdd">
+          <template #icon><IconifyIcon icon="lucide:plus" /></template>
+          {{ $t('pages.common.add') }}
+        </NButton>
+        <NButton type="error" @click="handleExport">
+          <template #icon><IconifyIcon icon="lucide:download" /></template>
+          {{ $t('pages.common.export') }}
+        </NButton>
+      </div>
+    </div>
+
+    <!-- 数据表格 -->
+    <NDataTable
+      :columns="tableColumns"
+      :data="tableData"
+      :loading="tableLoading"
+      :row-key="(row) => row.id"
+      :pagination="tablePagination"
+      scroll-x="1600px"
+    />
+
+    <!-- 新增/编辑抽屉 -->
+    <NDrawer
+      v-model:show="showFormDrawer"
+      :width="1000"
+      placement="right"
     >
-      <DialogContent class="sm:max-w-[425px]">
-        <DialogHeader>
-          <DialogTitle>{{ $t('ui.actionMessage.deleteTitle') }}</DialogTitle>
-          <DialogDescription>
-            {{ $t('ui.actionMessage.deleteConfirm', [deleteRow?.title]) }}
-          </DialogDescription>
-        </DialogHeader>
-        <DialogFooter>
-          <VbenButton variant="outline" @click="deleteDialogVisible = false">
-            {{ $t('common.cancel') }}
-          </VbenButton>
-          <VbenButton variant="destructive" @click="handleDelete">
-            {{ $t('common.confirm') }}
-          </VbenButton>
-        </DialogFooter>
-      </DialogContent>
-    </Dialog>
-  </Page>
+      <NDrawerContent
+        :title="currentNoticeId ? $t('common.edit') : $t('common.create')"
+        closable
+      >
+        <NoticeForm
+          :notice-id="currentNoticeId"
+          @success="handleFormSuccess"
+          @cancel="showFormDrawer = false"
+        />
+      </NDrawerContent>
+    </NDrawer>
+
+    <!-- 查看抽屉 -->
+    <NDrawer
+      v-model:show="showViewDrawer"
+      :width="900"
+      placement="right"
+    >
+      <NDrawerContent
+        :title="$t('common.detail')"
+        closable
+      >
+        <NoticeView
+          v-if="currentNoticeDetail"
+          :notice="currentNoticeDetail"
+        />
+      </NDrawerContent>
+    </NDrawer>
+  </div>
 </template>
+
 <style lang="scss" scoped></style>

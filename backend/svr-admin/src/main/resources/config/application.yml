@@ -165,6 +165,15 @@ wyhao-starter.tenant:
     - 8000 # 任务调度
     - 9000 # 开发工具
 
+### 系统配置
+system:
+  ## 登录日志配置
+  login-log:
+    # 日志留存天数（默认365天，即1年）
+    retention-days: 365
+    # 是否启用自动清理过期日志（默认启用）
+    auto-cleanup-enabled: true
+
 wyhao-starter:
   # 启用限流器
   rate-limiter.enabled: true

@@ -16,7 +16,7 @@ import top.wyhao.admin.tenant.service.PackageService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsReq;
+import top.wyhao.starter.web.core.model.req.IdsRequest;
 import top.wyhao.starter.web.core.model.resp.IdResp;
 
 import java.util.List;
@@ -131,7 +131,7 @@ public class PackageController {
      */
     @Operation(summary = "批量删除数据", description = "批量删除数据")
     @DeleteMapping
-    public void batchDelete(@RequestBody @Valid IdsReq req) {
+    public void batchDelete(@RequestBody @Valid IdsRequest req) {
         baseService.delete(req.getIds());
     }
 

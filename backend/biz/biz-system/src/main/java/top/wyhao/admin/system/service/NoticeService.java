@@ -4,10 +4,10 @@ package top.wyhao.admin.system.service;
 import top.wyhao.admin.system.model.enums.NoticeMethods;
 import top.wyhao.admin.system.model.entity.NoticeDO;
 import top.wyhao.admin.system.model.query.NoticeQuery;
-import top.wyhao.admin.system.model.bo.NoticeReq;
+import top.wyhao.admin.system.model.bo.NoticeRequest;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardNoticeResp;
-import top.wyhao.admin.system.model.vo.notice.NoticeDetailResp;
-import top.wyhao.admin.system.model.vo.notice.NoticeResp;
+import top.wyhao.admin.system.model.vo.NoticeDetailResult;
+import top.wyhao.admin.system.model.vo.NoticeResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.SortQuery;
 import top.wyhao.starter.web.core.model.resp.LabelValueResp;
@@ -20,10 +20,10 @@ import java.util.List;
 import jakarta.servlet.http.HttpServletResponse;
 
 /**
- * 公告业务接口
+ * 公告管理 API
  *
- * @author Charles7c
- * @since 2023/8/20 10:55
+ * @author Yonghao Wang
+ * @since 2026/5/8
  */
 public interface NoticeService {
 
@@ -34,7 +34,7 @@ public interface NoticeService {
      * @param pageQuery 分页查询条件
      * @return 分页列表信息
      */
-    PageResult<NoticeResp> findPage(NoticeQuery query, PageQuery pageQuery);
+    PageResult<NoticeResult> page(NoticeQuery query, PageQuery pageQuery);
 
     /**
      * 查询列表
@@ -43,7 +43,7 @@ public interface NoticeService {
      * @param sortQuery 排序查询条件
      * @return 列表信息
      */
-    List<NoticeResp> list(NoticeQuery query, SortQuery sortQuery);
+    List<NoticeResult> list(NoticeQuery query, SortQuery sortQuery);
 
     /**
      * 查询详情
@@ -51,7 +51,7 @@ public interface NoticeService {
      * @param id ID
      * @return 详情信息
      */
-    NoticeDetailResp get(Long id);
+    NoticeDetailResult detail(Long id);
 
     /**
      * 创建
@@ -59,7 +59,7 @@ public interface NoticeService {
      * @param req 创建请求参数
      * @return 自增 ID
      */
-    Long create(@Valid NoticeReq req);
+    Long create(@Valid NoticeRequest req);
 
     /**
      * 修改
@@ -67,7 +67,7 @@ public interface NoticeService {
      * @param req 修改请求参数
      * @param id  ID
      */
-    void update(@Valid NoticeReq req, Long id);
+    void update(@Valid NoticeRequest req, Long id);
 
     /**
      * 删除
@@ -83,7 +83,7 @@ public interface NoticeService {
      * @param sortQuery 排序查询条件
      * @param response  响应对象
      */
-    void export(NoticeQuery query, SortQuery sortQuery, HttpServletResponse response);
+    void export(NoticeQuery query, HttpServletResponse response);
 
     /**
      * 查询字典列表

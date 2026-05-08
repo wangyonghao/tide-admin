@@ -16,12 +16,9 @@ import {
   NIcon,
   NInput,
   NTag,
-  useMessage,
 } from 'naive-ui';
 
 import { logApi } from '#/api/monitor/log';
-
-const message = useMessage();
 
 // ==================== 搜索表单 ====================
 const searchForm = ref({
@@ -163,9 +160,6 @@ async function handleDetail(row: OperationLogResp) {
   detailLoading.value = true;
   try {
     detailData.value = await logApi.detail(row.id);
-  } catch (error) {
-    console.error('加载日志详情失败:', error);
-    message.error('加载详情失败');
   } finally {
     detailLoading.value = false;
   }
@@ -181,7 +175,7 @@ onMounted(() => {
   <div class="h-full bg-background p-4">
     <!-- 搜索和操作栏 -->
     <div class="mb-4">
-      <div class="flex items-center gap-2 flex-wrap">
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3">
         <NInput
           v-model:value="searchForm.operatorName"
           placeholder="操作人"
@@ -207,25 +201,29 @@ onMounted(() => {
           class="w-[180px]"
           @keyup.enter="handleSearch"
         />
-        <NDatePicker
-          v-model:value="searchForm.createTime"
-          type="datetimerange"
-          clearable
-          class="w-[360px]"
-          format="yyyy-MM-dd HH:mm:ss"
-        />
-        <NButton type="primary" @click="handleSearch">
-          <template #icon><IconifyIcon icon="lucide:search" /></template>
-          查询
-        </NButton>
-        <NButton @click="handleReset">
-          <template #icon><IconifyIcon icon="lucide:rotate-ccw" /></template>
-          重置
-        </NButton>
-        <NButton @click="handleExport">
-          <template #icon><IconifyIcon icon="lucide:download" /></template>
-          导出
-        </NButton>
+        <div class="sm:col-span-2 lg:col-span-1 xl:col-span-1">
+          <NDatePicker
+            v-model:value="searchForm.createTime"
+            type="datetimerange"
+            clearable
+            class="w-[360px]"
+            format="yyyy-MM-dd HH:mm:ss"
+          />
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+          <NButton type="primary" @click="handleSearch">
+            <template #icon><IconifyIcon icon="lucide:search" /></template>
+            查询
+          </NButton>
+          <NButton @click="handleReset">
+            <template #icon><IconifyIcon icon="lucide:rotate-ccw" /></template>
+            重置
+          </NButton>
+          <NButton @click="handleExport">
+            <template #icon><IconifyIcon icon="lucide:download" /></template>
+            导出
+          </NButton>
+        </div>
       </div>
     </div>
 
