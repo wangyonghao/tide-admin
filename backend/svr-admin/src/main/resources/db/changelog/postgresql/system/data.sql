@@ -3,14 +3,9 @@
 -- changeset wyhao:1
 -- comment system-初始化表数据
 INSERT INTO "sys_menu"
-("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden",
- "permission", "sort", "status", "create_user", "create_time")
-VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide:settings-2', FALSE, FALSE, FALSE, NULL, 1,
-        1, 1,
-        NOW()),
-       (1010, '用户管理', 1000, 2, '/system/user', 'system/user/index', NULL, 'lucide:user', FALSE, FALSE, FALSE, NULL,
-        1, 1,
-        1, NOW()),
+("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
+VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide:settings-2', FALSE, FALSE, FALSE, NULL, 1, 1, 1, NOW()),
+       (1010, '用户管理', 1000, 2, '/system/user', 'system/user/index', NULL, 'lucide:user', FALSE, FALSE, FALSE, NULL, 1, 1, 1, NOW()),
        (1011, '列表', 1010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:user:list', 1, 1, 1, NOW()),
        (1012, '详情', 1010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:user:get', 2, 1, 1, NOW()),
        (1013, '新增', 1010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:user:create', 3, 1, 1, NOW()),
@@ -21,20 +16,17 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (1018, '重置密码', 1010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:user:resetPwd', 8, 1, 1, NOW()),
        (1019, '分配角色', 1010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:user:updateRole', 9, 1, 1, NOW()),
 
-       (1030, '角色管理', 1000, 2, '/system/role', 'system/role/index', NULL, 'lucide:shield-user', FALSE, FALSE, FALSE,
-        NULL, 2, 1, 1, NOW()),
+       (1030, '角色管理', 1000, 2, '/system/role', 'system/role/index', NULL, 'lucide:shield-user', FALSE, FALSE, FALSE, NULL, 2, 1, 1, NOW()),
        (1031, '列表', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:list', 1, 1, 1, NOW()),
        (1032, '详情', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:get', 2, 1, 1, NOW()),
        (1033, '新增', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:create', 3, 1, 1, NOW()),
        (1034, '修改', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:update', 4, 1, 1, NOW()),
        (1035, '删除', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:delete', 5, 1, 1, NOW()),
-       (1036, '修改权限', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:updatePermission', 6, 1, 1,
-        NOW()),
+       (1036, '修改权限', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:updatePermission', 6, 1, 1, NOW()),
        (1037, '分配', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:assign', 7, 1, 1, NOW()),
        (1038, '取消分配', 1030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:role:unassign', 8, 1, 1, NOW()),
 
-       (1050, '菜单管理', 1000, 2, '/system/menu', 'system/menu/index', NULL, 'lucide:menu', FALSE, FALSE, FALSE, NULL,
-        3, 1, 1, NOW()),
+       (1050, '菜单管理', 1000, 2, '/system/menu', 'system/menu/index', NULL, 'lucide:menu', FALSE, FALSE, FALSE, NULL, 3, 1, 1, NOW()),
        (1051, '列表', 1050, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:menu:list', 1, 1, 1, NOW()),
        (1052, '详情', 1050, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:menu:get', 2, 1, 1, NOW()),
        (1053, '新增', 1050, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:menu:create', 3, 1, 1, NOW()),
@@ -42,9 +34,7 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (1055, '删除', 1050, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:menu:delete', 5, 1, 1, NOW()),
        (1056, '清除缓存', 1050, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:menu:clearCache', 6, 1, 1, NOW()),
 
-       (1070, '部门管理', 1000, 2, '/system/dept', 'system/dept/index', NULL, 'fluent:organization-48-regular', FALSE,
-        FALSE, FALSE, NULL,
-        4, 1, 1, NOW()),
+       (1070, '部门管理', 1000, 2, '/system/dept', 'system/dept/index', NULL, 'fluent:organization-48-regular', FALSE, FALSE, FALSE, NULL, 4, 1, 1, NOW()),
        (1071, '列表', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:list', 1, 1, 1, NOW()),
        (1072, '详情', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:get', 2, 1, 1, NOW()),
        (1073, '新增', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:create', 3, 1, 1, NOW()),
@@ -52,17 +42,11 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (1075, '删除', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:delete', 5, 1, 1, NOW()),
        (1076, '导出', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:export', 6, 1, 1, NOW()),
 
-       (1090, '通知公告', 1000, 2, '/system/notice', 'system/notice/index', NULL, 'pepicons-pencil:bulletin-notice',
-        FALSE,
-        FALSE, FALSE, NULL, 5, 1, 1, NOW()),
+       (1090, '通知公告', 1000, 2, '/system/notice', 'system/notice/index', NULL, 'pepicons-pencil:bulletin-notice', FALSE, FALSE, FALSE, NULL, 5, 1, 1, NOW()),
        (1091, '列表', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:list', 1, 1, 1, NOW()),
        (1092, '详情', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:get', 2, 1, 1, NOW()),
-       (1093, '查看公告', 1090, 2, '/system/notice/view', 'system/notice/view/index', NULL, NULL,
-        FALSE, FALSE, TRUE, 'system:notice:view', 3, 1, 1, NOW()),
-       (1094, '发布公告', 1090, 2, '/system/notice/add', 'system/notice/add/index', NULL, NULL,
-        FALSE, FALSE, TRUE, 'system:notice:create', 4, 1, 1, NOW()),
-       (1095, '修改', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:update', 5, 1, 1, NOW()),
-       (1096, '删除', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:delete', 6, 1, 1, NOW()),
+       (1093, '修改', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:update', 5, 1, 1, NOW()),
+       (1094, '删除', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:delete', 6, 1, 1, NOW()),
 
        (1110, '文件管理', 1000, 2, '/system/file', 'system/file/index', NULL, 'lucide:folder-tree', FALSE, FALSE, FALSE,
         NULL, 6, 1, 1, NOW()),
@@ -76,124 +60,70 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (1118, '计算文件夹大小', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:file:calcDirSize', 8, 1, 1,
         NOW()),
 
-       (1130, '字典管理', 1000, 2, '/system/dict', 'system/dict/index', NULL, 'arcticons:colordict', FALSE, FALSE,
-        FALSE, NULL, 7, 1, 1, NOW()),
+       (1130, '字典管理', 1000, 2, '/system/dict', 'system/dict/index', NULL, 'arcticons:colordict', FALSE, FALSE, FALSE, NULL, 7, 1, 1, NOW()),
        (1131, '列表', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:list', 1, 1, 1, NOW()),
        (1132, '详情', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:get', 2, 1, 1, NOW()),
        (1133, '新增', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:create', 3, 1, 1, NOW()),
        (1134, '修改', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:update', 4, 1, 1, NOW()),
        (1135, '删除', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:delete', 5, 1, 1, NOW()),
        (1136, '清除缓存', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:clearCache', 6, 1, 1, NOW()),
-       (1140, '字典项管理', 1000, 2, '/system/dict/item', 'system/dict/item/index', NULL, 'bookmark', FALSE, FALSE,
-        TRUE, NULL, 8, 1, 1, NOW()),
+      
+       (1140, '字典项管理', 1000, 2, '/system/dict/item', 'system/dict/item/index', NULL, 'bookmark', FALSE, FALSE, TRUE, NULL, 8, 1, 1, NOW()),
        (1141, '列表', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:list', 1, 1, 1, NOW()),
        (1142, '详情', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:get', 2, 1, 1, NOW()),
        (1143, '新增', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:create', 3, 1, 1, NOW()),
        (1144, '修改', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:update', 4, 1, 1, NOW()),
        (1145, '删除', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:delete', 5, 1, 1, NOW()),
 
-       (1150, '系统配置', 1000, 2, '/system/config', 'system/config/index', NULL, 'lucide:settings', FALSE, FALSE,
-        FALSE, NULL, 9, 1, 1, NOW()),
+       (1150, '系统配置', 1000, 2, '/system/config', 'system/config/index', NULL, 'lucide:settings', FALSE, FALSE, FALSE, NULL, 9, 1, 1, NOW()),
        (1151, '查看', 1150, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:get', 1, 1, 1, NOW()),
        (1152, '修改', 1150, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:edit', 2, 1, 1, NOW()),
-       (1170, '安全配置', 1150, 2, '/system/config?tab=security', 'system/config/security/index', NULL, 'safe', FALSE,
-        FALSE, TRUE, NULL, 2, 1, 1, NOW()),
-       (1171, '查询', 1170, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:securityConfig:get', 1, 1, 1, NOW()),
-       (1172, '修改', 1170, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:securityConfig:update', 2, 1, 1,
-        NOW()),
-       (1180, '登录配置', 1150, 2, '/system/config?tab=login', 'system/config/login/index', NULL, 'lock', FALSE, FALSE,
-        TRUE, NULL, 3, 1, 1, NOW()),
-       (1181, '查询', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:loginConfig:get', 1, 1, 1, NOW()),
-       (1182, '修改', 1180, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:loginConfig:update', 2, 1, 1, NOW()),
-       (1190, '邮件配置', 1150, 2, '/system/config?tab=mail', 'system/config/mail/index', NULL, 'email', FALSE, FALSE,
-        TRUE, NULL, 4, 1, 1, NOW()),
-       (1191, '查询', 1190, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:mailConfig:get', 1, 1, 1, NOW()),
-       (1192, '修改', 1190, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:mailConfig:update', 2, 1, 1, NOW()),
-       (1210, '短信配置', 1150, 2, '/system/config?tab=sms', 'system/config/sms/index', NULL, 'message', FALSE, FALSE,
-        TRUE, NULL, 5, 1, 1, NOW()),
-       (1211, '列表', 1210, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsConfig:list', 1, 1, 1, NOW()),
-       (1212, '详情', 1210, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsConfig:get', 2, 1, 1, NOW()),
-       (1213, '新增', 1210, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsConfig:create', 3, 1, 1, NOW()),
-       (1214, '修改', 1210, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsConfig:update', 4, 1, 1, NOW()),
-       (1215, '删除', 1210, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsConfig:delete', 5, 1, 1, NOW()),
-       (1216, '导出', 1210, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsConfig:export', 6, 1, 1, NOW()),
-       (1217, '设为默认配置', 1210, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsConfig:setDefault', 7, 1,
-        1, NOW()),
-       (1230, '存储配置', 1150, 2, '/system/config?tab=storage', 'system/config/storage/index', NULL, 'storage', FALSE,
-        FALSE, TRUE, NULL, 6, 1, 1, NOW()),
-       (1231, '列表', 1230, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:list', 1, 1, 1, NOW()),
-       (1232, '详情', 1230, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:get', 2, 1, 1, NOW()),
-       (1233, '新增', 1230, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:create', 3, 1, 1, NOW()),
-       (1234, '修改', 1230, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:update', 4, 1, 1, NOW()),
-       (1235, '删除', 1230, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:delete', 5, 1, 1, NOW()),
-       (1236, '修改状态', 1230, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:updateStatus', 6, 1, 1,
-        NOW()),
-       (1237, '设为默认存储', 1230, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:storage:setDefault', 7, 1, 1,
-        NOW()),
-       (1250, '客户端配置', 1150, 2, '/system/config?tab=client', 'system/config/client/index', NULL, 'mobile', FALSE,
-        FALSE, TRUE, NULL, 7, 1, 1, NOW()),
-       (1251, '列表', 1250, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:list', 1, 1, 1, NOW()),
-       (1252, '详情', 1250, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:get', 2, 1, 1, NOW()),
-       (1253, '新增', 1250, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:create', 3, 1, 1, NOW()),
-       (1254, '修改', 1250, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:update', 4, 1, 1, NOW()),
-       (1255, '删除', 1250, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:client:delete', 5, 1, 1, NOW()),
-       (2000, '系统监控', 0, 1, '/monitor', 'Layout', '/monitor/online', 'computer', FALSE, FALSE, FALSE, NULL, 2, 1, 1,
-        NOW()),
-       (2010, '在线用户', 2000, 2, '/monitor/online', 'monitor/online/index', NULL, 'user', FALSE, FALSE, FALSE, NULL,
-        1, 1, 1, NOW()),
+       
+       (2000, '系统监控', 0, 1, '/monitor', 'Layout', '/monitor/online', 'computer', FALSE, FALSE, FALSE, NULL, 2, 1, 1, NOW()),
+       (2010, '在线用户', 2000, 2, '/monitor/online', 'monitor/online/index', NULL, 'user', FALSE, FALSE, FALSE, NULL, 1, 1, 1, NOW()),
        (2011, '列表', 2010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:online:list', 1, 1, 1, NOW()),
        (2012, '强退', 2010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:online:kickout', 2, 1, 1, NOW()),
 
-       (2030, '系统日志', 2000, 2, '/monitor/log', 'monitor/log/index', NULL, 'ix:log', FALSE, FALSE, FALSE, NULL, 2, 1,
-        1, NOW()),
+       (2030, '系统日志', 2000, 2, '/monitor/log', 'monitor/log/index', NULL, 'ix:log', FALSE, FALSE, FALSE, NULL, 2, 1, 1, NOW()),
        (2031, '列表', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:list', 1, 1, 1, NOW()),
        (2032, '详情', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:get', 2, 1, 1, NOW()),
        (2033, '导出', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:export', 3, 1, 1, NOW()),
 
-       (2050, '短信日志', 2000, 2, '/system/sms/log', 'monitor/sms/log/index', NULL, 'lucide:message-circle', FALSE,
-        FALSE, FALSE, NULL, 3, 1, 1, NOW()),
+       (2050, '短信日志', 2000, 2, '/system/sms/log', 'monitor/sms/log/index', NULL, 'lucide:message-circle', FALSE, FALSE, FALSE, NULL, 3, 1, 1, NOW()),
        (2051, '列表', 2050, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsLog:list', 1, 1, 1, NOW()),
        (2052, '删除', 2050, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsLog:delete', 2, 1, 1, NOW()),
        (2053, '导出', 2050, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsLog:export', 3, 1, 1, NOW());
 
 -- 初始化默认部门
-INSERT INTO "sys_dept"
-("id", "name", "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time")
+INSERT INTO "sys_dept" ("id", "name", "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time")
 VALUES (1, 'Xxx科技有限公司', 0, '0', '系统初始部门', 1, 1, TRUE, 1, NOW()),
        (547887852587843590, 'Xxx（天津）科技有限公司', 1, '0,1', NULL, 1, 1, FALSE, 1, NOW()),
        (547887852587843591, '研发部', 547887852587843590, '0,1,547887852587843590', NULL, 1, 1, FALSE, 1, NOW()),
        (547887852587843592, 'UI部', 547887852587843590, '0,1,547887852587843590', NULL, 2, 1, FALSE, 1, NOW()),
        (547887852587843593, '测试部', 547887852587843590, '0,1,547887852587843590', NULL, 3, 1, FALSE, 1, NOW()),
        (547887852587843594, '运维部', 547887852587843590, '0,1,547887852587843590', NULL, 4, 1, FALSE, 1, NOW()),
-       (547887852587843595, '研发一组', 547887852587843591, '0,1,547887852587843590,547887852587843591', NULL, 1, 1,
-        FALSE, 1, NOW()),
-       (547887852587843596, '研发二组', 547887852587843591, '0,1,547887852587843590,547887852587843591', NULL, 2, 2,
-        FALSE, 1, NOW()),
+       (547887852587843595, '研发一组', 547887852587843591, '0,1,547887852587843590,547887852587843591', NULL, 1, 1, FALSE, 1, NOW()),
+       (547887852587843596, '研发二组', 547887852587843591, '0,1,547887852587843590,547887852587843591', NULL, 2, 2, FALSE, 1, NOW()),
 
        (547887852587843597, 'Xxx（四川）科技有限公司', 1, '0,1', NULL, 2, 1, FALSE, 1, NOW()),
        (547887852587843598, '研发部', 547887852587843597, '0,1,547887852587843597', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843599, '研发一组', 547887852587843598, '0,1,547887852587843597,547887852587843598', NULL, 1, 1,
-        FALSE, 1, NOW()),
+       (547887852587843599, '研发一组', 547887852587843598, '0,1,547887852587843597,547887852587843598', NULL, 1, 1, FALSE, 1, NOW()),
 
        (547887852587843600, 'Xxx（江西）科技有限公司', 1, '0,1', NULL, 3, 1, FALSE, 1, NOW()),
        (547887852587843601, '研发部', 547887852587843600, '0,1,547887852587843600', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843602, '研发一组', 547887852587843601, '0,1,547887852587843600,547887852587843601', NULL, 1, 1,
-        FALSE, 1, NOW()),
+       (547887852587843602, '研发一组', 547887852587843601, '0,1,547887852587843600,547887852587843601', NULL, 1, 1, FALSE, 1, NOW()),
 
        (547887852587843603, 'Xxx（江苏）科技有限公司', 1, '0,1', NULL, 4, 1, FALSE, 1, NOW()),
        (547887852587843604, '研发部', 547887852587843603, '0,1,547887852587843603', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843605, '研发一组', 547887852587843604, '0,1,547887852587843603,547887852587843604', NULL, 1, 1,
-        FALSE, 1, NOW()),
+       (547887852587843605, '研发一组', 547887852587843604, '0,1,547887852587843603,547887852587843604', NULL, 1, 1, FALSE, 1, NOW()),
 
        (547887852587843606, 'Xxx（浙江）科技有限公司', 1, '0,1', NULL, 5, 1, FALSE, 1, NOW()),
        (547887852587843607, '研发部', 547887852587843606, '0,1,547887852587843606', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843608, '研发一组', 547887852587843607, '0,1,547887852587843606,547887852587843607', NULL, 1, 1,
-        FALSE, 1, NOW()),
+       (547887852587843608, '研发一组', 547887852587843607, '0,1,547887852587843606,547887852587843607', NULL, 1, 1, FALSE, 1, NOW()),
 
        (547887852587843609, 'Xxx（湖南）科技有限公司', 1, '0,1', NULL, 6, 1, FALSE, 1, NOW()),
        (547887852587843610, '研发部', 547887852587843609, '0,1,547887852587843609', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843611, '研发一组', 547887852587843610, '0,1,547887852587843609,547887852587843610', NULL, 1, 1,
-        FALSE, 1, NOW());
+       (547887852587843611, '研发一组', 547887852587843610, '0,1,547887852587843609,547887852587843610', NULL, 1, 1, FALSE, 1, NOW());
 
 -- 初始化默认角色
 INSERT INTO "sys_role"
@@ -239,7 +169,7 @@ VALUES
 
 
 -- 初始化字典数据
-INSERT INTO "sys_dict" ("dict_type", "value", "label", "extra", "sort", "enabled", "description")
+INSERT INTO "sys_dict" ("dict_type", "value", "label", "ext", "sort", "enabled", "description")
 VALUES
 ('notice_type', '1', '产品新闻', '{"color": "primary"}', 1, true, NULL),
 ('notice_type', '2', '企业动态', '{"color": "success"}', 2, true, NULL),
@@ -251,8 +181,7 @@ VALUES
 ('sms_supplier', 'cloopen', '容联云', '{"color": "success"}', 3, true, NULL);
 
 -- 初始化默认用户和角色关联数据
-INSERT INTO "sys_user_role"
-("id", "user_id", "role_id")
+INSERT INTO "sys_user_role" ("id", "user_id", "role_id")
 VALUES
 (1, 1, 1),
 (2, 801822, 547888897925840927),
@@ -270,8 +199,7 @@ VALUES
 (14, 801834, 547888897925840928);
 
 -- 初始化默认角色和菜单关联数据
-INSERT INTO "sys_role_menu"
-("role_id", "menu_id")
+INSERT INTO "sys_role_menu" ("role_id", "menu_id")
 VALUES
 (547888897925840927, 1000),
 (547888897925840927, 1010),
@@ -291,11 +219,6 @@ VALUES
 (547888897925840928, 2023);
 
 -- 初始化默认角色和部门关联数据
-INSERT INTO "sys_role_dept" ("role_id", "dept_id") VALUES (547888897925840927, 547887852587843593);
-
--- 初始化默认存储
-INSERT INTO "sys_storage"
-("id", "name", "code", "type", "access_key", "secret_key", "endpoint", "bucket_name", "domain", "description", "is_default", "sort", "status", "create_user", "create_time")
-VALUES
-(1, '开发环境', 'local_dev', 1, NULL, NULL, NULL, 'C:/continew-admin/data/file/', 'http://localhost:8000/file/', '本地存储', true, 1, 1, 1, NOW()),
-(2, '生产环境', 'local_prod', 1, NULL, NULL, NULL, '../data/file/', 'http://api.continew.top/file/', '本地存储', false, 2, 2, 1, NOW());
+INSERT INTO "sys_role_dept" ("role_id", "dept_id") 
+VALUES 
+(547888897925840927, 547887852587843593);

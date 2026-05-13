@@ -15,8 +15,8 @@ import top.wyhao.admin.tenant.model.resp.TenantResp;
 import top.wyhao.admin.tenant.service.TenantService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.IdResp;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
@@ -93,8 +93,8 @@ public class TenantController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping
-    public IdResp<Long> create(@RequestBody @Valid TenantReq req) {
-        return new IdResp<>(tenantService.create(req));
+    public IdResult<Long> create(@RequestBody @Valid TenantReq req) {
+        return new IdResult<>(tenantService.create(req));
     }
 
     /**
@@ -132,7 +132,7 @@ public class TenantController {
      */
     @Operation(summary = "查询字典列表", description = "查询字典列表（下拉选项等场景）")
     @GetMapping("/dict")
-    public List<LabelValueResp> dict(@Valid TenantQuery query, @Valid SortQuery sortQuery) {
+    public List<LabelValueResult> dict(@Valid TenantQuery query, @Valid SortQuery sortQuery) {
         return tenantService.dict(query, sortQuery);
     }
 }

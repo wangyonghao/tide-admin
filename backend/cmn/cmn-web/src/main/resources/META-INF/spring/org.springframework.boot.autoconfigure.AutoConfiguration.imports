@@ -1,5 +1,5 @@
-top.wyhao.starter.web.config.RateLimiterAutoConfiguration
-top.wyhao.starter.web.config.WebMvcAutoConfiguration
-top.wyhao.starter.web.config.CorsAutoConfiguration
-top.wyhao.starter.web.config.UndertowAutoConfiguration
-top.wyhao.starter.web.config.SensitiveWordsAutoConfiguration
+top.wyhao.starter.web.config.UndertowConfig
+top.wyhao.starter.web.config.WebMvcConfig
+top.wyhao.starter.web.config.CorsConfig
+top.wyhao.starter.web.config.SensitiveWordsConfig
+top.wyhao.starter.web.config.RateLimiterConfig

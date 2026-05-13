@@ -3,11 +3,8 @@ package top.wyhao.admin.tenant.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.starter.data.entity.BaseDO;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.web.core.annotation.DictModel;
-
-import java.io.Serial;
+import top.wyhao.starter.data.entity.BaseDO;
 
 /**
  * 套餐实体
@@ -17,13 +14,8 @@ import java.io.Serial;
  * @since 2024/11/26 11:25
  */
 @Data
-@DictModel
 @TableName("tenant_package")
 public class PackageDO extends BaseDO {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     /**
      * 名称
      */

@@ -31,7 +31,7 @@ The rules are consistent with [Vite Env Variables and Modes](https://vitejs.dev/
 
 ```bash [.env]
 # Application title
-VITE_APP_TITLE=Vben Admin
+VITE_APP_TITLE=WYH Admin
 
 # Application namespace, used as a prefix for caching, store, etc., to ensure isolation
 VITE_APP_NAMESPACE=vben-web-antd

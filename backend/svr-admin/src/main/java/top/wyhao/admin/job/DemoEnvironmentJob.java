@@ -11,9 +11,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.open.mapper.AppMapper;
 import top.wyhao.admin.open.model.entity.AppDO;
-import top.wyhao.admin.system.model.entity.*;
-import top.wyhao.admin.system.model.entity.user.UserDO;
-import top.wyhao.admin.system.model.entity.user.UserSocialDO;
+import top.wyhao.admin.system.entity.*;
+import top.wyhao.admin.system.entity.user.UserDO;
+import top.wyhao.admin.system.entity.user.UserSocialDO;
 import top.wyhao.admin.system.mapper.*;
 import top.wyhao.admin.system.mapper.user.UserMapper;
 import top.wyhao.admin.system.mapper.user.UserSocialMapper;
@@ -38,7 +38,6 @@ import java.util.function.BooleanSupplier;
 public class DemoEnvironmentJob {
 
     private final DictMapper dictMapper;
-    private final StorageMapper storageMapper;
     private final NoticeMapper noticeMapper;
     private final NoticeLogMapper noticeLogMapper;
     private final MessageMapper messageMapper;
@@ -73,10 +72,8 @@ public class DemoEnvironmentJob {
             SnailJobLog.REMOTE.info("定时任务 [重置演示环境数据] 开始执行。");
             // 检测待清理数据
             SnailJobLog.REMOTE.info("开始检测演示环境待清理数据项，请稍候...");
-            Long dictCount = dictMapper.lambdaQuery().gt(DictDO::getId, DELETE_FLAG).count();
+            Long dictCount = dictMapper.lambdaQuery().gt(SysDict::getId, DELETE_FLAG).count();
             this.log(dictCount, "字典");
-            Long storageCount = storageMapper.lambdaQuery().gt(StorageDO::getId, DELETE_FLAG).count();
-            this.log(storageCount, "存储");
             Long noticeCount = noticeMapper.lambdaQuery().gt(NoticeDO::getId, DELETE_FLAG).count();
             this.log(noticeCount, "公告");
             Long messageCount = messageMapper.lambdaQuery().count();
@@ -108,10 +105,7 @@ public class DemoEnvironmentJob {
             packageMenuMapper.lambdaUpdate().remove();
             // 清理具体数据
             this.clean(dictCount, "字典", CacheConstants.DICT_KEY_PREFIX, () -> dictMapper.lambdaUpdate()
-                .gt(DictDO::getId, DELETE_FLAG)
-                .remove());
-            this.clean(storageCount, "存储", null, () -> storageMapper.lambdaUpdate()
-                .gt(StorageDO::getId, DELETE_FLAG)
+                .gt(SysDict::getId, DELETE_FLAG)
                 .remove());
             this.clean(noticeCount, "公告", null, () -> noticeMapper.lambdaUpdate()
                 .gt(NoticeDO::getId, DELETE_FLAG)

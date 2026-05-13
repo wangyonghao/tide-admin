@@ -5,9 +5,9 @@ import com.alicp.jetcache.anno.Cached;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.starter.core.constant.CacheConstants;
-import top.wyhao.admin.system.model.entity.DictDO;
+import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.starter.data.mapper.BaseMapper;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
  * @since 2023/9/11 21:29
  */
 @Mapper
-public interface DictMapper extends BaseMapper<DictDO> {
+public interface DictMapper extends BaseMapper<SysDict> {
 
     /**
      * 根据字典类型查询字典列表
@@ -27,5 +27,5 @@ public interface DictMapper extends BaseMapper<DictDO> {
      * @return 字典列表
      */
     @Cached(key = "#dictType", name = CacheConstants.DICT_KEY_PREFIX)
-    List<LabelValueResp<String>> listByDictType(@Param("dictType") String dictType);
+    List<LabelValueResult<String>> listByDictType(@Param("dictType") String dictType);
 }

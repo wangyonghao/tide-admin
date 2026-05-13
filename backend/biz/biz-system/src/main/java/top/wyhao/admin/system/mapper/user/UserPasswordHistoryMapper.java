@@ -3,7 +3,7 @@ package top.wyhao.admin.system.mapper.user;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.model.entity.user.UserPasswordHistoryDO;
+import top.wyhao.admin.system.entity.user.UserPasswordHistoryDO;
 import top.wyhao.starter.data.mapper.BaseMapper;
 
 /**

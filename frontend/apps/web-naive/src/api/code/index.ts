@@ -1,7 +1,7 @@
 import type { PageQuery } from '#/types/api';
 import type { Option } from '#/types/global';
 
-import { requestClient as http } from '#/api/request';
+import  http  from '#/api/http';
 
 // ========== API 定义 ==========
 /** 查询代码生成列表 */
@@ -30,15 +30,14 @@ export function genPreview(tableNames: Array<string>) {
 }
 /** 生成代码 */
 export function downloadCode(tableNames: Array<string>) {
-  return http.request(`/code/generator/${tableNames}/download`, {
-    method: 'post',
+  return http.post(`/code/generator/${tableNames}/download`, {
     responseType: 'blob',
     responseReturn: 'raw',
   });
 }
 /** 生成代码 */
 export function generateCode(tableNames: Array<string>) {
-  return http.request(`/code/generator/${tableNames}`, { method: 'post' });
+  return http.post(`/code/generator/${tableNames}`);
 }
 /** 查询字典列表 */
 export function listFieldConfigDict() {

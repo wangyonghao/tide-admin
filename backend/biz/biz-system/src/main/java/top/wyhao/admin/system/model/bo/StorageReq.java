@@ -4,14 +4,12 @@ package top.wyhao.admin.system.model.bo;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
+import top.wyhao.admin.system.model.validation.ValidationGroup;
 import top.wyhao.starter.core.constant.RegexConstants;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.admin.system.model.enums.StorageType;
-import top.wyhao.admin.system.model.validation.ValidationGroup;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -44,13 +42,6 @@ public class StorageReq implements Serializable {
     @NotBlank(message = "编码不能为空")
     @Pattern(regexp = RegexConstants.GENERAL_CODE, message = "编码长度为 2-30 个字符，支持大小写字母、数字、下划线，以字母开头")
     private String code;
-
-    /**
-     * 类型
-     */
-    @Schema(description = "类型", example = "2")
-    @NotNull(message = "类型无效")
-    private StorageType type;
 
     /**
      * Access Key

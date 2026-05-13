@@ -2,7 +2,7 @@
 package top.wyhao.admin.system.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import top.wyhao.admin.system.model.entity.MessageLogDO;
+import top.wyhao.admin.system.entity.MessageLogDO;
 import top.wyhao.starter.data.mapper.BaseMapper;
 
 /**

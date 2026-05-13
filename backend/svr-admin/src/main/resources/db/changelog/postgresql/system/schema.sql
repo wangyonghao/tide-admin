@@ -241,28 +241,33 @@ CREATE TABLE IF NOT EXISTS "sys_dict"
     "dict_type"   varchar(100) NOT NULL,
     "value"       varchar(255) NOT NULL,
     "label"       varchar(255) NOT NULL,
-    "extra"       jsonb        DEFAULT NULL,
+    "ext"         jsonb        DEFAULT NULL,
     "sort"        int4         DEFAULT 0,
     "enabled"     bool         DEFAULT true,
     "description" varchar(500) DEFAULT NULL,
-    "created_at"  timestamp    DEFAULT CURRENT_TIMESTAMP,
-    "updated_at"  timestamp    DEFAULT CURRENT_TIMESTAMP,
+    "create_time" timestamp    DEFAULT CURRENT_TIMESTAMP,
+    "create_user" int8,
+    "update_time" timestamp    DEFAULT CURRENT_TIMESTAMP,
+    "update_user" int8,
     CONSTRAINT "uk_dict_type_value" UNIQUE ("dict_type", "value")
 );
 -- 索引
 CREATE INDEX "idx_dict_type_sort" ON "sys_dict" ("dict_type", "sort");
-CREATE INDEX "idx_dict_extra_jsonb" ON "sys_dict" USING gin ("extra");
+CREATE INDEX "idx_dict_ext_jsonb" ON "sys_dict" USING gin ("ext");
 
 COMMENT ON COLUMN "sys_dict"."id" IS 'ID';
 COMMENT ON COLUMN "sys_dict"."dict_type" IS '字典类型';
 COMMENT ON COLUMN "sys_dict"."value" IS '字典值';
 COMMENT ON COLUMN "sys_dict"."label" IS '字典标签';
-COMMENT ON COLUMN "sys_dict"."extra" IS '扩展信息(JSON)';
+COMMENT ON COLUMN "sys_dict"."ext" IS '扩展信息(JSON)';
 COMMENT ON COLUMN "sys_dict"."sort" IS '排序';
 COMMENT ON COLUMN "sys_dict"."enabled" IS '是否启用';
 COMMENT ON COLUMN "sys_dict"."description" IS '描述';
-COMMENT ON COLUMN "sys_dict"."created_at" IS '创建时间';
-COMMENT ON COLUMN "sys_dict"."updated_at" IS '更新时间';
+COMMENT ON COLUMN "sys_dict"."create_time" IS '创建时间';
+COMMENT ON COLUMN "sys_dict"."update_time" IS '更新时间';
+COMMENT ON COLUMN "sys_dict"."create_user" IS '创建人';
+COMMENT ON COLUMN "sys_dict"."update_user" IS '更新人';
+COMMENT ON TABLE "sys_dict" IS '字典表';
 
 DROP TABLE IF EXISTS sys_operation_log;
 CREATE TABLE sys_operation_log
@@ -380,96 +385,48 @@ COMMENT ON COLUMN "sys_notice_log"."user_id" IS '用户ID';
 COMMENT ON COLUMN "sys_notice_log"."read_time" IS '读取时间';
 COMMENT ON TABLE "sys_notice_log" IS '公告日志表';
 
-CREATE TABLE IF NOT EXISTS "sys_storage"
-(
-    "id"          int8         NOT NULL,
-    "name"        varchar(100) NOT NULL,
-    "code"        varchar(30)  NOT NULL,
-    "type"        int2         NOT NULL DEFAULT 1,
-    "access_key"  varchar(255)          DEFAULT NULL,
-    "secret_key"  varchar(255)          DEFAULT NULL,
-    "endpoint"    varchar(255)          DEFAULT NULL,
-    "bucket_name" varchar(255) NOT NULL,
-    "domain"      varchar(255)          DEFAULT NULL,
-    "description" varchar(200)          DEFAULT NULL,
-    "is_default"  bool         NOT NULL DEFAULT false,
-    "sort"        int4         NOT NULL DEFAULT 999,
-    "status"      int2         NOT NULL DEFAULT 1,
-    "create_user" int8         NOT NULL,
-    "create_time" timestamp    NOT NULL,
-    "update_user" int8                  DEFAULT NULL,
-    "update_time" timestamp             DEFAULT NULL,
-    PRIMARY KEY ("id")
-);
-CREATE UNIQUE INDEX "uk_storage_code" ON "sys_storage" ("code");
-CREATE INDEX "idx_storage_create_user" ON "sys_storage" ("create_user");
-CREATE INDEX "idx_storage_update_user" ON "sys_storage" ("update_user");
-COMMENT ON COLUMN "sys_storage"."id" IS 'ID';
-COMMENT ON COLUMN "sys_storage"."name" IS '名称';
-COMMENT ON COLUMN "sys_storage"."code" IS '编码';
-COMMENT ON COLUMN "sys_storage"."type" IS '类型（1：本地存储；2：对象存储）';
-COMMENT ON COLUMN "sys_storage"."access_key" IS 'Access Key';
-COMMENT ON COLUMN "sys_storage"."secret_key" IS 'Secret Key';
-COMMENT ON COLUMN "sys_storage"."endpoint" IS 'Endpoint';
-COMMENT ON COLUMN "sys_storage"."bucket_name" IS 'Bucket';
-COMMENT ON COLUMN "sys_storage"."domain" IS '域名';
-COMMENT ON COLUMN "sys_storage"."description" IS '描述';
-COMMENT ON COLUMN "sys_storage"."is_default" IS '是否为默认存储';
-COMMENT ON COLUMN "sys_storage"."sort" IS '排序';
-COMMENT ON COLUMN "sys_storage"."status" IS '状态（1：启用；2：禁用）';
-COMMENT ON COLUMN "sys_storage"."create_user" IS '创建人';
-COMMENT ON COLUMN "sys_storage"."create_time" IS '创建时间';
-COMMENT ON COLUMN "sys_storage"."update_user" IS '修改人';
-COMMENT ON COLUMN "sys_storage"."update_time" IS '修改时间';
-COMMENT ON TABLE "sys_storage" IS '存储表';
-
 CREATE TABLE IF NOT EXISTS "sys_file"
 (
-    "id"                 int8         NOT NULL,
-    "name"               varchar(255) NOT NULL,
-    "original_name"      varchar(255) NOT NULL,
-    "size"               int8                  DEFAULT NULL,
-    "parent_path"        varchar(512) NOT NULL DEFAULT '/',
-    "path"               varchar(512) NOT NULL,
-    "extension"          varchar(100)          DEFAULT NULL,
-    "content_type"       varchar(255)          DEFAULT NULL,
-    "type"               int2         NOT NULL DEFAULT 1,
-    "sha256"             varchar(256) NOT NULL,
-    "metadata"           text                  DEFAULT NULL,
-    "thumbnail_name"     varchar(255)          DEFAULT NULL,
-    "thumbnail_size"     int8                  DEFAULT NULL,
-    "thumbnail_metadata" text                  DEFAULT NULL,
-    "storage_id"         int8         NOT NULL,
-    "create_user"        int8         NOT NULL,
-    "create_time"        timestamp    NOT NULL,
-    "update_user"        int8                  DEFAULT NULL,
-    "update_time"        timestamp             DEFAULT NULL,
+    "id"              SERIAL8      NOT NULL,
+    "file_name"       varchar(255) NOT NULL,
+    "file_type"       varchar(255)          DEFAULT NULL,
+    "file_size"       int8                  DEFAULT NULL,
+    "file_extension"  varchar(100)          DEFAULT NULL,
+    "oss_file_name"   varchar(255) NOT NULL,
+    "oss_platform"    varchar(50)  NOT NULL,
+    "oss_path"        varchar(512) NOT NULL,
+    "oss_url"         varchar(1024)         DEFAULT NULL,
+    "biz_id"          int8                  DEFAULT NULL,
+    "biz_type"        varchar(50)           DEFAULT NULL,
+    "status"          varchar(20)  NOT NULL DEFAULT 'AVAILABLE',
+    "create_user"     int8         NOT NULL,
+    "create_time"     timestamp    NOT NULL,
+    "update_user"     int8                  DEFAULT NULL,
+    "update_time"     timestamp             DEFAULT NULL,
     PRIMARY KEY ("id")
 );
-CREATE INDEX "idx_file_type" ON "sys_file" ("type");
-CREATE INDEX "idx_file_sha256" ON "sys_file" ("sha256");
-CREATE INDEX "idx_file_storage_id" ON "sys_file" ("storage_id");
+CREATE INDEX "idx_file_oss_platform" ON "sys_file" ("oss_platform");
+CREATE INDEX "idx_file_biz" ON "sys_file" ("biz_id", "biz_type");
+CREATE INDEX "idx_file_status" ON "sys_file" ("status");
 CREATE INDEX "idx_file_create_user" ON "sys_file" ("create_user");
 COMMENT ON COLUMN "sys_file"."id" IS 'ID';
-COMMENT ON COLUMN "sys_file"."name" IS '名称';
-COMMENT ON COLUMN "sys_file"."original_name" IS '原始名称';
-COMMENT ON COLUMN "sys_file"."size" IS '大小（字节）';
-COMMENT ON COLUMN "sys_file"."parent_path" IS '上级目录';
-COMMENT ON COLUMN "sys_file"."path" IS '路径';
-COMMENT ON COLUMN "sys_file"."extension" IS '扩展名';
-COMMENT ON COLUMN "sys_file"."content_type" IS '内容类型';
-COMMENT ON COLUMN "sys_file"."type" IS '类型（0: 目录；1：其他；2：图片；3：文档；4：视频；5：音频）';
-COMMENT ON COLUMN "sys_file"."sha256" IS 'SHA256值';
-COMMENT ON COLUMN "sys_file"."metadata" IS '元数据';
-COMMENT ON COLUMN "sys_file"."thumbnail_name" IS '缩略图名称';
-COMMENT ON COLUMN "sys_file"."thumbnail_size" IS '缩略图大小（字节)';
-COMMENT ON COLUMN "sys_file"."thumbnail_metadata" IS '缩略图元数据';
-COMMENT ON COLUMN "sys_file"."storage_id" IS '存储ID';
+COMMENT ON COLUMN "sys_file"."file_name" IS '原始文件名';
+COMMENT ON COLUMN "sys_file"."file_type" IS '文件类型（MIME类型）';
+COMMENT ON COLUMN "sys_file"."file_size" IS '文件大小（字节）';
+COMMENT ON COLUMN "sys_file"."file_extension" IS '文件后缀';
+COMMENT ON COLUMN "sys_file"."oss_file_name" IS 'OSS文件名';
+COMMENT ON COLUMN "sys_file"."oss_platform" IS '存储平台（local、minio、aliyun）';
+COMMENT ON COLUMN "sys_file"."oss_path" IS 'OSS文件路径';
+COMMENT ON COLUMN "sys_file"."oss_url" IS 'OSS文件URL';
+COMMENT ON COLUMN "sys_file"."biz_id" IS '关联业务单号';
+COMMENT ON COLUMN "sys_file"."biz_type" IS '关联业务类型（avatar、attachment、contract等）';
+COMMENT ON COLUMN "sys_file"."status" IS '文件状态（UPLOADING:上传中、AVAILABLE:可用、INFECTED:病毒感染、DELETED:已删除）';
 COMMENT ON COLUMN "sys_file"."create_user" IS '创建人';
 COMMENT ON COLUMN "sys_file"."create_time" IS '创建时间';
 COMMENT ON COLUMN "sys_file"."update_user" IS '修改人';
 COMMENT ON COLUMN "sys_file"."update_time" IS '修改时间';
 COMMENT ON TABLE "sys_file" IS '文件表';
+
 
 CREATE TABLE IF NOT EXISTS "sys_sms_config"
 (

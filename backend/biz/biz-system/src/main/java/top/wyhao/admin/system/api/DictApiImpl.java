@@ -5,7 +5,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.starter.web.excel.DictApi;
 import top.wyhao.admin.system.service.DictService;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -22,12 +22,12 @@ public class DictApiImpl implements DictApi {
     private final DictService dictService;
 
     @Override
-    public List<LabelValueResp<String>> listByDictType(String dictType) {
+    public List<LabelValueResult<String>> listByDictType(String dictType) {
         return dictService.listByDictType(dictType);
     }
 
     @Override
-    public List<LabelValueResp> listAll() {
+    public List<LabelValueResult> listAll() {
         return List.of(); // TODO(WYH) 待实现
     }
 }

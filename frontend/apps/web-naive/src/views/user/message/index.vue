@@ -12,8 +12,7 @@ import { useRoute, useRouter } from 'vue-router';
 import { Card, CardContent, ColPage, RowPage } from '@vben/common-ui';
 
 import {
-  getUnreadMessageCount,
-  getUnreadNoticeCount,
+  userMessageApi,
 } from '#/api/system/user-message';
 import { useDevice } from '#/hooks';
 import mittBus from '#/utils/mitt';

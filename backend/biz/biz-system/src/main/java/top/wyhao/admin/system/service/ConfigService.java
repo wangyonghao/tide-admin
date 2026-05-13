@@ -6,6 +6,9 @@ import top.wyhao.admin.system.model.bo.ConfigRequest;
 import top.wyhao.admin.system.model.query.ConfigQuery;
 import top.wyhao.admin.system.model.vo.ConfigResult;
 import top.wyhao.admin.system.model.vo.config.*;
+import top.wyhao.starter.core.model.MailConfig;
+import top.wyhao.starter.core.spi.MailConfigProvider;
+import top.wyhao.starter.core.spi.OSSConfigProvider;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
@@ -13,12 +16,12 @@ import top.wyhao.starter.web.core.model.SortQuery;
 import java.util.List;
 
 /**
- * 系统配置业务接口
+ * 系统配置业务
  *
  * @author Yonghao Wang
  * @since 2024/04/26
  */
-public interface ConfigService {
+public interface ConfigService extends MailConfigProvider, OSSConfigProvider {
 
     /**
      * 分页查询列表
@@ -92,14 +95,14 @@ public interface ConfigService {
      *
      * @return 邮件配置
      */
-    EmailConfigVO getEmailConfig();
+    MailConfig getMailConfig();
 
     /**
      * 更新邮件配置
      *
      * @param config 邮件配置
      */
-    void updateEmailConfig(EmailConfigVO config);
+    void updateMailConfig(MailConfig config);
 
     /**
      * 获取短信配置

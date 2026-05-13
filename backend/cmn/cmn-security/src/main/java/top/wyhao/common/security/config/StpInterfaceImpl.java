@@ -3,7 +3,7 @@ package top.wyhao.common.security.config;
 
 import cn.dev33.satoken.stp.StpInterface;
 import lombok.RequiredArgsConstructor;
-import top.wyhao.starter.core.auth.PermissionProvider;
+import top.wyhao.starter.core.spi.PermissionProvider;
 
 import java.util.List;
 

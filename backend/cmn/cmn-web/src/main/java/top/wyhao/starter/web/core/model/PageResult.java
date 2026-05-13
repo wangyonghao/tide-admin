@@ -98,9 +98,6 @@ public class PageResult<T> {
     public static <T, V> PageResult<V> build(com.baomidou.mybatisplus.extension.plugins.pagination.Page<T> page, java.util.function.Function<List<T>, List<V>> converter) {
         PageResult<V> result = new PageResult<>();
         result.setTotal(page.getTotal());
-//        result.setPages(page.getPages());
-//        result.setPageNum(page.getCurrent());
-//        result.setPageSize(page.getSize());
         result.setList(converter.apply(page.getRecords()));
         return result;
     }

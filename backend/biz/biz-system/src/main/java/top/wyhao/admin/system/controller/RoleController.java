@@ -24,7 +24,7 @@ import top.wyhao.starter.core.model.R;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.IdResp;
+import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;
 
@@ -88,8 +88,8 @@ public class RoleController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping("/system/role")
-    public R<IdResp<Long>> create(@RequestBody @Valid RoleRequest req) {
-        return R.ok(new IdResp<>(roleService.create(req)));
+    public R<IdResult<Long>> create(@RequestBody @Valid RoleRequest req) {
+        return R.ok(new IdResult<>(roleService.create(req)));
     }
 
     /**

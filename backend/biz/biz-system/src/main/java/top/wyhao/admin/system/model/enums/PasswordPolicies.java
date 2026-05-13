@@ -8,7 +8,7 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import top.wyhao.admin.system.model.entity.user.UserDO;
+import top.wyhao.admin.system.entity.user.UserDO;
 import top.wyhao.admin.system.model.vo.config.SecurityConfigVO;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.UserPasswordHistoryService;

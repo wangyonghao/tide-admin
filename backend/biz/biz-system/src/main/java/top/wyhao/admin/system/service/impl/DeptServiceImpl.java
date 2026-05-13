@@ -4,11 +4,7 @@ package top.wyhao.admin.system.service.impl;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.convert.Convert;
-import cn.hutool.core.map.MapUtil;
-import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -17,14 +13,13 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.model.bo.DeptReq;
-import top.wyhao.admin.system.model.entity.DeptDO;
+import top.wyhao.admin.system.entity.DeptDO;
 import top.wyhao.admin.system.model.query.DeptQuery;
 import top.wyhao.admin.system.model.vo.DeptResp;
 import top.wyhao.admin.system.mapper.DeptMapper;
 import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.UserService;
-import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
@@ -32,10 +27,8 @@ import top.wyhao.starter.data.enums.DatabaseType;
 import top.wyhao.starter.data.util.DBMetaUtils;
 import top.wyhao.starter.data.util.QueryWrapperUtil;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.annotation.DictModel;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
 
 import javax.sql.DataSource;
 import java.util.*;
@@ -166,44 +159,6 @@ public class DeptServiceImpl implements DeptService {
     public void export(DeptQuery query, HttpServletResponse response) {
         List<DeptResp> list = this.list(query, DeptResp.class);
         ExcelUtils.export(list, "导出数据", DeptResp.class, response);
-    }
-
-    @Override
-    public List<LabelValueResp> dict(DeptQuery query) {
-        DictModel dictModel = DeptDO.class.getDeclaredAnnotation(DictModel.class);
-        BizAssert.isNull(dictModel, "请添加并配置 @DictModel 字典结构信息");
-        List<DeptResp> list = this.list(query);
-        // 解析映射
-        List<LabelValueResp> respList = new ArrayList<>(list.size());
-        String labelKey = dictModel.labelKey().contains(StringConstants.DOT)
-            ? CharSequenceUtil.subAfter(dictModel.labelKey(), StringConstants.DOT, true)
-            : dictModel.labelKey();
-        String valueKey = dictModel.valueKey().contains(StringConstants.DOT)
-            ? CharSequenceUtil.subAfter(dictModel.valueKey(), StringConstants.DOT, true)
-            : dictModel.valueKey();
-        List<String> extraFieldNames = Arrays.stream(dictModel.extraKeys())
-            .map(extraKey -> extraKey.contains(StringConstants.DOT)
-                ? CharSequenceUtil.subAfter(extraKey, StringConstants.DOT, true)
-                : extraKey)
-            .map(CharSequenceUtil::toCamelCase)
-            .toList();
-        for (DeptResp entity : list) {
-            LabelValueResp<Object> labelValueResp = new LabelValueResp<>();
-            labelValueResp.setLabel(Convert.toStr(ReflectUtil.getFieldValue(entity, CharSequenceUtil
-                .toCamelCase(labelKey))));
-            labelValueResp.setValue(ReflectUtil.getFieldValue(entity, CharSequenceUtil.toCamelCase(valueKey)));
-            respList.add(labelValueResp);
-            if (CollUtil.isEmpty(extraFieldNames)) {
-                continue;
-            }
-            // 额外数据
-            Map<String, Object> extraMap = MapUtil.newHashMap(dictModel.extraKeys().length);
-            for (String extraFieldName : extraFieldNames) {
-                extraMap.put(extraFieldName, ReflectUtil.getFieldValue(entity, extraFieldName));
-            }
-            labelValueResp.setExtra(extraMap);
-        }
-        return respList;
     }
 
     /**

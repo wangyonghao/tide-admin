@@ -30,9 +30,9 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.admin.auth.model.vo.CaptchaImageVO;
+import top.wyhao.admin.auth.model.CaptchaImageResult;
 import top.wyhao.admin.config.CaptchaProperties;
-import top.wyhao.admin.system.model.entity.SmsConfigDO;
+import top.wyhao.admin.system.entity.SmsConfigDO;
 import top.wyhao.admin.system.model.vo.config.LoginConfigVO;
 import top.wyhao.admin.system.model.vo.config.SiteConfigVO;
 import top.wyhao.admin.system.service.ConfigService;
@@ -45,10 +45,10 @@ import top.wyhao.starter.core.util.TemplateUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
 import top.wyhao.starter.core.validation.Mobile;
-import top.wyhao.starter.mail.MailUtils;
-import top.wyhao.starter.web.ratelimiter.annotation.RateLimiter;
-import top.wyhao.starter.web.ratelimiter.annotation.RateLimiters;
-import top.wyhao.starter.web.ratelimiter.enums.LimitType;
+import top.wyhao.admin.cmn.mail.MailService;
+import top.wyhao.starter.web.ratelimit.LimitType;
+import top.wyhao.starter.web.ratelimit.RateLimiter;
+import top.wyhao.starter.web.ratelimit.RateLimiters;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -72,6 +72,8 @@ public class CaptchaController {
     private final SmsConfigService smsConfigService;
     private final ConfigService configService;
 
+    private final MailService mailService;
+
     @Operation(summary = "获取行为验证码", description = "获取行为验证码（Base64编码）")
     @GetMapping("/captcha/behavior")
     public Object getBehaviorCaptcha(CaptchaVO captchaReq, HttpServletRequest request) {
@@ -93,16 +95,16 @@ public class CaptchaController {
 
     @Operation(summary = "获取图片验证码", description = "获取图片验证码（Base64编码，带图片格式：data:image/gif;base64）")
     @GetMapping("/captcha/image")
-    public CaptchaImageVO getImageCaptcha() {
+    public CaptchaImageResult getImageCaptcha() {
         LoginConfigVO loginConfigVO = configService.getLoginConfig();
         boolean loginCaptchaEnabled = loginConfigVO.getCaptchaEnabled();
         if (!loginCaptchaEnabled) {
-            return CaptchaImageVO.builder().isEnabled(false).build();
+            return CaptchaImageResult.builder().isEnabled(false).build();
         }
         Captcha captcha = graphicCaptchaService.createCaptchaImage();
         long expireTime = LocalDateTimeUtil.toEpochMilli(LocalDateTime.now().plusSeconds(captchaProperties.getExpirationInSeconds()));
 
-        CaptchaImageVO vo = CaptchaImageVO.builder()
+        CaptchaImageResult vo = CaptchaImageResult.builder()
                 .uuid(IdUtil.fastUUID())
                 .img(captcha.toBase64())
                 .expireTime(expireTime)
@@ -136,7 +138,7 @@ public class CaptchaController {
             @RateLimiter(name = CAPTCHA_KEY, key = "#email", rate = 100, interval = 24, unit = TimeUnit.HOURS, message = "获取验证码操作太频繁，请稍后再试"),
             @RateLimiter(name = CAPTCHA_KEY, key = "#email", rate = 30, interval = 1, unit = TimeUnit.MINUTES, type = LimitType.IP, message = "获取验证码操作太频繁，请稍后再试")})
     public String getMailCaptcha(@NotBlank(message = "邮箱不能为空") @Email(message = "邮箱格式不正确") String email,
-                                    CaptchaVO captchaReq) throws MessagingException {
+                                 CaptchaVO captchaReq) throws MessagingException {
         // 行为验证码校验
         CaptchaService behaviorCaptchaService = SpringUtil.getBean(CaptchaService.class);
         ResponseModel verificationRes = behaviorCaptchaService.verification(captchaReq);
@@ -154,7 +156,7 @@ public class CaptchaController {
                 .set("siteCopyright", site.getSiteCopyright())
                 .set("captcha", captcha)
                 .set("expiration", expirationInMinutes));
-        MailUtils.sendHtml(email, "【%s】邮箱验证码".formatted(applicationProperties.getName()), content);
+        mailService.sendHtml(email, "【%s】邮箱验证码".formatted(applicationProperties.getName()), content);
         // 缓存验证码
         String captchaKey = CAPTCHA_KEY + email;
         RedisUtils.set(captchaKey, captcha, Duration.ofMinutes(expirationInMinutes));

@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.model.entity.RoleDeptDO;
+import top.wyhao.admin.system.entity.RoleDeptDO;
 import top.wyhao.admin.system.mapper.RoleDeptMapper;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.starter.core.util.CollUtils;

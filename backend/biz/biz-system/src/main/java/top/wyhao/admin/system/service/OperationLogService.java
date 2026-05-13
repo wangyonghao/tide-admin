@@ -19,10 +19,7 @@ public interface OperationLogService {
 
     @Async
     @EventListener
-    void log(OperationLog operationLog);
-
-    @Async
-    void recordLoginLog(LoginUser loginUser);
+    void create(OperationLog operationLog);
 
     /**
      * 分页查询列表
@@ -39,7 +36,7 @@ public interface OperationLogService {
      * @param id ID
      * @return 详情信息
      */
-    OperationLogDetailResult get(Long id);
+    OperationLogDetailResult detail(Long id);
 
     /**
      * 导出登录日志

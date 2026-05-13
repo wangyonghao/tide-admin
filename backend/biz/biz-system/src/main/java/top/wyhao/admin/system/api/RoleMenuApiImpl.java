@@ -4,7 +4,7 @@ package top.wyhao.admin.system.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.modules.common.api.system.RoleMenuApi;
-import top.wyhao.admin.system.model.entity.RoleMenuDO;
+import top.wyhao.admin.system.entity.RoleMenuDO;
 import top.wyhao.admin.system.service.RoleMenuService;
 import top.wyhao.starter.core.util.CollUtils;
 

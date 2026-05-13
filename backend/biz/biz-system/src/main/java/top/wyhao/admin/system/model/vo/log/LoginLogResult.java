@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
  * 登录日志响应信息
  *
  * @author Yonghao Wang
- * @since 2026/05/08
+ * @since 2026/5/8
  */
 @Data
 @Schema(description = "登录日志响应信息")

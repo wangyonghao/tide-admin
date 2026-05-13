@@ -10,12 +10,7 @@ import { $t } from '@vben/locales';
 import { NButton, NSpace, NTag, useDialog, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  deleteMessage,
-  listMessage,
-  readAllMessage,
-  readMessage,
-} from '#/api/system/user-message';
+import { userMessageApi } from '#/api/system/user-message';
 import { DictTag } from '#/components/dict';
 import { useDict } from '#/hooks';
 import mittBus from '#/utils/mitt';
@@ -110,7 +105,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
       },
       ajax: {
         query: async ({ page }, formValues) => {
-          const res = await listMessage({
+          const res = await userMessageApi.list({
             page: page.currentPage,
             size: page.pageSize,
             ...formValues,
@@ -162,7 +157,7 @@ const onDelete = () => {
   if (selectedKeys.length === 0) {
     return message.warning('请选择数据');
   }
-  deleteMessage(selectedKeys);
+  userMessageApi.delete(selectedKeys);
   tableGridApi.reload();
 };
 
@@ -172,7 +167,7 @@ const onRead = async () => {
   if (selectedKeys.length === 0) {
     return message.warning('请选择数据');
   }
-  await readMessage(selectedKeys);
+  await userMessageApi.read(selectedKeys);
   message.success('操作成功');
   tableGridApi.reload();
 };
@@ -192,7 +187,7 @@ const onReadAll = async () => {
 
 // 全部已读
 const readAll = async () => {
-  await readAllMessage();
+  await userMessageApi.readAll();
   message.success('操作成功');
   tableGridApi.reload();
 };

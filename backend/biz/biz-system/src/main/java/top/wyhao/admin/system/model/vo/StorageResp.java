@@ -1,16 +1,11 @@
 
 package top.wyhao.admin.system.model.vo;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Mapping;
-import cn.crane4j.annotation.condition.ConditionOnPropertyNotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.admin.system.model.enums.StorageType;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -39,7 +34,6 @@ public class StorageResp implements Serializable {
      * 创建人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "createUserString"))
     private Long createUser;
 
     /**
@@ -65,8 +59,6 @@ public class StorageResp implements Serializable {
      * 修改人
      */
     @JsonIgnore
-    @ConditionOnPropertyNotNull
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "updateUserString"))
     private Long updateUser;
 
     /**
@@ -103,18 +95,18 @@ public class StorageResp implements Serializable {
      * 类型
      */
     @Schema(description = "类型", example = "2")
-    private StorageType type;
+    private String storageType;
 
     /**
      * Access Key
      */
-    @Schema(description = "Access Key", example = "")
+    @Schema(description = "Access Key")
     private String accessKey;
 
     /**
      * Endpoint
      */
-    @Schema(description = "Endpoint", example = "")
+    @Schema(description = "Endpoint")
     private String endpoint;
 
     /**

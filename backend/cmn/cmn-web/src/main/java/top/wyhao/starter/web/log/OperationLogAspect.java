@@ -19,10 +19,14 @@ package top.wyhao.starter.web.log;
 import cn.hutool.extra.spring.SpringUtil;
 import lombok.extern.slf4j.Slf4j;
 import org.aspectj.lang.JoinPoint;
-import org.aspectj.lang.annotation.*;
+import org.aspectj.lang.annotation.AfterReturning;
+import org.aspectj.lang.annotation.AfterThrowing;
+import org.aspectj.lang.annotation.Aspect;
+import org.aspectj.lang.annotation.Before;
 import org.springframework.util.StopWatch;
-import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.starter.web.ServletUtils;
+import top.wyhao.starter.core.UserContextHolder;
+import top.wyhao.starter.core.model.LoginUser;
+import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.LocalDateTime;
 
@@ -77,9 +81,10 @@ public class OperationLogAspect {
             operationLog.setObjectId(objectId);
             operationLog.setObjectType(controllerLog.objectType());
             operationLog.setOperation(controllerLog.operationType());
-            if (LoginUtil.isLogin()) {
-                operationLog.setOperatorId(LoginUtil.getUserId());
-                operationLog.setOperatorName(LoginUtil.getUsername());
+            if (UserContextHolder.getCurrentUser() != null) {
+                LoginUser user = UserContextHolder.getCurrentUser();
+                operationLog.setOperatorId(user.getUserId());
+                operationLog.setOperatorName(user.getUsername());
             }
             operationLog.setOperatorIp(ip);
             operationLog.setOperateTime(LocalDateTime.now());
@@ -95,7 +100,6 @@ public class OperationLogAspect {
         } catch (Exception ex) {
             log.error("记录操作日志异常：", ex);
         } finally {
-            // 清理ThreadLocal防止内存泄漏
             START_TIME.remove();
         }
     }

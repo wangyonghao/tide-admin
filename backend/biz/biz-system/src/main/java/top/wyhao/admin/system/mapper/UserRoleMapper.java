@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.model.entity.UserRoleDO;
+import top.wyhao.admin.system.entity.UserRoleDO;
 import top.wyhao.admin.system.model.vo.role.RoleUserResult;
 import top.wyhao.starter.data.mapper.BaseMapper;
 

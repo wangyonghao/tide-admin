@@ -1,4 +1,67 @@
-import { requestClient } from '#/api/request';
+import http from '#/api/http';
+
+/* ==================== API 定义 ==================== */
+export const openAppApi = {
+  /**
+   * 应用列表查询
+   */
+  list: (params: OpenAppApi.AppQuery) => {
+    return http.get<{
+      current: number;
+      records: OpenAppApi.AppResp[];
+      size: number;
+      total: number;
+    }>('/open/app', { params });
+  },
+  /**
+   * 应用详情查询
+   */
+  detail: (id: string) => {
+    return http.get<OpenAppApi.AppResp>(`/open/app/${id}`);
+  },
+  /**
+   * 新增应用
+   */
+  create: (data: OpenAppApi.AppAddReq) => {
+    return http.post<OpenAppApi.AppResp>('/open/app', data);
+  },
+  /**
+   * 修改应用
+   */
+  update: (id: string, data: OpenAppApi.AppUpdateReq) => {
+    return http.put<OpenAppApi.AppResp>(`/open/app/${id}`, data);
+  },
+  /**
+   * 删除应用
+   */
+  delete: (id: string) => {
+    return http.delete(`/open/app/${id}`);
+  },
+  /**
+   * 导出应用
+   */
+  export: (params: OpenAppApi.AppQuery) => {
+    return http.download('/open/app/export', {
+      params,
+    });
+  },
+  /**
+   * 查看密钥
+   */
+  getSecretKey: (id: string) => {
+    return http.get<OpenAppApi.SecretKeyResp>(`/open/app/${id}/secret`);
+  },
+  /**
+   * 重置密钥
+   */
+  resetSecretKey: (id: string) => {
+    return http.patch<OpenAppApi.SecretKeyResp>(
+      `/open/app/${id}/secret`,
+    );
+  },
+};
+
+/* ==================== Schema 定义 ==================== */
 
 export namespace OpenAppApi {
   /**
@@ -72,69 +135,4 @@ export namespace OpenAppApi {
     /** Secret Key */
     secretKey: string;
   }
-}
-
-/**
- * 应用列表查询
- */
-export function getAppList(params: OpenAppApi.AppQuery) {
-  return requestClient.get<{
-    current: number;
-    records: OpenAppApi.AppResp[];
-    size: number;
-    total: number;
-  }>('/open/app', { params });
-}
-
-/**
- * 应用详情查询
- */
-export function getApp(id: string) {
-  return requestClient.get<OpenAppApi.AppResp>(`/open/app/${id}`);
-}
-
-/**
- * 新增应用
- */
-export function addApp(data: OpenAppApi.AppAddReq) {
-  return requestClient.post<OpenAppApi.AppResp>('/open/app', data);
-}
-
-/**
- * 修改应用
- */
-export function updateApp(id: string, data: OpenAppApi.AppUpdateReq) {
-  return requestClient.put<OpenAppApi.AppResp>(`/open/app/${id}`, data);
-}
-
-/**
- * 删除应用
- */
-export function deleteApp(id: string) {
-  return requestClient.delete(`/open/app/${id}`);
-}
-
-/**
- * 导出应用
- */
-export function exportApp(params: OpenAppApi.AppQuery) {
-  return requestClient.download('/open/app/export', {
-    params,
-  });
-}
-
-/**
- * 查看密钥
- */
-export function getSecretKey(id: string) {
-  return requestClient.get<OpenAppApi.SecretKeyResp>(`/open/app/${id}/secret`);
-}
-
-/**
- * 重置密钥
- */
-export function resetSecretKey(id: string) {
-  return requestClient.patch<OpenAppApi.SecretKeyResp>(
-    `/open/app/${id}/secret`,
-  );
 }

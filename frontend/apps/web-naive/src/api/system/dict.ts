@@ -1,100 +1,86 @@
-import type { PageQuery } from '#/types/api';
+import type { PageQuery, PageResult } from '#/types/api';
 
 import http from '#/api/http';
 
-/** 字典类型 */
-export interface DictResp {
-  id: string;
-  name: string;
-  code: string;
-  isBuiltin: boolean;
-  description: string;
-  createUserString: string;
-  createTime: string;
-  updateUserString: string;
-  updateTime: string;
-}
-export interface DictQuery {
-  description?: string;
-  sort: Array<string>;
-}
-export interface DictItemResp {
-  id: string;
-  label: string;
+/* ==================== API 定义 ==================== */
+export const dictApi = {
+  /** 分页查询字典列表 */
+  page: (query: DictPageQuery) => {
+    return http.get<PageResult<DictResult>>('/system/dict/page', { params: query });
+  },
+  /** 新增字典 */
+  create: (data: DictRequest) => {
+    return http.post('/system/dict', data);
+  },
+  /** 修改字典 */
+  update: (id: number, data: DictRequest) => {
+    return http.put(`/system/dict/${id}`, data);
+  },
+  /** 批量删除字典 */
+  delete: (ids: number[]) => {
+    return http.delete('/system/dict', { data: ids });
+  },
+  /** 清除字典缓存 */
+  clearCache: (dictType: string) => {
+    return http.delete(`/system/dict/cache/${dictType}`);
+  },
+};
+
+/* ==================== Schema 定义 ==================== */
+
+/**
+ * 字典响应参数
+ */
+export interface DictResult {
+  /** ID */
+  id: number;
+  /** 字典类型 */
+  dictType: string;
+  /** 字典值 */
   value: string;
-  color: string;
+  /** 字典标签 */
+  label: string;
+  /** 扩展信息 */
+  ext?: Record<string, any>;
+  /** 排序 */
   sort: number;
-  description: string;
-  status: 1 | 2;
-  dictId: string;
-  createUserString: string;
-  createTime: string;
-  updateUserString: string;
-  updateTime: string;
-  cssClass: string;
-  listClass: string;
-}
-export interface DictItemQuery {
+  /** 是否启用 */
+  enabled: boolean;
+  /** 描述 */
   description?: string;
-  status?: number;
-  sort: Array<string>;
-  dictId: string;
-}
-export interface DictItemPageQuery extends DictItemQuery, PageQuery {}
-
-/** 查询字典列表 */
-export function listDict(query?: DictQuery) {
-  return http.get<DictResp[]>(`/system/dict/list`, { params: query });
 }
 
-/** 查询字典详情 */
-export function getDict(id: number | string) {
-  return http.get<DictResp>(`/system/dict/${id}`);
+/**
+ * 字典查询条件
+ */
+export interface DictQuery {
+  /** 关键词（搜索字典类型、标签、值、描述） */
+  description?: string;
+  /** 字典类型 */
+  dictType?: string;
 }
 
-/** 新增字典 */
-export function addDict(data: any) {
-  return http.post(`/system/dict`, data);
+/**
+ * 字典创建或修改请求参数
+ */
+export interface DictRequest {
+  /** 字典类型 */
+  dictType: string;
+  /** 字典值 */
+  value: string;
+  /** 字典标签 */
+  label: string;
+  /** 扩展信息 */
+  extra?: Record<string, any>;
+  /** 排序 */
+  sort?: number;
+  /** 是否启用 */
+  enabled?: boolean;
+  /** 描述 */
+  description?: string;
 }
 
-/** 修改字典 */
-export function updateDict(data: any, id: string) {
-  return http.put(`/system/dict/${id}`, data);
-}
-
-/** 删除字典 */
-export function deleteDict(id: string) {
-  return http.delete(`/system/dict`, { data: { ids: [id] } });
-}
-
-/** 清除字典缓存 */
-export function clearDictCache(code: string) {
-  return http.delete(`/system/dict/cache/${code}`);
-}
-
-/** 查询字典项列表 */
-export function listDictItem(query: DictItemPageQuery) {
-  return http.get<DictItemResp[]>(`/system/dict/item`, {
-    params: query,
-  });
-}
-
-/** 查询字典项详情 */
-export function getDictItem(id: string) {
-  return http.get<DictItemResp>(`/system/dict/item/${id}`);
-}
-
-/** 新增字典项 */
-export function addDictItem(data: any) {
-  return http.post(`/system/dict/item`, data);
-}
-
-/** 修改字典项 */
-export function updateDictItem(data: any, id: string) {
-  return http.put(`/system/dict/item/${id}`, data);
-}
-
-/** 删除字典项 */
-export function deleteDictItem(id: string) {
-  return http.delete(`/system/dict/item`, { data: { ids: [id] } });
-}
+/**
+ * 字典分页查询参数
+ */
+export interface DictPageQuery extends DictQuery, PageQuery {}

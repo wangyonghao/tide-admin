@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.bo.user.UserImportReq;
+import top.wyhao.admin.system.model.bo.user.UserImportRequest;
 import top.wyhao.admin.system.model.bo.user.UserRequest;
 import top.wyhao.admin.system.model.query.UserQuery;
 import top.wyhao.admin.system.model.vo.user.UserDetailResult;
@@ -26,8 +26,8 @@ import top.wyhao.starter.core.util.FileUploadUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsRequest;
-import top.wyhao.starter.web.core.model.resp.IdResp;
+import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.starter.web.core.model.IdResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -77,8 +77,8 @@ public class UserController {
      */
     @SaCheckPermission("system:user:create")
     @PostMapping
-    public IdResp<Long> create(@RequestBody @Validated(UserRequest.Create.class) UserRequest request) {
-        return new IdResp<>(userService.create(request));
+    public IdResult<Long> create(@RequestBody @Validated(UserRequest.Create.class) UserRequest request) {
+        return new IdResult<>(userService.create(request));
     }
 
     /**
@@ -120,8 +120,8 @@ public class UserController {
      */
     @SaCheckPermission("system:user:import")
     @GetMapping("/import")
-    public void importUsers(@Valid UserImportReq userImportReq) {
-        userService.importUser(userImportReq);
+    public void importUsers(@Valid UserImportRequest userImportRequest) {
+        userService.importUser(userImportRequest);
     }
     /**
      * 导出

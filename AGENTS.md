@@ -463,7 +463,6 @@ packages/utils, packages/types (工具和类型)
 #### 后端
 1. 不要破坏模块依赖层次（svr → biz → cmn）
 2. 新增依赖必须在根 pom.xml 的 `<dependencyManagement>` 中声明
-3. 公共功能应放在 `cmn/biz-base` 模块
 4. 业务功能应放在对应的 `biz-*` 模块
 
 #### 前端
@@ -482,6 +481,7 @@ packages/utils, packages/types (工具和类型)
 - **用户管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/user/`
 - **角色管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/role/`
 - **菜单管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/menu/`
+- **文件管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/file/`
 
 #### 前端
 - **入口文件**: `frontend/apps/web-naive/src/main.ts`
@@ -513,11 +513,11 @@ top.wyhao.system.user/
 ├── service/          # 业务逻辑层
 │   └── impl/         # 业务逻辑实现
 ├── mapper/           # 数据访问层（MyBatis Mapper）
-├── model/            # 数据模型
-│   ├── entity/       # 实体类（对应数据库表）
+├── entity/           # 实体类（对应数据库表）
+├── model/            # 数据模型(API 查询、请求、响应 Schema)
 │   ├── query/        # 查询条件类
-│   ├── req/          # 请求参数类
-│   └── resp/         # 响应参数类
+│   ├── request/      # 请求参数类
+│   └── result/       # 响应参数类
 ├── enums/            # 枚举类
 ├── constant/         # 常量类
 └── config/           # 配置类
@@ -525,13 +525,19 @@ top.wyhao.system.user/
 
 注解使用规范
 
-- **Controller 层**：使用 `@RestController`、不在类上使用`@RequestMapping`
+- **Controller 层**：使用 `@RestController`、
 - **Service 层**：使用 `@Service`
 - **Mapper 层**：使用 `@Mapper`
 - **实体类**：使用 `@Data`（Lombok）、`@TableName`（MyBatis Plus）
 - **API 文档**：使用 `@Tag`、`@Operation`（Swagger）
 
-service层方法命名示例:
+controller层规范：
+
+* 在方法上定义完整api路径，而不在Controller类上使用统一的`@RequestMapping`
+* Controller类负责将Service返回的实体类转换为接口需要的结构（XxxResult）。
+
+service层能用方法命名示例:
+
 - detail 获取详情
 - list 查询列表
 - page 分页查询

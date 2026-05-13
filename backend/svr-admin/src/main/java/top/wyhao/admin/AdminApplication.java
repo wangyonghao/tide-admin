@@ -8,7 +8,6 @@ import cn.hutool.extra.spring.SpringUtil;
 import io.swagger.v3.oas.annotations.Hidden;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.dromara.x.file.storage.spring.EnableFileStorage;
 import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
@@ -23,14 +22,10 @@ import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
 
 /**
  * 启动程序
- *
- * @author Charles7c
- * @since 2022/12/8 23:15
  */
 @Slf4j
 @EnableAsync(proxyTargetClass = true)
 @ComponentScan(basePackages = {"top.wyhao"})
-@EnableFileStorage
 @EnableFeignClients(basePackages = {"top.wyhao"})
 @RestController
 @SpringBootApplication
@@ -60,7 +55,7 @@ public class AdminApplication implements ApplicationRunner {
         log.info("--------------------------------------------------------");
         log.info("{} server started successfully.", applicationProperties.getName());
         log.info("当前版本: v{} (Profile: {})", applicationProperties.getVersion(), SpringUtil
-            .getProperty("spring.profiles.active"));
+                .getProperty("spring.profiles.active"));
         log.info("服务地址: {}", baseUrl);
         log.info("接口文档: {}/doc.html", baseUrl);
         log.info("Wyhao Admin: 持续迭代优化的，高质量多租户中后台管理系统框架");

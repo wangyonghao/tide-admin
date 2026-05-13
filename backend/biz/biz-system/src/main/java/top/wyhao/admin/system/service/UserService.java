@@ -5,13 +5,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.model.bo.user.*;
-import top.wyhao.admin.system.model.entity.user.UserDO;
+import top.wyhao.admin.system.entity.user.UserDO;
 import top.wyhao.admin.system.model.query.UserQuery;
 import top.wyhao.admin.system.model.vo.user.UserDetailResult;
 import top.wyhao.admin.system.model.vo.user.UserImportParseResp;
 import top.wyhao.admin.system.model.vo.user.UserImportResp;
 import top.wyhao.admin.system.model.vo.user.UserResult;
-import top.wyhao.starter.core.auth.PermissionProvider;
+import top.wyhao.starter.core.spi.PermissionProvider;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
@@ -39,7 +39,7 @@ public interface UserService extends PermissionProvider {
      * @param req 请求参数
      * @return 导入结果
      */
-    UserImportResp importUser(UserImportReq req);
+    UserImportResp importUser(UserImportRequest req);
 
     /**
      * 重置密码

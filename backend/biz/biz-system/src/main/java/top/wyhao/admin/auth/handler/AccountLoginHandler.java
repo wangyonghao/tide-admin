@@ -5,29 +5,28 @@ import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.util.StrUtil;
 import jakarta.servlet.http.HttpServletRequest;
-import jakarta.validation.ValidationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.bo.AccountLoginRequest;
-import top.wyhao.admin.auth.model.vo.LoginResult;
+import top.wyhao.admin.auth.LoginHelper;
+import top.wyhao.admin.auth.model.AccountLoginRequest;
+import top.wyhao.admin.auth.model.LoginResult;
 import top.wyhao.admin.modules.common.util.RsaUtils;
-import top.wyhao.admin.system.model.entity.DeptDO;
-import top.wyhao.admin.system.model.entity.user.UserDO;
+import top.wyhao.admin.system.entity.DeptDO;
+import top.wyhao.admin.system.entity.user.UserDO;
 import top.wyhao.admin.system.model.vo.config.LoginConfigVO;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.admin.system.service.UserService;
-import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.model.LoginUser;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
-import top.wyhao.starter.web.ServletUtils;
+import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -75,7 +74,7 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest> {
             if (Objects.isNull(user)) {
                 incrementRetry(retryKey);
                 // 记录登录失败日志
-                loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", "用户不存在");
+                loginLogService.create(req.getUsername(), ip, userAgent, "FAILURE", "用户不存在");
                 // 防止用户名探测，统一提示：用户名或密码错误
                 throw new BusinessException("USERNAME_PASSWORD_ERROR", "用户名或密码错误");
             }
@@ -87,7 +86,7 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest> {
                 int remaining = loginConfig.getMaxRetry() - getRetryCount(retryKey);
                 String msg = remaining > 0 ? "用户名或密码错误，还剩" + remaining + "次机会" : "用户名或密码错误，账号已锁定";
                 // 记录登录失败日志
-                loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", "密码错误");
+                loginLogService.create(req.getUsername(), ip, userAgent, "FAILURE", "密码错误");
                 throw new BusinessException("USERNAME_PASSWORD_ERROR", msg);
             } else {
                 // 如账号密码匹配，清除错误次数
@@ -101,7 +100,7 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest> {
             if (user.getPwdExpireDate() != null && LocalDate.now().isAfter(user.getPwdExpireDate())) {
                 String tempToken = SaTempUtil.createToken(user.getId(), 600); // 10分钟
                 // 记录登录失败日志（密码过期）
-                loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", "密码已过期");
+                loginLogService.create(req.getUsername(), ip, userAgent, "FAILURE", "密码已过期");
                 return LoginResult.builder().code("PASSWORD_EXPIRED").token(tempToken).build();
             }
 
@@ -109,27 +108,21 @@ public class AccountLoginHandler implements LoginHandler<AccountLoginRequest> {
             LoginUser loginUser = BeanUtil.copyProperties(user, LoginUser.class);
             loginUser.setUserId(user.getId());
             loginUser.setDeviceType("PC");
-            LoginUtil.doLogin(loginUser);
-
-            // 9. 记录操作日志
-            operationLogService.recordLoginLog(loginUser);
-
-            // 10. 记录登录成功日志
-            loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "SUCCESS", null);
+            LoginHelper.doLogin(loginUser);
 
             return LoginResult.builder()
                     .code("200")
-                    .token(LoginUtil.getTokenValue())
+                    .token(UserContextHolder.getToken())
                     .build();
         } catch (BusinessException e) {
             // 如果是业务异常且还没记录日志，记录失败日志
             if (!"USERNAME_PASSWORD_ERROR".equals(e.getCode())) {
-                loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", e.getMessage());
+                loginLogService.create(req.getUsername(), ip, userAgent, "FAILURE", e.getMessage());
             }
             throw e;
         } catch (Exception e) {
             // 其他异常也记录失败日志
-            loginLogService.recordLoginLog(req.getUsername(), ip, userAgent, "FAILURE", "系统异常: " + e.getMessage());
+            loginLogService.create(req.getUsername(), ip, userAgent, "FAILURE", "系统异常: " + e.getMessage());
             throw e;
         }
     }

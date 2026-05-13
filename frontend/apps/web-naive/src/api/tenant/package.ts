@@ -1,7 +1,7 @@
-import type { BaseEntity, PageQuery, PageRes } from '#/types/api';
+import type { BaseEntity, PageQuery, PageResult } from '#/types/api';
 import type { Option } from '#/types/global';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 租户套餐 */
 export interface TenantPackageResp extends BaseEntity {
@@ -26,7 +26,7 @@ export interface TenantPackagePageQuery extends PageQuery, TenantPackageQuery {}
 
 /** 查询租户套餐列表 */
 export function listTenantPackage(query: TenantPackagePageQuery) {
-  return http.get<PageRes<TenantPackageResp[]>>('/tenant/package', {
+  return http.get<PageResult<TenantPackageResp[]>>('/tenant/package', {
     params: query,
   });
 }

@@ -24,7 +24,7 @@ import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.req.IdsRequest;
+import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.Collections;

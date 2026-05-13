@@ -19,15 +19,11 @@ import java.util.Map;
 @Builder
 @Schema(description = "文件上传响应参数")
 public class FileUploadResp implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     /**
      * 文件 id
      */
     @Schema(description = "文件 id", example = "1897293810343682049")
-    private String id;
+    private Long id;
 
     /**
      * 文件 URL

@@ -96,14 +96,6 @@ avatar:
   # 支持的后缀
   support-suffix: jpg,jpeg,png,gif
 
-### 存储配置
-wyhao:
-  storage:
-    # 默认存储平台
-    default-platform: local
-    # 默认存储配置来源 (CONFIG: 配置文件, DYNAMIC: 动态配置)
-    default-storage-source: DYNAMIC
-
 ### 接口文档配置
 springdoc:
   api-docs:

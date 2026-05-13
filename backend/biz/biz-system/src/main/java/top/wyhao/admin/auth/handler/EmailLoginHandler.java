@@ -4,11 +4,13 @@ package top.wyhao.admin.auth.handler;
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.bo.EmailLoginRequest;
-import top.wyhao.admin.auth.model.vo.LoginResult;
-import top.wyhao.admin.system.model.entity.DeptDO;
-import top.wyhao.admin.system.model.entity.user.UserDO;
+import top.wyhao.admin.auth.LoginHelper;
+import top.wyhao.admin.auth.model.EmailLoginRequest;
+import top.wyhao.admin.auth.model.LoginResult;
+import top.wyhao.admin.system.entity.DeptDO;
+import top.wyhao.admin.system.entity.user.UserDO;
 import top.wyhao.admin.system.service.DeptService;
+import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
@@ -29,9 +31,15 @@ public class EmailLoginHandler implements LoginHandler<EmailLoginRequest> {
     private final UserService userService;
     private final OperationLogService operationLogService;
     private final DeptService deptService;
+    private final LoginLogService loginLogService;
 
     public LoginResult login(EmailLoginRequest req) {
-        this.preLogin(req);
+        String email = req.getEmail();
+        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + email;
+        String captcha = RedisUtils.get(captchaKey);
+        ValidationUtils.throwIfBlank(captcha, "验证码已失效");
+        ValidationUtils.throwIfNotEqualIgnoreCase(req.getCaptcha(), captcha, "验证码不正确");
+        RedisUtils.delete(captchaKey);
         // 验证邮箱
         UserDO user = userService.getByEmail(req.getEmail());
         ValidationUtils.throwIfNull(user, "此邮箱未绑定本系统账号");
@@ -44,25 +52,13 @@ public class EmailLoginHandler implements LoginHandler<EmailLoginRequest> {
         loginUser.setUserId(user.getId());
         loginUser.setDeviceType("PC");
 
-        // 登录并缓存用户信息
-        LoginUtil.doLogin(loginUser);
-
-        // 记录登录日志
-        operationLogService.recordLoginLog(loginUser);
+        // 登录并记录登录日志
+        LoginHelper.doLogin(loginUser);
 
         return LoginResult.builder()
                 .code("200")
                 .token(LoginUtil.getTokenValue())
                 .build();
-    }
-
-    public void preLogin(EmailLoginRequest req) {
-        String email = req.getEmail();
-        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + email;
-        String captcha = RedisUtils.get(captchaKey);
-        ValidationUtils.throwIfBlank(captcha, "验证码已失效");
-        ValidationUtils.throwIfNotEqualIgnoreCase(req.getCaptcha(), captcha, "验证码不正确");
-        RedisUtils.delete(captchaKey);
     }
 
     /**

@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.model.vo;
 
-import cn.crane4j.annotation.condition.ConditionOnPropertyNotNull;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -17,10 +16,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 /**
- * 公告详情响应参数
+ * 公告详情响应信息
  *
- * @author Charles7c
- * @since 2023/8/20 10:55
+ * @author Yonghao Wang
+ * @since 2026/5/8
  */
 @Data
 @ExcelIgnoreUnannotated
@@ -64,7 +63,6 @@ public class NoticeDetailResult {
      * 修改人
      */
     @JsonIgnore
-    @ConditionOnPropertyNotNull
     private Long updateUser;
 
     /**

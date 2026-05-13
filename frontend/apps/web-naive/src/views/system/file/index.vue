@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, h, onMounted, ref } from 'vue';
+import { computed, h, onMounted, ref, watch } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 import { Page } from '@vben/common-ui';
 import {
@@ -10,8 +10,10 @@ import {
   NIcon,
   NInput,
   NModal,
+  NPagination,
   NProgress,
   NSpace,
+  NSpin,
   NSplit,
   NTag,
   NUpload,
@@ -19,20 +21,26 @@ import {
   type UploadFileInfo,
 } from 'naive-ui';
 import { SearchOutline } from '@vicons/ionicons5';
+import {
+  type FileQuery,
+  type FileResult,
+  FileType,
+  fileApi,
+} from '#/api/system/file';
 
 const message = useMessage();
 
 // ==================== 文件类型过滤 ====================
 const fileTypes = [
-  { key: 'all', label: '全部', icon: 'lucide:folder' },
-  { key: 'image', label: '图片', icon: 'lucide:image' },
-  { key: 'video', label: '视频', icon: 'lucide:video' },
-  { key: 'audio', label: '音频', icon: 'lucide:music' },
-  { key: 'document', label: '文档', icon: 'lucide:file-text' },
-  { key: 'other', label: '其他', icon: 'lucide:file' },
+  { key: 'all', label: '全部', icon: 'lucide:folder', value: undefined },
+  { key: 'image', label: '图片', icon: 'lucide:image', value: FileType.IMAGE },
+  { key: 'video', label: '视频', icon: 'lucide:video', value: FileType.VIDEO },
+  { key: 'audio', label: '音频', icon: 'lucide:music', value: FileType.AUDIO },
+  { key: 'document', label: '文档', icon: 'lucide:file-text', value: FileType.DOCUMENT },
+  { key: 'other', label: '其他', icon: 'lucide:file', value: FileType.OTHER },
 ];
 
-const selectedFileType = ref('all');
+const selectedFileType = ref<FileType | undefined>(undefined);
 const searchKeyword = ref('');
 
 // ==================== 视图模式 ====================
@@ -49,63 +57,59 @@ const storagePercent = computed(() => {
 });
 
 // ==================== 文件数据 ====================
-interface FileItem {
-  id: string;
-  name: string;
-  type: 'folder' | 'file';
-  fileType?: string;
-  size?: number;
-  modifiedTime: string;
-  starred: boolean;
-  selected: boolean;
-  thumbnail?: string;
+interface FileItem extends FileResult {
+  starred?: boolean;
+  selected?: boolean;
 }
 
-const currentPath = ref<string[]>(['根目录']);
-const fileList = ref<FileItem[]>([
-  {
-    id: '1',
-    name: '文档',
-    type: 'folder',
-    modifiedTime: '2024-01-15 10:30',
-    starred: false,
-    selected: false,
-  },
-  {
-    id: '2',
-    name: '图片',
-    type: 'folder',
-    modifiedTime: '2024-01-14 15:20',
-    starred: true,
-    selected: false,
-  },
-  {
-    id: '3',
-    name: '项目文档.pdf',
-    type: 'file',
-    fileType: 'pdf',
-    size: 2048576,
-    modifiedTime: '2024-01-13 09:15',
-    starred: false,
-    selected: false,
-  },
-  {
-    id: '4',
-    name: '演示视频.mp4',
-    type: 'file',
-    fileType: 'video',
-    size: 10485760,
-    modifiedTime: '2024-01-12 14:45',
-    starred: true,
-    selected: false,
-  },
-]);
+const currentPath = ref<string>('/');
+const fileList = ref<FileItem[]>([]);
+const loading = ref(false);
+const total = ref(0);
+const pageNum = ref(1);
+const pageSize = ref(20);
+
+// 加载文件列表
+async function loadFileList() {
+  try {
+    loading.value = true;
+    const query: FileQuery = {
+      parentPath: currentPath.value,
+      type: selectedFileType.value,
+      fileName: searchKeyword.value || undefined,
+      page: pageNum.value,
+      size: pageSize.value,
+    };
+    
+    const response = await fileApi.list(query);
+    fileList.value = response.list.map(file => ({
+      ...file,
+      starred: false,
+      selected: false,
+    }));
+    total.value = response.total;
+  } catch (error) {
+    message.error('加载文件列表失败');
+    console.error(error);
+  } finally {
+    loading.value = false;
+  }
+}
+
+// 监听筛选条件变化
+watch([selectedFileType, searchKeyword, currentPath], () => {
+  pageNum.value = 1;
+  loadFileList();
+});
+
+// 监听分页变化
+watch([pageNum, pageSize], () => {
+  loadFileList();
+});
 
 // ==================== 文件图标 ====================
 function getFileIcon(item: FileItem) {
-  if (item.type === 'folder') return 'lucide:folder';
-  
-  const ext = item.name.split('.').pop()?.toLowerCase();
+  const ext = item.extension?.toLowerCase();
   const iconMap: Record<string, string> = {
     pdf: 'lucide:file-text',
     doc: 'lucide:file-text',
@@ -208,19 +212,19 @@ const contextMenuOptions = (file: FileItem) => [
 function handleContextMenu(key: string, file: FileItem) {
   switch (key) {
     case 'download':
-      message.info(`下载: ${file.name}`);
+      fileApi.download(file.id, file.originalName);
       break;
     case 'share':
-      message.info(`分享: ${file.name}`);
+      message.info(`分享: ${file.originalName}`);
       break;
     case 'rename':
       handleRename(file);
       break;
     case 'copy':
-      message.info(`复制: ${file.name}`);
+      message.info(`复制: ${file.originalName}`);
       break;
     case 'cut':
-      message.info(`剪切: ${file.name}`);
+      message.info(`剪切: ${file.originalName}`);
       break;
     case 'star':
       file.starred = !file.starred;
@@ -239,30 +243,42 @@ const newFileName = ref('');
 
 function handleRename(file: FileItem) {
   renameFile.value = file;
-  newFileName.value = file.name;
+  newFileName.value = file.originalName;
   renameModalVisible.value = true;
 }
 
 function confirmRename() {
-  if (renameFile.value && newFileName.value) {
-    renameFile.value.name = newFileName.value;
-    message.success('重命名成功');
-    renameModalVisible.value = false;
-  }
+  message.info('暂不支持重命名功能');
+  renameModalVisible.value = false;
 }
 
 // ==================== 删除 ====================
-function handleDelete(file: FileItem) {
-  const index = fileList.value.findIndex(f => f.id === file.id);
-  if (index > -1) {
-    fileList.value.splice(index, 1);
+async function handleDelete(file: FileItem) {
+  try {
+    await fileApi.delete(file.id);
     message.success('删除成功');
+    await loadFileList();
+  } catch (error) {
+    message.error('删除失败');
+    console.error(error);
   }
 }
 
-function batchDelete() {
-  fileList.value = fileList.value.filter(f => !f.selected);
-  message.success('批量删除成功');
+async function batchDelete() {
+  const ids = selectedFiles.value.map(f => f.id);
+  if (ids.length === 0) {
+    message.warning('请选择要删除的文件');
+    return;
+  }
+  
+  try {
+    await fileApi.batchDelete(ids);
+    message.success('批量删除成功');
+    await loadFileList();
+  } catch (error) {
+    message.error('批量删除失败');
+    console.error(error);
+  }
 }
 
 // ==================== 新建 ====================
@@ -271,11 +287,13 @@ const newMenuOptions = [
     label: '新建文件夹',
     key: 'folder',
     icon: () => h(IconifyIcon, { icon: 'lucide:folder-plus' }),
+    disabled: true, // 暂不支持新建文件夹
   },
   {
     label: '新建文档',
     key: 'document',
     icon: () => h(IconifyIcon, { icon: 'lucide:file-plus' }),
+    disabled: true, // 暂不支持新建文档
   },
 ];
 
@@ -290,50 +308,55 @@ function handleNewMenu(key: string) {
 }
 
 function confirmNew() {
-  if (newItemName.value) {
-    const newItem: FileItem = {
-      id: Date.now().toString(),
-      name: newItemType.value === 'folder' ? newItemName.value : `${newItemName.value}.txt`,
-      type: newItemType.value === 'folder' ? 'folder' : 'file',
-      fileType: newItemType.value === 'document' ? 'txt' : undefined,
-      size: newItemType.value === 'document' ? 0 : undefined,
-      modifiedTime: new Date().toLocaleString('zh-CN'),
-      starred: false,
-      selected: false,
-    };
-    fileList.value.unshift(newItem);
-    message.success(`创建${newItemType.value === 'folder' ? '文件夹' : '文档'}成功`);
-    newModalVisible.value = false;
-  }
+  message.info('暂不支持此功能');
+  newModalVisible.value = false;
 }
 
 // ==================== 上传 ====================
 const uploadModalVisible = ref(false);
+const uploading = ref(false);
 
-function handleUpload(options: { file: UploadFileInfo }) {
-  message.success(`上传文件: ${options.file.name}`);
-  // 这里添加实际的上传逻辑
+async function handleUpload(options: { file: UploadFileInfo }) {
+  if (!options.file.file) {
+    message.error('文件不能为空');
+    return;
+  }
+  
+  try {
+    uploading.value = true;
+    await fileApi.upload(options.file.file, currentPath.value);
+    message.success(`上传文件成功: ${options.file.name}`);
+    await loadFileList();
+    uploadModalVisible.value = false;
+  } catch (error) {
+    message.error(`上传文件失败: ${options.file.name}`);
+    console.error(error);
+  } finally {
+    uploading.value = false;
+  }
 }
 
 // ==================== 双击打开 ====================
 function handleDoubleClick(file: FileItem) {
-  if (file.type === 'folder') {
-    currentPath.value.push(file.name);
-    // 这里加载文件夹内容
-    message.info(`打开文件夹: ${file.name}`);
-  } else {
-    message.info(`打开文件: ${file.name}`);
-  }
+  // 文件系统不支持文件夹，直接打开文件
+  window.open(file.url, '_blank');
 }
 
 // ==================== 面包屑导航 ====================
-function navigateToPath(index: number) {
-  currentPath.value = currentPath.value.slice(0, index + 1);
-  // 这里加载对应路径的内容
+const pathSegments = computed(() => {
+  const segments = currentPath.value.split('/').filter(Boolean);
+  return [{ name: '根目录', path: '/' }, ...segments.map((seg, idx) => ({
+    name: seg,
+    path: '/' + segments.slice(0, idx + 1).join('/'),
+  }))];
+});
+
+function navigateToPath(path: string) {
+  currentPath.value = path;
 }
 
 onMounted(() => {
-  // 加载文件列表
+  loadFileList();
 });
 </script>
 
@@ -357,11 +380,11 @@ onMounted(() => {
               :key="type.key"
               class="flex items-center gap-2 px-3 py-2 rounded cursor-pointer transition-colors"
               :class="
-                selectedFileType === type.key
+                selectedFileType === type.value
                   ? 'bg-primary text-primary-foreground'
                   : 'hover:bg-muted'
               "
-              @click="selectedFileType = type.key"
+              @click="selectedFileType = type.value"
             >
               <IconifyIcon :icon="type.icon" class="text-lg" />
               <span>{{ type.label }}</span>
@@ -396,18 +419,18 @@ onMounted(() => {
             <!-- 面包屑导航 -->
             <div class="flex items-center gap-2 flex-1">
               <span
-                v-for="(path, index) in currentPath"
+                v-for="(segment, index) in pathSegments"
                 :key="index"
                 class="flex items-center gap-2"
               >
                 <span
                   class="cursor-pointer hover:text-primary"
-                  @click="navigateToPath(index)"
+                  @click="navigateToPath(segment.path)"
                 >
-                  {{ path }}
+                  {{ segment.name }}
                 </span>
                 <IconifyIcon
-                  v-if="index < currentPath.length - 1"
+                  v-if="index < pathSegments.length - 1"
                   icon="lucide:chevron-right"
                   class="text-gray-400"
                 />
@@ -473,115 +496,138 @@ onMounted(() => {
           </div>
 
           <!-- 文件列表 - 网格视图 -->
-          <div v-if="viewMode === 'grid'" class="flex-1 overflow-auto">
-            <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
-              <NCard
-                v-for="file in fileList"
-                :key="file.id"
-                size="small"
-                hoverable
-                class="cursor-pointer relative"
-                :class="{ 'ring-2 ring-primary': file.selected }"
-                @click="toggleFileSelection(file)"
-                @dblclick="handleDoubleClick(file)"
-              >
-                <NDropdown
-                  trigger="manual"
-                  placement="bottom-start"
-                  :options="contextMenuOptions(file)"
-                  :show="false"
-                  @select="(key) => handleContextMenu(key as string, file)"
-                >
-                  <div class="flex flex-col items-center gap-2">
-                    <!-- 文件图标 -->
-                    <div class="relative">
-                      <IconifyIcon
-                        :icon="getFileIcon(file)"
-                        class="text-6xl"
-                        :class="file.type === 'folder' ? 'text-yellow-500' : 'text-blue-500'"
-                      />
-                      <IconifyIcon
-                        v-if="file.starred"
-                        icon="lucide:star"
-                        class="absolute -top-1 -right-1 text-yellow-500 text-lg"
-                      />
-                    </div>
-
-                    <!-- 文件名 -->
-                    <div class="text-sm text-center break-all line-clamp-2 w-full">
-                      {{ file.name }}
-                    </div>
-
-                    <!-- 文件信息 -->
-                    <div class="text-xs text-gray-500 text-center w-full">
-                      <div v-if="file.type === 'file'">{{ formatFileSize(file.size) }}</div>
-                      <div>{{ file.modifiedTime }}</div>
-                    </div>
-                  </div>
-                </NDropdown>
-              </NCard>
-            </div>
-          </div>
-
-          <!-- 文件列表 - 列表视图 -->
-          <div v-else class="flex-1 overflow-auto">
-            <table class="w-full">
-              <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0">
-                <tr>
-                  <th class="px-4 py-2 text-left w-12">
-                    <NCheckbox :checked="selectedFiles.length === fileList.length" @update:checked="selectAll" />
-                  </th>
-                  <th class="px-4 py-2 text-left">名称</th>
-                  <th class="px-4 py-2 text-left w-32">大小</th>
-                  <th class="px-4 py-2 text-left w-48">修改时间</th>
-                  <th class="px-4 py-2 text-left w-32">操作</th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr
+          <NSpin :show="loading">
+            <div v-if="viewMode === 'grid'" class="flex-1 overflow-auto">
+              <div v-if="fileList.length === 0" class="flex items-center justify-center h-64 text-gray-400">
+                <div class="text-center">
+                  <IconifyIcon icon="lucide:folder-open" class="text-6xl mb-4" />
+                  <p>暂无文件</p>
+                </div>
+              </div>
+              <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4">
+                <NCard
                   v-for="file in fileList"
                   :key="file.id"
-                  class="border-b hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
-                  :class="{ 'bg-primary/10': file.selected }"
+                  size="small"
+                  hoverable
+                  class="cursor-pointer relative"
+                  :class="{ 'ring-2 ring-primary': file.selected }"
                   @click="toggleFileSelection(file)"
                   @dblclick="handleDoubleClick(file)"
                 >
-                  <td class="px-4 py-2">
-                    <NCheckbox v-model:checked="file.selected" @click.stop />
-                  </td>
-                  <td class="px-4 py-2">
-                    <div class="flex items-center gap-2">
-                      <IconifyIcon
-                        :icon="getFileIcon(file)"
-                        class="text-2xl"
-                        :class="file.type === 'folder' ? 'text-yellow-500' : 'text-blue-500'"
-                      />
-                      <span>{{ file.name }}</span>
-                      <IconifyIcon
-                        v-if="file.starred"
-                        icon="lucide:star"
-                        class="text-yellow-500"
-                      />
+                  <NDropdown
+                    trigger="manual"
+                    placement="bottom-start"
+                    :options="contextMenuOptions(file)"
+                    :show="false"
+                    @select="(key) => handleContextMenu(key as string, file)"
+                  >
+                    <div class="flex flex-col items-center gap-2">
+                      <!-- 文件图标 -->
+                      <div class="relative">
+                        <IconifyIcon
+                          :icon="getFileIcon(file)"
+                          class="text-6xl text-blue-500"
+                        />
+                        <IconifyIcon
+                          v-if="file.starred"
+                          icon="lucide:star"
+                          class="absolute -top-1 -right-1 text-yellow-500 text-lg"
+                        />
+                      </div>
+
+                      <!-- 文件名 -->
+                      <div class="text-sm text-center break-all line-clamp-2 w-full">
+                        {{ file.fileName }}
+                      </div>
+
+                      <!-- 文件信息 -->
+                      <div class="text-xs text-gray-500 text-center w-full">
+                        <div>{{ formatFileSize(file.size) }}</div>
+                        <div>{{ file.createTime }}</div>
+                      </div>
                     </div>
-                  </td>
-                  <td class="px-4 py-2 text-gray-500">
-                    {{ file.type === 'folder' ? '-' : formatFileSize(file.size) }}
-                  </td>
-                  <td class="px-4 py-2 text-gray-500">{{ file.modifiedTime }}</td>
-                  <td class="px-4 py-2">
-                    <NDropdown
-                      trigger="click"
-                      :options="contextMenuOptions(file)"
-                      @select="(key) => handleContextMenu(key as string, file)"
-                    >
-                      <NButton size="small" text @click.stop>
-                        <template #icon><IconifyIcon icon="lucide:more-horizontal" /></template>
-                      </NButton>
-                    </NDropdown>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
+                  </NDropdown>
+                </NCard>
+              </div>
+            </div>
+
+            <!-- 文件列表 - 列表视图 -->
+            <div v-else class="flex-1 overflow-auto">
+              <div v-if="fileList.length === 0" class="flex items-center justify-center h-64 text-gray-400">
+                <div class="text-center">
+                  <IconifyIcon icon="lucide:folder-open" class="text-6xl mb-4" />
+                  <p>暂无文件</p>
+                </div>
+              </div>
+              <table v-else class="w-full">
+                <thead class="bg-gray-50 dark:bg-gray-800 sticky top-0">
+                  <tr>
+                    <th class="px-4 py-2 text-left w-12">
+                      <NCheckbox :checked="selectedFiles.length === fileList.length" @update:checked="selectAll" />
+                    </th>
+                    <th class="px-4 py-2 text-left">名称</th>
+                    <th class="px-4 py-2 text-left w-32">大小</th>
+                    <th class="px-4 py-2 text-left w-48">创建时间</th>
+                    <th class="px-4 py-2 text-left w-32">操作</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr
+                    v-for="file in fileList"
+                    :key="file.id"
+                    class="border-b hover:bg-gray-50 dark:hover:bg-gray-800 cursor-pointer"
+                    :class="{ 'bg-primary/10': file.selected }"
+                    @click="toggleFileSelection(file)"
+                    @dblclick="handleDoubleClick(file)"
+                  >
+                    <td class="px-4 py-2">
+                      <NCheckbox v-model:checked="file.selected" @click.stop />
+                    </td>
+                    <td class="px-4 py-2">
+                      <div class="flex items-center gap-2">
+                        <IconifyIcon
+                          :icon="getFileIcon(file)"
+                          class="text-2xl text-blue-500"
+                        />
+                        <span>{{ file.fileName }}</span>
+                        <IconifyIcon
+                          v-if="file.starred"
+                          icon="lucide:star"
+                          class="text-yellow-500"
+                        />
+                      </div>
+                    </td>
+                    <td class="px-4 py-2 text-gray-500">
+                      {{ formatFileSize(file.size) }}
+                    </td>
+                    <td class="px-4 py-2 text-gray-500">{{ file.createTime }}</td>
+                    <td class="px-4 py-2">
+                      <NDropdown
+                        trigger="click"
+                        :options="contextMenuOptions(file)"
+                        @select="(key) => handleContextMenu(key as string, file)"
+                      >
+                        <NButton size="small" text @click.stop>
+                          <template #icon><IconifyIcon icon="lucide:more-horizontal" /></template>
+                        </NButton>
+                      </NDropdown>
+                    </td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </NSpin>
+
+          <!-- 分页 -->
+          <div v-if="total > 0" class="flex justify-end mt-4">
+            <NPagination
+              v-model:page="pageNum"
+              v-model:page-size="pageSize"
+              :page-count="Math.ceil(total / pageSize)"
+              :page-sizes="[10, 20, 50, 100]"
+              show-size-picker
+            />
           </div>
         </div>
       </template>
@@ -616,17 +662,19 @@ onMounted(() => {
 
     <!-- 上传对话框 -->
     <NModal v-model:show="uploadModalVisible" preset="dialog" title="上传文件">
-      <NUpload
-        multiple
-        directory-dnd
-        :custom-request="handleUpload"
-      >
-        <div class="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded cursor-pointer hover:border-primary">
-          <IconifyIcon icon="lucide:upload-cloud" class="text-6xl text-gray-400 mb-4" />
-          <p class="text-gray-600">点击或拖拽文件到此处上传</p>
-          <p class="text-sm text-gray-400 mt-2">支持批量上传</p>
-        </div>
-      </NUpload>
+      <NSpin :show="uploading">
+        <NUpload
+          multiple
+          directory-dnd
+          :custom-request="handleUpload"
+        >
+          <div class="flex flex-col items-center justify-center p-8 border-2 border-dashed rounded cursor-pointer hover:border-primary">
+            <IconifyIcon icon="lucide:upload-cloud" class="text-6xl text-gray-400 mb-4" />
+            <p class="text-gray-600">点击或拖拽文件到此处上传</p>
+            <p class="text-sm text-gray-400 mt-2">支持批量上传</p>
+          </div>
+        </NUpload>
+      </NSpin>
     </NModal>
   </Page>
 </template>

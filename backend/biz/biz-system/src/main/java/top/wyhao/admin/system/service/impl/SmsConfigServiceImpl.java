@@ -13,7 +13,7 @@ import top.wyhao.admin.system.model.query.SmsConfigQuery;
 import top.wyhao.admin.system.mapper.SmsConfigMapper;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.admin.system.config.sms.SmsConfigUtil;
-import top.wyhao.admin.system.model.entity.SmsConfigDO;
+import top.wyhao.admin.system.entity.SmsConfigDO;
 import top.wyhao.admin.system.model.bo.SmsConfigReq;
 import top.wyhao.admin.system.model.vo.SmsConfigResp;
 import top.wyhao.admin.system.service.SmsConfigService;
@@ -21,7 +21,7 @@ import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -116,7 +116,7 @@ public class SmsConfigServiceImpl implements SmsConfigService {
     }
 
     @Override
-    public List<LabelValueResp> dict(SmsConfigQuery query, SortQuery sortQuery) {
+    public List<LabelValueResult> dict(SmsConfigQuery query, SortQuery sortQuery) {
         return List.of();
     }
 

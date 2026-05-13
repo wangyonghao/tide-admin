@@ -1,8 +1,6 @@
 
 package top.wyhao.admin.system.model.vo;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Mapping;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -10,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.ResultStatusEnum;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 
 import java.time.LocalDateTime;
@@ -34,7 +31,6 @@ public class SmsLogResult {
      * 创建人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "createUserString"))
     private Long createUser;
 
     /**
@@ -61,7 +57,7 @@ public class SmsLogResult {
     /**
      * 配置 ID
      */
-    @Schema(description = "配置 ID", example = "")
+    @Schema(description = "配置 ID")
     @ExcelProperty(value = "配置 ID")
     private Long configId;
 

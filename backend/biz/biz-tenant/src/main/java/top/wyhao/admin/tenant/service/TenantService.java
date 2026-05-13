@@ -10,7 +10,7 @@ import top.wyhao.admin.tenant.model.resp.TenantResp;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -60,7 +60,7 @@ public interface TenantService {
 
     void update(@Valid TenantReq req, Long id);
 
-    List<LabelValueResp> dict(@Valid TenantQuery query, @Valid SortQuery sortQuery);
+    List<LabelValueResult> dict(@Valid TenantQuery query, @Valid SortQuery sortQuery);
 
     TenantDetailResp get(Long id);
 

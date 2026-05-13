@@ -34,7 +34,7 @@ import top.wyhao.starter.tenant.util.TenantUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -233,7 +233,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public List<LabelValueResp> dict(TenantQuery query, SortQuery sortQuery) {
+    public List<LabelValueResult> dict(TenantQuery query, SortQuery sortQuery) {
         return List.of();
     }
 

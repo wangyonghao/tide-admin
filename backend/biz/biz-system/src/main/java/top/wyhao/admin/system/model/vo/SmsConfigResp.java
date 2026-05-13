@@ -1,9 +1,6 @@
 
 package top.wyhao.admin.system.model.vo;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Mapping;
-import cn.crane4j.annotation.condition.ConditionOnPropertyNotNull;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -11,7 +8,6 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 import top.wyhao.starter.json.masking.annotation.MaskField;
 import top.wyhao.starter.json.masking.enums.MaskStrategy;
@@ -47,7 +43,6 @@ public class SmsConfigResp implements Serializable {
      * 创建人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "createUserString"))
     private Long createUser;
 
     /**
@@ -75,8 +70,6 @@ public class SmsConfigResp implements Serializable {
      * 修改人
      */
     @JsonIgnore
-    @ConditionOnPropertyNotNull
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "updateUserString"))
     private Long updateUser;
 
     /**
@@ -128,7 +121,7 @@ public class SmsConfigResp implements Serializable {
     /**
      * 短信签名
      */
-    @Schema(description = "短信签名", example = "")
+    @Schema(description = "短信签名")
     @ExcelProperty(value = "短信签名")
     private String signature;
 
@@ -170,7 +163,7 @@ public class SmsConfigResp implements Serializable {
     /**
      * 各个厂商独立配置
      */
-    @Schema(description = "各个厂商独立配置", example = "")
+    @Schema(description = "各个厂商独立配置")
     @ExcelProperty(value = "各个厂商独立配置")
     private String supplierConfig;
 

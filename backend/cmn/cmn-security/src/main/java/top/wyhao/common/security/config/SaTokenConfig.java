@@ -7,6 +7,7 @@ import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;
 import jakarta.annotation.PostConstruct;
+import jakarta.annotation.Resource;
 import org.redisson.api.RedissonClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +15,11 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
-import top.wyhao.starter.core.auth.PermissionProvider;
+import top.wyhao.common.security.context.SaUserContext;
+import top.wyhao.starter.core.UserContextHolder;
+import top.wyhao.starter.core.spi.PermissionProvider;
 import top.wyhao.common.security.handler.SaTokenExceptionHandler;
+import top.wyhao.starter.core.spi.UserContext;
 
 /**
  * Sa-Token 自动配置
@@ -75,8 +79,21 @@ public class SaTokenConfig {
         return new SaTokenExceptionHandler();
     }
 
+
+    @Bean
+    public SaUserContext loginUserContext() {
+        return new SaUserContext();
+    }
+
+
+    @Resource
+    UserContext loginUserContext;
+
     @PostConstruct
     public void postConstruct() {
-        log.debug("[wyhao Starter] - 'SaToken' configured.");
+        // 为 LoginUserHolder 注入用户上下文， 以供业务模块获取登录用户信息
+        UserContextHolder.setLoginUserContext(loginUserContext);
+
+        log.debug("[cmn-security] - 'SaToken' configured.");
     }
 }

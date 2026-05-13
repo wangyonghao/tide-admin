@@ -10,7 +10,7 @@ import cn.idev.excel.metadata.data.ReadCellData;
 import cn.idev.excel.metadata.data.WriteCellData;
 import cn.idev.excel.metadata.property.ExcelContentProperty;
 import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 import java.util.Objects;
@@ -28,12 +28,12 @@ public class ExcelDictConverter implements Converter<Object> {
                                     ExcelContentProperty contentProperty,
                                     GlobalConfiguration globalConfiguration) {
         // 获取字典数据
-        List<LabelValueResp<String>> dictList = this.getDictCode(contentProperty);
+        List<LabelValueResult<String>> dictList = this.getDictCode(contentProperty);
         // 转换字典标签为字典值
         String value = dictList.stream()
             .filter(item -> Objects.equals(cellData.getStringValue(), item.getValue()))
             .findFirst()
-            .map(LabelValueResp::getLabel)
+            .map(LabelValueResult::getLabel)
             .orElse(null);
         // 转换字典值为对应类型
         return Convert.convert(contentProperty.getField().getType(), value);
@@ -47,7 +47,7 @@ public class ExcelDictConverter implements Converter<Object> {
             return new WriteCellData<>(StringConstants.EMPTY);
         }
         // 获取字典数据
-        List<LabelValueResp<String>> dictList = this.getDictCode(contentProperty);
+        List<LabelValueResult<String>> dictList = this.getDictCode(contentProperty);
         if (CollUtil.isEmpty(dictList)) {
             return new WriteCellData<>(StringConstants.EMPTY);
         }
@@ -55,7 +55,7 @@ public class ExcelDictConverter implements Converter<Object> {
         return new WriteCellData<>(dictList.stream()
             .filter(item -> Objects.equals(data, item.getValue()))
             .findFirst()
-            .map(LabelValueResp::getLabel)
+            .map(LabelValueResult::getLabel)
             .orElse(StringConstants.EMPTY));
     }
 
@@ -65,7 +65,7 @@ public class ExcelDictConverter implements Converter<Object> {
      * @param contentProperty Excel 内容属性
      * @return 字典数据
      */
-    private List<LabelValueResp<String>> getDictCode(ExcelContentProperty contentProperty) {
+    private List<LabelValueResult<String>> getDictCode(ExcelContentProperty contentProperty) {
         DictExcelProperty dictExcelProperty = contentProperty.getField().getAnnotation(DictExcelProperty.class);
         if (dictExcelProperty == null) {
             throw new IllegalArgumentException("Excel 字典转换器异常：请为字段添加 @DictExcelProperty 注解");

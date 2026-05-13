@@ -607,7 +607,7 @@
       <!-- 存储模块 -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-storage</artifactId>
+        <artifactId>cmn-oss</artifactId>
         <version>${revision}</version>
       </dependency>
 

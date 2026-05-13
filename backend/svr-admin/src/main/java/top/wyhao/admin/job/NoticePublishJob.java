@@ -14,7 +14,7 @@ import top.wyhao.admin.schedule.model.annotation.ConditionalOnEnabledScheduleJob
 import top.wyhao.admin.system.model.enums.NoticeMethods;
 import top.wyhao.admin.system.model.enums.NoticeStatus;
 import top.wyhao.admin.system.mapper.NoticeMapper;
-import top.wyhao.admin.system.model.entity.NoticeDO;
+import top.wyhao.admin.system.entity.NoticeDO;
 import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.starter.core.constant.PropertiesConstants;
 import top.wyhao.starter.core.util.CollUtils;

@@ -16,7 +16,7 @@ import {
   VbenInputPassword,
 } from '@vben-core/shadcn-ui';
 
-import { getImageCaptcha } from '#/api';
+import { authApi, captchaApi } from '#/api';
 import { useUserStore } from '#/store';
 
 import ForceChangePassword from './force-change-password.vue';
@@ -119,7 +119,7 @@ const validateForm = () => {
 // Get captcha
 const getCaptcha = async () => {
   try {
-    const res = await getImageCaptcha();
+    const res = await captchaApi.getImage();
     const { uuid, img, expireTime, isEnabled } = res;
     captchaInfo.value = { uuid, img, expireTime, isEnabled };
     captcha.value = '';

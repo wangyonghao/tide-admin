@@ -17,13 +17,14 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.bo.SocialLoginRequest;
-import top.wyhao.admin.auth.model.vo.LoginResult;
+import top.wyhao.admin.auth.LoginHelper;
+import top.wyhao.admin.auth.model.SocialLoginRequest;
+import top.wyhao.admin.auth.model.LoginResult;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.bo.MessageReq;
-import top.wyhao.admin.system.model.entity.DeptDO;
-import top.wyhao.admin.system.model.entity.user.UserDO;
-import top.wyhao.admin.system.model.entity.user.UserSocialDO;
+import top.wyhao.admin.system.entity.DeptDO;
+import top.wyhao.admin.system.entity.user.UserDO;
+import top.wyhao.admin.system.entity.user.UserSocialDO;
 import top.wyhao.admin.system.model.enums.MessageTemplates;
 import top.wyhao.admin.system.model.enums.MessageType;
 import top.wyhao.admin.system.service.*;
@@ -57,6 +58,7 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest> {
     private final DeptService deptService;
     private final MessageService messageService;
     private final OperationLogService operationLogService;
+    private final LoginLogService loginLogService;
 
     public LoginResult login(SocialLoginRequest req) {
         if (StpUtil.isLogin()) {
@@ -120,10 +122,7 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest> {
         loginUser.setDeviceType("PC");
 
         // 登录并缓存用户信息
-        LoginUtil.doLogin(loginUser);
-
-        // 记录登录日志
-        operationLogService.recordLoginLog(loginUser);
+        LoginHelper.doLogin(loginUser);
 
         return LoginResult.builder()
                 .code("200")

@@ -1,14 +1,12 @@
 
 package top.wyhao.admin.open.service.impl;
 
-import cn.crane4j.core.support.OperateTemplate;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.IdUtil;
-import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -32,8 +30,8 @@ import top.wyhao.starter.data.service.impl.ServiceImpl;
 import top.wyhao.starter.data.util.QueryWrapperUtil;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.SortQuery;
 import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.lang.reflect.Field;
 import java.util.List;
@@ -105,9 +103,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, AppDO> implements App
         QueryWrapper<AppDO> queryWrapper = this.buildQueryWrapper(query);
         QueryWrapperUtil.applySort(queryWrapper, query.getSort(),AppDO.class);
         IPage<AppDO> page = baseMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        PageResult<AppResp> pageResult = PageResult.build(page, AppResp.class);
-        pageResult.getList().forEach(this::fill);
-        return pageResult;
+        return PageResult.build(page, AppResp.class);
     }
 
     @Override
@@ -116,9 +112,7 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, AppDO> implements App
         // 设置排序
         QueryWrapperUtil.applySort(queryWrapper, sortQuery.getSort(),AppDO.class);
         List<AppDO> entityList = baseMapper.selectList(queryWrapper);
-        List<AppResp> list = BeanUtil.copyToList(entityList, AppResp.class);
-        list.forEach(this::fill);
-        return list;
+        return BeanUtil.copyToList(entityList, AppResp.class);
     }
 
 
@@ -143,7 +137,6 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, AppDO> implements App
         this.sort(queryWrapper, sortQuery);
         List<AppDO> entityList = baseMapper.selectList(queryWrapper);
         List<AppDetailResp> list = BeanUtil.copyToList(entityList, AppDetailResp.class);
-        list.forEach(this::fill);
         ExcelUtils.export(list, "导出数据", AppDetailResp.class, response);
     }
 
@@ -182,11 +175,4 @@ public class AppServiceImpl extends ServiceImpl<AppMapper, AppDO> implements App
         return QueryWrapperUtil.build(query, this.getQueryFields(), queryWrapper);
     }
 
-    protected void fill(Object obj) {
-        if (obj == null) {
-            return;
-        }
-        OperateTemplate operateTemplate = SpringUtil.getBean(OperateTemplate.class);
-        operateTemplate.execute(obj);
-    }
 }

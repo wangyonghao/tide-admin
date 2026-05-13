@@ -3,12 +3,11 @@ package top.wyhao.admin.system.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.admin.system.model.bo.DeptReq;
-import top.wyhao.admin.system.model.entity.DeptDO;
+import top.wyhao.admin.system.entity.DeptDO;
 import top.wyhao.admin.system.model.query.DeptQuery;
 import top.wyhao.admin.system.model.vo.DeptResp;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
 
 import java.util.List;
 
@@ -30,7 +29,6 @@ public interface DeptService{
      * 查询列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 列表信息
      */
     List<DeptResp> list(DeptQuery query);
@@ -78,19 +76,9 @@ public interface DeptService{
      * 导出
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @param response  响应对象
      */
     void export(DeptQuery query, HttpServletResponse response);
-
-    /**
-     * 查询字典列表
-     *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @return 字典列表信息
-     */
-    List<LabelValueResp> dict(DeptQuery query);
 
     /**
      * 查询子部门列表

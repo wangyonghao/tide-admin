@@ -1,8 +1,8 @@
 
 package top.wyhao.admin.auth.handler;
 
-import top.wyhao.admin.auth.model.bo.LoginRequest;
-import top.wyhao.admin.auth.model.vo.LoginResult;
+import top.wyhao.admin.auth.model.LoginRequest;
+import top.wyhao.admin.auth.model.LoginResult;
 
 /**
  * 登录处理器

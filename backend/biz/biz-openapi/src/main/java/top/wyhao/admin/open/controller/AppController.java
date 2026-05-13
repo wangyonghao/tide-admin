@@ -14,8 +14,8 @@ import top.wyhao.admin.open.model.resp.AppResp;
 import top.wyhao.admin.open.service.AppService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsRequest;
-import top.wyhao.starter.web.core.model.resp.IdResp;
+import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
@@ -68,8 +68,8 @@ public class AppController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping
-    public IdResp<Long> create(@RequestBody @Valid AppReq req) {
-        return new IdResp<>(appService.create(req));
+    public IdResult<Long> create(@RequestBody @Valid AppReq req) {
+        return new IdResult<>(appService.create(req));
     }
 
     /**

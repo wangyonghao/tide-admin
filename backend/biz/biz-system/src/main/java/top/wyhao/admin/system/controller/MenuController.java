@@ -14,7 +14,7 @@ import top.wyhao.admin.system.model.vo.MenuTreeVO;
 import top.wyhao.admin.system.model.vo.MenuVO;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.IdResp;
+import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;
 
@@ -63,8 +63,8 @@ public class MenuController {
      */
     @Operation(summary = "创建菜单", description = "创建菜单")
     @PostMapping("/system/menu")
-    public IdResp<Long> create(@RequestBody @Valid MenuRequest req) {
-        return new IdResp<>(menuService.create(req));
+    public IdResult<Long> create(@RequestBody @Valid MenuRequest req) {
+        return new IdResult<>(menuService.create(req));
     }
 
     /**

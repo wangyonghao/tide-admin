@@ -16,9 +16,9 @@ import top.wyhao.admin.system.service.SmsLogService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsRequest;
-import top.wyhao.starter.web.core.model.resp.IdResp;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -96,8 +96,8 @@ public class SmsLogController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping
-    public IdResp<Long> create(@RequestBody @Valid SmsLogReq req) {
-        return new IdResp<>(smsLogService.create(req));
+    public IdResult<Long> create(@RequestBody @Valid SmsLogReq req) {
+        return new IdResult<>(smsLogService.create(req));
     }
 
     /**
@@ -158,7 +158,7 @@ public class SmsLogController {
      */
     @Operation(summary = "查询字典列表", description = "查询字典列表（下拉选项等场景）")
     @GetMapping("/dict")
-    public List<LabelValueResp> dict(@Valid SmsLogQuery query, @Valid SortQuery sortQuery) {
+    public List<LabelValueResult> dict(@Valid SmsLogQuery query, @Valid SortQuery sortQuery) {
         return smsLogService.dict(query, sortQuery);
     }
 

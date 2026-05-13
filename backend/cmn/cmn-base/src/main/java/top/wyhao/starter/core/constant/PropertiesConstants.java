@@ -28,10 +28,6 @@ public interface PropertiesConstants {
      */
     String WEB_CORS = WEB + StringConstants.DOT + "cors";
 
-    /**
-     * Web-响应配置
-     */
-    String WEB_RESPONSE = WEB + StringConstants.DOT + "response";
 
 
     /**
@@ -53,16 +49,6 @@ public interface PropertiesConstants {
      * 加密-API 加密
      */
     String ENCRYPT_API = ENCRYPT + StringConstants.DOT + "api";
-
-    /**
-     * 安全配置
-     */
-    String SECURITY = "security";
-
-    /**
-     * 安全-敏感词配置
-     */
-    String SECURITY_SENSITIVE_WORDS = SECURITY + StringConstants.DOT + "sensitive-words";
 
 
     /**
@@ -120,10 +106,6 @@ public interface PropertiesConstants {
      */
     String LICENSE_VERIFIER = LICENSE + StringConstants.DOT + "verifier";
 
-    /**
-     * CRUD 配置
-     */
-    String CRUD = WYHAO_STARTER + StringConstants.DOT + "crud";
 
     /**
      * 数据权限配置

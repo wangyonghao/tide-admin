@@ -12,7 +12,7 @@ import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.model.LoginUser;
 import top.wyhao.starter.core.model.R;
 import top.wyhao.starter.tenant.context.TenantContextHolder;
-import top.wyhao.starter.web.ServletUtils;
+import top.wyhao.starter.web.http.ServletUtils;
 import top.wyhao.starter.json.util.JSONUtils;
 
 /**

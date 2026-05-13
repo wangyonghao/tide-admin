@@ -18,16 +18,14 @@ import net.sf.jsqlparser.statement.select.PlainSelect;
 import net.sf.jsqlparser.statement.select.SelectItem;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.enums.DataScopeEnum;
-import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.model.LoginUser;
 import top.wyhao.starter.core.model.RoleVO;
 import top.wyhao.starter.data.datapermission.annotation.DataPermission;
 import top.wyhao.starter.data.datapermission.exception.DataPermissionException;
 import top.wyhao.starter.data.enums.DatabaseType;
 import top.wyhao.starter.data.util.DBMetaUtils;
-import top.wyhao.common.security.util.LoginUtil;
 
 import javax.sql.DataSource;
 import java.lang.reflect.Method;
@@ -69,7 +67,7 @@ public class DefaultDataPermissionHandler implements DataPermissionHandler {
             if (dataPermission == null) {
                 return where;
             }
-            if (LoginUtil.hasRole(RoleCodeEnum.SUPER_ADMIN.getCode()) || LoginUtil.hasRole(RoleCodeEnum.TENANT_ADMIN.getCode())) {
+            if (UserContextHolder.isSuperadmin()) {
                 return where;
             }
             return buildDataScopeFilter(dataPermission, where);
@@ -87,7 +85,7 @@ public class DefaultDataPermissionHandler implements DataPermissionHandler {
      */
     private DataPermission findDataPermissionAnnotation(String mappedStatementId) {
         try {
-            int lastDotIndex = mappedStatementId.lastIndexOf(StringConstants.DOT);
+            int lastDotIndex = mappedStatementId.lastIndexOf(".");
             if (lastDotIndex == -1) {
                 return null;
             }
@@ -134,7 +132,7 @@ public class DefaultDataPermissionHandler implements DataPermissionHandler {
      * @return 构建后查询条件
      */
     private Expression buildDataScopeFilter(DataPermission dataPermission, Expression where) {
-        LoginUser userData = LoginUtil.getLoginUser();
+        LoginUser userData = UserContextHolder.getCurrentUser();
         if (userData == null) {
             throw DataPermissionException.invalidUserData("User data is null or invalid");
         }

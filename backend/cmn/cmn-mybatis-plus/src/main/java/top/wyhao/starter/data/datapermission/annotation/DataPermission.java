@@ -4,10 +4,7 @@ package top.wyhao.starter.data.datapermission.annotation;
 import java.lang.annotation.*;
 
 /**
- * 数据权限注解
- *
- * @author Charles7c
- * @since 1.1.0
+ * 数据权限注解，用于 Mapper 类的方法之上
  */
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)

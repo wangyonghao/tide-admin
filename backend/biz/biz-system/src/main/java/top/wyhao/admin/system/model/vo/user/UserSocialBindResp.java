@@ -10,16 +10,11 @@ import java.io.Serializable;
 /**
  * 第三方账号绑定响应参数
  *
- * @author Charles7c
- * @since 2023/10/19 21:29
+ * @author Yonghao Wang
  */
 @Data
 @Schema(description = "第三方账号绑定响应参数")
-public class UserSocialBindResp implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class UserSocialBindResp{
     /**
      * 来源
      */

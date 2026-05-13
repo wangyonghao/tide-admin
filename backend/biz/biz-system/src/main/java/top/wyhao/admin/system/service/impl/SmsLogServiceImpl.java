@@ -11,7 +11,7 @@ import top.wyhao.admin.system.service.SmsLogService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -44,7 +44,7 @@ public class SmsLogServiceImpl implements SmsLogService {
     }
 
     @Override
-    public List<LabelValueResp> dict(SmsLogQuery query, SortQuery sortQuery) {
+    public List<LabelValueResult> dict(SmsLogQuery query, SortQuery sortQuery) {
         return List.of();
     }
 

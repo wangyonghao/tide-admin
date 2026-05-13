@@ -16,10 +16,7 @@ import java.io.Serializable;
  */
 @Data
 @NoArgsConstructor
-public class RoleVO implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class RoleVO {
 
     /**
      * ID

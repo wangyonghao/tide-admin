@@ -4,6 +4,56 @@ import type { PageQuery, PageResult } from '#/types/api';
 
 import http from '#/api/http';
 
+/* ==================== API 定义 ==================== */
+export const userMessageApi = {
+  /** 查询未读消息数量 */
+  getUnreadCount: () => {
+    return http.get(`/user/message/unread`);
+  },
+  /** 查询消息列表 */
+  list: (query: MessagePageQuery) => {
+    return http.get<PageResult<MessageResp[]>>(`/user/message`, {
+      params: query,
+    });
+  },
+  /** 获取用户消息详情 */
+  detail: (id: number | string) => {
+    return http.get<MessageResp>(`/user/message/${id}`);
+  },
+  /** 删除消息 */
+  delete: (ids: Array<string>) => {
+    return http.delete(`/user/message`, { data: { ids } });
+  },
+  /** 标记已读 */
+  read: (ids: Array<string>) => {
+    return http.patch(`/user/message/read`, { data: { ids } });
+  },
+  /** 全部已读 */
+  readAll: () => {
+    return http.patch(`/user/message/readAll`);
+  },
+  /** 查询未读公告数量 */
+  getUnreadNoticeCount: () => {
+    return http.get(`/user/message/notice/unread`);
+  },
+  /** 查询未读公告 ID 列表 */
+  getUnreadNoticeIds: (method: string) => {
+    return http.get<number[]>(`/user/message/notice/unread/${method}`);
+  },
+  /** 分页查询用户公告 */
+  listNotice: (query: NoticePageQuery) => {
+    return http.get<PageResult<NoticeResp[]>>(`/user/message/notice`, {
+      params: query,
+    });
+  },
+  /** 获取用户公告详情 */
+  getNoticeDetail: (id: string) => {
+    return http.get<NoticeResp>(`/user/message/notice/${id}`);
+  },
+};
+
+/* ==================== Schema 定义 ==================== */
+
 /** 系统消息类型 */
 export interface MessageResp {
   id: string;
@@ -25,57 +75,3 @@ export interface MessageQuery {
 }
 
 export interface MessagePageQuery extends MessageQuery, PageQuery {}
-
-/** 查询未读消息数量 */
-export function getUnreadMessageCount() {
-  return http.get(`/user/message/unread`);
-}
-
-/** 查询消息列表 */
-export function listMessage(query: MessagePageQuery) {
-  return http.get<PageResult<MessageResp[]>>(`/user/message`, {
-    params: query,
-  });
-}
-
-/** 获取用户消息详情 */
-export function getUserMessage(id: number | string) {
-  return http.get<MessageResp>(`/user/message/${id}`);
-}
-
-/** 删除消息 */
-export function deleteMessage(ids: Array<string>) {
-  return http.delete(`/user/message`, { data: { ids } });
-}
-
-/** 标记已读 */
-export function readMessage(ids: Array<string>) {
-  return http.patch(`/user/message/read`, { data: { ids } });
-}
-
-/** 全部已读 */
-export function readAllMessage() {
-  return http.patch(`/user/message/readAll`);
-}
-
-/** 查询未读公告数量 */
-export function getUnreadNoticeCount() {
-  return http.get(`/user/message/notice/unread`);
-}
-
-/** 查询未读公告 ID 列表 */
-export function getUnreadNoticeIds(method: string) {
-  return http.get<number[]>(`/user/message/notice/unread/${method}`);
-}
-
-/** 分页查询用户公告 */
-export function listUserNotice(query: NoticePageQuery) {
-  return http.get<PageResult<NoticeResp[]>>(`/user/message/notice`, {
-    params: query,
-  });
-}
-
-/** 获取用户公告详情 */
-export function getUserNotice(id: string) {
-  return http.get<NoticeResp>(`/user/message/notice/${id}`);
-}

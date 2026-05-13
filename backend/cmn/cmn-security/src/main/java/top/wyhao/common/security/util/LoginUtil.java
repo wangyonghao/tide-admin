@@ -51,21 +51,6 @@ public class LoginUtil {
         return (LoginUser) session.get(LOGIN_USER_KEY);
     }
 
-    public static void doLogin(LoginUser loginUser){
-        RequestMeta info = getRequestMeta();
-        StpUtil.login(loginUser.getUserId());
-
-        // 写入Session
-        SaSession session = StpUtil.getTokenSession();
-        session.set("loginName", loginUser.getUsername());
-        session.set("ipaddr", info.ip());
-        session.set("loginLocation", info.address());
-        session.set("browser", info.browser());
-        session.set("os", info.os());
-        session.set("loginTime", System.currentTimeMillis());
-        session.set(LOGIN_USER_KEY, loginUser);
-    }
-
     /**
      * 判断当前会话是否已经登录
      */
@@ -139,19 +124,7 @@ public class LoginUtil {
         return users;
     }
 
-    /**
-     * 从请求中读取 ip、地址、浏览器、操作系统信息
-     */
-    public static RequestMeta getRequestMeta() {
-        ServletRequestAttributes attrs = (ServletRequestAttributes) RequestContextHolder.getRequestAttributes();
-        HttpServletRequest request = attrs != null ? attrs.getRequest() : null;
-        String ip =  request != null ? JakartaServletUtil.getClientIP(request): null;
-        String address = ExceptionUtils.exToNull(() -> IpUtils.getIpv4Address(ip));
-        UserAgent ua = request != null ? UserAgentUtil.parse(request.getHeader("User-Agent")) : null;
-        String browser = ua != null ? ua.getBrowser().getName() : "Unknown";
-        String os = ua != null ? ua.getOs().getName() : "Unknown";
-        return new RequestMeta(ip, address, browser, os);
-    }
+
 
     public static String getTokenValue() {
         return StpUtil.getTokenValue();
@@ -162,8 +135,4 @@ public class LoginUtil {
         return session.getLong("tenantId");
     }
 
-    /**
-     * 请求信息
-     */
-    public record RequestMeta(String ip, String address, String browser, String os) {}
 }

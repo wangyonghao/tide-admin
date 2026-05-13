@@ -22,37 +22,36 @@ import top.wyhao.admin.auth.handler.AccountLoginHandler;
 import top.wyhao.admin.auth.handler.EmailLoginHandler;
 import top.wyhao.admin.auth.handler.PhoneLoginHandler;
 import top.wyhao.admin.auth.handler.SocialLoginHandler;
-import top.wyhao.admin.auth.model.bo.*;
+import top.wyhao.admin.auth.model.*;
 import top.wyhao.admin.auth.model.enums.AuthType;
-import top.wyhao.admin.auth.model.vo.AuthInfo;
-import top.wyhao.admin.auth.model.vo.LoginResult;
-import top.wyhao.admin.auth.model.vo.SocialAuthAuthorizeResp;
 import top.wyhao.admin.modules.common.util.RsaUtils;
 import top.wyhao.admin.system.model.bo.user.UserPasswordResetRequest;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.exception.BadRequestException;
-import top.wyhao.starter.core.model.R;
+import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.util.validation.Validator;
 
 import java.util.Map;
 
 /**
  * 认证 API
+ *
+ * @author Yonghao Wang
  */
 @Tag(name = "认证 API")
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/auth")
 public class AuthController {
-    private final UserService userService;
     private final JustAuthProperties authProperties;
+
+    private final UserService userService;
     private final MenuService menuService;
 
     @SaIgnore
     @Operation(summary = "登录", description = "用户登录")
-    @PostMapping("/login")
+    @PostMapping("/auth/login")
     public LoginResult login(@RequestBody @Valid LoginRequest req) {
         if (req.getAuthType() == null) {
             req.setAuthType(AuthType.ACCOUNT);
@@ -92,13 +91,13 @@ public class AuthController {
 
     @SaIgnore
     @Operation(summary = "(密码过期时）强制用户修改密码", description = "通过临时令牌修改密码")
-    @PostMapping("/force-change-password")
+    @PostMapping("/auth/force-change-password")
     public void forceChangePassword(@RequestBody Map<String, String> body) {
         String tempToken = body.getOrDefault("tempToken", body.get("temp-token"));
         String newPasswordEnc = body.get("newPassword");
         Object userIdObj = SaTempUtil.parseToken(tempToken);
         if (userIdObj == null) {
-            throw new BadRequestException("TEMPTOKEN_EXPIRED", "临时令牌无效或已过期");
+            throw new BusinessException("TEMPTOKEN_EXPIRED", "临时令牌无效或已过期");
         }
         String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(newPasswordEnc, "新密码解密失败");
         UserPasswordResetRequest resetReq = new UserPasswordResetRequest();
@@ -108,7 +107,7 @@ public class AuthController {
 
     @Operation(summary = "登出", description = "注销用户的当前登录")
     @Parameter(name = "Authorization", description = "令牌", required = true, example = "Bearer xxxx-xxxx-xxxx-xxxx", in = ParameterIn.HEADER)
-    @PostMapping("/logout")
+    @PostMapping("/auth/logout")
     public void logout() {
         try {
             LoginUtil.logout();
@@ -119,24 +118,24 @@ public class AuthController {
     @SaIgnore
     @Operation(summary = "三方账号登录授权", description = "三方账号登录授权")
     @Parameter(name = "source", description = "来源", example = "gitee", in = ParameterIn.PATH)
-    @GetMapping("/{source}")
-    public SocialAuthAuthorizeResp authorize(@PathVariable String source) {
+    @GetMapping("/auth/{source}")
+    public SocialAuthorizeUrlResult socialLogin(@PathVariable String source) {
         AuthRequest authRequest = this.getAuthRequest(source);
-        return SocialAuthAuthorizeResp.builder()
+        return SocialAuthorizeUrlResult.builder()
                 .authorizeUrl(authRequest.authorize(AuthStateUtils.createState()))
                 .build();
     }
 
     @Operation(summary = "获取认证信息", description = "获取认证信息")
-    @GetMapping("/info")
-    public AuthInfo getAuthInfo() {
+    @GetMapping("/auth/info")
+    public AuthInfoResult getAuthInfo() {
         Long userId = LoginUtil.getUserId();
-        AuthInfo authInfo = new AuthInfo();
-        authInfo.setUser(userService.detail(userId));
-        authInfo.setRoles(userService.findUserRoles(userId));
-        authInfo.setPermissions(userService.findUserPermissions(userId));
-        authInfo.setMenus(menuService.getMenuTreeByUserId(userId));
-        return authInfo;
+        AuthInfoResult authInfoResult = new AuthInfoResult();
+        authInfoResult.setUser(userService.detail(userId));
+        authInfoResult.setRoles(userService.findUserRoles(userId));
+        authInfoResult.setPermissions(userService.findUserPermissions(userId));
+        authInfoResult.setMenus(menuService.getMenuTreeByUserId(userId));
+        return authInfoResult;
     }
 
     private AuthRequest getAuthRequest(String source) {
@@ -144,7 +143,7 @@ public class AuthController {
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw new BadRequestException("PLATFORM_NOT_SUPPORT", "暂不支持 [%s] 平台账号登录".formatted(source));
+            throw new BusinessException("PLATFORM_NOT_SUPPORT", "暂不支持 [%s] 平台账号登录".formatted(source));
         }
     }
 }

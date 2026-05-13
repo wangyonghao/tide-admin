@@ -1,16 +1,20 @@
 
 package top.wyhao.admin.exception;
 
+import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolation;
+import jakarta.validation.ConstraintViolationException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.support.DefaultMessageSourceResolvable;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.converter.HttpMessageNotReadableException;
 import org.springframework.validation.BindException;
+import org.springframework.validation.FieldError;
 import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.MissingServletRequestParameterException;
@@ -24,6 +28,8 @@ import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.exception.BadRequestException;
 import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.model.R;
+
+import java.util.stream.Collectors;
 
 /**
  * 兜底错误处理
@@ -41,22 +47,11 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public R<Void> handleBusinessException(BusinessException e, HttpServletRequest request) {
         log.debug("业务阻断：request={} {} code={}, message={}", request.getMethod(), request.getRequestURI(), e.getCode(), e.getMessage());
+        log.debug("root cause",ExceptionUtil.getRootCause(e));
+
         return R.fail(e.getCode(), e.getMessage());
     }
 
-
-    /**
-     * 自定义验证异常-错误请求
-     * <p>
-     * {@code ValidationUtils.throwIfXxx(xxx)}
-     * </p>
-     */
-    @ExceptionHandler(BadRequestException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public R<Void> handleBadRequestException(BadRequestException e, HttpServletRequest request) {
-        log.debug("业务阻断：request=[{}]{} code={}, message={}", request.getMethod(), request.getRequestURI(), e.getCode(), e.getMessage());
-        return R.fail(String.valueOf(HttpStatus.BAD_REQUEST.value()), e.getMessage());
-    }
 
     /**
      * 请求参数缺失异常
@@ -74,7 +69,7 @@ public class GlobalExceptionHandler {
      * {@code @NotBlank}、{@code @NotNull} 等参数验证不通过
      * </p>
      */
-    @ExceptionHandler({BindException.class, MethodArgumentNotValidException.class})
+    @ExceptionHandler({BindException.class})
     @ResponseStatus(HttpStatus.BAD_REQUEST)
     public R<Void> handleBindException(BindException e, HttpServletRequest request) {
         log.debug(CharSequenceUtil.format("[{}] {}", request.getMethod(), request.getRequestURI()), e);
@@ -148,8 +143,8 @@ public class GlobalExceptionHandler {
     /**
      * 请求 URL 不存在异常
      */
-    @ResponseStatus(HttpStatus.NOT_FOUND)
     @ExceptionHandler(NoHandlerFoundException.class)
+    @ResponseStatus(HttpStatus.NOT_FOUND)
     public R<Void> handleNoHandlerFoundException(NoHandlerFoundException e, HttpServletRequest request) {
         log.error(CharSequenceUtil.format("[{}] {}", request.getMethod(), request.getRequestURI()), e);
         return R.fail(String.valueOf(HttpStatus.NOT_FOUND.value()), "请求 URL '%s' 不存在".formatted(request
@@ -160,11 +155,21 @@ public class GlobalExceptionHandler {
      * 不支持的 HTTP 请求方法异常
      */
     @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    @ResponseStatus(HttpStatus.METHOD_NOT_ALLOWED)
     public R<Void> handleHttpRequestMethodNotSupportedException(HttpRequestMethodNotSupportedException e,
                                                           HttpServletRequest request) {
         log.error(CharSequenceUtil.format("[{}] {}", request.getMethod(), request.getRequestURI()), e);
         return R.fail(String.valueOf(HttpStatus.METHOD_NOT_ALLOWED.value()), "请求方式 '%s' 不支持".formatted(e.getMethod()));
+    }
+
+    @ExceptionHandler(ConstraintViolationException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public R<Void> handleConstraintViolationException(ConstraintViolationException e, HttpServletRequest request) {
+        String msg = e.getConstraintViolations().stream()
+                .map(ConstraintViolation::getMessage)
+                .collect(Collectors.joining(","));
+        log.warn(CharSequenceUtil.format("参数校验失败：request={} {} type={}, message={}", request.getMethod(), request.getRequestURI(), e.getClass().getName(), e.getMessage()),e);
+        return R.fail(HttpStatus.BAD_REQUEST.name(), "参数校验失败：" + msg);
     }
 
     /**

@@ -1,9 +1,6 @@
 
 package top.wyhao.admin.system.model.vo.user;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
@@ -25,7 +22,6 @@ import java.util.Objects;
  */
 @Data
 @Schema(description = "用户响应参数")
-@Assemble(key = "id", props = @Mapping(src = "roleId", ref = "roleIds"), sort = 0, container = ContainerConstants.USER_ROLE_ID_LIST, handlerType = OneToManyAssembleOperationHandler.class)
 public class UserResult {
     /**
      * ID

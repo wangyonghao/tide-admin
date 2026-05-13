@@ -3,7 +3,6 @@ package top.wyhao.admin.auth.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.session.SaSession;
-import cn.dev33.satoken.stp.StpLogic;
 import cn.dev33.satoken.stp.StpUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -15,7 +14,7 @@ import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.admin.auth.model.vo.OnlineUserVO;
+import top.wyhao.admin.auth.model.OnlineUserResult;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -38,17 +37,17 @@ public class OnlineUserController {
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @SaCheckPermission("monitor:online:list")
     @GetMapping("/monitor/online")
-    public PageResult<OnlineUserVO> page(@Valid String keyword, @Valid PageQuery pageQuery) {
+    public PageResult<OnlineUserResult> page(@Valid String keyword, @Valid PageQuery pageQuery) {
         int start = (pageQuery.getPage() - 1) * pageQuery.getSize();
 
         List<String> sessionIds = StpUtil.searchTokenSessionId("", start, pageQuery.getSize(), false);
 
-        List<OnlineUserVO> onlineUsers = new ArrayList<>();
+        List<OnlineUserResult> onlineUsers = new ArrayList<>();
         for (String sessionId : sessionIds) {
             try {
                 SaSession session = StpUtil.getSessionBySessionId(sessionId);
                 if (session != null) {
-                    OnlineUserVO online = new OnlineUserVO();
+                    OnlineUserResult online = new OnlineUserResult();
                     online.setSessionId(sessionId);
                     online.setToken(session.getToken());
 

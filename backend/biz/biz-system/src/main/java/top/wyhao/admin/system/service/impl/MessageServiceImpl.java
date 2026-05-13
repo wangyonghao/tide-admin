@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import cn.crane4j.annotation.AutoOperate;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
@@ -10,23 +9,23 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.model.enums.MessageType;
-import top.wyhao.admin.system.model.enums.NoticeScopes;
 import top.wyhao.admin.system.mapper.MessageLogMapper;
 import top.wyhao.admin.system.mapper.MessageMapper;
-import top.wyhao.admin.system.model.entity.MessageDO;
-import top.wyhao.admin.system.model.entity.MessageLogDO;
-import top.wyhao.admin.system.model.query.MessageQuery;
 import top.wyhao.admin.system.model.bo.MessageReq;
+import top.wyhao.admin.system.entity.MessageDO;
+import top.wyhao.admin.system.entity.MessageLogDO;
+import top.wyhao.admin.system.model.enums.MessageType;
+import top.wyhao.admin.system.model.enums.NoticeScopes;
+import top.wyhao.admin.system.model.query.MessageQuery;
 import top.wyhao.admin.system.model.vo.message.MessageDetailResp;
 import top.wyhao.admin.system.model.vo.message.MessageResp;
 import top.wyhao.admin.system.model.vo.message.MessageTypeUnreadResp;
 import top.wyhao.admin.system.model.vo.message.MessageUnreadResp;
 import top.wyhao.admin.system.service.MessageService;
 import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.starter.messaging.websocket.util.WebSocketUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.messaging.websocket.util.WebSocketUtils;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -47,7 +46,6 @@ public class MessageServiceImpl implements MessageService {
     private final MessageLogMapper messageLogMapper;
 
     @Override
-    @AutoOperate(type = MessageResp.class, on = "list")
     public PageResult<MessageResp> page(MessageQuery query, PageQuery pageQuery) {
         IPage<MessageResp> page = baseMapper.selectMessagePage(new Page<>(pageQuery.getPage(), pageQuery
             .getSize()), query);

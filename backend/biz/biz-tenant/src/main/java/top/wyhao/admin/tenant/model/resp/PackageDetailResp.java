@@ -1,12 +1,8 @@
 
 package top.wyhao.admin.tenant.model.resp;
 
-import cn.crane4j.annotation.AssembleMethod;
-import cn.crane4j.annotation.ContainerMethod;
-import cn.crane4j.annotation.MappingType;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.admin.tenant.service.PackageMenuService;
 
 import java.io.Serial;
 import java.util.List;
@@ -20,7 +16,6 @@ import java.util.List;
  */
 @Data
 @Schema(description = "套餐详情响应参数")
-@AssembleMethod(key = "id", prop = ":menuIds", targetType = PackageMenuService.class, method = @ContainerMethod(bindMethod = "listMenuIdsByPackageId", type = MappingType.ORDER_OF_KEYS))
 public class PackageDetailResp extends PackageResp {
 
     @Serial

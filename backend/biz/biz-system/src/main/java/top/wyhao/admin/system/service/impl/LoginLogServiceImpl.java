@@ -13,14 +13,14 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.mapper.LoginLogMapper;
-import top.wyhao.admin.system.model.entity.LoginLogDO;
+import top.wyhao.admin.system.entity.LoginLogDO;
 import top.wyhao.admin.system.model.enums.LoginDeviceEnum;
 import top.wyhao.admin.system.model.query.LoginLogQuery;
 import top.wyhao.admin.system.model.vo.log.LoginLogExportResult;
 import top.wyhao.admin.system.model.vo.log.LoginLogResult;
 import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.starter.core.enums.RoleCodeEnum;
+import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.util.IpUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -45,7 +45,7 @@ public class LoginLogServiceImpl implements LoginLogService {
 
     @Async
     @Override
-    public void recordLoginLog(String username, String ipAddress, String userAgent, String loginStatus, String failureReason) {
+    public void create(String username, String ipAddress, String userAgent, String loginStatus, String failureReason) {
         try {
             LoginLogDO loginLog = new LoginLogDO();
             loginLog.setUsername(username);
@@ -159,7 +159,7 @@ public class LoginLogServiceImpl implements LoginLogService {
         }
 
         // 租户ID查询（超级管理员可以查询所有租户）
-        if (!LoginUtil.hasRole(RoleCodeEnum.SUPER_ADMIN.getCode())) {
+        if (!UserContextHolder.isSuperadmin()) {
             // 非超级管理员，只能查询当前租户
             queryWrapper.eq(LoginLogDO::getTenantId, LoginUtil.getTenantId());
         } else if (query.getTenantId() != null) {

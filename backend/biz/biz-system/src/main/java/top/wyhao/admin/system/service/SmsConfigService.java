@@ -5,13 +5,13 @@ import cn.hutool.core.lang.tree.Tree;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import top.wyhao.admin.system.model.bo.SmsConfigReq;
-import top.wyhao.admin.system.model.entity.SmsConfigDO;
+import top.wyhao.admin.system.entity.SmsConfigDO;
 import top.wyhao.admin.system.model.query.SmsConfigQuery;
 import top.wyhao.admin.system.model.vo.SmsConfigResp;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -53,5 +53,5 @@ public interface SmsConfigService {
 
     void export(@Valid SmsConfigQuery query, @Valid SortQuery sortQuery, HttpServletResponse response);
 
-    List<LabelValueResp> dict(@Valid SmsConfigQuery query, @Valid SortQuery sortQuery);
+    List<LabelValueResult> dict(@Valid SmsConfigQuery query, @Valid SortQuery sortQuery);
 }

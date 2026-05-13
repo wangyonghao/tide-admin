@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.bo.MenuRequest;
-import top.wyhao.admin.system.model.entity.MenuDO;
+import top.wyhao.admin.system.entity.MenuDO;
 import top.wyhao.admin.system.model.enums.MenuType;
 import top.wyhao.admin.system.model.query.MenuQuery;
 import top.wyhao.admin.system.model.vo.MenuTreeVO;

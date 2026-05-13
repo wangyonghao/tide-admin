@@ -221,8 +221,6 @@ web:
       - /*/*.css
       - /*/*.js
       - /websocket/**
-      # 本地存储资源
-      - /file/**
 --- ### Just Auth 配置
 justauth:
   enabled: true

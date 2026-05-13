@@ -1,15 +1,12 @@
 
 package top.wyhao.admin.system.model.vo.role;
 
-import cn.crane4j.annotation.*;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.admin.system.service.RoleDeptService;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.starter.core.enums.DataScopeEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 
@@ -27,7 +24,6 @@ import java.util.List;
 @Data
 @ExcelIgnoreUnannotated
 @Schema(description = "角色详情响应参数")
-@AssembleMethod(key = "id", prop = ":deptIds", targetType = RoleDeptService.class, method = @ContainerMethod(bindMethod = "listDeptIdByRoleId", type = MappingType.ORDER_OF_KEYS))
 public class RoleDetailResult implements Serializable {
 
     @Serial
@@ -44,7 +40,6 @@ public class RoleDetailResult implements Serializable {
      * 创建人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "createUserString"))
     private Long createUser;
 
     /**
@@ -72,7 +67,6 @@ public class RoleDetailResult implements Serializable {
      * 修改人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "updateUserString"))
     private Long updateUser;
 
     /**

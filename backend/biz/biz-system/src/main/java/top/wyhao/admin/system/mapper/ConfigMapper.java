@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.model.entity.ConfigDO;
+import top.wyhao.admin.system.entity.ConfigDO;
 import top.wyhao.admin.system.model.vo.ConfigResult;
 import top.wyhao.starter.data.mapper.BaseMapper;
 

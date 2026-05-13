@@ -4,20 +4,18 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.query.NoticeQuery;
 import top.wyhao.admin.system.model.bo.NoticeRequest;
+import top.wyhao.admin.system.model.query.NoticeQuery;
 import top.wyhao.admin.system.model.vo.NoticeDetailResult;
 import top.wyhao.admin.system.model.vo.NoticeResult;
 import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsRequest;
-import top.wyhao.starter.web.core.model.resp.IdResp;
 import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;
 
@@ -48,18 +46,6 @@ public class NoticeController {
     }
 
     /**
-     * 查询列表
-     *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @return 列表信息
-     */
-    @Operation(summary = "查询列表", description = "查询列表")
-    @GetMapping("/system/notice/list")
-    public List<NoticeResult> list(@Valid NoticeQuery query, @Valid SortQuery sortQuery) {
-        return noticeService.list(query, sortQuery);
-    }
-    /**
      * 查询详情
      *
      * @param id ID
@@ -80,8 +66,8 @@ public class NoticeController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping("/system/notice")
-    public IdResp<Long> create(@RequestBody @Valid NoticeRequest req) {
-        return new IdResp<>(noticeService.create(req));
+    public IdResult<Long> create(@RequestBody @Valid NoticeRequest req) {
+        return new IdResult<>(noticeService.create(req));
     }
 
     /**
@@ -118,18 +104,5 @@ public class NoticeController {
     @DeleteMapping("/system/notice")
     public void batchDelete(@RequestBody @Valid IdsRequest req) {
         noticeService.delete(req.getIds());
-    }
-
-    /**
-     * 导出
-     *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @param response  响应对象
-     */
-    @Operation(summary = "导出数据", description = "导出数据")
-    @GetMapping("/system/notice/export")
-    public void export(@Valid NoticeQuery query, HttpServletResponse response) {
-        noticeService.export(query, response);
     }
 }

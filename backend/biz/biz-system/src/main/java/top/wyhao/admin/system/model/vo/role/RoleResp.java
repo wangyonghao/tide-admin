@@ -1,9 +1,6 @@
 
 package top.wyhao.admin.system.model.vo.role;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Mapping;
-import cn.crane4j.annotation.condition.ConditionOnPropertyNotNull;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,7 +35,6 @@ public class RoleResp implements Serializable {
      * 创建人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "createUserString"))
     private Long createUser;
 
     /**
@@ -64,8 +60,6 @@ public class RoleResp implements Serializable {
      * 修改人
      */
     @JsonIgnore
-    @ConditionOnPropertyNotNull
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "updateUserString"))
     private Long updateUser;
 
     /**

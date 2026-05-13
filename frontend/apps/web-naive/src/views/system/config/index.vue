@@ -182,9 +182,6 @@ async function loadConfig(configKey: string) {
         break;
       }
     }
-  } catch (error) {
-    console.error('加载配置失败:', error);
-    message.error('加载配置失败');
   } finally {
     loading.value = false;
   }
@@ -225,9 +222,6 @@ async function handleSave() {
       }
     }
     message.success('保存成功');
-  } catch (error) {
-    console.error('保存配置失败:', error);
-    message.error('保存失败');
   } finally {
     saving.value = false;
   }
@@ -251,33 +245,31 @@ onMounted(() => {
 </script>
 
 <template>
-  <Page>
+  <Page class="h-full m-4 bg-background">
     <NSplit
       direction="horizontal"
       default-size="200px"
       min="200px"
       max="320px"
       :resizable="true"
-      class="h-full p-2"
+      class="h-full"
     >
       <template #1>
         <!-- 左侧配置列表 -->
-        <div class="h-full bg-background p-4">
-          <div class="space-y-2">
-            <div
-              v-for="item in configList"
-              :key="item.key"
-              class="flex items-center gap-2 px-3 py-2 rounded cursor-pointer transition-colors"
-              :class="
-                selectedConfigKey === item.key
-                  ? 'bg-primary text-primary-foreground'
-                  : 'hover:bg-muted'
-              "
-              @click="handleSelectConfig(item.key)"
-            >
-              <IconifyIcon :icon="item.icon" class="text-lg" />
-              <span>{{ item.label }}</span>
-            </div>
+        <div class="space-y-2">
+          <div
+            v-for="item in configList"
+            :key="item.key"
+            class="flex items-center gap-2 px-3 py-2 rounded cursor-pointer transition-colors"
+            :class="
+              selectedConfigKey === item.key
+                ? 'bg-primary text-primary-foreground'
+                : 'hover:bg-muted'
+            "
+            @click="handleSelectConfig(item.key)"
+          >
+            <IconifyIcon :icon="item.icon" class="text-lg" />
+            <span>{{ item.label }}</span>
           </div>
         </div>
       </template>

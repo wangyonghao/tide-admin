@@ -1,20 +1,13 @@
 
 package top.wyhao.admin.tenant.model.resp;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.AssembleMethod;
-import cn.crane4j.annotation.ContainerMethod;
-import cn.crane4j.annotation.Mapping;
-import cn.crane4j.annotation.condition.ConditionOnPropertyNotNull;
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.admin.tenant.service.PackageService;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 
 import java.io.Serial;
@@ -47,7 +40,6 @@ public class TenantResp implements Serializable {
      * 创建人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "createUserString"))
     private Long createUser;
 
     /**
@@ -75,8 +67,6 @@ public class TenantResp implements Serializable {
      * 修改人
      */
     @JsonIgnore
-    @ConditionOnPropertyNotNull
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "updateUserString"))
     private Long updateUser;
 
     /**
@@ -152,7 +142,6 @@ public class TenantResp implements Serializable {
      * 套餐 ID
      */
     @Schema(description = "套餐 ID", example = "1")
-    @AssembleMethod(props = @Mapping(src = "name", ref = "packageName"), targetType = PackageService.class, method = @ContainerMethod(bindMethod = "get", resultType = PackageResp.class))
     private Long packageId;
 
     /**

@@ -1,7 +1,7 @@
 
 package top.wyhao.starter.web.excel;
 
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public interface DictApi {
      * @param dictType 字典类型
      * @return 字典列表
      */
-    List<LabelValueResp<String>> listByDictType(String dictType);
+    List<LabelValueResult<String>> listByDictType(String dictType);
 
-    List<LabelValueResp> listAll();
+    List<LabelValueResult> listAll();
 }

@@ -36,24 +36,6 @@ spring.liquibase:
   # 配置文件路径
   change-log: classpath:/db/changelog/postgresql/db.changelog-master.yaml
 
---- ### 存储配置
-wyhao:
-  storage:
-    # 默认存储平台
-    default-platform: local
-    # 默认存储配置来源 (CONFIG: 配置文件, DYNAMIC: 动态配置)
-    default-storage-source: CONFIG
-    # 本地存储配置
-    local:
-      - # 是否启用
-        enabled: true
-        # 存储平台名称
-        platform: local
-        # 存储路径
-        bucket-name: ./data/file/
-        # 访问路径
-        endpoint: http://localhost:8000/file
-
 --- ### 缓存配置
 spring.data:
   ## Redis 配置（单机模式）
@@ -240,8 +222,6 @@ web:
       - /swagger-ui/**
       - /swagger-resources/**
       - /*/api-docs/**
-      # 本地存储资源
-      - /file/**
 --- ### Just Auth 配置
 justauth:
   enabled: true

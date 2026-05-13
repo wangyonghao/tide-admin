@@ -15,12 +15,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.mapper.ConfigMapper;
 import top.wyhao.admin.system.model.bo.ConfigRequest;
-import top.wyhao.admin.system.model.entity.ConfigDO;
+import top.wyhao.admin.system.entity.ConfigDO;
 import top.wyhao.admin.system.model.query.ConfigQuery;
 import top.wyhao.admin.system.model.vo.ConfigResult;
 import top.wyhao.admin.system.model.vo.config.*;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.model.MailConfig;
+import top.wyhao.starter.core.model.OSSConfig;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.data.util.QueryWrapperUtil;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -73,6 +75,7 @@ public class ConfigServiceImpl implements ConfigService {
         return BeanUtil.copyProperties(configDO, ConfigResult.class);
     }
 
+
     @Override
     public SiteConfigVO getSiteConfig() {
         return this.getConfig("site", SiteConfigVO.class);
@@ -107,14 +110,14 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public EmailConfigVO getEmailConfig() {
-        return this.getConfig("email", EmailConfigVO.class);
+    public MailConfig getMailConfig() {
+        return this.getConfig("mail", MailConfig.class);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateEmailConfig(EmailConfigVO config) {
-        this.updateConfig("email", config);
+    public void updateMailConfig(MailConfig config) {
+        this.updateConfig("mail", config);
     }
 
     @Override
@@ -310,5 +313,105 @@ public class ConfigServiceImpl implements ConfigService {
 
         Long count = configMapper.selectCount(queryWrapper);
         BizAssert.isTrue(count == 0, "配置键已存在");
+    }
+
+    @Override
+    public OSSConfig getOSSConfig(String key) {
+        return this.getConfig("oss", OSSConfig.class);
+    }
+
+    @Override
+    public String getStorageProvider() {
+        return "local";
+    }
+
+    @Override
+    public String getStorageLocalPath() {
+        return "./data/file";
+    }
+
+    @Override
+    public String getStorageEndPoint() {
+        return "/api/fs/"; // 通过 FileAccessController 来访问本地文件
+    }
+
+    @Override
+    public String getStorageMinioEndpoint() {
+        return "";
+    }
+
+    @Override
+    public String getStorageMinioAccessKey() {
+        return "";
+    }
+
+    @Override
+    public String getStorageMinioSecretKey() {
+        return "";
+    }
+
+    @Override
+    public String getStorageMinioBucket() {
+        return "";
+    }
+
+    @Override
+    public String getStorageRustfsEndpoint() {
+        return "";
+    }
+
+    @Override
+    public String getStorageRustfsAccessKey() {
+        return "";
+    }
+
+    @Override
+    public String getStorageRustfsSecretKey() {
+        return "";
+    }
+
+    @Override
+    public String getStorageRustfsBucket() {
+        return "";
+    }
+
+    @Override
+    public String getStorageAliyunEndpoint() {
+        return "";
+    }
+
+    @Override
+    public String getStorageAliyunAccessKey() {
+        return "";
+    }
+
+    @Override
+    public String getStorageAliyunSecretKey() {
+        return "";
+    }
+
+    @Override
+    public String getStorageAliyunBucket() {
+        return "";
+    }
+
+    @Override
+    public String getStorageTencentSecretId() {
+        return "";
+    }
+
+    @Override
+    public String getStorageTencentSecretKey() {
+        return "";
+    }
+
+    @Override
+    public String getStorageTencentRegion() {
+        return "";
+    }
+
+    @Override
+    public String getStorageTencentBucket() {
+        return "";
     }
 }

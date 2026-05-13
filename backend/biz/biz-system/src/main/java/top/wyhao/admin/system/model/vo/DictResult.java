@@ -5,19 +5,17 @@ import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
-import java.time.LocalDateTime;
 import java.util.Map;
 
 /**
  * 字典响应参数
  *
- * @author Charles7c
- * @since 2023/9/11 21:29
+ * @author Yonghao Wang
+ * @since 2026/5/13
  */
 @Data
 @Schema(description = "字典响应参数")
-public class DictResult{
-
+public class DictResult {
     /**
      * ID
      */
@@ -50,7 +48,7 @@ public class DictResult{
      * 扩展信息
      */
     @Schema(description = "扩展信息")
-    private Map<String, Object> extra;
+    private Map<String, Object> ext;
 
     /**
      * 排序
@@ -72,16 +70,4 @@ public class DictResult{
     @Schema(description = "描述")
     @ExcelProperty(value = "描述")
     private String description;
-
-    /**
-     * 创建时间
-     */
-    @Schema(description = "创建时间")
-    private LocalDateTime createdAt;
-
-    /**
-     * 更新时间
-     */
-    @Schema(description = "更新时间")
-    private LocalDateTime updatedAt;
 }

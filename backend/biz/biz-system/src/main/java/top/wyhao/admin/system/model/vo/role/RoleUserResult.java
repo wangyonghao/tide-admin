@@ -1,12 +1,8 @@
 
 package top.wyhao.admin.system.model.vo.role;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Mapping;
-import cn.crane4j.core.executor.handler.OneToManyAssembleOperationHandler;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 
@@ -34,7 +30,6 @@ public class RoleUserResult {
      * 用户 ID
      */
     @Schema(description = "用户 ID", example = "1")
-    @Assemble(props = @Mapping(src = "roleId", ref = "roleIds"), sort = 0, container = ContainerConstants.USER_ROLE_ID_LIST, handlerType = OneToManyAssembleOperationHandler.class)
     private Long userId;
 
     /**

@@ -1,8 +1,6 @@
 
 package top.wyhao.admin.modules.common.api.system;
 
-import cn.crane4j.annotation.ContainerMethod;
-import cn.crane4j.annotation.MappingType;
 import top.wyhao.starter.core.constant.ContainerConstants;
 
 /**
@@ -23,7 +21,6 @@ public interface UserApi {
      * @param id ID
      * @return 昵称
      */
-    @ContainerMethod(namespace = ContainerConstants.USER_NICKNAME, type = MappingType.ORDER_OF_KEYS)
     String getNicknameById(Long id);
 
     /**

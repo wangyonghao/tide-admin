@@ -7,20 +7,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.bo.ConfigRequest;
 import top.wyhao.admin.system.model.query.ConfigQuery;
 import top.wyhao.admin.system.model.vo.ConfigResult;
 import top.wyhao.admin.system.model.vo.config.*;
 import top.wyhao.admin.system.service.ConfigService;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsRequest;
-import top.wyhao.starter.web.core.model.resp.IdResp;
-
-import java.util.List;
 
 /**
  * 系统配置 API
@@ -30,7 +23,6 @@ import java.util.List;
  */
 @Tag(name = "系统配置 API")
 @RestController
-@RequestMapping("/system/config")
 @RequiredArgsConstructor
 public class ConfigController {
 
@@ -42,7 +34,7 @@ public class ConfigController {
      * 获取站点配置
      */
     @Operation(summary = "获取站点配置")
-    @GetMapping("/site")
+    @GetMapping("/system/config/site")
     public SiteConfigVO getSiteConfig() {
         return configService.getSiteConfig();
     }
@@ -52,7 +44,7 @@ public class ConfigController {
      */
     @Operation(summary = "更新站点配置")
     @SaCheckPermission("system:config:edit")
-    @PutMapping("/site")
+    @PutMapping("/system/config/site")
     public void updateSiteConfig(@RequestBody @Valid SiteConfigVO config) {
         configService.updateSiteConfig(config);
     }
@@ -61,7 +53,7 @@ public class ConfigController {
      * 获取登录配置
      */
     @Operation(summary = "获取登录配置")
-    @GetMapping("/login")
+    @GetMapping("/system/config/login")
     public LoginConfigVO getLoginConfig() {
         return configService.getLoginConfig();
     }
@@ -71,7 +63,7 @@ public class ConfigController {
      */
     @Operation(summary = "更新登录配置")
     @SaCheckPermission("system:config:edit")
-    @PutMapping("/login")
+    @PutMapping("/system/config/login")
     public void updateLoginConfig(@RequestBody @Valid LoginConfigVO config) {
         configService.updateLoginConfig(config);
     }
@@ -80,7 +72,7 @@ public class ConfigController {
      * 获取注册配置
      */
     @Operation(summary = "获取注册配置")
-    @GetMapping("/register")
+    @GetMapping("/system/config/register")
     public RegisterConfigVO getRegisterConfig() {
         return configService.getRegisterConfig();
     }
@@ -90,7 +82,7 @@ public class ConfigController {
      */
     @Operation(summary = "更新注册配置")
     @SaCheckPermission("system:config:edit")
-    @PutMapping("/register")
+    @PutMapping("/system/config/register")
     public void updateRegisterConfig(@RequestBody @Valid RegisterConfigVO config) {
         configService.updateRegisterConfig(config);
     }
@@ -99,10 +91,10 @@ public class ConfigController {
      * 获取邮件配置
      */
     @Operation(summary = "获取邮件配置")
-    @SaCheckPermission("system:config:list")
-    @GetMapping("/email")
-    public EmailConfigVO getEmailConfig() {
-        return configService.getEmailConfig();
+    @SaCheckPermission("system:config:mail")
+    @GetMapping("/system/config/mail")
+    public MailConfig getMailConfig() {
+        return configService.getMailConfig();
     }
 
     /**
@@ -110,9 +102,9 @@ public class ConfigController {
      */
     @Operation(summary = "更新邮件配置")
     @SaCheckPermission("system:config:edit")
-    @PutMapping("/email")
-    public void updateEmailConfig(@RequestBody @Valid EmailConfigVO config) {
-        configService.updateEmailConfig(config);
+    @PutMapping("/system/config/mail")
+    public void updateMailConfig(@RequestBody @Valid MailConfig config) {
+        configService.updateMailConfig(config);
     }
 
     /**
@@ -120,7 +112,7 @@ public class ConfigController {
      */
     @Operation(summary = "获取短信配置")
     @SaCheckPermission("system:config:list")
-    @GetMapping("/sms")
+    @GetMapping("/system/config/sms")
     public SmsConfigVO getSmsConfig() {
         return configService.getSmsConfig();
     }
@@ -130,7 +122,7 @@ public class ConfigController {
      */
     @Operation(summary = "更新短信配置")
     @SaCheckPermission("system:config:edit")
-    @PutMapping("/sms")
+    @PutMapping("/system/config/sms")
     public void updateSmsConfig(@RequestBody @Valid SmsConfigVO config) {
         configService.updateSmsConfig(config);
     }
@@ -140,7 +132,7 @@ public class ConfigController {
      */
     @Operation(summary = "获取存储配置")
     @SaCheckPermission("system:config:list")
-    @GetMapping("/storage")
+    @GetMapping("/system/config/storage")
     public StorageConfigVO getStorageConfig() {
         return configService.getStorageConfig();
     }
@@ -150,7 +142,7 @@ public class ConfigController {
      */
     @Operation(summary = "更新存储配置")
     @SaCheckPermission("system:config:edit")
-    @PutMapping("/storage")
+    @PutMapping("/system/config/storage")
     public void updateStorageConfig(@RequestBody @Valid StorageConfigVO config) {
         configService.updateStorageConfig(config);
     }
@@ -159,7 +151,7 @@ public class ConfigController {
      * 获取安全配置
      */
     @Operation(summary = "获取安全配置")
-    @GetMapping("/security")
+    @GetMapping("/system/config/security")
     public SecurityConfigVO getSecurityConfig() {
         return configService.getSecurityConfig();
     }
@@ -169,33 +161,12 @@ public class ConfigController {
      */
     @Operation(summary = "更新安全配置")
     @SaCheckPermission("system:config:edit")
-    @PutMapping("/security")
+    @PutMapping("/system/config/security")
     public void updateSecurityConfig(@RequestBody @Valid SecurityConfigVO config) {
         configService.updateSecurityConfig(config);
     }
 
     // ==================== 通用 CRUD 接口 ====================
-
-    /**
-     * 分页查询列表
-     */
-    @Operation(summary = "分页查询列表")
-    @SaCheckPermission("system:config:list")
-    @GetMapping
-    public PageResult<ConfigResult> page(@Valid ConfigQuery query, @Valid PageQuery pageQuery) {
-        return configService.page(query, pageQuery);
-    }
-
-    /**
-     * 查询详情
-     */
-    @Operation(summary = "查询详情")
-    @SaCheckPermission("system:config:list")
-    @GetMapping("/{id}")
-    public ConfigResult get(@PathVariable Long id) {
-        return configService.detail(id);
-    }
-
     /**
      * 根据键查询配置
      */
@@ -204,58 +175,6 @@ public class ConfigController {
     @GetMapping("/key/{configKey}")
     public ConfigResult getByKey(@PathVariable String configKey) {
         return configService.getByKey(configKey);
-    }
-
-    /**
-     * 新增
-     */
-    @Operation(summary = "新增")
-    @SaCheckPermission("system:config:create")
-    @PostMapping
-    public IdResp<Long> create(@RequestBody @Validated(ConfigRequest.Create.class) ConfigRequest request) {
-        return new IdResp<>(configService.create(request));
-    }
-
-    /**
-     * 修改
-     */
-    @Operation(summary = "修改")
-    @SaCheckPermission("system:config:edit")
-    @PatchMapping("/{id}")
-    public void update(@PathVariable Long id,
-                       @RequestBody @Validated(ConfigRequest.Update.class) ConfigRequest request) {
-        configService.update(id, request);
-    }
-
-    /**
-     * 根据键更新配置
-     */
-    @Operation(summary = "根据键更新配置")
-    @SaCheckPermission("system:config:edit")
-    @PutMapping("/key/{configKey}")
-    public void updateByKey(@PathVariable String configKey,
-                            @RequestBody @Validated(ConfigRequest.Update.class) ConfigRequest request) {
-        configService.updateByKey(configKey, request);
-    }
-
-    /**
-     * 删除
-     */
-    @Operation(summary = "删除")
-    @SaCheckPermission("system:config:delete")
-    @DeleteMapping("/{id}")
-    public void delete(@PathVariable Long id) {
-        configService.delete(List.of(id));
-    }
-
-    /**
-     * 批量删除
-     */
-    @Operation(summary = "批量删除")
-    @SaCheckPermission("system:config:delete")
-    @DeleteMapping
-    public void batchDelete(@RequestBody @Valid IdsRequest req) {
-        configService.delete(req.getIds());
     }
 
     /**

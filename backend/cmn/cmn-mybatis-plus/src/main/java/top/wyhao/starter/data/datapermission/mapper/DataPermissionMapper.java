@@ -15,8 +15,6 @@ import java.util.List;
  * 数据权限 Mapper 基类
  *
  * @param <T> 实体类
- * @author Charles7c
- * @since 2023/9/3 21:50
  */
 public interface DataPermissionMapper<T> extends BaseMapper<T> {
 

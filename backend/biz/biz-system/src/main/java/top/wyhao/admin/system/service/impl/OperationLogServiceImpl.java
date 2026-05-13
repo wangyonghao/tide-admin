@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import cn.crane4j.annotation.AutoOperate;
 import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -13,23 +12,21 @@ import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.mapper.OperationLogMapper;
-import top.wyhao.admin.system.model.entity.SysOperationLog;
+import top.wyhao.admin.system.entity.SysOperationLog;
 import top.wyhao.admin.system.model.query.LogQuery;
-import top.wyhao.admin.system.model.vo.log.OperationLogDetailResult;
-import top.wyhao.admin.system.model.vo.log.OperationLogResult;
 import top.wyhao.admin.system.model.vo.log.LoginLogExportResult;
+import top.wyhao.admin.system.model.vo.log.OperationLogDetailResult;
 import top.wyhao.admin.system.model.vo.log.OperationLogExportResp;
+import top.wyhao.admin.system.model.vo.log.OperationLogResult;
 import top.wyhao.admin.system.service.OperationLogService;
-import top.wyhao.starter.core.model.LoginUser;
+import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.data.util.QueryWrapperUtil;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.ServletUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.log.OperationLog;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -43,33 +40,18 @@ public class OperationLogServiceImpl implements OperationLogService {
     private final OperationLogMapper operationLogMapper;
 
     /**
-     * 记录操作日志
+     * 异步记录操作日志
      *
      * @param operationLog 操作日志事件
      */
     @Async
     @EventListener
     @Override
-    public void log(OperationLog operationLog) {
+    public void create(OperationLog operationLog) {
         SysOperationLog operLog = BeanUtil.toBean(operationLog, SysOperationLog.class);
         operationLogMapper.insert(operLog);
     }
 
-    @Override
-    public void recordLoginLog(LoginUser loginUser) {
-        ServletUtils.RequestMeta requestMeta = ServletUtils.getRequestMeta();
-        // 记录登录日志
-        SysOperationLog operationLog = new SysOperationLog();
-        operationLog.setOperation("login");
-        operationLog.setObjectType("user");
-        operationLog.setObjectId(loginUser.getUserId());
-        operationLog.setOperatorId(loginUser.getUserId());
-        operationLog.setOperatorName(loginUser.getUsername());
-        operationLog.setOperatorIp(requestMeta.ip());
-        operationLog.setOperateTime(LocalDateTime.now());
-        operationLog.setRemark(requestMeta.address() + ", " + requestMeta.browser() + ", " + requestMeta.os()); // 登录设备信息
-        operationLogMapper.insert(operationLog);
-    }
 
     @Override
     public PageResult<OperationLogResult> page(LogQuery query, PageQuery pageQuery) {
@@ -80,9 +62,8 @@ public class OperationLogServiceImpl implements OperationLogService {
     }
 
     @Override
-    @AutoOperate(type = OperationLogDetailResult.class)
-    public OperationLogDetailResult get(Long id) {
-        SysOperationLog sysOperationLog = operationLogMapper.selectById(id);
+    public OperationLogDetailResult detail(Long id) {
+        SysOperationLog sysOperationLog = this.require(id);
         BizAssert.throwIfNotExists(sysOperationLog, "LogDO", "ID", id);
         return BeanUtil.copyProperties(sysOperationLog, OperationLogDetailResult.class);
     }
@@ -109,5 +90,13 @@ public class OperationLogServiceImpl implements OperationLogService {
         QueryWrapper<SysOperationLog> queryWrapper = QueryWrapperUtil.build(query);
         QueryWrapperUtil.applySort(queryWrapper, query.getSort(), SysOperationLog.class);
         return operationLogMapper.selectLogList(queryWrapper);
+    }
+
+    private SysOperationLog require(Long id){
+        SysOperationLog operationLog =  operationLogMapper.selectById(id);
+        if(operationLog == null){
+            throw new BusinessException("OPERATIONLOG_NOT_FOUND", "操作日志不存在");
+        }
+        return operationLog;
     }
 }

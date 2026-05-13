@@ -13,11 +13,10 @@ import top.wyhao.admin.system.model.query.DeptQuery;
 import top.wyhao.admin.system.model.vo.DeptResp;
 import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.starter.core.model.R;
+import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.req.IdsRequest;
-import top.wyhao.starter.web.core.model.resp.IdResp;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
 
 import java.util.List;
 
@@ -90,8 +89,8 @@ public class DeptController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping
-    public IdResp<Long> create(@RequestBody @Valid DeptReq req) {
-        return new IdResp<>(deptService.create(req));
+    public IdResult<Long> create(@RequestBody @Valid DeptReq req) {
+        return new IdResult<>(deptService.create(req));
     }
 
     /**
@@ -142,17 +141,6 @@ public class DeptController {
         deptService.export(query, response);
     }
 
-    /**
-     * 查询字典列表
-     *
-     * @param query     查询条件
-     * @return 字典列表信息
-     */
-    @Operation(summary = "查询字典列表", description = "查询字典列表（下拉选项等场景）")
-    @GetMapping("/dict")
-    public List<LabelValueResp> dict(@Valid DeptQuery query) {
-        return deptService.dict(query);
-    }
 
     /**
      * 查询部门树

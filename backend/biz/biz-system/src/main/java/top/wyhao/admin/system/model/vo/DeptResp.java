@@ -8,7 +8,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
-import top.wyhao.starter.web.core.annotation.TreeField;
 
 import java.util.List;
 
@@ -20,7 +19,6 @@ import java.util.List;
  */
 @Data
 @ExcelIgnoreUnannotated
-@TreeField(value = "id", nameKey = "name")
 @Schema(description = "部门响应参数")
 public class DeptResp {
     /**

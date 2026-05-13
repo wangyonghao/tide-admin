@@ -2,7 +2,7 @@
 import type { FormInst, FormRules, SelectOption } from 'naive-ui';
 import type { NoticeCreateReq, NoticeUpdateReq } from '#/api/system/notice';
 
-import { computed, onMounted, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';

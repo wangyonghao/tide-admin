@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
 import top.wyhao.admin.system.model.bo.RoleRequest;
-import top.wyhao.admin.system.model.entity.RoleDO;
+import top.wyhao.admin.system.entity.RoleDO;
 import top.wyhao.admin.system.model.query.RoleQuery;
 import top.wyhao.admin.system.model.query.RoleUserQuery;
 import top.wyhao.admin.system.model.vo.MenuVO;

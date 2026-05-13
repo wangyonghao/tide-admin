@@ -6,9 +6,7 @@ import lombok.Data;
 import top.wyhao.admin.system.model.enums.FileType;
 import top.wyhao.starter.data.annotation.Query;
 import top.wyhao.starter.data.enums.QueryType;
-
-import java.io.Serial;
-import java.io.Serializable;
+import top.wyhao.starter.web.core.model.SortQuery;
 
 /**
  * 文件查询条件
@@ -18,29 +16,34 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "文件查询条件")
-public class FileQuery implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class FileQuery extends SortQuery {
 
     /**
      * 名称
      */
     @Schema(description = "名称", example = "example")
     @Query(type = QueryType.LIKE)
-    private String originalName;
+    private String fileName;
 
     /**
      * 上级目录
      */
     @Schema(description = "上级目录", example = "/")
     @Query(type = QueryType.EQ)
-    private String parentPath;
+    private String ossPath;
 
     /**
      * 类型
      */
     @Schema(description = "类型", example = "2")
     @Query(type = QueryType.EQ)
-    private FileType type;
+    private FileType fileType;
+
+    @Schema(description = "关联业务类型", example = "2")
+    @Query(type = QueryType.EQ)
+    private String bizType;
+    @Schema(description = "关联业务Id", example = "2")
+    @Query(type = QueryType.EQ)
+    private String bizId;
+
 }

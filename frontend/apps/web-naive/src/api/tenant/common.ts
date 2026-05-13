@@ -1,4 +1,4 @@
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 根据域名查询租户 ID */
 export function getTenantIdByDomain(domain: string) {

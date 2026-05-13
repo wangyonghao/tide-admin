@@ -2,22 +2,18 @@
 package top.wyhao.admin.system.service;
 
 import top.wyhao.admin.system.model.enums.NoticeMethods;
-import top.wyhao.admin.system.model.entity.NoticeDO;
+import top.wyhao.admin.system.entity.NoticeDO;
 import top.wyhao.admin.system.model.query.NoticeQuery;
 import top.wyhao.admin.system.model.bo.NoticeRequest;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardNoticeResp;
 import top.wyhao.admin.system.model.vo.NoticeDetailResult;
 import top.wyhao.admin.system.model.vo.NoticeResult;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
 import top.wyhao.starter.web.core.model.PageResult;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
-
-import jakarta.servlet.http.HttpServletResponse;
 
 /**
  * 公告管理 API
@@ -35,15 +31,6 @@ public interface NoticeService {
      * @return 分页列表信息
      */
     PageResult<NoticeResult> page(NoticeQuery query, PageQuery pageQuery);
-
-    /**
-     * 查询列表
-     *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @return 列表信息
-     */
-    List<NoticeResult> list(NoticeQuery query, SortQuery sortQuery);
 
     /**
      * 查询详情
@@ -75,26 +62,6 @@ public interface NoticeService {
      * @param ids ID 列表
      */
     void delete(@NotEmpty(message = "ID 不能为空") List<Long> ids);
-
-    /**
-     * 导出
-     *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @param response  响应对象
-     */
-    void export(NoticeQuery query, HttpServletResponse response);
-
-    /**
-     * 查询字典列表
-     *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @return 字典列表信息
-     * @since 2.1.0
-     */
-    List<LabelValueResp> dict(NoticeQuery query, SortQuery sortQuery);
-
     /**
      * 发布公告
      *

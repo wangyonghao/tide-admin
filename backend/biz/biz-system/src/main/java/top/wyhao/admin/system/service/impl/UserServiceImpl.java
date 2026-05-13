@@ -23,26 +23,27 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.ahoo.cosid.IdGenerator;
 import me.ahoo.cosid.provider.DefaultIdGeneratorProvider;
-import org.dromara.x.file.storage.core.FileInfo;
-import org.dromara.x.file.storage.core.FileStorageService;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.modules.common.util.RsaUtils;
+import top.wyhao.admin.system.entity.DeptDO;
+import top.wyhao.admin.system.entity.RoleDO;
+import top.wyhao.admin.system.entity.SysFile;
+import top.wyhao.admin.system.entity.UserRoleDO;
+import top.wyhao.admin.system.entity.user.UserDO;
+import top.wyhao.admin.system.entity.user.UserPasswordHistoryDO;
 import top.wyhao.admin.system.mapper.DeptMapper;
 import top.wyhao.admin.system.mapper.MenuMapper;
 import top.wyhao.admin.system.mapper.UserRoleMapper;
 import top.wyhao.admin.system.mapper.user.UserMapper;
 import top.wyhao.admin.system.mapper.user.UserPasswordHistoryMapper;
 import top.wyhao.admin.system.model.SystemConstants;
+import top.wyhao.admin.system.model.bo.FileRequest;
 import top.wyhao.admin.system.model.bo.user.*;
-import top.wyhao.admin.system.model.entity.DeptDO;
-import top.wyhao.admin.system.model.entity.RoleDO;
-import top.wyhao.admin.system.model.entity.UserRoleDO;
-import top.wyhao.admin.system.model.entity.user.UserDO;
-import top.wyhao.admin.system.model.entity.user.UserPasswordHistoryDO;
+import top.wyhao.admin.system.model.query.FileQuery;
 import top.wyhao.admin.system.model.query.UserQuery;
 import top.wyhao.admin.system.model.vo.config.SecurityConfigVO;
 import top.wyhao.admin.system.model.vo.user.UserDetailResult;
@@ -68,9 +69,7 @@ import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
 
-import java.io.IOException;
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -97,7 +96,6 @@ public class UserServiceImpl implements UserService {
     private final UserSocialService userSocialService;
     private final RoleService roleService;
     private final FileService fileService;
-    private final FileStorageService fileStorageService;
     private final UserMapper userMapper;
     private final DeptMapper deptMapper;
     private final UserPasswordHistoryMapper passwordHistoryMapper;
@@ -107,8 +105,7 @@ public class UserServiceImpl implements UserService {
 
     @Value("${avatar.support-suffix}")
     private String[] avatarSupportSuffix;
-    @Value("${avatar.path}")
-    private String avatarPath;
+
 
     @Override
     public UserDetailResult detail(Long id) {
@@ -280,7 +277,7 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public UserImportResp importUser(UserImportReq req) {
+    public UserImportResp importUser(UserImportRequest req) {
         // 校验导入会话是否过期
         List<UserImportRowReq> importUserList;
         try {
@@ -441,22 +438,69 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public String updateAvatar(MultipartFile avatarFile, Long id) throws IOException {
+    @Transactional(rollbackFor = Exception.class)
+    public String updateAvatar(MultipartFile avatarFile, Long userId) {
+
+        // 校验头像文件类型和大小
+        checkAvatar(avatarFile);
+
+        UserDetailResult user = this.detail(userId);
+
+        // 上传新头像
+        SysFile avatar = uploadAvatarFile(avatarFile, userId);
+
+        // 更新用户头像
+        userMapper.lambdaUpdate().set(UserDO::getAvatar, avatar.getOssUrl()).eq(UserDO::getId, userId).update();
+
+        // 删除旧头像文件
+//        deleteOldAvatarFile(user);
+
+        return avatar.getOssUrl();
+    }
+
+
+    private void deleteOldAvatarFile(UserDetailResult user) {
+        String oldAvatar = user.getAvatar();
+        if (CharSequenceUtil.isNotBlank(oldAvatar)) {
+            fileService.delete(user.getId(), "user_avatar");
+        }
+    }
+
+    private SysFile uploadAvatarFile(MultipartFile avatarFile, Long userId) {
+        String avatarPath = "/user/avatar";
+        FileRequest fileRequest = new FileRequest();
+        fileRequest.setBizId(userId);
+        fileRequest.setBizType("user_avatar");
+        fileRequest.setPath(avatarPath);
+        return fileService.upload(avatarFile, avatarPath);
+    }
+
+    private Long getAvatarFileId(String bizId, String bizType) {
+        FileQuery fileQuery = new FileQuery();
+        fileQuery.setBizId(bizId);
+        fileQuery.setBizType(bizType);
+        List<SysFile> files = fileService.list(fileQuery);
+        if (CollUtil.isEmpty(files)) {
+            return null;
+        }
+        return files.get(0).getId();
+    }
+
+    /**
+     * 校验头像文件类型和大小
+     *
+     * @param avatarFile
+     */
+    private void checkAvatar(MultipartFile avatarFile) {
         String avatarImageType = FileNameUtil.extName(avatarFile.getOriginalFilename());
         BizAssert.isTrue(!CharSequenceUtil.equalsAnyIgnoreCase(avatarImageType, avatarSupportSuffix), "头像仅支持 {} 格式的图片", String
                 .join(StringConstants.COMMA, avatarSupportSuffix));
-        // 上传新头像
-        UserDO user = userMapper.selectById(id);
-        FileInfo fileInfo = fileService.upload(avatarFile, avatarPath);
-        // 更新用户头像
-        String newAvatar = fileInfo.getUrl();
-        userMapper.lambdaUpdate().set(UserDO::getAvatar, newAvatar).eq(UserDO::getId, id).update();
-        // 删除原头像
-        String oldAvatar = user.getAvatar();
-        if (CharSequenceUtil.isNotBlank(oldAvatar)) {
-            fileStorageService.delete(oldAvatar);
+
+        long avatarMaxSize = 1024 * 1024 * 2; // 2MB
+        long avatarSize = avatarFile.getSize();
+        if (avatarSize > avatarMaxSize) {
+            throw new BusinessException("FILE_SIZE_EXCEEDED", StrUtil.format("头像大小不能超过 {} MB", avatarMaxSize / 1024 / 1024));
         }
-        return newAvatar;
     }
 
     @Override
@@ -624,7 +668,7 @@ public class UserServiceImpl implements UserService {
      * @param existPhones    导入数据中已存在的手机号
      * @return 是否跳过
      */
-    private boolean isSkipUserImport(UserImportReq req,
+    private boolean isSkipUserImport(UserImportRequest req,
                                      UserImportRowReq row,
                                      List<String> existUsernames,
                                      List<String> existEmails,
@@ -644,7 +688,7 @@ public class UserServiceImpl implements UserService {
      * @param existPhones    导入数据中已存在的手机号
      * @return 是否退出
      */
-    private boolean isExitImportUser(UserImportReq req,
+    private boolean isExitImportUser(UserImportRequest req,
                                      List<UserImportRowReq> list,
                                      List<String> existUsernames,
                                      List<String> existEmails,

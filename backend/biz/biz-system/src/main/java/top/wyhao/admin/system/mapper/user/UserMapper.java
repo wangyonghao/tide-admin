@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import top.wyhao.admin.system.model.entity.user.UserDO;
+import top.wyhao.admin.system.entity.user.UserDO;
 import top.wyhao.admin.system.model.vo.user.UserDetailResult;
 import top.wyhao.admin.system.model.vo.user.UserResult;
 import top.wyhao.starter.data.datapermission.annotation.DataPermission;

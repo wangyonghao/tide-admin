@@ -27,16 +27,12 @@ import java.util.List;
 
 /**
  * 敏感词校验器
- *
- * @author luoqiz
- * @author Charles7c
- * @since 2.9.0
  */
 public class SensitiveWordsValidator implements ConstraintValidator<SensitiveWords, String> {
 
     private final WordTree tree = new WordTree();
 
-    @Value("${" + PropertiesConstants.SECURITY_SENSITIVE_WORDS + ":[]}")
+    @Value("${security.sensitive-words:[]}")
     private String[] words;
 
     @PostConstruct

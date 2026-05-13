@@ -21,5 +21,13 @@
             <groupId>top.wyhao</groupId>
             <artifactId>biz-base</artifactId>
         </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-mybatis-plus</artifactId>
+        </dependency>
     </dependencies>
 </project>

@@ -57,7 +57,7 @@
         WHERE t1.id = #{id}
     </select>
 
-    <select id="selectUnreadListByUserId" resultType="top.wyhao.admin.system.model.entity.MessageDO">
+    <select id="selectUnreadListByUserId" resultType="top.wyhao.admin.system.entity.MessageDO">
         SELECT
             t1.*
         FROM sys_message AS t1

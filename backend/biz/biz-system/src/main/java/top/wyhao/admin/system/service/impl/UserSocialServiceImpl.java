@@ -8,7 +8,7 @@ import me.zhyd.oauth.model.AuthUser;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.model.enums.SocialSource;
 import top.wyhao.admin.system.mapper.user.UserSocialMapper;
-import top.wyhao.admin.system.model.entity.user.UserSocialDO;
+import top.wyhao.admin.system.entity.user.UserSocialDO;
 import top.wyhao.admin.system.service.UserSocialService;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;

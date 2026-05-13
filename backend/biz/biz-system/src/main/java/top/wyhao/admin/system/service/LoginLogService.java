@@ -23,7 +23,7 @@ public interface LoginLogService {
      * @param loginStatus   登录状态
      * @param failureReason 失败原因（可选）
      */
-    void recordLoginLog(String username, String ipAddress, String userAgent, String loginStatus, String failureReason);
+    void create(String username, String ipAddress, String userAgent, String loginStatus, String failureReason);
 
     /**
      * 分页查询登录日志

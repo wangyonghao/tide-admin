@@ -1,15 +1,10 @@
 
 package top.wyhao.starter.core.model;
 
-import cn.hutool.core.collection.CollUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import top.wyhao.starter.core.enums.RoleCodeEnum;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
-import java.util.Set;
 
 /**
  * 登录用户

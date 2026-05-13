@@ -4,11 +4,13 @@ package top.wyhao.admin.auth.handler;
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.bo.PhoneLoginRequest;
-import top.wyhao.admin.auth.model.vo.LoginResult;
-import top.wyhao.admin.system.model.entity.DeptDO;
-import top.wyhao.admin.system.model.entity.user.UserDO;
+import top.wyhao.admin.auth.LoginHelper;
+import top.wyhao.admin.auth.model.PhoneLoginRequest;
+import top.wyhao.admin.auth.model.LoginResult;
+import top.wyhao.admin.system.entity.DeptDO;
+import top.wyhao.admin.system.entity.user.UserDO;
 import top.wyhao.admin.system.service.DeptService;
+import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
@@ -28,6 +30,7 @@ public class PhoneLoginHandler implements LoginHandler<PhoneLoginRequest> {
     private final UserService userService;
     private final OperationLogService operationLogService;
     private final DeptService deptService;
+    private final LoginLogService loginLogService;
 
     public LoginResult login(PhoneLoginRequest req) {
         this.preLogin(req);
@@ -43,11 +46,8 @@ public class PhoneLoginHandler implements LoginHandler<PhoneLoginRequest> {
         loginUser.setUserId(user.getId());
         loginUser.setDeviceType("PC");
 
-        // 登录并缓存用户信息
-        LoginUtil.doLogin(loginUser);
-
-        // 记录登录日志
-        operationLogService.recordLoginLog(loginUser);
+        // 登录并记录登录日志
+        LoginHelper.doLogin(loginUser);
 
         return LoginResult.builder()
                 .code("200")

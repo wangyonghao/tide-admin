@@ -1,17 +1,13 @@
 
 package top.wyhao.admin.system.model.vo;
 
-import cn.crane4j.annotation.Assemble;
-import cn.crane4j.annotation.Mapping;
 import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.admin.system.model.enums.MenuType;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.web.core.annotation.TreeField;
 
 import java.time.LocalDateTime;
 
@@ -19,7 +15,6 @@ import java.time.LocalDateTime;
  * 菜单响应参数
  */
 @Data
-@TreeField(value = "id")
 @Schema(description = "菜单响应参数")
 public class MenuVO {
     /**
@@ -33,7 +28,6 @@ public class MenuVO {
      * 创建人
      */
     @JsonIgnore
-    @Assemble(container = ContainerConstants.USER_NICKNAME, props = @Mapping(ref = "createUserString"))
     private Long createUser;
 
     /**

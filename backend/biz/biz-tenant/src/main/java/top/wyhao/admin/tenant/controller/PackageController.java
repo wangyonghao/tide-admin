@@ -16,8 +16,8 @@ import top.wyhao.admin.tenant.service.PackageService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.req.IdsRequest;
-import top.wyhao.starter.web.core.model.resp.IdResp;
+import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;
 
@@ -95,8 +95,8 @@ public class PackageController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping
-    public IdResp<Long> create(@RequestBody @Valid PackageReq req) {
-        return new IdResp<>(baseService.create(req));
+    public IdResult<Long> create(@RequestBody @Valid PackageReq req) {
+        return new IdResult<>(baseService.create(req));
     }
 
     /**

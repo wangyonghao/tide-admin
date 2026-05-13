@@ -10,7 +10,7 @@ import top.wyhao.admin.system.model.vo.SmsLogResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -29,7 +29,7 @@ public interface SmsLogService {
 
     void delete(List<Long> id);
 
-    List<LabelValueResp> dict(@Valid SmsLogQuery query, @Valid SortQuery sortQuery);
+    List<LabelValueResult> dict(@Valid SmsLogQuery query, @Valid SortQuery sortQuery);
 
     void export(@Valid SmsLogQuery query, @Valid SortQuery sortQuery, HttpServletResponse response);
 

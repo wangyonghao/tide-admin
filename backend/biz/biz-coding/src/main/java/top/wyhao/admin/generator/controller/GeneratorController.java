@@ -18,7 +18,7 @@ import top.wyhao.admin.generator.model.resp.GeneratePreviewResp;
 import top.wyhao.admin.generator.service.GeneratorService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.resp.LabelValueResp;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 import top.wyhao.starter.web.excel.DictApi;
 
 import java.sql.SQLException;
@@ -96,7 +96,7 @@ public class GeneratorController {
     @Operation(summary = "查询字典", description = "查询字典列表（包含枚举字典）")
     @SaCheckPermission("code:generator:config")
     @GetMapping("/dict")
-    public List<LabelValueResp> listDict() {
+    public List<LabelValueResult> listDict() {
         return dictApi.listAll();
     }
 }

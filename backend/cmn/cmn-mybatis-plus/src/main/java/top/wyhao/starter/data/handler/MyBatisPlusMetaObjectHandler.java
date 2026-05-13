@@ -3,7 +3,8 @@ package top.wyhao.starter.data.handler;
 
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
-import top.wyhao.common.security.util.LoginUtil;
+import top.wyhao.starter.core.UserContextHolder;
+import top.wyhao.starter.core.model.LoginUser;
 
 import java.time.LocalDateTime;
 
@@ -42,8 +43,9 @@ public class MyBatisPlusMetaObjectHandler implements MetaObjectHandler {
         if (metaObject == null) {
             return;
         }
-        if (metaObject.hasSetter(CREATE_USER)) {
-            this.setFieldValByName(CREATE_USER, LoginUtil.getUserId(), metaObject);
+        LoginUser loginUser = UserContextHolder.getCurrentUser();
+        if (metaObject.hasSetter(CREATE_USER) && loginUser != null) {
+            this.setFieldValByName(CREATE_USER, loginUser.getUserId(), metaObject);
         }
         if (metaObject.hasSetter(CREATE_TIME)) {
             this.setFieldValByName(CREATE_TIME, LocalDateTime.now(), metaObject);
@@ -60,27 +62,13 @@ public class MyBatisPlusMetaObjectHandler implements MetaObjectHandler {
         if (metaObject == null) {
             return;
         }
-        if (metaObject.hasSetter(UPDATE_USER)) {
-            this.setFieldValByName(UPDATE_USER, LoginUtil.getUserId(), metaObject);
+
+        LoginUser loginUser = UserContextHolder.getCurrentUser();
+        if (metaObject.hasSetter(UPDATE_USER) && loginUser != null) {
+            this.setFieldValByName(UPDATE_USER, loginUser.getUserId(), metaObject);
         }
         if (metaObject.hasSetter(UPDATE_TIME)) {
             this.setFieldValByName(UPDATE_TIME, LocalDateTime.now(), metaObject);
         }
-    }
-
-    /**
-     * 填充字段值
-     *
-     * @param metaObject     元数据对象
-     * @param fieldName      要填充的字段名
-     * @param fillFieldValue 要填充的字段值
-     * @param isOverride     如果字段值不为空，是否覆盖（true：覆盖；false：不覆盖）
-     */
-    private void fillFieldValue(MetaObject metaObject, String fieldName, Object fillFieldValue, boolean isOverride) {
-        if (!metaObject.hasSetter(fieldName)) {
-            return;
-        }
-        Object fieldValue = metaObject.getValue(fieldName);
-        setFieldValByName(fieldName, fieldValue != null && !isOverride ? fieldValue : fillFieldValue, metaObject);
     }
 }

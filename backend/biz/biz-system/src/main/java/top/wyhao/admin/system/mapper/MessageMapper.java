@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.model.entity.MessageDO;
+import top.wyhao.admin.system.entity.MessageDO;
 import top.wyhao.admin.system.model.query.MessageQuery;
 import top.wyhao.admin.system.model.vo.message.MessageDetailResp;
 import top.wyhao.admin.system.model.vo.message.MessageResp;

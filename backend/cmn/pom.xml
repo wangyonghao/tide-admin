@@ -39,7 +39,7 @@
     <module>cmn-license</module>
     <module>cmn-mail</module>
     <module>cmn-websocket</module>
-    <module>cmn-storage</module>
+    <module>cmn-oss</module>
     <module>cmn-trace</module>
     <module>cmn-web</module>
   </modules>

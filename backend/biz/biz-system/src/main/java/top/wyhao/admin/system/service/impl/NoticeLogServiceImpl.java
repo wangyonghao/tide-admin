@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.mapper.NoticeLogMapper;
-import top.wyhao.admin.system.model.entity.NoticeLogDO;
+import top.wyhao.admin.system.entity.NoticeLogDO;
 import top.wyhao.admin.system.service.NoticeLogService;
 import top.wyhao.starter.core.util.CollUtils;
 

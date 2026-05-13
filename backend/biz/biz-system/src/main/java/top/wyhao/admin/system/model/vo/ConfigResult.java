@@ -12,8 +12,8 @@ import java.time.LocalDateTime;
 /**
  * 系统配置响应信息
  *
- * @author wyhao
- * @since 2024/04/26
+ * @author Yonghao Wang
+ * @since 2024/4/26
  */
 @Data
 @Schema(description = "系统配置响应信息")
