@@ -8,7 +8,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.UserRoleDO;
 import top.wyhao.admin.system.model.vo.role.RoleUserResult;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 /**
  * 用户和角色 Mapper

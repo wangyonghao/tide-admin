@@ -2,7 +2,7 @@ package ${packageName}.${subPackageName};
 
 import org.apache.ibatis.annotations.Mapper;
 import ${packageName}.model.entity.${classNamePrefix}DO;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import model.top.wyhao.cmn.db.BaseMapper;
 
 /**
 * ${businessName} Mapper

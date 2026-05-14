@@ -9,7 +9,7 @@ import top.wyhao.admin.system.entity.NoticeDO;
 import top.wyhao.admin.system.model.query.NoticeQuery;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardNoticeResp;
 import top.wyhao.admin.system.model.vo.NoticeResult;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;
 

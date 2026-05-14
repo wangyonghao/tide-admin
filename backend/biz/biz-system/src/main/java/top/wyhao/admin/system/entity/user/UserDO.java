@@ -3,7 +3,7 @@ package top.wyhao.admin.system.entity.user;
 
 import com.baomidou.mybatisplus.annotation.*;
 import lombok.Data;
-import top.wyhao.starter.encrypt.field.annotation.FieldEncrypt;
+import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -11,11 +11,11 @@ import java.time.LocalDateTime;
 /**
  * 用户实体
  *
- * @author Charles7c
- * @since 2022/12/21 20:42
+ * @author Yonghao Wang
+ * @since 2026/4/14
  */
 @Data
-@TableName("sys_user")
+@TableName(value = "sys_user", autoResultMap = true)
 public class UserDO {
     @TableId
     private Long id;
@@ -38,15 +38,13 @@ public class UserDO {
     /**
      * 邮箱
      */
-    @FieldEncrypt
-    @TableField(insertStrategy = FieldStrategy.NOT_EMPTY)
+    @TableField(insertStrategy = FieldStrategy.NOT_EMPTY, typeHandler = EncryptTypeHandler.class)
     private String email;
 
     /**
      * 手机号码
      */
-    @FieldEncrypt
-    @TableField(insertStrategy = FieldStrategy.NOT_EMPTY)
+    @TableField(insertStrategy = FieldStrategy.NOT_EMPTY, typeHandler = EncryptTypeHandler.class)
     private String phone;
     /**
      * 头像地址

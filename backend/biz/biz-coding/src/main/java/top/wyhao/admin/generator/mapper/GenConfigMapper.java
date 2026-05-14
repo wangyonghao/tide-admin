@@ -3,7 +3,7 @@ package top.wyhao.admin.generator.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import top.wyhao.admin.generator.model.entity.GenConfigDO;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 /**
  * 生成配置 Mapper

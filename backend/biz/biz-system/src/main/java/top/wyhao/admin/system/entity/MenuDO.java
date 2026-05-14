@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.admin.system.model.enums.MenuType;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.data.entity.BaseDO;
+import top.wyhao.cmn.db.model.BaseDO;
 
 /**
  * 菜单实体

@@ -84,7 +84,7 @@
         <!-- 数据访问模块 -->
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-mybatis-plus</artifactId>
+            <artifactId>cmn-db</artifactId>
         </dependency>
       <dependency>
         <groupId>top.wyhao</groupId>

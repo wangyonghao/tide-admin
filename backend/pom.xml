@@ -526,16 +526,10 @@
       <!-- 数据访问模块 - MyBatis Plus -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-mybatis-plus</artifactId>
+        <artifactId>cmn-db</artifactId>
         <version>${revision}</version>
       </dependency>
 
-      <!-- 加密模块 - 字段加密 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-encrypt-field</artifactId>
-        <version>${revision}</version>
-      </dependency>
       <!-- 加密模块 - API 加密 -->
       <dependency>
         <groupId>top.wyhao</groupId>

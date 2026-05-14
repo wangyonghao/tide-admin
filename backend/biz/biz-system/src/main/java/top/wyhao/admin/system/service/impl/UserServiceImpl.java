@@ -51,6 +51,7 @@ import top.wyhao.admin.system.model.vo.user.UserImportParseResp;
 import top.wyhao.admin.system.model.vo.user.UserImportResp;
 import top.wyhao.admin.system.model.vo.user.UserResult;
 import top.wyhao.admin.system.service.*;
+import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
@@ -63,8 +64,6 @@ import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.starter.data.util.QueryWrapperUtil;
-import top.wyhao.starter.encrypt.field.util.EncryptHelper;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -261,11 +260,11 @@ public class UserServiceImpl implements UserService {
         userImportResp
                 .setDuplicateUserRows(countExistByField(validRowList, UserImportRowReq::getUsername, UserDO::getUsername));
         // 查询重复邮箱
-        userImportResp.setDuplicateEmailRows(countExistByField(validRowList, row -> EncryptHelper.encrypt(row
-                .getEmail()), UserDO::getEmail));
+        userImportResp.setDuplicateEmailRows(countExistByField(validRowList, row -> row
+                .getEmail(), UserDO::getEmail));
         // 查询重复手机
-        userImportResp.setDuplicatePhoneRows(countExistByField(validRowList, row -> EncryptHelper.encrypt(row
-                .getPhone()), UserDO::getPhone));
+        userImportResp.setDuplicatePhoneRows(countExistByField(validRowList, row -> row
+                .getPhone(), UserDO::getPhone));
 
         // 设置导入会话并缓存数据，有效期10分钟
         String importKey = UUID.fastUUID().toString(true);
@@ -289,10 +288,8 @@ public class UserServiceImpl implements UserService {
             throw new BusinessException("IMPORTATION_EXPIRED", "导入已过期，请重新上传");
         }
         // 已存在数据查询
-        List<String> existEmails = listExistByField(importUserList, row -> EncryptHelper.encrypt(row
-                .getEmail()), UserDO::getEmail);
-        List<String> existPhones = listExistByField(importUserList, row -> EncryptHelper.encrypt(row
-                .getPhone()), UserDO::getPhone);
+        List<String> existEmails = listExistByField(importUserList, row -> row.getEmail(), UserDO::getEmail);
+        List<String> existPhones = listExistByField(importUserList, row -> row.getPhone(), UserDO::getPhone);
         List<UserDO> existUserList = listByUsernames(CollUtils
                 .mapToList(importUserList, UserImportRowReq::getUsername));
         List<String> existUsernames = CollUtils.mapToList(existUserList, UserDO::getUsername);
@@ -794,7 +791,7 @@ public class UserServiceImpl implements UserService {
      */
     private void checkEmailUnique(String email, Long selfUserId) {
         boolean isEmailExists = userMapper.lambdaQuery()
-                .eq(UserDO::getEmail, EncryptHelper.encrypt(email))
+                .eq(UserDO::getEmail, email)
                 .ne(ObjectUtil.isNotNull(selfUserId), UserDO::getId, selfUserId)
                 .exists();
         if (isEmailExists) {
@@ -810,7 +807,7 @@ public class UserServiceImpl implements UserService {
      */
     private void checkPhoneUnique(String phone, Long selfUserId) {
         boolean isExists = userMapper.lambdaQuery()
-                .eq(UserDO::getPhone, EncryptHelper.encrypt(phone))
+                .eq(UserDO::getPhone, phone)
                 .ne(ObjectUtil.isNotNull(selfUserId), UserDO::getId, selfUserId)
                 .exists();
         if (isExists) {

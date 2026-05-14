@@ -1,30 +1,26 @@
 
 package top.wyhao.starter.web.config;
 
-import java.math.BigInteger;
-import java.time.*;
-import java.time.format.DateTimeFormatter;
-import java.util.TimeZone;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.boot.autoconfigure.AutoConfiguration;
-import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
-
+import cn.hutool.core.date.DatePattern;
 import com.fasterxml.jackson.databind.module.SimpleModule;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import com.fasterxml.jackson.datatype.jsr310.deser.*;
 import com.fasterxml.jackson.datatype.jsr310.ser.*;
-
-import cn.hutool.core.date.DatePattern;
+import org.springframework.boot.autoconfigure.AutoConfiguration;
+import org.springframework.boot.autoconfigure.jackson.Jackson2ObjectMapperBuilderCustomizer;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.PropertySource;
 import top.wyhao.starter.core.enums.BaseEnum;
 import top.wyhao.starter.core.util.GeneralPropertySourceFactory;
 import top.wyhao.starter.web.json.serializer.BaseEnumDeserializer;
 import top.wyhao.starter.web.json.serializer.BaseEnumSerializer;
 import top.wyhao.starter.web.json.serializer.BigNumberSerializer;
 import top.wyhao.starter.web.json.serializer.SimpleDeserializersWrapper;
+
+import java.math.BigInteger;
+import java.time.*;
+import java.time.format.DateTimeFormatter;
+import java.util.TimeZone;
 
 /**
  * Jackson 自动配置
@@ -37,8 +33,6 @@ import top.wyhao.starter.web.json.serializer.SimpleDeserializersWrapper;
 @PropertySource(value = "classpath:default-json-jackson.yml", factory = GeneralPropertySourceFactory.class)
 public class JacksonAutoConfiguration {
 
-    private static final Logger log = LoggerFactory.getLogger(JacksonAutoConfiguration.class);
-
     @Bean
     public Jackson2ObjectMapperBuilderCustomizer jackson2ObjectMapperBuilderCustomizer() {
         return builder -> {
@@ -48,7 +42,6 @@ public class JacksonAutoConfiguration {
 
             builder.timeZone(TimeZone.getDefault());
             builder.modules(javaTimeModule, baseEnumModule, bigNumberModule);
-            log.debug("[wyhao-starter] - 'Jackson' configured.");
         };
     }
 

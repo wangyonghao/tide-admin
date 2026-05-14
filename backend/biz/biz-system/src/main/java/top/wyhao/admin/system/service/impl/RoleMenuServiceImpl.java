@@ -9,7 +9,7 @@ import top.wyhao.admin.system.entity.RoleMenuDO;
 import top.wyhao.admin.system.mapper.RoleMenuMapper;
 import top.wyhao.admin.system.service.RoleMenuService;
 import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.starter.data.service.impl.ServiceImpl;
+import top.wyhao.cmn.db.model.ServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;

@@ -2,7 +2,7 @@
 package top.wyhao.admin.system.service;
 
 import top.wyhao.admin.system.entity.RoleMenuDO;
-import top.wyhao.starter.data.service.IService;
+import top.wyhao.cmn.db.model.IService;
 
 import java.util.List;
 

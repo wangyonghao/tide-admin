@@ -2,7 +2,7 @@ package ${package}.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.starter.data.entity.BaseDO;
+import model.top.wyhao.cmn.db.BaseDO;
 
 import java.io.Serial;
 

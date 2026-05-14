@@ -6,7 +6,7 @@ import cn.hutool.core.map.MapUtil;
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
-import top.wyhao.starter.data.enums.DatabaseType;
+import top.wyhao.cmn.db.dialect.DatabaseType;
 
 import java.util.List;
 import java.util.Map;

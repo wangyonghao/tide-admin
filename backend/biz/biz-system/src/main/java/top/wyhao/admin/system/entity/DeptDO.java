@@ -4,7 +4,7 @@ package top.wyhao.admin.system.entity;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.data.entity.BaseDO;
+import top.wyhao.cmn.db.model.BaseDO;
 
 /**
  * 部门实体

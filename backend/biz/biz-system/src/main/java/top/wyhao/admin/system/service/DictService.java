@@ -4,11 +4,9 @@ package top.wyhao.admin.system.service;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.admin.system.model.DictQuery;
-import top.wyhao.admin.system.model.vo.DictResult;
-import top.wyhao.starter.data.service.IService;
+import top.wyhao.cmn.db.model.IService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.LabelValueResult;
-import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
 

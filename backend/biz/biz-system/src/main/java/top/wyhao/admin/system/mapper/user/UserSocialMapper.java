@@ -4,7 +4,7 @@ package top.wyhao.admin.system.mapper.user;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.user.UserSocialDO;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 /**
  * 用户社会化关联 Mapper

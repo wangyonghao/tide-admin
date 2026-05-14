@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import top.wyhao.admin.system.entity.MenuDO;
 import top.wyhao.admin.system.model.enums.MenuType;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;
 

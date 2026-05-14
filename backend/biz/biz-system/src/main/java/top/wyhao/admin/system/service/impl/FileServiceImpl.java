@@ -22,7 +22,7 @@ import top.wyhao.admin.system.model.vo.file.FileResult;
 import top.wyhao.admin.system.service.FileService;
 import top.wyhao.starter.core.exception.BadRequestException;
 import top.wyhao.starter.core.exception.BusinessException;
-import top.wyhao.starter.data.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 

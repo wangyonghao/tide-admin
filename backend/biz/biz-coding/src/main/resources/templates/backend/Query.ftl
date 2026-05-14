@@ -4,8 +4,8 @@ import lombok.Data;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 
-import top.wyhao.starter.data.annotation.Query;
-import top.wyhao.starter.data.enums.QueryType;
+import query.top.wyhao.cmn.db.Query;
+import query.top.wyhao.cmn.db.QueryType;
 <#if imports??>
     <#list imports as className>
 import ${className};

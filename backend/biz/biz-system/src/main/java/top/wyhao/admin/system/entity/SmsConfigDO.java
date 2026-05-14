@@ -6,9 +6,9 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
+import top.wyhao.cmn.db.model.BaseDO;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.data.entity.BaseDO;
-import top.wyhao.starter.encrypt.field.annotation.FieldEncrypt;
 
 import java.time.LocalDateTime;
 
@@ -20,7 +20,7 @@ import java.time.LocalDateTime;
  * @since 2025/03/15 18:41
  */
 @Data
-@TableName("sys_sms_config")
+@TableName(value = "sys_sms_config", autoResultMap = true)
 public class SmsConfigDO extends BaseDO {
     @TableId
     private Long id;
@@ -43,7 +43,7 @@ public class SmsConfigDO extends BaseDO {
     /**
      * Secret Key
      */
-    @FieldEncrypt
+    @TableField(typeHandler = EncryptTypeHandler.class)
     private String secretKey;
 
     /**

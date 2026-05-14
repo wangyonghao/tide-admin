@@ -10,9 +10,8 @@ import org.apache.ibatis.annotations.Select;
 import top.wyhao.admin.system.entity.user.UserDO;
 import top.wyhao.admin.system.model.vo.user.UserDetailResult;
 import top.wyhao.admin.system.model.vo.user.UserResult;
-import top.wyhao.starter.data.datapermission.annotation.DataPermission;
-import top.wyhao.starter.data.datapermission.mapper.DataPermissionMapper;
-import top.wyhao.starter.encrypt.field.annotation.FieldEncrypt;
+import top.wyhao.cmn.db.datapermission.annotation.DataPermission;
+import top.wyhao.cmn.db.datapermission.mapper.DataPermissionMapper;
 
 import java.util.List;
 
@@ -61,7 +60,7 @@ public interface UserMapper extends DataPermissionMapper<UserDO> {
      * @return 用户信息
      */
     @Select("SELECT * FROM sys_user WHERE phone = #{phone}")
-    UserDO selectByPhone(@FieldEncrypt @Param("phone") String phone);
+    UserDO selectByPhone(@Param("phone") String phone);
 
     /**
      * 根据邮箱查询
@@ -70,7 +69,7 @@ public interface UserMapper extends DataPermissionMapper<UserDO> {
      * @return 用户信息
      */
     @Select("SELECT * FROM sys_user WHERE email = #{email}")
-    UserDO selectByEmail(@FieldEncrypt @Param("email") String email);
+    UserDO selectByEmail(@Param("email") String email);
 
     /**
      * 根据 ID 查询昵称

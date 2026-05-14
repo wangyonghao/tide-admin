@@ -2,7 +2,7 @@
 package top.wyhao.admin.tenant.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.admin.tenant.model.entity.PackageDO;
 
 /**

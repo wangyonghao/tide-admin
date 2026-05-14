@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.encrypt.field.annotation.FieldEncrypt;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 import top.wyhao.starter.excel.converter.ExcelListConverter;
 
@@ -139,7 +138,6 @@ public class UserDetailResult {
      */
     @Schema(description = "手机号码", example = "13811111111")
     @ExcelProperty(value = "手机号码", order = 10)
-    @FieldEncrypt
     private String phone;
 
     /**
@@ -147,7 +145,6 @@ public class UserDetailResult {
      */
     @Schema(description = "邮箱", example = "123456789@qq.com")
     @ExcelProperty(value = "邮箱", order = 11)
-    @FieldEncrypt
     private String email;
 
     /**

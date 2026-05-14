@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
-import top.wyhao.starter.web.masking.annotation.MaskField;
-import top.wyhao.starter.web.masking.enums.MaskStrategy;
+import top.wyhao.starter.web.sensitive.annotation.Sensitive;
+import top.wyhao.starter.web.sensitive.enums.SensitiveMethod;
 import top.wyhao.starter.web.excel.DictExcelProperty;
 
 import java.io.Serial;
@@ -115,7 +115,7 @@ public class SmsConfigResp implements Serializable {
      */
     @Schema(description = "Secret Key", example = "7fd4************************57be")
     @ExcelProperty(value = "Secret Key")
-    @MaskField(MaskStrategy.SECRET_KEY)
+    @Sensitive(SensitiveMethod.SECRET_KEY)
     private String secretKey;
 
     /**

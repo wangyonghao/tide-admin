@@ -3,7 +3,7 @@ package top.wyhao.admin.tenant.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.starter.data.entity.BaseDO;
+import top.wyhao.cmn.db.model.BaseDO;
 import top.wyhao.starter.core.enums.StatusEnum;
 
 import java.io.Serial;

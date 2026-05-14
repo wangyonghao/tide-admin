@@ -45,8 +45,8 @@ import top.wyhao.starter.core.exception.SystemException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.FileUploadUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.starter.data.enums.DatabaseType;
-import top.wyhao.starter.data.util.DBMetaUtils;
+import top.wyhao.cmn.db.dialect.DatabaseType;
+import top.wyhao.cmn.db.util.DBMetaUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 

@@ -4,8 +4,8 @@ package top.wyhao.admin.system.model.query;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.data.annotation.Query;
-import top.wyhao.starter.data.enums.QueryType;
+import top.wyhao.cmn.db.query.Query;
+import top.wyhao.cmn.db.query.QueryType;
 
 import java.io.Serial;
 import java.io.Serializable;

@@ -25,7 +25,7 @@ import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.starter.data.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.ArrayList;

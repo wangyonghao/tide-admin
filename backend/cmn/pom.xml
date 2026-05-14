@@ -28,9 +28,8 @@
     <module>cmn-captcha-graphic</module>
     <module>cmn-captcha-behavior</module>
     <module>cmn-base</module>
-    <module>cmn-mybatis-plus</module>
+    <module>cmn-db</module>
     <module>cmn-encrypt-core</module>
-    <module>cmn-encrypt-field</module>
     <module>cmn-encrypt-api</module>
     <module>cmn-fastexcel</module>
     <module>cmn-poi</module>

@@ -1,12 +1,12 @@
 
 package top.wyhao.admin.open.model.entity;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.starter.data.entity.BaseDO;
-import top.wyhao.starter.encrypt.field.annotation.FieldEncrypt;
+import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
+import top.wyhao.cmn.db.model.BaseDO;
 
-import java.io.Serial;
 import java.time.LocalDateTime;
 
 /**
@@ -17,11 +17,8 @@ import java.time.LocalDateTime;
  * @since 2024/10/17 16:03
  */
 @Data
-@TableName("sys_app")
+@TableName(value = "sys_app", autoResultMap = true)
 public class AppDO extends BaseDO {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
 
     /**
      * 名称
@@ -31,13 +28,13 @@ public class AppDO extends BaseDO {
     /**
      * Access Key（访问密钥）
      */
-    @FieldEncrypt
+    @TableField(typeHandler = EncryptTypeHandler.class)
     private String accessKey;
 
     /**
      * Secret Key（私有密钥）
      */
-    @FieldEncrypt
+    @TableField(typeHandler = EncryptTypeHandler.class)
     private String secretKey;
 
     /**

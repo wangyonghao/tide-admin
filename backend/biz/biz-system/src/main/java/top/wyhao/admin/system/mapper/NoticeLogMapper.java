@@ -3,7 +3,7 @@ package top.wyhao.admin.system.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import top.wyhao.admin.system.entity.NoticeLogDO;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 /**
  * 公告日志 Mapper

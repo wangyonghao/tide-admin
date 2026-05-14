@@ -3,8 +3,8 @@ package top.wyhao.admin.system.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import top.wyhao.admin.system.entity.DeptDO;
-import top.wyhao.starter.data.enums.DatabaseType;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.dialect.DatabaseType;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;
 

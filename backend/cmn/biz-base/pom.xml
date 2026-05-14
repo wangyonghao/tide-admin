@@ -49,11 +49,6 @@
             <artifactId>cmn-justauth</artifactId>
         </dependency>
 
-        <!-- ContiNew Starter 加密模块 - 字段加密 -->
-        <dependency>
-            <groupId>top.wyhao</groupId>
-            <artifactId>cmn-encrypt-field</artifactId>
-        </dependency>
 
         <!-- ContiNew Starter 验证码模块 - 图形验证码 -->
         <dependency>
@@ -88,7 +83,7 @@
         <!-- ContiNew Starter 数据权限模块 - MyBatis Plus -->
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-mybatis-plus</artifactId>
+            <artifactId>cmn-db</artifactId>
         </dependency>
 
         <!-- ContiNew Starter 扩展模块 - 租户 -->

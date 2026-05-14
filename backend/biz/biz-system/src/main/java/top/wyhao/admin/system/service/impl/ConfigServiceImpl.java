@@ -24,7 +24,7 @@ import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.core.model.OSSConfig;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.starter.data.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;

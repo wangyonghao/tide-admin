@@ -2,11 +2,8 @@
 package top.wyhao.admin.system.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import org.apache.ibatis.annotations.Select;
 import top.wyhao.admin.system.entity.SysFile;
-import top.wyhao.starter.data.mapper.BaseMapper;
-
-import java.util.List;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 /**
  * 文件 Mapper

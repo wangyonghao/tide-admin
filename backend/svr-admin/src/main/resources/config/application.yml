@@ -18,6 +18,9 @@ application:
   license:
     name: Apache-2.0
     url: https://github.com/wangyonghao/wyh-admin/blob/dev/LICENSE
+  # AES加密密钥，用于数据库加密
+  crypto:
+    aes-key: ${AES_KEY}
 
 ### 服务器配置
 server:
@@ -130,14 +133,6 @@ wyhao-starter.trace:
     pattern: '[$spanId][$traceId]'
     mdc-enable: false
 
-### CRUD 配置
-wyhao-starter.crud:
-  ## 树型字典结构映射配置（简单树，对应前端 UI）
-  tree-dict-model:
-    id-key: key
-    name-key: title
-    weight-key: sort
-
 ### 租户配置
 wyhao-starter.tenant:
   enabled: true
@@ -211,7 +206,8 @@ mybatis-plus:
     database-id: pgsql
   ## 全局配置
   global-config:
-    banner: true
+    #关闭控制台打印 Mybatis-Plus的Banner
+    banner: false
     db-config:
       # 主键类型（默认 assign_id，表示自行赋值）
       # auto 代表使用数据库自增策略（需要在表中设置好自增约束）

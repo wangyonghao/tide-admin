@@ -79,7 +79,7 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (2030, '系统日志', 2000, 2, '/monitor/log', 'monitor/log/index', NULL, 'ix:log', FALSE, FALSE, FALSE, NULL, 2, 1, 1, NOW()),
        (2031, '列表', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:list', 1, 1, 1, NOW()),
        (2032, '详情', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:get', 2, 1, 1, NOW()),
-       (2033, '导出', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:export', 3, 1, 1, NOW()),
+       (2033, '导出', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:export', 3, 1, 1, NOW());
 
 -- 初始化默认部门
 INSERT INTO "sys_dept" ("id", "name", "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time")

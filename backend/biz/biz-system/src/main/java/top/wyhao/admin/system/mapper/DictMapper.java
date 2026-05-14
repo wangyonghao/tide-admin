@@ -6,7 +6,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.admin.system.entity.SysDict;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;

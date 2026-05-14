@@ -13,7 +13,7 @@ import top.wyhao.admin.system.model.vo.dashboard.DashboardAccessTrendResp;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardChartCommonResp;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardOverviewCommonResp;
 import top.wyhao.admin.system.model.vo.log.OperationLogResult;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.Date;
 import java.util.List;

@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-mybatis-plus</artifactId>
+            <artifactId>cmn-db</artifactId>
         </dependency>
     </dependencies>
 </project>

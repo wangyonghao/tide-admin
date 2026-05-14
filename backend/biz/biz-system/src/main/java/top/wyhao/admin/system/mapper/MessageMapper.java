@@ -9,7 +9,7 @@ import top.wyhao.admin.system.entity.MessageDO;
 import top.wyhao.admin.system.model.query.MessageQuery;
 import top.wyhao.admin.system.model.vo.message.MessageDetailResp;
 import top.wyhao.admin.system.model.vo.message.MessageResp;
-import top.wyhao.starter.data.mapper.BaseMapper;
+import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;
 

@@ -7,7 +7,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import org.springframework.data.domain.Sort;
 import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
-import top.wyhao.starter.data.util.SqlInjectionUtils;
+import top.wyhao.cmn.db.util.SqlInjectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;

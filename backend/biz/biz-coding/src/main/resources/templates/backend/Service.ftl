@@ -6,7 +6,7 @@ import ${packageName}.model.query.${classNamePrefix}Query;
 import ${packageName}.model.req.${classNamePrefix}Req;
 import ${packageName}.model.resp.${classNamePrefix}DetailResp;
 import ${packageName}.model.resp.${classNamePrefix}Resp;
-import top.wyhao.starter.data.service.IService;
+import model.top.wyhao.cmn.db.IService;
 
 /**
  * ${businessName}业务接口

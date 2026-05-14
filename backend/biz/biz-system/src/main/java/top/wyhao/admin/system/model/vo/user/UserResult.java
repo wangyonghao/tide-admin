@@ -7,8 +7,8 @@ import lombok.Data;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.web.masking.annotation.MaskField;
-import top.wyhao.starter.web.masking.enums.MaskStrategy;
+import top.wyhao.starter.web.sensitive.annotation.Sensitive;
+import top.wyhao.starter.web.sensitive.enums.SensitiveMethod;
 
 import java.util.List;
 import java.util.Objects;
@@ -63,14 +63,14 @@ public class UserResult {
      * 邮箱
      */
     @Schema(description = "邮箱", example = "c*******@126.com")
-    @MaskField(MaskStrategy.EMAIL)
+    @Sensitive(SensitiveMethod.EMAIL)
     private String email;
 
     /**
      * 手机号码
      */
     @Schema(description = "手机号码", example = "188****8888")
-    @MaskField(MaskStrategy.MOBILE_PHONE)
+    @Sensitive(SensitiveMethod.MOBILE_PHONE)
     private String phone;
 
     /**
