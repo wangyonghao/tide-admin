@@ -57,8 +57,7 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (1115, '删除', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:file:delete', 5, 1, 1, NOW()),
        (1116, '下载', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:file:download', 6, 1, 1, NOW()),
        (1117, '创建文件夹', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:file:createDir', 7, 1, 1, NOW()),
-       (1118, '计算文件夹大小', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:file:calcDirSize', 8, 1, 1,
-        NOW()),
+       (1118, '计算文件夹大小', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:file:calcDirSize', 8, 1, 1, NOW()),
 
        (1130, '字典管理', 1000, 2, '/system/dict', 'system/dict/index', NULL, 'arcticons:colordict', FALSE, FALSE, FALSE, NULL, 7, 1, 1, NOW()),
        (1131, '列表', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:list', 1, 1, 1, NOW()),
@@ -68,13 +67,6 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (1135, '删除', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:delete', 5, 1, 1, NOW()),
        (1136, '清除缓存', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:clearCache', 6, 1, 1, NOW()),
       
-       (1140, '字典项管理', 1000, 2, '/system/dict/item', 'system/dict/item/index', NULL, 'bookmark', FALSE, FALSE, TRUE, NULL, 8, 1, 1, NOW()),
-       (1141, '列表', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:list', 1, 1, 1, NOW()),
-       (1142, '详情', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:get', 2, 1, 1, NOW()),
-       (1143, '新增', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:create', 3, 1, 1, NOW()),
-       (1144, '修改', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:update', 4, 1, 1, NOW()),
-       (1145, '删除', 1140, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dictItem:delete', 5, 1, 1, NOW()),
-
        (1150, '系统配置', 1000, 2, '/system/config', 'system/config/index', NULL, 'lucide:settings', FALSE, FALSE, FALSE, NULL, 9, 1, 1, NOW()),
        (1151, '查看', 1150, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:get', 1, 1, 1, NOW()),
        (1152, '修改', 1150, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:edit', 2, 1, 1, NOW()),
@@ -88,11 +80,6 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (2031, '列表', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:list', 1, 1, 1, NOW()),
        (2032, '详情', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:get', 2, 1, 1, NOW()),
        (2033, '导出', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:export', 3, 1, 1, NOW()),
-
-       (2050, '短信日志', 2000, 2, '/system/sms/log', 'monitor/sms/log/index', NULL, 'lucide:message-circle', FALSE, FALSE, FALSE, NULL, 3, 1, 1, NOW()),
-       (2051, '列表', 2050, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsLog:list', 1, 1, 1, NOW()),
-       (2052, '删除', 2050, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsLog:delete', 2, 1, 1, NOW()),
-       (2053, '导出', 2050, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE, 'system:smsLog:export', 3, 1, 1, NOW());
 
 -- 初始化默认部门
 INSERT INTO "sys_dept" ("id", "name", "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time")

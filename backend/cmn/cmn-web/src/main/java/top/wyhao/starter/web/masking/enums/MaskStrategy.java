@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.json.masking.enums;
+package top.wyhao.starter.web.masking.enums;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.DesensitizedUtil;

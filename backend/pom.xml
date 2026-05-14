@@ -476,13 +476,6 @@
         <version>${revision}</version>
       </dependency>
 
-      <!-- JSON 模块 - Jackson -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-json</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
       <!-- API 文档模块 -->
       <dependency>
         <groupId>top.wyhao</groupId>

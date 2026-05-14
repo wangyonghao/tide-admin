@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.json.exception;
+package top.wyhao.starter.web.json.exception;
 
 import top.wyhao.starter.core.exception.SystemException;
 

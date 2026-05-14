@@ -16,12 +16,22 @@
     <description>ContiNew Starter Web 模块</description>
 
     <dependencies>
-        <!-- JSON 模块 - Jackson -->
+        <!-- Wyhao Starter Core 模块 -->
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-json</artifactId>
+            <artifactId>cmn-base</artifactId>
         </dependency>
 
+        <!-- Spring Boot JSON 模块 -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-json</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
+        </dependency>
         <!-- Swagger 注解 -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>

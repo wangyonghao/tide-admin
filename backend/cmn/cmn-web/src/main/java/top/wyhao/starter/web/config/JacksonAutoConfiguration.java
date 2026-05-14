@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.json.autoconfigure;
+package top.wyhao.starter.web.config;
 
 import java.math.BigInteger;
 import java.time.*;
@@ -21,10 +21,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.*;
 import cn.hutool.core.date.DatePattern;
 import top.wyhao.starter.core.enums.BaseEnum;
 import top.wyhao.starter.core.util.GeneralPropertySourceFactory;
-import top.wyhao.starter.json.serializer.BaseEnumDeserializer;
-import top.wyhao.starter.json.serializer.BaseEnumSerializer;
-import top.wyhao.starter.json.serializer.BigNumberSerializer;
-import top.wyhao.starter.json.serializer.SimpleDeserializersWrapper;
+import top.wyhao.starter.web.json.serializer.BaseEnumDeserializer;
+import top.wyhao.starter.web.json.serializer.BaseEnumSerializer;
+import top.wyhao.starter.web.json.serializer.BigNumberSerializer;
+import top.wyhao.starter.web.json.serializer.SimpleDeserializersWrapper;
 
 /**
  * Jackson 自动配置
@@ -54,6 +54,7 @@ public class JacksonAutoConfiguration {
 
     /**
      * 日期时间序列化及反序列化配置
+     *
      * @return {@link JavaTimeModule}
      */
     private JavaTimeModule javaTimeModule() {
@@ -95,6 +96,7 @@ public class JacksonAutoConfiguration {
 
     /**
      * 大数值序列化及反序列化配置
+     *
      * @return {@link SimpleModule}
      */
     private SimpleModule bigNumberModule() {

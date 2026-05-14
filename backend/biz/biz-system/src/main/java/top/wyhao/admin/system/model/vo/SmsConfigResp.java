@@ -9,8 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
-import top.wyhao.starter.json.masking.annotation.MaskField;
-import top.wyhao.starter.json.masking.enums.MaskStrategy;
+import top.wyhao.starter.web.masking.annotation.MaskField;
+import top.wyhao.starter.web.masking.enums.MaskStrategy;
 import top.wyhao.starter.web.excel.DictExcelProperty;
 
 import java.io.Serial;

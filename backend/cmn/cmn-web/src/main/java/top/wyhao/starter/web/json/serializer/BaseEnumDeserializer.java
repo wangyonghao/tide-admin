@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.json.serializer;
+package top.wyhao.starter.web.json.serializer;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.util.ReflectUtil;

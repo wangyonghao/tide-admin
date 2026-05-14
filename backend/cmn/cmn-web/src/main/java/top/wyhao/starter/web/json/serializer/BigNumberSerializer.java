@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.json.serializer;
+package top.wyhao.starter.web.json.serializer;
 
 import com.fasterxml.jackson.core.JsonGenerator;
 import com.fasterxml.jackson.databind.SerializerProvider;

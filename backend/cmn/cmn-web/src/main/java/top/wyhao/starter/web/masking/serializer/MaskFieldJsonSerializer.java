@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.json.masking.serializer;
+package top.wyhao.starter.web.masking.serializer;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -10,8 +10,8 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.json.masking.annotation.MaskField;
-import top.wyhao.starter.json.masking.enums.MaskStrategy;
+import top.wyhao.starter.web.masking.annotation.MaskField;
+import top.wyhao.starter.web.masking.enums.MaskStrategy;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -45,7 +45,7 @@ public class MaskFieldJsonSerializer extends JsonSerializer<String> implements C
         if (maskField == null) {
             return serializerProvider.findValueSerializer(beanProperty.getType(), beanProperty);
         }
-        this.strategy=maskField.value();
+        this.strategy = maskField.value();
         return this;
     }
 }

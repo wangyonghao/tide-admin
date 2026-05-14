@@ -5,11 +5,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.starter.core.constant.ContainerConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.json.masking.annotation.MaskField;
-import top.wyhao.starter.json.masking.enums.MaskStrategy;
+import top.wyhao.starter.web.masking.annotation.MaskField;
+import top.wyhao.starter.web.masking.enums.MaskStrategy;
 
 import java.util.List;
 import java.util.Objects;

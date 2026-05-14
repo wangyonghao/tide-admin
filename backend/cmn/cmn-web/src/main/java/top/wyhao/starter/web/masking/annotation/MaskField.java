@@ -1,11 +1,8 @@
 
-package top.wyhao.starter.json.masking.annotation;
+package top.wyhao.starter.web.masking.annotation;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;
-import top.wyhao.starter.json.masking.serializer.MaskFieldJsonSerializer;
-import top.wyhao.starter.json.masking.enums.MaskStrategy;
-
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;import top.wyhao.starter.web.masking.enums.MaskStrategy;import top.wyhao.starter.web.masking.serializer.MaskFieldJsonSerializer;
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

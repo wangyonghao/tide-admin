@@ -35,7 +35,6 @@
     <module>cmn-fastexcel</module>
     <module>cmn-poi</module>
     <module>cmn-tenant</module>
-    <module>cmn-json</module>
     <module>cmn-license</module>
     <module>cmn-mail</module>
     <module>cmn-websocket</module>

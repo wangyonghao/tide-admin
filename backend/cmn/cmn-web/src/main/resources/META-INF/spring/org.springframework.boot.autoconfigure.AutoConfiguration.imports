@@ -1,5 +1,6 @@
 top.wyhao.starter.web.config.UndertowConfig
 top.wyhao.starter.web.config.WebMvcConfig
+top.wyhao.starter.web.config.JacksonAutoConfiguration
 top.wyhao.starter.web.config.CorsConfig
 top.wyhao.starter.web.config.SensitiveWordsConfig
 top.wyhao.starter.web.config.RateLimiterConfig

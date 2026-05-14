@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.json.util;
+package top.wyhao.starter.web.json.util;
 
 import cn.hutool.extra.spring.SpringUtil;
 import com.fasterxml.jackson.databind.JsonNode;
