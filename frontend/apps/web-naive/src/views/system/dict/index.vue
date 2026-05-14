@@ -353,7 +353,7 @@ onMounted(() => {
         :columns="columns"
         :data="tableData"
         :loading="tableLoading"
-        :row-key="(row: DictResult) => row.id"
+        :row-key="(row) => row.id"
         :pagination="pagination"
         :scroll-x="1200"
         remote

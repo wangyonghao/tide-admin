@@ -5,7 +5,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import { $t } from '@vben/locales';
 
-import { dateRangeShortcuts } from '#/utils/dateTools';
+import { dateRangeShortcuts } from '#/utils/date-tools';
 
 export function useGridSearchFormSchema(
   groupNameList: Ref<{ label: string; value: string }[]>,

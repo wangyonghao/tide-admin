@@ -4,7 +4,7 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import { listTenantPackageDict } from '#/api/tenant';
 import { useDict } from '#/hooks';
 import { $t } from '#/locales';
-import { datetimeFutureShortcuts } from '#/utils/dateTools';
+import { datetimeFutureShortcuts } from '#/utils/date-tools';
 
 export function useTenantEditFormSchema(): VbenFormSchema[] {
   return [
