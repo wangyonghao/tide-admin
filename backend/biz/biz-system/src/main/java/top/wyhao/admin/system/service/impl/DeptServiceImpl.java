@@ -12,26 +12,28 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.model.bo.DeptReq;
 import top.wyhao.admin.system.entity.SysDept;
+import top.wyhao.admin.system.mapper.SysDeptMapper;
+import top.wyhao.admin.system.model.bo.DeptReq;
 import top.wyhao.admin.system.model.query.DeptQuery;
 import top.wyhao.admin.system.model.vo.DeptResp;
-import top.wyhao.admin.system.mapper.DeptMapper;
 import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.UserService;
-import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.util.TreeUtils;
-import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.cmn.db.dialect.DatabaseType;
 import top.wyhao.cmn.db.util.DBMetaUtils;
 import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.starter.core.util.TreeUtils;
+import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import javax.sql.DataSource;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Optional;
 
 /**
  * 部门业务实现
@@ -47,7 +49,7 @@ public class DeptServiceImpl implements DeptService {
     private final DataSource dataSource;
     private final UserService userService;
 
-    private final DeptMapper baseMapper;
+    private final SysDeptMapper baseMapper;
 
 
     public void beforeCreate(DeptReq req) {

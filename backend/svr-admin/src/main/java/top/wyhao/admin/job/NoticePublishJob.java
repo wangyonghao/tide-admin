@@ -11,10 +11,10 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.schedule.model.annotation.ConditionalOnEnabledScheduleJob;
+import top.wyhao.admin.system.entity.SysNotice;
+import top.wyhao.admin.system.mapper.SysNoticeMapper;
 import top.wyhao.admin.system.model.enums.NoticeMethods;
 import top.wyhao.admin.system.model.enums.NoticeStatus;
-import top.wyhao.admin.system.mapper.NoticeMapper;
-import top.wyhao.admin.system.entity.SysNotice;
 import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.starter.core.constant.PropertiesConstants;
 import top.wyhao.starter.core.util.CollUtils;
@@ -66,7 +66,7 @@ public class NoticePublishJob {
      * 发布公告
      */
     private static void publishNotice() {
-        NoticeMapper noticeMapper = SpringUtil.getBean(NoticeMapper.class);
+        SysNoticeMapper noticeMapper = SpringUtil.getBean(SysNoticeMapper.class);
         // 查询待发布公告
         List<SysNotice> list = noticeMapper.lambdaQuery()
             .eq(SysNotice::getStatus, NoticeStatus.PENDING)

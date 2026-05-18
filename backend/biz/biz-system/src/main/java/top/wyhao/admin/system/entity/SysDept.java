@@ -3,8 +3,8 @@ package top.wyhao.admin.system.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import top.wyhao.cmn.db.model.BaseEntity;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.cmn.db.model.BaseDO;
 
 /**
  * 部门实体
@@ -14,7 +14,7 @@ import top.wyhao.cmn.db.model.BaseDO;
  */
 @Data
 @TableName("sys_dept")
-public class SysDept extends BaseDO {
+public class SysDept extends BaseEntity {
 
     /**
      * 名称

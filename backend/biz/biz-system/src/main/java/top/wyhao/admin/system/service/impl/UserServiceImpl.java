@@ -34,11 +34,11 @@ import top.wyhao.admin.system.entity.SysRole;
 import top.wyhao.admin.system.entity.SysUserRole;
 import top.wyhao.admin.system.entity.user.SysUser;
 import top.wyhao.admin.system.entity.user.SysUserPasswordHistory;
-import top.wyhao.admin.system.mapper.DeptMapper;
-import top.wyhao.admin.system.mapper.MenuMapper;
-import top.wyhao.admin.system.mapper.UserRoleMapper;
-import top.wyhao.admin.system.mapper.user.UserMapper;
-import top.wyhao.admin.system.mapper.user.UserPasswordHistoryMapper;
+import top.wyhao.admin.system.mapper.SysDeptMapper;
+import top.wyhao.admin.system.mapper.SysMenuMapper;
+import top.wyhao.admin.system.mapper.SysUserRoleMapper;
+import top.wyhao.admin.system.mapper.user.SysUserMapper;
+import top.wyhao.admin.system.mapper.user.SysUserPasswordHistoryMapper;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.bo.FileRequest;
 import top.wyhao.admin.system.model.bo.user.*;
@@ -95,11 +95,11 @@ public class UserServiceImpl implements UserService {
     private final UserSocialService userSocialService;
     private final RoleService roleService;
     private final FileService fileService;
-    private final UserMapper userMapper;
-    private final DeptMapper deptMapper;
-    private final UserPasswordHistoryMapper passwordHistoryMapper;
-    private final UserRoleMapper userRoleMapper;
-    private final MenuMapper menuMapper;
+    private final SysUserMapper userMapper;
+    private final SysDeptMapper deptMapper;
+    private final SysUserPasswordHistoryMapper passwordHistoryMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final SysMenuMapper menuMapper;
     private final ConfigService configService;
 
     @Value("${avatar.support-suffix}")

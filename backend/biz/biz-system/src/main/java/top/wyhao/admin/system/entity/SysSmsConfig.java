@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
-import top.wyhao.cmn.db.model.BaseDO;
+import top.wyhao.cmn.db.model.BaseEntity;
 import top.wyhao.starter.core.enums.StatusEnum;
 
 import java.time.LocalDateTime;
@@ -21,7 +21,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName(value = "sys_sms_config", autoResultMap = true)
-public class SysSmsConfig extends BaseDO {
+public class SysSmsConfig extends BaseEntity {
     @TableId
     private Long id;
 

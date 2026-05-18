@@ -15,14 +15,14 @@ import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.cmn.oss.FileStorage;
 import top.wyhao.admin.cmn.oss.FileStorageFactory;
 import top.wyhao.admin.system.entity.SysFile;
-import top.wyhao.admin.system.mapper.FileMapper;
+import top.wyhao.admin.system.mapper.SysFileMapper;
 import top.wyhao.admin.system.model.enums.FileType;
 import top.wyhao.admin.system.model.query.FileQuery;
 import top.wyhao.admin.system.model.vo.file.FileResult;
 import top.wyhao.admin.system.service.FileService;
+import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.core.exception.BadRequestException;
 import top.wyhao.starter.core.exception.BusinessException;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -43,7 +43,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
 
-    private final FileMapper fileMapper;
+    private final SysFileMapper fileMapper;
 
     private final FileStorageFactory fileStorageFactory;
 

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
-import top.wyhao.cmn.db.model.BaseDO;
+import top.wyhao.cmn.db.model.BaseEntity;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName(value = "sys_app", autoResultMap = true)
-public class SysApp extends BaseDO {
+public class SysApp extends BaseEntity {
 
     /**
      * 名称

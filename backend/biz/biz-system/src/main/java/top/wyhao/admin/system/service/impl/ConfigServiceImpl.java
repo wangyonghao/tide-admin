@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.entity.SysConfig;
-import top.wyhao.admin.system.mapper.ConfigMapper;
+import top.wyhao.admin.system.mapper.SysConfigMapper;
 import top.wyhao.admin.system.model.bo.ConfigRequest;
 import top.wyhao.admin.system.model.query.ConfigQuery;
 import top.wyhao.admin.system.model.vo.ConfigResult;
@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class ConfigServiceImpl implements ConfigService {
 
-    private final ConfigMapper configMapper;
+    private final SysConfigMapper configMapper;
 
     @Override
     public PageResult<ConfigResult> page(ConfigQuery query, PageQuery pageQuery) {

@@ -9,19 +9,19 @@ import org.dromara.sms4j.core.factory.SmsFactory;
 import org.dromara.sms4j.provider.config.BaseConfig;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.model.query.SmsConfigQuery;
-import top.wyhao.admin.system.mapper.SmsConfigMapper;
-import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.admin.system.config.sms.SmsConfigUtil;
 import top.wyhao.admin.system.entity.SysSmsConfig;
+import top.wyhao.admin.system.mapper.SysSmsConfigMapper;
 import top.wyhao.admin.system.model.bo.SmsConfigReq;
+import top.wyhao.admin.system.model.query.SmsConfigQuery;
 import top.wyhao.admin.system.model.vo.SmsConfigResp;
 import top.wyhao.admin.system.service.SmsConfigService;
+import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.web.core.model.LabelValueResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -34,7 +34,7 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class SmsConfigServiceImpl implements SmsConfigService {
-    private final SmsConfigMapper baseMapper;
+    private final SysSmsConfigMapper baseMapper;
 
     public void afterCreate(SmsConfigReq req, SysSmsConfig entity) {
         this.load(entity);

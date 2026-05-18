@@ -29,10 +29,10 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.generator.config.properties.GeneratorProperties;
 import top.wyhao.admin.generator.enums.FormTypeEnum;
 import top.wyhao.admin.generator.enums.QueryTypeEnum;
-import top.wyhao.admin.generator.mapper.FieldConfigMapper;
-import top.wyhao.admin.generator.mapper.GenConfigMapper;
-import top.wyhao.admin.generator.model.entity.GenFieldConfig;
+import top.wyhao.admin.generator.mapper.GenGenConfigMapper;
+import top.wyhao.admin.generator.mapper.GenGenFieldConfigMapper;
 import top.wyhao.admin.generator.model.entity.GenConfig;
+import top.wyhao.admin.generator.model.entity.GenFieldConfig;
 import top.wyhao.admin.generator.model.entity.InnerGenConfig;
 import top.wyhao.admin.generator.model.query.GenConfigQuery;
 import top.wyhao.admin.generator.model.req.GenConfigReq;
@@ -72,8 +72,8 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final DataSource dataSource;
     private final GeneratorProperties generatorProperties;
     private final ApplicationProperties applicationProperties;
-    private final FieldConfigMapper fieldConfigMapper;
-    private final GenConfigMapper genConfigMapper;
+    private final GenGenFieldConfigMapper fieldConfigMapper;
+    private final GenGenConfigMapper genConfigMapper;
     private static final List<String> TIME_PACKAGE_CLASS = Arrays.asList("LocalDate", "LocalTime", "LocalDateTime");
 
     @Override

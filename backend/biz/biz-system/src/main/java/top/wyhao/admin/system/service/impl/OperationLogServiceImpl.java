@@ -11,17 +11,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.mapper.OperationLogMapper;
 import top.wyhao.admin.system.entity.SysOperationLog;
+import top.wyhao.admin.system.mapper.SysOperationLogMapper;
 import top.wyhao.admin.system.model.query.LogQuery;
 import top.wyhao.admin.system.model.vo.log.LoginLogExportResult;
 import top.wyhao.admin.system.model.vo.log.OperationLogDetailResult;
 import top.wyhao.admin.system.model.vo.log.OperationLogExportResp;
 import top.wyhao.admin.system.model.vo.log.OperationLogResult;
 import top.wyhao.admin.system.service.OperationLogService;
+import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -37,7 +37,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class OperationLogServiceImpl implements OperationLogService {
 
-    private final OperationLogMapper operationLogMapper;
+    private final SysOperationLogMapper operationLogMapper;
 
     /**
      * 异步记录操作日志

@@ -6,10 +6,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.mapper.NoticeMapper;
+import top.wyhao.admin.system.entity.SysNotice;
+import top.wyhao.admin.system.mapper.SysNoticeMapper;
 import top.wyhao.admin.system.model.bo.MessageReq;
 import top.wyhao.admin.system.model.bo.NoticeRequest;
-import top.wyhao.admin.system.entity.SysNotice;
 import top.wyhao.admin.system.model.enums.*;
 import top.wyhao.admin.system.model.query.NoticeQuery;
 import top.wyhao.admin.system.model.vo.NoticeDetailResult;
@@ -38,7 +38,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoticeServiceImpl implements NoticeService {
 
-    private final NoticeMapper noticeMapper;
+    private final SysNoticeMapper noticeMapper;
     private final NoticeLogService noticeLogService;
     private final MessageService messageService;
 

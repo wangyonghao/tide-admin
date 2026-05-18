@@ -5,8 +5,8 @@ import cn.hutool.core.lang.tree.Tree;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.tenant.mapper.PackageMapper;
-import top.wyhao.admin.tenant.mapper.TenantMapper;
+import top.wyhao.admin.tenant.mapper.SysTenantMapper;
+import top.wyhao.admin.tenant.mapper.TenantPackageMapper;
 import top.wyhao.admin.tenant.model.entity.TenantPackage;
 import top.wyhao.admin.tenant.model.query.PackageQuery;
 import top.wyhao.admin.tenant.model.req.PackageReq;
@@ -30,8 +30,8 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class PackageServiceImpl implements PackageService {
-    private final PackageMapper baseMapper;
-    private final TenantMapper tenantMapper;
+    private final TenantPackageMapper baseMapper;
+    private final SysTenantMapper tenantMapper;
 
     @Override
     public Long create(PackageReq req) {

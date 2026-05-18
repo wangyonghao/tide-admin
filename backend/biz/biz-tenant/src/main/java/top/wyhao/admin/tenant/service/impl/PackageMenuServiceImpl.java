@@ -5,7 +5,7 @@ import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.tenant.mapper.PackageMenuMapper;
+import top.wyhao.admin.tenant.mapper.TenantPackageMenuMapper;
 import top.wyhao.admin.tenant.model.entity.TenantPackageMenu;
 import top.wyhao.admin.tenant.service.PackageMenuService;
 import top.wyhao.starter.core.util.CollUtils;
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class PackageMenuServiceImpl implements PackageMenuService {
 
-    private final PackageMenuMapper baseMapper;
+    private final TenantPackageMenuMapper baseMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

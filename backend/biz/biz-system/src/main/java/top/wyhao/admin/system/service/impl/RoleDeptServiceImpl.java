@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.entity.SysRoleDept;
-import top.wyhao.admin.system.mapper.RoleDeptMapper;
+import top.wyhao.admin.system.mapper.SysRoleDeptMapper;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.starter.core.util.CollUtils;
 
@@ -22,7 +22,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleDeptServiceImpl implements RoleDeptService {
 
-    private final RoleDeptMapper roleDeptMapper;
+    private final SysRoleDeptMapper roleDeptMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

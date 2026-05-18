@@ -7,14 +7,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.mapper.DictMapper;
 import top.wyhao.admin.system.entity.SysDict;
+import top.wyhao.admin.system.mapper.SysDictMapper;
 import top.wyhao.admin.system.model.DictQuery;
 import top.wyhao.admin.system.service.DictService;
-import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.cmn.db.util.QueryWrapperUtil;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.web.core.model.LabelValueResult;
+import top.wyhao.starter.web.core.model.PageQuery;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -27,7 +27,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class DictServiceImpl extends ServiceImpl<DictMapper, SysDict> implements DictService {
+public class DictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> implements DictService {
     @Override
     public IPage<SysDict> page(DictQuery query, PageQuery pageQuery) {
         // 构建查询条件

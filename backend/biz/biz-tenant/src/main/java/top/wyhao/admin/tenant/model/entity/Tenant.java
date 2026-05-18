@@ -3,7 +3,7 @@ package top.wyhao.admin.tenant.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.cmn.db.model.BaseDO;
+import top.wyhao.cmn.db.model.BaseEntity;
 import top.wyhao.starter.core.enums.StatusEnum;
 
 import java.io.Serial;
@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("tenant")
-public class Tenant extends BaseDO {
+public class Tenant extends BaseEntity {
 
     @Serial
     private static final long serialVersionUID = 1L;

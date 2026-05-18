@@ -16,16 +16,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.mapper.MenuMapper;
-import top.wyhao.admin.system.mapper.RoleMapper;
-import top.wyhao.admin.system.mapper.UserRoleMapper;
-import top.wyhao.admin.system.mapper.user.UserMapper;
-import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
-import top.wyhao.admin.system.model.bo.RoleRequest;
 import top.wyhao.admin.system.entity.SysMenu;
 import top.wyhao.admin.system.entity.SysRole;
 import top.wyhao.admin.system.entity.SysUserRole;
 import top.wyhao.admin.system.entity.user.SysUser;
+import top.wyhao.admin.system.mapper.SysMenuMapper;
+import top.wyhao.admin.system.mapper.SysRoleMapper;
+import top.wyhao.admin.system.mapper.SysUserRoleMapper;
+import top.wyhao.admin.system.mapper.user.SysUserMapper;
+import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
+import top.wyhao.admin.system.model.bo.RoleRequest;
 import top.wyhao.admin.system.model.query.RoleQuery;
 import top.wyhao.admin.system.model.query.RoleUserQuery;
 import top.wyhao.admin.system.model.vo.MenuVO;
@@ -35,6 +35,7 @@ import top.wyhao.admin.system.model.vo.role.RoleUserResult;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.RoleMenuService;
 import top.wyhao.admin.system.service.RoleService;
+import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.enums.DataScopeEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
@@ -42,7 +43,6 @@ import top.wyhao.starter.core.exception.BadRequestException;
 import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -58,7 +58,7 @@ import java.util.stream.Collectors;
  */
 @Service
 @RequiredArgsConstructor
-public class RoleServiceImpl extends ServiceImpl<RoleMapper, SysRole> implements RoleService {
+public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> implements RoleService {
     /**
      * 超级管理员角色 ID（内置且仅有一位超级管理员用户）
      */
@@ -66,10 +66,10 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, SysRole> implements
 
     private final RoleMenuService roleMenuService;
     private final RoleDeptService roleDeptService;
-    private final UserMapper userMapper;
-    private final UserRoleMapper userRoleMapper;
-    private final MenuMapper menuMapper;
-    private final RoleMapper roleMapper;
+    private final SysUserMapper userMapper;
+    private final SysUserRoleMapper userRoleMapper;
+    private final SysMenuMapper menuMapper;
+    private final SysRoleMapper roleMapper;
 
     @Override
     public PageResult<RoleResp> page(RoleQuery query, PageQuery pageQuery) {

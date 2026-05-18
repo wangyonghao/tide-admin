@@ -13,7 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.entity.SysLoginLog;
-import top.wyhao.admin.system.mapper.LoginLogMapper;
+import top.wyhao.admin.system.mapper.SysLoginLogMapper;
 import top.wyhao.admin.system.model.enums.LoginDeviceEnum;
 import top.wyhao.admin.system.model.query.LoginLogQuery;
 import top.wyhao.admin.system.model.vo.log.LoginLogExportResult;
@@ -41,7 +41,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class LoginLogServiceImpl implements LoginLogService {
 
-    private final LoginLogMapper loginLogMapper;
+    private final SysLoginLogMapper loginLogMapper;
 
     @Async
     @Override

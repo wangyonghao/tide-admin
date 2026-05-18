@@ -8,16 +8,17 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.admin.system.entity.SysMenu;
+import top.wyhao.admin.system.mapper.SysMenuMapper;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.bo.MenuRequest;
-import top.wyhao.admin.system.entity.SysMenu;
 import top.wyhao.admin.system.model.enums.MenuType;
 import top.wyhao.admin.system.model.query.MenuQuery;
 import top.wyhao.admin.system.model.vo.MenuTreeVO;
 import top.wyhao.admin.system.model.vo.MenuVO;
-import top.wyhao.admin.system.mapper.MenuMapper;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.UserService;
+import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.constant.StringConstants;
@@ -25,7 +26,6 @@ import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.ArrayList;
@@ -39,7 +39,7 @@ import java.util.List;
 public class MenuServiceImpl implements MenuService {
 
     private final UserService userService;
-    private final MenuMapper menuMapper;
+    private final SysMenuMapper menuMapper;
 
     @Override
     public List<MenuTreeVO> tree(MenuQuery query) {

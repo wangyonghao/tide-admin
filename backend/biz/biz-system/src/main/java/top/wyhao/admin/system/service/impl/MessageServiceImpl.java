@@ -9,11 +9,11 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.mapper.MessageLogMapper;
-import top.wyhao.admin.system.mapper.MessageMapper;
-import top.wyhao.admin.system.model.bo.MessageReq;
 import top.wyhao.admin.system.entity.SysMessage;
 import top.wyhao.admin.system.entity.SysMessageLog;
+import top.wyhao.admin.system.mapper.SysMessageLogMapper;
+import top.wyhao.admin.system.mapper.SysMessageMapper;
+import top.wyhao.admin.system.model.bo.MessageReq;
 import top.wyhao.admin.system.model.enums.MessageType;
 import top.wyhao.admin.system.model.enums.NoticeScopes;
 import top.wyhao.admin.system.model.query.MessageQuery;
@@ -42,8 +42,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MessageServiceImpl implements MessageService {
 
-    private final MessageMapper baseMapper;
-    private final MessageLogMapper messageLogMapper;
+    private final SysMessageMapper baseMapper;
+    private final SysMessageLogMapper messageLogMapper;
 
     @Override
     public PageResult<MessageResp> page(MessageQuery query, PageQuery pageQuery) {

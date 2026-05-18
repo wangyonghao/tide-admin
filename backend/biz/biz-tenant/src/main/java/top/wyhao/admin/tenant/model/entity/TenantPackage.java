@@ -3,8 +3,8 @@ package top.wyhao.admin.tenant.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import top.wyhao.cmn.db.model.BaseEntity;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.cmn.db.model.BaseDO;
 
 /**
  * 套餐实体
@@ -15,7 +15,7 @@ import top.wyhao.cmn.db.model.BaseDO;
  */
 @Data
 @TableName("tenant_package")
-public class TenantPackage extends BaseDO {
+public class TenantPackage extends BaseEntity {
     /**
      * 名称
      */

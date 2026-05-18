@@ -15,7 +15,7 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.mapper.OperationLogMapper;
+import top.wyhao.admin.system.mapper.SysOperationLogMapper;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardAccessTrendResp;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardChartCommonResp;
 import top.wyhao.admin.system.model.vo.dashboard.DashboardNoticeResp;
@@ -39,7 +39,7 @@ import java.util.*;
 @RequiredArgsConstructor
 public class DashboardServiceImpl implements DashboardService {
 
-    private final OperationLogMapper operationLogMapper;
+    private final SysOperationLogMapper operationLogMapper;
     private final NoticeService noticeService;
 
     @Override

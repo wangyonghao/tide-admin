@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import top.wyhao.cmn.db.model.BaseEntity;
 import top.wyhao.starter.core.enums.ResultStatusEnum;
-import top.wyhao.cmn.db.model.BaseDO;
 
 import java.time.LocalDateTime;
 
@@ -16,7 +16,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("sys_sms_log")
-public class SysSmsLog extends BaseDO {
+public class SysSmsLog extends BaseEntity {
 
     @TableId
     private Long id;

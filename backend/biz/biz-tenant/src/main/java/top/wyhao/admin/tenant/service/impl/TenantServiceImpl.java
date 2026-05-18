@@ -11,7 +11,7 @@ import me.ahoo.cosid.provider.IdGeneratorProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.tenant.constant.TenantConstants;
-import top.wyhao.admin.tenant.mapper.TenantMapper;
+import top.wyhao.admin.tenant.mapper.SysTenantMapper;
 import top.wyhao.admin.tenant.model.entity.Tenant;
 import top.wyhao.admin.tenant.model.query.TenantQuery;
 import top.wyhao.admin.tenant.model.req.TenantReq;
@@ -58,7 +58,7 @@ public class TenantServiceImpl implements TenantService {
     private final RoleMenuApi roleMenuApi;
     private final RoleApi roleApi;
     private final TenantProperties tenantProperties;
-    private final TenantMapper baseMapper;
+    private final SysTenantMapper baseMapper;
 
     @Override
     public Long create(TenantReq req) {

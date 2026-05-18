@@ -7,8 +7,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.mapper.user.UserPasswordHistoryMapper;
 import top.wyhao.admin.system.entity.user.SysUserPasswordHistory;
+import top.wyhao.admin.system.mapper.user.SysUserPasswordHistoryMapper;
 import top.wyhao.admin.system.service.UserPasswordHistoryService;
 import top.wyhao.starter.core.util.CollUtils;
 
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserPasswordHistoryServiceImpl implements UserPasswordHistoryService {
 
-    private final UserPasswordHistoryMapper baseMapper;
+    private final SysUserPasswordHistoryMapper baseMapper;
     private final PasswordEncoder passwordEncoder;
 
     @Override

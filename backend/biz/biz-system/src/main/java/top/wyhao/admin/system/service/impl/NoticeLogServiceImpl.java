@@ -5,8 +5,8 @@ import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.mapper.NoticeLogMapper;
 import top.wyhao.admin.system.entity.SysNoticeLog;
+import top.wyhao.admin.system.mapper.SysNoticeLogMapper;
 import top.wyhao.admin.system.service.NoticeLogService;
 import top.wyhao.starter.core.util.CollUtils;
 
@@ -24,7 +24,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class NoticeLogServiceImpl implements NoticeLogService {
 
-    private final NoticeLogMapper baseMapper;
+    private final SysNoticeLogMapper baseMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

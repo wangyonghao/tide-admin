@@ -6,10 +6,10 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.entity.SysRoleMenu;
-import top.wyhao.admin.system.mapper.RoleMenuMapper;
+import top.wyhao.admin.system.mapper.SysRoleMenuMapper;
 import top.wyhao.admin.system.service.RoleMenuService;
+import top.wyhao.cmn.db.model.impl.BaseServiceImpl;
 import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.cmn.db.model.ServiceImpl;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -22,8 +22,8 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class RoleMenuServiceImpl extends ServiceImpl<RoleMenuMapper, SysRoleMenu> implements RoleMenuService {
-    private final RoleMenuMapper roleMenuMapper;
+public class RoleMenuServiceImpl extends BaseServiceImpl<SysRoleMenuMapper, SysRoleMenu> implements RoleMenuService {
+    private final SysRoleMenuMapper roleMenuMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)

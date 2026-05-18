@@ -17,7 +17,7 @@ import jakarta.validation.ValidationException;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.open.mapper.AppMapper;
+import top.wyhao.admin.open.mapper.SysAppMapper;
 import top.wyhao.admin.open.model.entity.SysApp;
 import top.wyhao.admin.open.model.query.AppQuery;
 import top.wyhao.admin.open.model.req.AppReq;
@@ -25,7 +25,7 @@ import top.wyhao.admin.open.model.resp.AppDetailResp;
 import top.wyhao.admin.open.model.resp.AppResp;
 import top.wyhao.admin.open.model.resp.AppSecretResp;
 import top.wyhao.admin.open.service.AppService;
-import top.wyhao.cmn.db.model.ServiceImpl;
+import top.wyhao.cmn.db.model.impl.BaseServiceImpl;
 import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.util.ReflectUtils;
@@ -46,7 +46,7 @@ import java.util.Optional;
  * @since 2024/10/17 16:03
  */
 @Service
-public class AppServiceImpl extends ServiceImpl<AppMapper, SysApp> implements AppService {
+public class AppServiceImpl extends BaseServiceImpl<SysAppMapper, SysApp> implements AppService {
 
     private List<Field> queryFields;
 
