@@ -44,11 +44,11 @@ import top.wyhao.admin.system.model.bo.FileRequest;
 import top.wyhao.admin.system.model.bo.user.*;
 import top.wyhao.admin.system.model.query.FileQuery;
 import top.wyhao.admin.system.model.query.UserQuery;
-import top.wyhao.admin.system.model.vo.config.SecurityConfigVO;
-import top.wyhao.admin.system.model.vo.user.UserDetailResult;
-import top.wyhao.admin.system.model.vo.user.UserImportParseResp;
-import top.wyhao.admin.system.model.vo.user.UserImportResp;
-import top.wyhao.admin.system.model.vo.user.UserResult;
+import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
+import top.wyhao.admin.system.model.result.user.UserDetailResult;
+import top.wyhao.admin.system.model.result.user.UserImportParseResp;
+import top.wyhao.admin.system.model.result.user.UserImportResp;
+import top.wyhao.admin.system.model.result.user.UserResult;
 import top.wyhao.admin.system.service.*;
 import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.common.security.util.LoginUtil;
@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
         QueryWrapperUtil.applySort(queryWrapper, query.getSort(), SysUser.class);
         IPage<UserResult> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page);
+        return PageResult.build(page, UserResult.class);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -260,11 +260,9 @@ public class UserServiceImpl implements UserService {
         userImportResp
                 .setDuplicateUserRows(countExistByField(validRowList, UserImportRowReq::getUsername, SysUser::getUsername));
         // 查询重复邮箱
-        userImportResp.setDuplicateEmailRows(countExistByField(validRowList, row -> row
-                .getEmail(), SysUser::getEmail));
+        userImportResp.setDuplicateEmailRows(countExistByField(validRowList, row -> row.getEmail(), SysUser::getEmail));
         // 查询重复手机
-        userImportResp.setDuplicatePhoneRows(countExistByField(validRowList, row -> row
-                .getPhone(), SysUser::getPhone));
+        userImportResp.setDuplicatePhoneRows(countExistByField(validRowList, row -> row.getPhone(), SysUser::getPhone));
 
         // 设置导入会话并缓存数据，有效期10分钟
         String importKey = UUID.fastUUID().toString(true);

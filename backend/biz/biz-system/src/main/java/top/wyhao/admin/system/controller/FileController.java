@@ -14,7 +14,7 @@ import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.entity.SysFile;
 import top.wyhao.admin.system.model.bo.FileRequest;
 import top.wyhao.admin.system.model.query.FileQuery;
-import top.wyhao.admin.system.model.vo.file.FileResult;
+import top.wyhao.admin.system.model.result.file.FileResult;
 import top.wyhao.admin.system.service.FileService;
 import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.PageQuery;

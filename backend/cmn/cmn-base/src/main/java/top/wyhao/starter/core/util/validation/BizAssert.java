@@ -182,7 +182,7 @@ public class BizAssert extends Validator {
      * @param params            参数值
      */
     public static void isTrue(BooleanSupplier conditionSupplier, String template, Object... params) {
-        throwIf(conditionSupplier, CharSequenceUtil.format(template, params), EXCEPTION_TYPE);
+        throwIf(() -> !conditionSupplier.getAsBoolean(), CharSequenceUtil.format(template, params), EXCEPTION_TYPE);
     }
 
     public static void notNull(Object obj, String template, Object... params) {

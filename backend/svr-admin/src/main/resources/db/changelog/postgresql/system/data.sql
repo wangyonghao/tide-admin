@@ -1,6 +1,6 @@
 -- liquibase formatted sql
 
--- changeset wyhao:1
+-- changeset wangyonghao:1
 -- comment system-初始化表数据
 INSERT INTO "sys_menu"
 ("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
@@ -82,108 +82,21 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (2033, '导出', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:export', 3, 1, 1, NOW());
 
 -- 初始化默认部门
-INSERT INTO "sys_dept" ("id", "name", "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time")
-VALUES (1, 'Xxx科技有限公司', 0, '0', '系统初始部门', 1, 1, TRUE, 1, NOW()),
-       (547887852587843590, 'Xxx（天津）科技有限公司', 1, '0,1', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843591, '研发部', 547887852587843590, '0,1,547887852587843590', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843592, 'UI部', 547887852587843590, '0,1,547887852587843590', NULL, 2, 1, FALSE, 1, NOW()),
-       (547887852587843593, '测试部', 547887852587843590, '0,1,547887852587843590', NULL, 3, 1, FALSE, 1, NOW()),
-       (547887852587843594, '运维部', 547887852587843590, '0,1,547887852587843590', NULL, 4, 1, FALSE, 1, NOW()),
-       (547887852587843595, '研发一组', 547887852587843591, '0,1,547887852587843590,547887852587843591', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843596, '研发二组', 547887852587843591, '0,1,547887852587843590,547887852587843591', NULL, 2, 2, FALSE, 1, NOW()),
-
-       (547887852587843597, 'Xxx（四川）科技有限公司', 1, '0,1', NULL, 2, 1, FALSE, 1, NOW()),
-       (547887852587843598, '研发部', 547887852587843597, '0,1,547887852587843597', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843599, '研发一组', 547887852587843598, '0,1,547887852587843597,547887852587843598', NULL, 1, 1, FALSE, 1, NOW()),
-
-       (547887852587843600, 'Xxx（江西）科技有限公司', 1, '0,1', NULL, 3, 1, FALSE, 1, NOW()),
-       (547887852587843601, '研发部', 547887852587843600, '0,1,547887852587843600', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843602, '研发一组', 547887852587843601, '0,1,547887852587843600,547887852587843601', NULL, 1, 1, FALSE, 1, NOW()),
-
-       (547887852587843603, 'Xxx（江苏）科技有限公司', 1, '0,1', NULL, 4, 1, FALSE, 1, NOW()),
-       (547887852587843604, '研发部', 547887852587843603, '0,1,547887852587843603', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843605, '研发一组', 547887852587843604, '0,1,547887852587843603,547887852587843604', NULL, 1, 1, FALSE, 1, NOW()),
-
-       (547887852587843606, 'Xxx（浙江）科技有限公司', 1, '0,1', NULL, 5, 1, FALSE, 1, NOW()),
-       (547887852587843607, '研发部', 547887852587843606, '0,1,547887852587843606', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843608, '研发一组', 547887852587843607, '0,1,547887852587843606,547887852587843607', NULL, 1, 1, FALSE, 1, NOW()),
-
-       (547887852587843609, 'Xxx（湖南）科技有限公司', 1, '0,1', NULL, 6, 1, FALSE, 1, NOW()),
-       (547887852587843610, '研发部', 547887852587843609, '0,1,547887852587843609', NULL, 1, 1, FALSE, 1, NOW()),
-       (547887852587843611, '研发一组', 547887852587843610, '0,1,547887852587843609,547887852587843610', NULL, 1, 1, FALSE, 1, NOW());
+INSERT INTO "sys_dept" ("id", "code", "name","type", "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time", "update_user", "update_time")
+VALUES (1, 'A00', '总公司', 1,0, '', '系统默认根节点，不可删除', 1, 1, TRUE, 1, NOW(),1, NOW());
 
 -- 初始化默认角色
 INSERT INTO "sys_role"
-("id", "name", "code", "data_scope", "description", "sort", "is_builtin", "create_user", "create_time")
+    ("id", "name", "code", "data_scope", "description", "sort", "is_builtin", "create_user", "create_time")
 VALUES
-(1, '超级管理员', 'super_admin', 1, '系统初始角色', 0, true, 1, NOW()),
-(2, '系统管理员', 'sys_admin', 1, NULL, 1, false, 1, NOW()),
-(3, '普通用户', 'general', 4, NULL, 2, false, 1, NOW()),
-(547888897925840927, '测试人员', 'tester', 5, NULL, 3, false, 1, NOW()),
-(547888897925840928, '研发人员', 'developer', 4, NULL, 4, false, 1, NOW());
+    (1, '超级管理员', 'super_admin', 1, '系统初始角色', 0, true, 1, NOW());
 
 -- 初始化默认用户：admin/admin123；test/test123
-INSERT INTO "sys_user"
-("id", "username", "nickname", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "dept_id", "create_user", "create_time")
-VALUES
-(1, 'admin', '超级管理员', '$2a$10$kAfyANQ23MKgtwxr9aT.TOWPRW88aX4DXrJmX1W6GfGK463oBdmeG', 1, '42190c6c5639d2ca4edb4150a35e058559ccf8270361a23745a2fd285a273c28', '5bda89a4609a65546422ea56bfe5eab4', NULL, '系统初始用户', 1, true, NOW(), 1, 1, NOW()),
-(801822, 'test', '测试员', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 2, NULL, NULL, NULL,
- NULL, 1, FALSE, NOW(), 547887852587843593, 1, NOW()),
-(801823, 'Charles', 'Charles', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL,
- NULL, '代码写到极致，就是艺术。', 1, FALSE, NOW(), 547887852587843595, 1, NOW()),
-(801824, 'Yoofff', 'Yoofff', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL,
- NULL, '弱小和无知不是生存的障碍，傲慢才是。', 1, FALSE, NOW(), 1, 1, NOW()),
-(801825, 'Jasmine', 'Jasmine', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL,
- NULL, '干就完事了！', 1, FALSE, NOW(), 547887852587843605, 1, NOW()),
-(801826, 'AutumnSail', '秋登', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL,
- NULL, '只有追求完美，才能创造奇迹。', 1, FALSE, NOW(), 547887852587843602, 1, NOW()),
-(801827, 'Kils', 'Kils', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL, NULL,
- '可以摆烂，但不能真的菜。', 1, FALSE, NOW(), 547887852587843599, 1, NOW()),
-(801828, 'mochou', '莫愁', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL, NULL,
- '万事莫愁，皆得所愿。', 1, FALSE, NOW(), 547887852587843602, 1, NOW()),
-(801829, 'Jing', 'MS-Jing', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL, NULL,
- '路虽远，行则将至。', 2, FALSE, NOW(), 547887852587843599, 1, NOW()),
-(801830, 'domw', '梓陌', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL, NULL,
- '胜利是奖赏，挫折是常态。', 1, FALSE, NOW(), 547887852587843608, 1, NOW()),
-(801831, 'xtanyu', '小熊', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL, NULL,
- '不想上班。', 1, FALSE, NOW(), 547887852587843611, 1, NOW()),
-(801832, 'ppxb', '番茄', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL, NULL,
- 'one day smile one day cry.', 1, FALSE, NOW(), 1, 547887852587843599, NOW()),
-(801833, 'luoqiz', '老罗', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL, NULL,
- '行者无疆，丈量四方。', 1, FALSE, NOW(), 1, 1, NOW()),
-(801834, 'lishuyanla', '颜如玉', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 1, NULL, NULL,
- NULL, '书中自有颜如玉，世间多是李莫愁。', 1, FALSE, NOW(), 1, 1, NOW());
-
-
--- 初始化字典数据
-INSERT INTO "sys_dict" ("dict_type", "value", "label", "ext", "sort", "enabled", "description")
-VALUES
-('notice_type', '1', '产品新闻', '{"color": "primary"}', 1, true, NULL),
-('notice_type', '2', '企业动态', '{"color": "success"}', 2, true, NULL),
-('client_type', 'PC', '桌面端', '{"color": "primary"}', 1, true, NULL),
-('client_type', 'ANDROID', '安卓', '{"color": "success"}', 2, true, NULL),
-('client_type', 'XCX', '小程序', '{"color": "warning"}', 3, true, NULL),
-('sms_supplier', 'alibaba', '阿里云', '{"color": "warning"}', 1, true, NULL),
-('sms_supplier', 'tencent', '腾讯云', '{"color": "primary"}', 2, true, NULL),
-('sms_supplier', 'cloopen', '容联云', '{"color": "success"}', 3, true, NULL);
-
+INSERT INTO "sys_user" ("id", "username", "nickname", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "dept_id", "create_user", "create_time")
+VALUES (1, 'admin', '超级管理员', '$2a$10$kAfyANQ23MKgtwxr9aT.TOWPRW88aX4DXrJmX1W6GfGK463oBdmeG', 1, '42190c6c5639d2ca4edb4150a35e058559ccf8270361a23745a2fd285a273c28', '5bda89a4609a65546422ea56bfe5eab4', NULL, '系统初始用户', 1, true, NOW(), 1, 1, NOW());
 -- 初始化默认用户和角色关联数据
 INSERT INTO "sys_user_role" ("id", "user_id", "role_id")
-VALUES
-(1, 1, 1),
-(2, 801822, 547888897925840927),
-(3, 801823, 547888897925840928),
-(4, 801824, 547888897925840928),
-(5, 801825, 547888897925840928),
-(6, 801826, 547888897925840928),
-(7, 801827, 547888897925840928),
-(8, 801828, 547888897925840928),
-(9, 801829, 547888897925840928),
-(10, 801830, 547888897925840928),
-(11, 801831, 547888897925840928),
-(12, 801832, 547888897925840928),
-(13, 801833, 547888897925840928),
-(14, 801834, 547888897925840928);
+VALUES (1, 1, 1);
 
 -- 初始化默认角色和菜单关联数据
 INSERT INTO "sys_role_menu" ("role_id", "menu_id")
@@ -205,7 +118,17 @@ VALUES
 (547888897925840928, 2022),
 (547888897925840928, 2023);
 
--- 初始化默认角色和部门关联数据
-INSERT INTO "sys_role_dept" ("role_id", "dept_id") 
-VALUES 
-(547888897925840927, 547887852587843593);
+-- 初始化字典数据
+INSERT INTO "sys_dict" ("dict_type", "value", "label", "ext", "sort", "enabled", "description")
+VALUES
+    ('notice_type', '1', '产品新闻', '{"color": "primary"}', 1, true, NULL),
+    ('notice_type', '2', '企业动态', '{"color": "success"}', 2, true, NULL),
+    ('client_type', 'PC', '桌面端', '{"color": "primary"}', 1, true, NULL),
+    ('client_type', 'ANDROID', '安卓', '{"color": "success"}', 2, true, NULL),
+    ('client_type', 'XCX', '小程序', '{"color": "warning"}', 3, true, NULL),
+    ('sms_supplier', 'alibaba', '阿里云', '{"color": "warning"}', 1, true, NULL),
+    ('sms_supplier', 'tencent', '腾讯云', '{"color": "primary"}', 2, true, NULL),
+    ('sms_supplier', 'cloopen', '容联云', '{"color": "success"}', 3, true, NULL),
+    ('dept_type', '1', '分公司', '{"color": "primary"}', 1, true, NULL),
+    ('dept_type', '2', '部门', '{"color": "success"}', 2, true, NULL),
+    ('dept_type', '3', '用户组', '{"color": "warning"}', 3, true, NULL);

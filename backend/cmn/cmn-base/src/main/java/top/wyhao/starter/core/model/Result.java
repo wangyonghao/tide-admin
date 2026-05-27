@@ -21,9 +21,9 @@ public class Result<T> {
     private String code;
 
     /**
-     * 状态信息
+     * 提示信息
      */
-    private String msg;
+    private String message;
 
     /**
      * 响应数据
@@ -87,7 +87,7 @@ public class Result<T> {
         Result<T> result = new Result<>();
         result.setCode(code);
         result.setData(data);
-        result.setMsg(msg);
+        result.setMessage(msg);
         result.setTimestamp(System.currentTimeMillis());
         return result;
     }

@@ -3,9 +3,9 @@ package top.wyhao.admin.system.service;
 
 import top.wyhao.admin.system.model.query.MessageQuery;
 import top.wyhao.admin.system.model.bo.MessageRequest;
-import top.wyhao.admin.system.model.vo.message.MessageDetailResult;
-import top.wyhao.admin.system.model.vo.message.MessageResult;
-import top.wyhao.admin.system.model.vo.message.MessageUnreadResp;
+import top.wyhao.admin.system.model.result.message.MessageDetailResult;
+import top.wyhao.admin.system.model.result.message.MessageResult;
+import top.wyhao.admin.system.model.result.message.MessageUnreadResp;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 

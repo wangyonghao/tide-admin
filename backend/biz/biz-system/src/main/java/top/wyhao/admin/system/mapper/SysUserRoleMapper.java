@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysUserRole;
-import top.wyhao.admin.system.model.vo.role.RoleUserResult;
+import top.wyhao.admin.system.model.result.role.RoleUserResult;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 /**

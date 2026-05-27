@@ -21,8 +21,8 @@ public class DeptQuery extends SortQuery {
      * 关键词
      */
     @Schema(description = "关键词", example = "测试部")
-    @Query(columns = {"name", "description"}, type = QueryType.LIKE)
-    private String description;
+    @Query(columns = {"name", "code"}, type = QueryType.LIKE)
+    private String keyword;
 
     /**
      * 状态

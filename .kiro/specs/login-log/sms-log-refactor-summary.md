@@ -161,7 +161,7 @@ h(NPopconfirm, {
 ### 2. 错误处理
 ```typescript
 try {
-  await deleteSmsLog(row.id);
+  await smsLogApi.delete(row.id);
   message.success('删除成功');
   await loadTableData();
 } catch (error) {

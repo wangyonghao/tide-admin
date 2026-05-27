@@ -13,7 +13,7 @@ import top.wyhao.admin.auth.model.AccountLoginRequest;
 import top.wyhao.admin.auth.model.LoginResult;
 import top.wyhao.admin.system.entity.SysDept;
 import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.model.vo.config.LoginConfigVO;
+import top.wyhao.admin.system.model.result.config.LoginConfigVO;
 import top.wyhao.admin.system.service.*;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.UserContextHolder;

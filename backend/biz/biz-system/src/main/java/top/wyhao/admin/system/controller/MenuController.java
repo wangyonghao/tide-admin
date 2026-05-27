@@ -7,11 +7,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.system.model.bo.MenuRequest;
 import top.wyhao.admin.system.model.query.MenuQuery;
-import top.wyhao.admin.system.model.vo.MenuTreeVO;
-import top.wyhao.admin.system.model.vo.MenuVO;
+import top.wyhao.admin.system.model.result.MenuTreeVO;
+import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.starter.web.core.model.SortQuery;
 import top.wyhao.starter.web.core.model.IdResult;
@@ -76,7 +77,7 @@ public class MenuController {
     @Operation(summary = "修改菜单", description = "修改菜单")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @PutMapping("/system/menu/{id}")
-    public void update(@RequestBody @Valid MenuRequest req, @PathVariable Long id) {
+    public void update(@RequestBody @Validated(MenuRequest.Update.class) MenuRequest req, @PathVariable Long id) {
         menuService.update(id, req);
     }
 

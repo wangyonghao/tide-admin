@@ -55,9 +55,9 @@ public interface SysMenuMapper extends BaseMapper<SysMenu> {
                 .exists();
     }
 
-    default boolean isNameExists(String title, Long parentId, Long selfId) {
+    default boolean isNameExists(String name, Long parentId, Long selfId) {
         return this.lambdaQuery()
-                .eq(SysMenu::getName, title)
+                .eq(SysMenu::getName, name)
                 .eq(SysMenu::getParentId, parentId)
                 .ne(SysMenu::getType, MenuType.BUTTON)
                 .ne(selfId != null, SysMenu::getId, selfId)

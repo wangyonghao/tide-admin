@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.system.model.DictRequest;
 import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.admin.system.model.DictQuery;
-import top.wyhao.admin.system.model.vo.DictResult;
+import top.wyhao.admin.system.model.result.DictResult;
 import top.wyhao.admin.system.service.DictService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;

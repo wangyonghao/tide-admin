@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.exception;
 
-import cn.hutool.core.exceptions.ExceptionUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import com.fasterxml.jackson.databind.exc.InvalidFormatException;
@@ -62,7 +61,7 @@ public class GlobalExceptionHandler {
         Result<Map<String, Object>> result = new Result<>();
         result.setData(data);
         result.setCode(e.getCode());
-        result.setMsg(e.getMessage());
+        result.setMessage(e.getMessage());
         return result;
     }
 
@@ -74,7 +73,7 @@ public class GlobalExceptionHandler {
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
     public Result<Void> handleBusinessException(BusinessException e, HttpServletRequest request) {
         log.debug("业务阻断：request={} {} code={}, message={}", request.getMethod(), request.getRequestURI(), e.getCode(), e.getMessage());
-        log.debug("root cause",ExceptionUtil.getRootCause(e));
+        log.debug("root cause",e);
 
         return Result.fail(e.getCode(), e.getMessage());
     }

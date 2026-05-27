@@ -8,8 +8,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.model.vo.user.UserDetailResult;
-import top.wyhao.admin.system.model.vo.user.UserResult;
+import top.wyhao.admin.system.model.result.user.UserDetailResult;
+import top.wyhao.admin.system.model.result.user.UserResult;
 import top.wyhao.cmn.db.datapermission.annotation.DataPermission;
 import top.wyhao.cmn.db.datapermission.mapper.DataPermissionMapper;
 

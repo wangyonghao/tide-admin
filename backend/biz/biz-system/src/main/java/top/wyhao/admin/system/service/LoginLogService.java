@@ -2,7 +2,7 @@ package top.wyhao.admin.system.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.admin.system.model.query.LoginLogQuery;
-import top.wyhao.admin.system.model.vo.log.LoginLogResult;
+import top.wyhao.admin.system.model.result.log.LoginLogResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 

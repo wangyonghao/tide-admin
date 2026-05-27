@@ -1,11 +1,10 @@
 package top.wyhao.admin.system.service;
 
-import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.entity.SysFile;
 import top.wyhao.admin.system.model.query.FileQuery;
-import top.wyhao.admin.system.model.vo.file.FileResult;
+import top.wyhao.admin.system.model.result.file.FileResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 

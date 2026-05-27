@@ -1,8 +1,5 @@
 # GitHub Actions 工作流说明
 
-## 概述
-
-本项目使用 GitHub Actions 进行持续集成和部署。工作流文件已从 `backend/` 和 `frontend/` 目录统一移至根目录 `.github/workflows/`，并添加了 `on.push.paths` 过滤规则以精准区分前后端工作流。
 
 ## 工作流文件说明
 

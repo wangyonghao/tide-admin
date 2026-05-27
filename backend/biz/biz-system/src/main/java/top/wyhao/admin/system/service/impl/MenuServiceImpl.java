@@ -3,19 +3,21 @@ package top.wyhao.admin.system.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.entity.SysMenu;
+import top.wyhao.admin.system.exception.MenuException;
 import top.wyhao.admin.system.mapper.SysMenuMapper;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.bo.MenuRequest;
 import top.wyhao.admin.system.model.enums.MenuType;
 import top.wyhao.admin.system.model.query.MenuQuery;
-import top.wyhao.admin.system.model.vo.MenuTreeVO;
-import top.wyhao.admin.system.model.vo.MenuVO;
+import top.wyhao.admin.system.model.result.MenuTreeVO;
+import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.cmn.db.util.QueryWrapperUtil;
@@ -134,11 +136,13 @@ public class MenuServiceImpl implements MenuService {
 
     @Override
     public void update(Long id, MenuRequest req) {
-        this.checkNameUnique(req.getName(), req.getParentId(), id);
-        SysMenu oldMenu = menuMapper.selectById(id);
-        BizAssert.throwIfNotEqual(req.getType(), oldMenu.getType(), "不允许修改菜单类型");
 
-        SysMenu entity = BeanUtil.copyProperties(req, SysMenu.class);
+        if(StrUtil.isNotBlank(req.getName())){
+            this.checkNameUnique(req.getName(), req.getParentId(), id);
+        }
+
+
+        SysMenu entity = BeanUtil.copyProperties(req, SysMenu.class, "type");
         entity.setId(id);
         menuMapper.updateById(entity);
         RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
@@ -168,12 +172,14 @@ public class MenuServiceImpl implements MenuService {
     /**
      * 检查标题是否重复
      *
-     * @param title    标题
+     * @param name    标题
      * @param parentId 上级 ID
      * @param selfId   ID
      */
-    private void checkNameUnique(String title, Long parentId, Long selfId) {
-        BizAssert.isTrue(menuMapper.isNameExists(title, parentId, selfId), "标题为 [{}] 的菜单已存在", title);
+    private void checkNameUnique(String name, Long parentId, Long selfId) {
+        if(menuMapper.isNameExists(name, parentId, selfId)){
+            throw MenuException.titleExist(name);
+        }
     }
 
     /**

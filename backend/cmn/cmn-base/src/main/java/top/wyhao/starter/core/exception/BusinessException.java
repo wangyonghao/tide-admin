@@ -11,6 +11,19 @@ import top.wyhao.starter.core.util.I18nUtils;
  */
 @Data
 public class BusinessException extends RuntimeException {
+    /**
+     * 错误码
+     */
+    private String code;
+    /**
+     * 错误码对应的参数
+     */
+    private Object[] args;
+    /**
+     * 错误消息
+     */
+    private String defaultMessage;
+
 
     public BusinessException(String message) {
         this(null, null, message);
@@ -31,20 +44,6 @@ public class BusinessException extends RuntimeException {
         this.defaultMessage = defaultMessage;
     }
 
-    /**
-     * 错误码
-     */
-    private String code;
-
-    /**
-     * 错误码对应的参数
-     */
-    private Object[] args;
-
-    /**
-     * 错误消息
-     */
-    private String defaultMessage;
 
     // 性能优化：避免重复创建栈轨迹
     @Override

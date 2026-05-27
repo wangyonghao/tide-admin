@@ -38,8 +38,6 @@ import java.util.List;
 /**
  * 租户数据 API 实现
  *
-
-
  * @since 2024/12/2 20:12
  */
 @Service
@@ -128,11 +126,13 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private Long initDeptData(TenantBO tenant) {
         SysDept dept = new SysDept();
         dept.setName(tenant.getName());
+        dept.setCode("000000"); // todo
+        dept.setType(1); // todo
         dept.setParentId(GlobalConstants.ROOT_PARENT_ID);
         dept.setAncestors(GlobalConstants.ROOT_PARENT_ID.toString());
         dept.setDescription("系统初始部门");
         dept.setSort(1);
-        dept.setStatus(StatusEnum.ENABLE);
+        dept.setStatus(StatusEnum.ENABLE.getValue());
         dept.setIsBuiltin(true);
         deptMapper.insert(dept);
         return dept.getId();

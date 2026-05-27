@@ -9,7 +9,7 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.model.vo.config.SecurityConfigVO;
+import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.UserPasswordHistoryService;
 import top.wyhao.starter.core.constant.GlobalConstants;

@@ -10,13 +10,11 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.system.model.bo.DeptRequest;
 import top.wyhao.admin.system.model.query.DeptQuery;
-import top.wyhao.admin.system.model.vo.DeptResp;
+import top.wyhao.admin.system.model.result.DeptResult;
 import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.IdsRequest;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
 
@@ -25,46 +23,20 @@ import java.util.List;
  */
 @Tag(name = "部门管理 API")
 @RestController
-@RequestMapping("/system/dept")
 @RequiredArgsConstructor
 public class DeptController {
 
     private final DeptService deptService;
 
     /**
-     * 分页查询列表
-     *
-     * @param query     查询条件
-     * @param pageQuery 分页查询条件
-     * @return 分页信息
-     */
-    @Operation(summary = "分页查询列表", description = "分页查询列表")
-    @GetMapping
-    public PageResult<DeptResp> page(@Valid DeptQuery query, @Valid PageQuery pageQuery) {
-        return deptService.page(query, pageQuery);
-    }
-
-    /**
-     * 查询列表
-     *
-     * @param query     查询条件
-     * @return 列表信息
-     */
-    @Operation(summary = "查询列表", description = "查询列表")
-    @GetMapping("/list")
-    public List<DeptResp> list(@Valid DeptQuery query) {
-        return deptService.list(query);
-    }
-
-    /**
      * 查询树列表
      *
-     * @param query     查询条件
+     * @param query 查询条件
      * @return 树列表信息
      */
     @Operation(summary = "查询树列表", description = "查询树列表")
-    @GetMapping("/tree")
-    public List<DeptResp> tree(@Valid DeptQuery query) {
+    @GetMapping("/system/dept/tree")
+    public List<DeptResult> tree(@Valid DeptQuery query) {
         return deptService.tree(query);
     }
 
@@ -76,8 +48,8 @@ public class DeptController {
      */
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
-    @GetMapping("/{id}")
-    public DeptResp get(@PathVariable Long id) {
+    @GetMapping("/system/dept/{id}")
+    public DeptResult get(@PathVariable Long id) {
         return deptService.get(id);
     }
 
@@ -88,7 +60,7 @@ public class DeptController {
      * @return ID
      */
     @Operation(summary = "创建数据", description = "创建数据")
-    @PostMapping
+    @PostMapping("/system/dept")
     public IdResult<Long> create(@RequestBody @Valid DeptRequest req) {
         return new IdResult<>(deptService.create(req));
     }
@@ -101,7 +73,7 @@ public class DeptController {
      */
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
-    @PutMapping("/{id}")
+    @PatchMapping("/system/dept/{id}")
     public void update(@RequestBody @Valid DeptRequest req, @PathVariable Long id) {
         deptService.update(req, id);
     }
@@ -113,7 +85,7 @@ public class DeptController {
      */
     @Operation(summary = "删除数据", description = "删除数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/system/dept/{id}")
     public void delete(@PathVariable Long id) {
         deptService.delete(List.of(id));
     }
@@ -124,7 +96,7 @@ public class DeptController {
      * @param req 删除请求参数
      */
     @Operation(summary = "批量删除数据", description = "批量删除数据")
-    @DeleteMapping
+    @DeleteMapping("/system/dept")
     public void batchDelete(@RequestBody @Valid IdsRequest req) {
         deptService.delete(req.getIds());
     }
@@ -132,11 +104,11 @@ public class DeptController {
     /**
      * 导出
      *
-     * @param query     查询条件
-     * @param response  响应对象
+     * @param query    查询条件
+     * @param response 响应对象
      */
     @Operation(summary = "导出数据", description = "导出数据")
-    @GetMapping("/export")
+    @GetMapping("/system/dept/export")
     public void export(@Valid DeptQuery query, HttpServletResponse response) {
         deptService.export(query, response);
     }
@@ -145,12 +117,12 @@ public class DeptController {
     /**
      * 查询部门树
      *
-     * @param query     查询条件
+     * @param query 查询条件
      * @return 树型字典列表信息
      */
     @Operation(summary = "查询部门树", description = "查询树型结构字典列表（树型结构下拉选项等场景）")
     @GetMapping("/dict/tree")
-    public Result<List<DeptResp>> treeDict(@Valid DeptQuery query) {
+    public Result<List<DeptResult>> treeDict(@Valid DeptQuery query) {
         return Result.ok(deptService.tree(query));
     }
 }

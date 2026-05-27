@@ -2,16 +2,14 @@
 package top.wyhao.admin.system.mapper;
 
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysConfig;
-import top.wyhao.admin.system.model.vo.ConfigResult;
+import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.cmn.db.model.BaseMapper;
-import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.web.json.util.JSONUtils;
 
 /**

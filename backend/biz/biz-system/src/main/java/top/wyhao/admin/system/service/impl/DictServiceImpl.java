@@ -39,7 +39,8 @@ public class DictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> impleme
 
     @Override
     public List<LabelValueResult<String>> listByDictType(String dictType) {
-        return baseMapper.listByDictType(dictType);
+        List<SysDict> list = baseMapper.lambdaQuery().eq(SysDict::getDictType, dictType).list();
+        return list.stream().map(item -> new LabelValueResult<>(item.getLabel(), item.getValue())).collect(Collectors.toList());
     }
 
     @Override

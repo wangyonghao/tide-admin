@@ -27,7 +27,7 @@ public class SmsConfigLoader implements ApplicationRunner {
     @Override
     public void run(ApplicationArguments args) {
         if(smsReadConfig.getSupplierConfigList().isEmpty()){
-            log.warn("[cmn-sms]从数据库中加载短信配置失败，短信服务暂不可用，请前往管理台进行配置");
+            log.warn("[cmn-sms] 未读取到短信配置，请前往管理台进行配置");
             return;
         }
         SmsFactory.createSmsBlend(smsReadConfig);

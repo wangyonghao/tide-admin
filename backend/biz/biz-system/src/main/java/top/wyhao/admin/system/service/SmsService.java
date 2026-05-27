@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import top.wyhao.admin.system.model.bo.SmsLogRequest;
 import top.wyhao.admin.system.model.query.SmsLogQuery;
-import top.wyhao.admin.system.model.vo.SmsLogResult;
+import top.wyhao.admin.system.model.result.SmsLogResult;
 import top.wyhao.admin.system.otp.enums.OtpScene;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;

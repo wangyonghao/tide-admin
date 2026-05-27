@@ -18,7 +18,7 @@ import top.wyhao.admin.system.entity.SysFile;
 import top.wyhao.admin.system.mapper.SysFileMapper;
 import top.wyhao.admin.system.model.enums.FileType;
 import top.wyhao.admin.system.model.query.FileQuery;
-import top.wyhao.admin.system.model.vo.file.FileResult;
+import top.wyhao.admin.system.model.result.file.FileResult;
 import top.wyhao.admin.system.service.FileService;
 import top.wyhao.cmn.db.util.QueryWrapperUtil;
 import top.wyhao.starter.core.exception.BadRequestException;

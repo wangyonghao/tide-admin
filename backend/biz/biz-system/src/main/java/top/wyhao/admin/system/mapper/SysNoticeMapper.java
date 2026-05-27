@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysNotice;
 import top.wyhao.admin.system.model.query.NoticeQuery;
-import top.wyhao.admin.system.model.vo.NoticeResult;
-import top.wyhao.admin.system.model.vo.dashboard.DashboardNoticeResp;
+import top.wyhao.admin.system.model.result.NoticeResult;
+import top.wyhao.admin.system.model.result.dashboard.DashboardNoticeResp;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;

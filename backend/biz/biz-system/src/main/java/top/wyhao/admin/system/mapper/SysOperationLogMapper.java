@@ -8,10 +8,10 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysOperationLog;
-import top.wyhao.admin.system.model.vo.dashboard.DashboardAccessTrendResp;
-import top.wyhao.admin.system.model.vo.dashboard.DashboardChartCommonResp;
-import top.wyhao.admin.system.model.vo.dashboard.DashboardOverviewCommonResp;
-import top.wyhao.admin.system.model.vo.log.OperationLogResult;
+import top.wyhao.admin.system.model.result.dashboard.DashboardAccessTrendResp;
+import top.wyhao.admin.system.model.result.dashboard.DashboardChartCommonResp;
+import top.wyhao.admin.system.model.result.dashboard.DashboardOverviewCommonResp;
+import top.wyhao.admin.system.model.result.log.OperationLogResult;
 import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.starter.core.constant.CacheConstants;
 

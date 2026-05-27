@@ -3,8 +3,8 @@ package top.wyhao.admin.auth.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.admin.system.model.vo.MenuTreeVO;
-import top.wyhao.admin.system.model.vo.user.UserDetailResult;
+import top.wyhao.admin.system.model.result.MenuTreeVO;
+import top.wyhao.admin.system.model.result.user.UserDetailResult;
 
 import java.util.List;
 

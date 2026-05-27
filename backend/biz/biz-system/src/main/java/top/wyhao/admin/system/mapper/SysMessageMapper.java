@@ -7,8 +7,8 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysMessage;
 import top.wyhao.admin.system.model.query.MessageQuery;
-import top.wyhao.admin.system.model.vo.message.MessageDetailResult;
-import top.wyhao.admin.system.model.vo.message.MessageResult;
+import top.wyhao.admin.system.model.result.message.MessageDetailResult;
+import top.wyhao.admin.system.model.result.message.MessageResult;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;

@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.admin.system.model.bo.DeptRequest;
 import top.wyhao.admin.system.entity.SysDept;
 import top.wyhao.admin.system.model.query.DeptQuery;
-import top.wyhao.admin.system.model.vo.DeptResp;
+import top.wyhao.admin.system.model.result.DeptResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -23,7 +23,7 @@ public interface DeptService{
      * @param pageQuery 分页查询条件
      * @return 分页信息
      */
-    PageResult<DeptResp> page(DeptQuery query, PageQuery pageQuery);
+    PageResult<DeptResult> page(DeptQuery query, PageQuery pageQuery);
 
     /**
      * 查询列表
@@ -31,7 +31,7 @@ public interface DeptService{
      * @param query     查询条件
      * @return 列表信息
      */
-    List<DeptResp> list(DeptQuery query);
+    List<DeptResult> list(DeptQuery query);
 
     /**
      * 查询部门树
@@ -39,7 +39,7 @@ public interface DeptService{
      * @param query     查询条件
      * @return 树列表信息
      */
-    List<DeptResp> tree(DeptQuery query);
+    List<DeptResult> tree(DeptQuery query);
 
     /**
      * 查询详情
@@ -47,7 +47,7 @@ public interface DeptService{
      * @param id ID
      * @return 详情信息
      */
-    DeptResp get(Long id);
+    DeptResult get(Long id);
 
     /**
      * 创建

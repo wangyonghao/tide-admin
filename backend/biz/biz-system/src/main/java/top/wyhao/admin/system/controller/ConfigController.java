@@ -12,8 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsConfig;
 import top.wyhao.admin.system.model.query.ConfigQuery;
-import top.wyhao.admin.system.model.vo.ConfigResult;
-import top.wyhao.admin.system.model.vo.config.*;
+import top.wyhao.admin.system.model.result.ConfigResult;
+import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.core.UserContextHolder;
@@ -131,7 +131,7 @@ public class ConfigController {
         Long userId = UserContextHolder.getUserId();
 
         // 获取用户详细信息（包含邮箱）
-        top.wyhao.admin.system.model.vo.user.UserDetailResult userDetail = userService.detail(userId);
+        top.wyhao.admin.system.model.result.user.UserDetailResult userDetail = userService.detail(userId);
         BizAssert.notNull(userDetail, "用户信息不存在");
         BizAssert.notBlank(userDetail.getEmail(), "用户邮箱为空，请先设置邮箱地址");
 

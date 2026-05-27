@@ -4,6 +4,7 @@ package top.wyhao.admin.system.model.bo;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.groups.Default;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import top.wyhao.admin.system.model.enums.MenuType;
@@ -12,17 +13,20 @@ import top.wyhao.starter.core.enums.StatusEnum;
 /**
  * 菜单创建或修改请求参数
  *
-
  * @since 2023/2/15 20:21
  */
 @Data
 @Schema(description = "菜单创建或修改请求参数")
 public class MenuRequest {
+
+
+    @NotNull(groups = Update.class)
+    private Long id;
     /**
      * 类型
      */
     @Schema(description = "类型", example = "2")
-    @NotNull(message = "类型无效")
+    @NotNull(message = "类型无效", groups = Create.class)
     private MenuType type;
 
     /**
@@ -104,4 +108,7 @@ public class MenuRequest {
     @Schema(description = "状态", example = "1")
     @NotNull(message = "状态无效")
     private StatusEnum status;
+
+    public interface Update extends Default {}
+    public interface Create extends Default {}
 }

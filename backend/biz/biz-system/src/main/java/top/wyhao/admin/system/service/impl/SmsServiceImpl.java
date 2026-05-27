@@ -5,7 +5,6 @@ import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
-import com.google.common.collect.Maps;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
@@ -15,7 +14,7 @@ import top.wyhao.admin.system.entity.SysSmsLog;
 import top.wyhao.admin.system.mapper.SysSmsLogMapper;
 import top.wyhao.admin.system.model.bo.SmsLogRequest;
 import top.wyhao.admin.system.model.query.SmsLogQuery;
-import top.wyhao.admin.system.model.vo.SmsLogResult;
+import top.wyhao.admin.system.model.result.SmsLogResult;
 import top.wyhao.admin.system.otp.enums.OtpScene;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.SmsService;
@@ -28,7 +27,6 @@ import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 /**
  * 短信日志业务实现

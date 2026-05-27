@@ -9,7 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.system.model.query.SmsLogQuery;
-import top.wyhao.admin.system.model.vo.SmsLogResult;
+import top.wyhao.admin.system.model.result.SmsLogResult;
 import top.wyhao.admin.system.service.SmsService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
