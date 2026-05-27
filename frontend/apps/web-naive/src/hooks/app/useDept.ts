@@ -1,4 +1,4 @@
-import type { DeptResp } from '#/api/system/dept';
+import type { DeptResult } from '#/api/system/dept';
 
 import { ref } from 'vue';
 
@@ -7,12 +7,12 @@ import { deptApi } from '#/api/system/dept';
 /** 部门模块 */
 export function useDept(options?: { onSuccess?: () => void }) {
   const loading = ref(false);
-  const deptList = ref<DeptResp[]>([]);
+  const deptList = ref<DeptResult[]>([]);
 
-  const getDeptList = async (name?: string) => {
+  const getDeptList = async (keyword?: string) => {
     try {
       loading.value = true;
-      const res = await deptApi.tree({ description: name });
+      const res = await deptApi.tree({ keyword: keyword });
       deptList.value = res;
       options?.onSuccess && options.onSuccess();
     } finally {

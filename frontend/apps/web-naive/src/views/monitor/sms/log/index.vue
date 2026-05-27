@@ -7,11 +7,13 @@ import type { SmsLogQuery, SmsLogResp } from '#/api/system/sms-log';
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElButton, ElMessage, ElPopconfirm, ElSpace } from 'element-plus';
+import { NButton, useMessage, NPopconfirm, NSpace } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteSmsLog, exportSmsLog, listSmsLog } from '#/api/system/sms-log';
+import { smsLogApi} from '#/api/system/sms-log';
 import { useDownload } from '#/hooks/app/useDownload';
+
+const message = useMessage();
 
 function useSmsLogGridSearchFormSchema(): VbenFormSchema[] {
   return [
@@ -109,7 +111,7 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
       },
       ajax: {
         query: async ({ page }, formValues) => {
-          const res = await listSmsLog({
+          const res = await smsLogApi.list({
             page: page.currentPage,
             size: page.pageSize,
             ...formValues,
@@ -139,8 +141,8 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
 
 const handleDelete = async (row: SmsLogResp) => {
   try {
-    await deleteSmsLog(row.id);
-    ElMessage.success($t('pages.common.deleteSuccess'));
+    await smsLogApi.delete(row.id);
+    message.success($t('pages.common.deleteSuccess'));
     await tableGridApi.query();
     return true;
   } catch {
@@ -159,30 +161,31 @@ const handleExport = () => {
   <Page auto-content-height>
     <TableGrid :table-title="$t('system.smsLog.listTitle')">
       <template #toolbar-tools>
-        <ElSpace>
+        <NSpace>
           <span v-access:code="['system:smsLog:export']">
-            <ElButton type="danger" @click="handleExport">
+            <NButton type="error" @click="handleExport">
               {{ $t('pages.common.export') }}
-            </ElButton>
+            </NButton>
           </span>
-        </ElSpace>
+        </NSpace>
       </template>
       <template #action="{ row }">
-        <ElSpace>
+        <NSpace>
           <span v-access:code="['system:smsLog:delete']">
-            <ElPopconfirm
+            <NPopconfirm
               :title="$t('ui.actionMessage.deleteConfirm', [row.phone])"
-              icon-color="red"
-              @confirm="handleDelete(row)"
+              positive-text="确认"
+              negative-text="取消"
+              @positive-click="handleDelete(row)"
             >
-              <template #reference>
-                <ElButton type="danger" text link>
+              <template #trigger>
+                <NButton type="error" text>
                   {{ $t('pages.common.delete') }}
-                </ElButton>
+                </NButton>
               </template>
-            </ElPopconfirm>
+            </NPopconfirm>
           </span>
-        </ElSpace>
+        </NSpace>
       </template>
     </TableGrid>
   </Page>

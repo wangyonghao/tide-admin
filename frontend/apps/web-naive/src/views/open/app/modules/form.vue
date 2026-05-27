@@ -7,7 +7,7 @@ import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { useVbenForm } from '#/adapter/form';
-import { addApp, updateApp } from '#/api/open/app';
+import { openAppApi } from '#/api/open/app';
 
 import { useFormSchema } from '../data';
 
@@ -27,7 +27,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
     if (!valid) return;
     const values = await formApi.getValues();
     drawerApi.lock();
-    (id.value ? updateApp(id.value, values) : addApp(values))
+    (id.value ? openAppApi.update(id.value, values) : openAppApi.create(values))
       .then(() => {
         emits('success');
         drawerApi.close();

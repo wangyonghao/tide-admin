@@ -13,6 +13,12 @@ export function getGenConfig(tableName: string) {
   return http.get<GenConfigResp>(`/code/generator/config/${tableName}`);
 }
 /** 查询字段配置列表 */
+export function listDictMenu(tableName: string, requireSync: boolean) {
+  return http.get<[]>(
+    `/code/generator/field/${tableName}?requireSync=${requireSync}`,
+  );
+}
+/** 查询字段配置列表 */
 export function listFieldConfig(tableName: string, requireSync: boolean) {
   return http.get<FieldConfigResp[]>(
     `/code/generator/field/${tableName}?requireSync=${requireSync}`,

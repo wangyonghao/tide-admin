@@ -4,15 +4,15 @@ import type { GenConfigResp } from '#/api';
 
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 
-import { ElButton, ElSpace } from 'element-plus';
+import { NButton, NSpace } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { listGenConfig } from '#/api';
 import { $t } from '#/locales';
 
 import { useGenConfigColumns, useGridFormSchema } from './data';
-import GenConfigDrawer from './modules/GenConfigDrawer.vue';
-import GenPreviewModal from './modules/GenPreviewModal.vue';
+import GenConfigDrawer from './modules/gen-config-drawer.vue';
+import GenPreviewModal from './modules/gen-preview-modal.vue';
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: GenConfigDrawer,
@@ -94,21 +94,21 @@ function refreshGrid() {
     <Grid :table-title="$t('system.code.list')">
       <template #toolbar-tools> </template>
       <template #action="{ row }">
-        <ElSpace>
-          <ElButton
+        <NSpace>
+          <NButton
             @click="openConfig(row)"
             v-access:code="['code:generator:config']"
           >
             配置
-          </ElButton>
-          <ElButton
+          </NButton>
+          <NButton
             :disabled="!row.author"
             @click="onPreview([row.tableName])"
             v-access:code="['code:generator:preview']"
           >
             生成
-          </ElButton>
-        </ElSpace>
+          </NButton>
+        </NSpace>
       </template>
     </Grid>
   </Page>

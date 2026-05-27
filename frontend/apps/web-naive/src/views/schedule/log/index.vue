@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { JobLogResp } from '#/api/schedule';
-import type { DictItemResp } from '#/api/system';
 
 import { onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
@@ -9,16 +8,17 @@ import { useRoute } from 'vue-router';
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { ElButton, ElMessage, ElPopconfirm, ElSpace } from 'element-plus';
+import { NButton, NPopconfirm, NSpace, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { listGroup, listJobLog, retryJob, stopJob } from '#/api/schedule';
-import { DictTag } from '#/components/dict';
 import { useDict } from '#/hooks';
 
-import { useGridFieldColumns, useGridSearchFormSchema } from './dataScope';
+import { useGridFieldColumns, useGridSearchFormSchema } from './data-scope';
 
 const groupList = ref<{ label: string; value: string }[]>([]);
+
+const message = useMessage();
 
 const { job_execute_reason_enum, job_execute_status_enum } = useDict(
   'job_execute_reason_enum',
@@ -86,14 +86,14 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
 // 停止
 const onStop = (record: JobLogResp) => {
   stopJob(record.id).then(() => {
-    ElMessage.success($t('ui.actionMessage.stopSuccess', [record.jobName]));
+    message.success($t('ui.actionMessage.stopSuccess', [record.jobName]));
   });
 };
 
 // 重试
 const onRetry = (record: JobLogResp) => {
   retryJob(record.id).then(() => {
-    ElMessage.success($t('ui.actionMessage.retrySuccess', [record.jobName]));
+    message.success($t('ui.actionMessage.retrySuccess', [record.jobName]));
   });
 };
 
@@ -134,24 +134,23 @@ onMounted(async () => {
       </template>
 
       <template #action="{ row }">
-        <ElSpace>
+        <NSpace>
           <span
             v-access:code="['schedule:log:stop']"
             v-if="row.taskBatchStatus === 2"
           >
-            <ElPopconfirm
+            <NPopconfirm
               :title="$t('ui.actionMessage.confirmStop', [row.jobName])"
-              icon-color="red"
-              @confirm="onStop(row)"
-              trigger="hover"
-              width="200px"
+              positive-text="确认"
+              negative-text="取消"
+              @positive-click="onStop(row)"
             >
-              <template #reference>
-                <ElButton type="danger" link text>
+              <template #trigger>
+                <NButton type="error" text>
                   {{ $t('common.stop') }}
-                </ElButton>
+                </NButton>
               </template>
-            </ElPopconfirm>
+            </NPopconfirm>
           </span>
 
           <span
@@ -162,21 +161,20 @@ onMounted(async () => {
               row.taskBatchStatus === 6
             "
           >
-            <ElPopconfirm
+            <NPopconfirm
               :title="$t('ui.actionMessage.confirmRetry', [row.jobName])"
-              icon-color="red"
-              @confirm="onRetry(row)"
-              trigger="hover"
-              width="200px"
+              positive-text="确认"
+              negative-text="取消"
+              @positive-click="onRetry(row)"
             >
-              <template #reference>
-                <ElButton type="danger" link text>
+              <template #trigger>
+                <NButton type="error" text>
                   {{ $t('common.retry') }}
-                </ElButton>
+                </NButton>
               </template>
-            </ElPopconfirm>
+            </NPopconfirm>
           </span>
-        </ElSpace>
+        </NSpace>
       </template>
     </TableGrid>
   </Page>

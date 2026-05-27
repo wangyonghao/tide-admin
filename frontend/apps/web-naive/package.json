@@ -27,7 +27,6 @@
   },
   "dependencies": {
     "@vben-core/shadcn-ui": "workspace:*",
-    "@vben/access": "workspace:*",
     "@vben/common-ui": "workspace:*",
     "@vben/constants": "workspace:*",
     "@vben/hooks": "workspace:*",
@@ -44,14 +43,12 @@
     "@vicons/ionicons5": "^0.13.0",
     "@vueuse/core": "catalog:",
     "axios": "catalog:",
+    "cron-parser": "^5.5.0",
     "crypto-js": "^4.2.0",
     "jsencrypt": "^3.5.4",
     "naive-ui": "catalog:",
     "pinia": "catalog:",
     "vue": "catalog:",
     "vue-router": "catalog:"
-  },
-  "devDependencies": {
-    "zod": "catalog:"
   }
 }

@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import type { CascaderNode, TreeNodeData } from 'element-plus';
+import type { TreeNodeData } from 'naive-ui';
 
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type {
@@ -15,14 +15,15 @@ import { useVbenDrawer } from '@vben/common-ui';
 import { getPopupContainer } from '@vben/utils';
 
 import {
-  ElCheckbox,
-  ElInput,
-  ElOption,
-  ElSelect,
-  ElMessage as message,
-  ElStep as Step,
-  ElSteps as Steps,
-} from 'element-plus';
+  NCheckbox,
+  NInput,
+  NSelect,
+  useMessage,
+  NSteps,
+  NStep,
+} from 'naive-ui';
+
+const message = useMessage();
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -32,7 +33,7 @@ import {
   listFieldConfig,
   listFieldConfigDict,
   saveGenConfig,
-} from '#/api';
+} from '#/api/code';
 import { useDict } from '#/hooks/app';
 import { $t } from '#/locales';
 
@@ -377,10 +378,10 @@ const getDrawerTitle = computed(() => {
 <template>
   <Drawer :title="getDrawerTitle" class="w-[80%]">
     <div class="mx-auto flex h-full w-full flex-col">
-      <Steps :current="currentTab" class="px-16">
-        <Step title="生成配置" />
-        <Step title="字段配置" />
-      </Steps>
+      <NSteps :current="currentTab" class="px-16">
+        <NStep title="生成配置" />
+        <NStep title="字段配置" />
+      </NSteps>
       <div class="w-full flex-1 p-6">
         <FirstForm v-show="currentTab === 0" />
         <Grid v-show="currentTab === 1">
@@ -406,95 +407,96 @@ const getDrawerTitle = computed(() => {
 </a-popconfirm> -->
           </template>
           <template #fieldName="{ row }">
-            <ElInput v-model="row.fieldName" />
+            <NInput v-model:value="row.fieldName" />
           </template>
           <template #fieldType="{ row }">
-            <ElSelect
-              v-model="row.fieldType"
+            <NSelect
+              v-model:value="row.fieldType"
               placeholder="请选择字段类型"
-              allow-search
-              allow-create
-              :error="!row.fieldType"
+              clearable
+              filterable
+              tag
             >
-              <ElOption value="String">String</ElOption>
-              <ElOption value="Integer">Integer</ElOption>
-              <ElOption value="Long">Long</ElOption>
-              <ElOption value="Float">Float</ElOption>
-              <ElOption value="Double">Double</ElOption>
-              <ElOption value="Boolean">Boolean</ElOption>
-              <ElOption value="BigDecimal">BigDecimal</ElOption>
-              <ElOption value="LocalDate">LocalDate</ElOption>
-              <ElOption value="LocalTime">LocalTime</ElOption>
-              <ElOption value="LocalDateTime">LocalDateTime</ElOption>
-            </ElSelect>
+              <option value="String">String</option>
+              <option value="Integer">Integer</option>
+              <option value="Long">Long</option>
+              <option value="Float">Float</option>
+              <option value="Double">Double</option>
+              <option value="Boolean">Boolean</option>
+              <option value="BigDecimal">BigDecimal</option>
+              <option value="LocalDate">LocalDate</option>
+              <option value="LocalTime">LocalTime</option>
+              <option value="LocalDateTime">LocalDateTime</option>
+            </NSelect>
           </template>
           <template #comment="{ row }">
-            <ElInput v-model="row.comment" />
+            <NInput v-model:value="row.comment" />
           </template>
           <template #showInList="{ row }">
-            <ElCheckbox v-model="row.showInList" value="true" />
+            <NCheckbox v-model:checked="row.showInList" />
           </template>
           <template #showInForm="{ row }">
-            <ElCheckbox v-model="row.showInForm" value="true" />
+            <NCheckbox v-model:checked="row.showInForm" />
           </template>
           <template #isRequired="{ row }">
-            <ElCheckbox
+            <NCheckbox
               v-if="row.showInForm"
-              v-model="row.isRequired"
-              value="true"
+              v-model:checked="row.isRequired"
             />
-            <ElCheckbox v-else disabled />
+            <NCheckbox v-else disabled />
           </template>
           <template #showInQuery="{ row }">
-            <ElCheckbox v-model="row.showInQuery" value="true" />
+            <NCheckbox v-model:checked="row.showInQuery" />
           </template>
           <template #formType="{ row }">
-            <ElSelect
+            <NSelect
               v-if="row.showInForm || row.showInQuery"
-              v-model="row.formType"
-              :options="form_type_enum"
-              :default-value="1"
+              v-model:value="row.formType"
               placeholder="请选择表单类型"
+              clearable
             >
-              <ElOption
+              <option
                 v-for="item in form_type_enum"
                 :key="item.value"
-                :label="item.label"
                 :value="item.value"
-              />
-            </ElSelect>
+              >
+                {{ item.label }}
+              </option>
+            </NSelect>
             <span v-else>无需设置</span>
           </template>
           <template #queryType="{ row }">
-            <ElSelect
+            <NSelect
               v-if="row.showInQuery"
-              v-model="row.queryType"
-              :default-value="1"
+              v-model:value="row.queryType"
               placeholder="请选择查询方式"
+              clearable
             >
-              <ElOption
+              <option
                 v-for="item in query_type_enum"
                 :key="item.value"
-                :label="item.label"
                 :value="item.value"
-              />
-            </ElSelect>
+              >
+                {{ item.label }}
+              </option>
+            </NSelect>
             <span v-else>无需设置</span>
           </template>
           <template #dictCode="{ row }">
-            <ElSelect
-              v-model="row.dictCode"
+            <NSelect
+              v-model:value="row.dictCode"
               placeholder="请选择字典类型"
-              allow-search
-              allow-clear
+              clearable
+              filterable
             >
-              <ElOption
+              <option
                 v-for="item in dictList"
                 :key="item.value"
-                :label="item.label"
                 :value="item.value"
-              />
-            </ElSelect>
+              >
+                {{ item.label }}
+              </option>
+            </NSelect>
           </template>
         </Grid>
       </div>

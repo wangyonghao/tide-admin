@@ -4,12 +4,12 @@ import { NCard, NTabs, NTabPane } from 'naive-ui';
 import { useUserStore } from '#/store/user';
 import { $t } from '#/locales';
 
-import ProfileSummary from './components/ProfileSummary.vue';
-import BasicInfo from './components/BasicInfo.vue';
-import SecuritySettings from './components/SecuritySettings.vue';
-import NotificationSettings from './components/NotificationSettings.vue';
-import OperationLogs from './components/OperationLogs.vue';
-import PreferencesSettings from './components/PreferencesSettings.vue';
+import ProfileSummary from './components/profile-summary.vue';
+import BasicInfo from './components/basic-info.vue';
+import SecuritySettings from './components/security-settings.vue';
+import NotificationSettings from './components/notification-settings.vue';
+import OperationLogs from './components/operation-logs.vue';
+import PreferencesSettings from './components/preferences-settings.vue';
 
 const userStore = useUserStore();
 

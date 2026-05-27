@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui';
 
-import type { DeptResp } from '#/api/system/dept';
+import type { DeptResult } from '#/api/system/dept';
 
 import { h, ref, watch } from 'vue';
 
@@ -11,6 +11,7 @@ import { $t } from '@vben/locales';
 
 import { useDebounceFn } from '@vueuse/core';
 import {
+  NBadge,
   NButton,
   NDataTable,
   NInput,
@@ -37,75 +38,38 @@ const tableData = ref<DeptResp[]>([]);
 const expandedRowKeys = ref<string[]>([]);
 
 // 创建列配置
-const createColumns = (): DataTableColumns<DeptResp> => {
+const createColumns = (): DataTableColumns<DeptResult> => {
   return [
     { title: $t('system.dept.name'), key: 'name', align: 'left', width: 300 },
-    {
-      title: $t('system.dept.status'),
-      key: 'status',
-      align: 'center',
-      width: 80,
+    { title: $t('system.dept.code'), key: 'code', align: 'left', width: 140 },
+    { title: $t('system.dept.status'), key: 'status', align: 'center', width: 80,
       render: (row) => {
-        return h(
-          NTag,
-          { type: row.status === 1 ? 'success' : 'error' },
-          {
-            default: () =>
-              row.status === 1 ? $t('common.enabled') : $t('common.disabled'),
-          },
+        return h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: '6px' }},
+          [
+            h(NBadge, { dot: true, color: row.status === 1 ? 'oklch(76.8% 0.233 130.85)' : 'oklch(50.5% 0.213 27.518)'}),
+            row.status === 1 ? $t('common.enabled') : $t('common.disabled')
+          ],
         );
       },
     },
-    {
-      title: $t('system.dept.description'),
-      key: 'description',
-      align: 'left',
-      ellipsis: {
-        tooltip: true,
-      },
-    },
-    {
-      title: $t('pages.common.operation'),
-      key: 'action',
-      align: 'center',
-      width: 150,
-      fixed: 'right',
+    { title: $t('system.dept.description'), key: 'remark', align: 'left', ellipsis: { tooltip: true } },
+    { title: $t('pages.common.operation'), key: 'action', align: 'center', width: 150, fixed: 'right',
       render: (row) => {
-        return h(
-          NSpace,
+        return h(NSpace,
           { justify: 'center' },
-          {
-            default: () => [
-              h(
-                'span',
+          { default: () => [
+              h('span',
                 { 'v-access:code': ['system:dept:update'] },
-                h(
-                  NButton,
-                  {
-                    text: true,
-                    onClick: () => handleEdit(row),
-                  },
-                  {
-                    icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }),
-                  },
+                h(NButton,
+                  { text: true, onClick: () => handleEdit(row) },
+                  { icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }) },
                 ),
               ),
-              h(
-                'span',
+              h('span',
                 { 'v-access:code': ['system:dept:delete'] },
-                h(
-                  NButton,
-                  {
-                    text: true,
-                    onClick: () => handleDelete(row),
-                  },
-                  {
-                    icon: () =>
-                      h(IconifyIcon, {
-                        icon: 'lucide:trash-2',
-                        class: 'text-red-500',
-                      }),
-                  },
+                h(NButton,
+                  { text: true, onClick: () => handleDelete(row) },
+                  { icon: () => h(IconifyIcon, { icon: 'lucide:trash-2'}) },
                 ),
               ),
             ],
@@ -122,9 +86,7 @@ const columns = ref(createColumns());
 async function loadData() {
   try {
     loading.value = true;
-    const res = await deptApi.list({
-      description: searchForm.value.name || undefined,
-    });
+    const res = await deptApi.tree({ keyword: searchForm.value.name });
     tableData.value = res;
     // 默认展开所有节点
     if (res.length > 0) {
@@ -132,16 +94,15 @@ async function loadData() {
     }
   } catch (error) {
     console.error('Failed to load dept data:', error);
-    message.error($t('pages.common.loadFailed'));
   } finally {
     loading.value = false;
   }
 }
 
 // 递归展开所有节点
-function expandAllNodes(data: DeptResp[]) {
+function expandAllNodes(data: DeptResult[]) {
   const keys: string[] = [];
-  const traverse = (items: DeptResp[]) => {
+  const traverse = (items: DeptResult[]) => {
     items.forEach((item) => {
       if (item.children && item.children.length > 0) {
         keys.push(item.id);
@@ -279,7 +240,7 @@ loadData();
           :columns="columns"
           :data="tableData"
           :loading="loading"
-          :row-key="(row: DeptResp) => row.id"
+          :row-key="(row: DeptResult) => row.id"
           :expanded-row-keys="expandedRowKeys"
           @update:expanded-row-keys="
             (keys) => (expandedRowKeys = keys as string[])

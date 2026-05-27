@@ -4,7 +4,7 @@ import { Page, useVbenModal } from '@vben/common-ui';
 import { NButton, NCard, useMessage } from 'naive-ui';
 
 import { useVbenForm } from '#/adapter/form';
-import { getAllMenusApi } from '#/api';
+import { menuApi } from '#/api/system/menu';
 
 import modalDemo from './modal.vue';
 
@@ -37,7 +37,7 @@ const [Form, formApi] = useVbenForm({
           }));
         },
         // 菜单接口
-        api: getAllMenusApi,
+        api: menuApi.tree,
       },
       // 字段名
       fieldName: 'api',
@@ -50,7 +50,7 @@ const [Form, formApi] = useVbenForm({
       // 对应组件的参数
       componentProps: {
         // 菜单接口
-        api: getAllMenusApi,
+        api: menuApi.tree,
         childrenField: 'children',
         // 菜单接口转options格式
         labelField: 'name',

@@ -44,7 +44,7 @@ function defineApplicationConfig(userConfigPromise?: DefineApplicationOptions) {
       nitroMockOptions: {},
       print: !isBuild,
       printInfoMap: {
-        'Vben Admin Docs': 'https://doc.vben.pro',
+        'Tide Admin Docs': 'https://tide-doc.wyhao.top',
       },
       pwa: true,
       pwaOptions: getDefaultPwaOptions(appTitle),

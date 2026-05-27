@@ -53,6 +53,10 @@ async function loadCommonPlugins(
   const { devtools, injectMetadata, isBuild, visualizer } = options;
   return [
     {
+      condition: !isBuild && devtools,
+      plugins: () => [viteVueDevTools()],
+    },
+    {
       condition: true,
       plugins: () => [
         viteVue({
@@ -65,11 +69,6 @@ async function loadCommonPlugins(
         viteTailwindReferencePlugin(),
         tailwindcss(),
       ],
-    },
-
-    {
-      condition: !isBuild && devtools,
-      plugins: () => [viteVueDevTools()],
     },
     {
       condition: injectMetadata,
@@ -129,7 +128,6 @@ async function loadApplicationPlugins(
       plugins: async () => {
         return [
           viteVueI18nPlugin({
-            compositionOnly: true,
             fullInstall: true,
             runtimeOnly: true,
           }),

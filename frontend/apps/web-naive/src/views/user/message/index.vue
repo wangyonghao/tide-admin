@@ -9,34 +9,38 @@ import {
 } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 
-import { Card, CardContent, ColPage, RowPage } from '@vben/common-ui';
+import { ColPage } from '@vben/common-ui';
 
-import {
-  userMessageApi,
-} from '#/api/system/user-message';
-import { useDevice } from '#/hooks';
-import mittBus from '#/utils/mitt';
+import { userMessageApi } from '#/api/system/user-message';
 
-import MyMessage from './components/MyMessage.vue';
-import MyNotice from './components/MyNotice.vue';
+import MyMessage from './components/my-message.vue';
+import MyNotice from './components/my-notice.vue';
 
 defineOptions({ name: 'UserMessage' });
 
-const { width, isDesktop } = useDevice();
+
+import { useWindowSize } from '@vueuse/core';
+const { width } = useWindowSize();
+
+const isDesktop = computed(() => width.value > 571);
+
 
 const colPageRef = ref<InstanceType<typeof ColPage>>();
 
-const rowPageRef = ref<InstanceType<typeof RowPage>>();
+const rowPageRef = ref();
 
 const unreadMessageCount = ref(0);
 const unreadNoticeCount = ref(0);
 
+
+
+
 const rowProps = ref({
   topCollapsedWidth: 2,
   topCollapsible: true,
-  topWidth: isDesktop ? 0 : 10,
+  topWidth: isDesktop.value ? 0 : 10,
   resizable: false,
-  bottomWidth: isDesktop ? 100 : 90,
+  bottomWidth: isDesktop.value ? 100 : 90,
   splitHandle: false,
   splitLine: false,
 });
@@ -44,9 +48,9 @@ const rowProps = ref({
 const colProps = ref({
   leftCollapsedWidth: 2,
   leftCollapsible: true,
-  leftWidth: isDesktop ? 20 : 0,
+  leftWidth: isDesktop.value ? 20 : 0,
   resizable: false,
-  rightWidth: isDesktop ? 80 : 100,
+  rightWidth: isDesktop.value ? 80 : 100,
   splitHandle: false,
   splitLine: false,
 });
@@ -78,22 +82,23 @@ const tabItems = computed(() => [
 ]);
 
 const getMessageData = async () => {
-  const data = await getUnreadMessageCount();
+  const data = await userMessageApi.getUnreadCount();
   unreadMessageCount.value = data.total;
 };
 
 const getNoticeData = async () => {
-  const data = await getUnreadNoticeCount();
+  const data = await userMessageApi.getUnreadNoticeCount();
   unreadNoticeCount.value = data.total;
 };
 
 onMounted(() => {
   getMessageData();
   getNoticeData();
-  mittBus.on('count-refresh', () => {
+/*  mittBus.on('count-refresh', () => {
     getMessageData();
     getNoticeData();
   });
+  */
 });
 
 const menuList = [
@@ -147,40 +152,37 @@ watch(
 </script>
 
 <template>
-  <RowPage
+  <div
     auto-content-height
     v-bind="rowProps"
     ref="rowPageRef"
     content-class="py-0"
   >
-    <template #top v-if="!isDesktop">
-      <Card>
-        <el-scrollbar class="h-full">
-          <div class="flex flex-row gap-2 px-2 py-4">
-            <div
-              :class="`menu-title ${activeKey === item.key ? 'bg-blue-100' : ''}`"
-              v-for="item in tabItems"
-              :key="item.key"
-              :label="item.title"
-            >
-              <TabPaneTitle
-                :title="item.title"
-                :count="item.count"
-                :offset="[0, 0]"
-                @click="change(item.key)"
-              />
-            </div>
+    <Card>
+      <el-scrollbar class="h-full">
+        <div class="flex flex-row gap-2 px-2 py-4">
+          <div
+            :class="`menu-title ${activeKey === item.key ? 'bg-blue-100' : ''}`"
+            v-for="item in tabItems"
+            :key="item.key"
+            :label="item.title"
+          >
+            <TabPaneTitle
+              :title="item.title"
+              :count="item.count"
+              :offset="[0, 0]"
+              @click="change(item.key)"
+            />
           </div>
-        </el-scrollbar>
-      </Card>
-    </template>
+        </div>
+      </el-scrollbar>
+    </Card>
     <ColPage
       auto-content-height
       v-bind="colProps"
       ref="colPageRef"
       content-class="p-0"
     >
-      <template #left v-if="isDesktop">
         <Card class="h-full">
           <el-scrollbar class="h-full">
             <div class="flex flex-col gap-2 px-2 py-4">
@@ -200,14 +202,13 @@ watch(
             </div>
           </el-scrollbar>
         </Card>
-      </template>
       <Card>
         <CardContent>
           <component :is="activeComponent" />
         </CardContent>
       </Card>
     </ColPage>
-  </RowPage>
+  </div>
 </template>
 
 <style scoped lang="scss">

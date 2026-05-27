@@ -5,9 +5,8 @@ import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
-import { getUnreadNoticeIds, getUserNotice } from '#/api/system/user-message';
+import { userMessageApi} from '#/api/system/user-message';
 
-import AiEditor from './view/components/index.vue';
 
 defineOptions({ name: 'NoticePopup' });
 
@@ -24,11 +23,11 @@ interface Props {
 }
 
 const visible = ref(false);
-const unreadNoticeIds = ref<number[]>([]);
-const currentIndex = ref(0);
+const unreadNoticeIds = ref<string[]>([]);
+const currentIndex = ref<number>(0);
 const loading = ref(false);
 const contentLoading = ref(false);
-const noticeCache = ref<Map<number, NoticePreviewResp>>(new Map());
+const noticeCache = ref<Map<string, NoticePreviewResp>>(new Map());
 
 const currentNotice = computed(() => {
   const noticeId = unreadNoticeIds.value[currentIndex.value];
@@ -54,7 +53,7 @@ const fetchNoticeDetail = async (index: number) => {
 
   try {
     contentLoading.value = true;
-    const data = await getUserNotice(noticeId);
+    const data = await userMessageApi.getNoticeDetail(noticeId);
     noticeCache.value.set(noticeId, data as NoticePreviewResp);
     // 确保设置当前索引，触发计算属性更新
     currentIndex.value = index;
@@ -79,7 +78,7 @@ const fetchNoticeDetail = async (index: number) => {
 const fetchUnreadNotices = async () => {
   try {
     loading.value = true;
-    const noticeIds = await getUnreadNoticeIds(props.method);
+    const noticeIds = await  userMessageApi.getUnreadNoticeIds(props.method);
 
     if (noticeIds && noticeIds.length > 0) {
       unreadNoticeIds.value = noticeIds;
@@ -190,7 +189,7 @@ const getTitle = computed(() => {
             <div v-if="contentLoading" class="content-loading">
               <a-spin size="large" />
             </div>
-            <AiEditor v-else v-model:model-value="currentNoticeContent" />
+            <!-- <AiEditor v-else v-model:model-value="currentNoticeContent" /> -->
           </div>
         </div>
 

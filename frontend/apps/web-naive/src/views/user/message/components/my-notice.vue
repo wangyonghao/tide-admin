@@ -12,8 +12,7 @@ import { $t } from '@vben/locales';
 import { NButton, NTag } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { listUserNotice } from '#/api/system/user-message';
-import { DictTag } from '#/components/dict';
+import { userMessageApi } from '#/api/system/user-message';
 import { useDict } from '#/hooks';
 
 defineOptions({ name: 'UserMyNotice' });
@@ -95,7 +94,7 @@ const [TableGrid] = useVbenVxeGrid({
       },
       ajax: {
         query: async ({ page }, formValues) => {
-          const res = await listUserNotice({
+          const res = await userMessageApi.listNotice({
             page: page.currentPage,
             size: page.pageSize,
             ...formValues,

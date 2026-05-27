@@ -63,6 +63,7 @@ export interface NoticeResp extends BaseEntity {
   publishTime: string;
   /** 是否置顶 */
   isTop: string;
+  isRead: boolean;
   /** 状态（1：草稿；2：待发布；3：已发布） */
   status: number;
   /** 创建人 */

@@ -1,43 +1,25 @@
 <script setup lang="ts">
-import type { TreeNodeData } from 'element-plus';
+import type { TreeSelectOption } from 'naive-ui';
 
 import type { GeneratePreviewResp } from '#/api/code';
 
 import { computed, ref, watch } from 'vue';
 
-import {
-  CnCodeView,
-  ResizableHandle,
-  ResizablePanel,
-  ResizablePanelGroup,
-  useVbenModal,
-} from '@vben/common-ui';
-import {
-  SvgCopyIcon,
-  SvgDirectoryBlueIcon,
-  SvgFileJavaIcon,
-  SvgFileJavascriptIcon,
-  SvgFileJsonIcon,
-  SvgFileMavenIcon,
-  SvgFileSqlIcon,
-  SvgFileTypescriptIcon,
-  SvgFileVueIcon,
-  SvgFileXmlIcon,
-} from '@vben/icons';
+import { useVbenModal } from '@vben/common-ui';
 
 import { useClipboard } from '@vueuse/core';
 import {
-  ElAutoResizer,
-  ElCard,
-  ElIcon,
-  ElLink,
-  ElMessage,
-  ElScrollbar,
-  ElTreeV2,
-} from 'element-plus';
+  NCard,
+  NIcon,
+  NScrollbar,
+  NTree,
+  useMessage,
+} from 'naive-ui';
 
 import { downloadCode, generateCode, genPreview } from '#/api/code';
+import { CnCodeView } from '#/components/code-view';
 
+const message = useMessage();
 const { copy, copied } = useClipboard();
 
 const genPreviewList = ref<GeneratePreviewResp[]>([]);
@@ -45,9 +27,9 @@ const currentPreview = ref<GeneratePreviewResp>();
 const visible = ref(false);
 const previewTableNames = ref<string[]>([]);
 
-const treeData = ref<TreeNodeData[]>([]);
+const treeData = ref<[]>([]);
 // 合并目录
-const mergeDir = (parent: TreeNodeData) => {
+const mergeDir = (parent: TreeSelectOption) => {
   // 合并目录
   if (
     parent.children?.length === 1 &&
@@ -70,8 +52,8 @@ const mergeDir = (parent: TreeNodeData) => {
 };
 
 const pushDir = (
-  children: TreeNodeData[] | undefined,
-  treeNode: TreeNodeData,
+  children: TreeSelectOption[] | undefined,
+  treeNode: TreeSelectOption,
 ) => {
   if (children) {
     for (const child of children) {
@@ -90,20 +72,20 @@ let autoIncrementKey = 0;
 const assembleTree = (genPreview: GeneratePreviewResp) => {
   const separator = genPreview.path.includes('/') ? '/' : '\\';
   const paths: string[] = genPreview.path.split(separator);
-  let tempChildren: TreeNodeData[] | undefined = treeData.value;
+  let tempChildren: TreeSelectOption[] | undefined = treeData.value;
   for (const path of paths) {
     autoIncrementKey++;
     // 向treeData中推送目录,如果该级目录有那么不推送进行下级的合并
     tempChildren = pushDir(tempChildren, {
       title: path,
       key: `${autoIncrementKey}-0`,
-      children: new Array<TreeNodeData>(),
+      children: new Array<TreeSelectOption>(),
     });
   }
   tempChildren?.push({
     title: genPreview.fileName,
     key: genPreview.fileName,
-    children: new Array<TreeNodeData>(),
+    children: new Array<TreeSelectOption>(),
   });
 };
 
@@ -137,7 +119,7 @@ const onDownload = async () => {
 const onGenerator = async () => {
   const tableNames = previewTableNames.value;
   await generateCode(tableNames);
-  ElMessage.success('代码生成成功');
+  message.success('代码生成成功');
 };
 
 // 校验文件类型
@@ -153,16 +135,17 @@ const onCopy = () => {
 };
 watch(copied, () => {
   if (copied.value) {
-    ElMessage.success('复制成功');
+    message.success('复制成功');
   }
 });
 
 const selectedKeys = ref();
 // 选择文件预览
-const onSelectPreview = (data: TreeNodeData) => {
+const onSelectPreview = (data: TreeSelectOption) => {
   currentPreview.value = genPreviewList.value.find(
     (p) => p.fileName === data.key,
   );
+  selectedKeys.value = [data.key];
 };
 
 // 打开
@@ -209,7 +192,7 @@ const treeProps = {
 const allNodeKeys = computed(() => {
   // 递归函数，收集所有节点的 key
   const allNodeKeys: any[] = [];
-  const getAllNodeKeys = (nodes: TreeNodeData[]) => {
+  const getAllNodeKeys = (nodes: TreeSelectOption[]) => {
     nodes.forEach((node) => {
       allNodeKeys.push(node.key);
       if (node.children && node.children.length > 0) {
@@ -231,92 +214,94 @@ const allNodeKeys = computed(() => {
             ? `生成 ${previewTableNames[0]} 表预览`
             : '批量生成预览'
         }}
-        <ElLink
+        <a
           v-access:code="['code:generator:generate']"
-          style="margin-left: 10px"
+          style="margin-left: 10px; color: var(--n-text-color); cursor: pointer"
           @click="onDownload"
         >
           下载源码
-        </ElLink>
-        <ElLink
+        </a>
+        <a
           v-access:code="['code:generator:generate']"
-          style="margin-left: 10px"
+          style="margin-left: 10px; color: var(--n-text-color); cursor: pointer"
           @click="onGenerator"
         >
           生成源码
-        </ElLink>
+        </a>
       </div>
     </template>
     <div class="preview-content">
-      <ResizablePanelGroup direction="horizontal">
-        <ResizablePanel :default-size="35">
           <div
             :style="{ minWidth: '250px', height: '100%' }"
             class="border-border bg-card mr-2 rounded-[var(--radius)] border p-2"
           >
-            <ElAutoResizer>
-              <template #default="{ height }">
-                <ElTreeV2
+                <NTree
                   v-if="treeData.length > 0"
                   :data="treeData"
                   :props="treeProps"
-                  @node-click="onSelectPreview"
-                  highlight-current
+                  :selected-keys="selectedKeys"
                   :height="height"
                   :default-expanded-keys="allNodeKeys"
+                  block-line
+                  @update:selected-keys="(keys) => {
+                    selectedKeys = keys;
+                    if (keys.length > 0) {
+                      const selectedNode = treeData.find(n => n.key === keys[0]);
+                      if (selectedNode) {
+                        onSelectPreview(selectedNode);
+                      }
+                    }
+                  }"
                 >
-                  <template #default="{ node }">
-                    <ElIcon
-                      class="node-icon"
-                      :class="{ 'is-leaf': node.isLeaf }"
-                    >
-                      <SvgDirectoryBlueIcon v-if="!node.isLeaf" />
-                      <SvgFileJavaIcon
-                        v-if="node.isLeaf && checkFileType(node.label, '.java')"
-                      />
-                      <SvgFileVueIcon
-                        v-if="node.isLeaf && checkFileType(node.label, '.vue')"
-                        :size="16"
-                      />
-                      <SvgFileTypescriptIcon
-                        v-if="node.isLeaf && checkFileType(node.label, '.ts')"
-                        :size="16"
-                        name="file-typescript"
-                      />
-                      <SvgFileJavascriptIcon
-                        v-if="node.isLeaf && checkFileType(node.label, '.js')"
-                        :size="16"
-                        name="file-javascript"
-                      />
-                      <SvgFileJsonIcon
-                        v-if="node.isLeaf && checkFileType(node.label, '.json')"
-                      />
-                      <SvgFileMavenIcon
-                        v-if="
-                          node.isLeaf && checkFileType(node.label, 'pom.xml')
-                        "
-                      />
-                      <SvgFileXmlIcon
-                        v-if="
-                          node.isLeaf &&
-                          checkFileType(node.label, '.xml') &&
-                          !checkFileType(node.label, 'pom.xml')
-                        "
-                      />
-                      <SvgFileSqlIcon
-                        v-if="node.isLeaf && checkFileType(node.label, '.sql')"
-                      />
-                    </ElIcon>
-                    <span>{{ node.label }}</span>
+                  <template #default="{ option }">
+                    <div style="display: flex; gap: 8px; align-items: center">
+                      <NIcon
+                        class="node-icon"
+                        :class="{ 'is-leaf': !option.children?.length }"
+                      >
+                        <SvgDirectoryBlueIcon v-if="option.children?.length" />
+                        <SvgFileJavaIcon
+                          v-if="!option.children?.length && checkFileType(option.title, '.java')"
+                        />
+                        <SvgFileVueIcon
+                          v-if="!option.children?.length && checkFileType(option.title, '.vue')"
+                          :size="16"
+                        />
+                        <SvgFileTypescriptIcon
+                          v-if="!option.children?.length && checkFileType(option.title, '.ts')"
+                          :size="16"
+                          name="file-typescript"
+                        />
+                        <SvgFileJavascriptIcon
+                          v-if="!option.children?.length && checkFileType(option.title, '.js')"
+                          :size="16"
+                          name="file-javascript"
+                        />
+                        <SvgFileJsonIcon
+                          v-if="!option.children?.length && checkFileType(option.title, '.json')"
+                        />
+                        <SvgFileMavenIcon
+                          v-if="
+                            !option.children?.length && checkFileType(option.title, 'pom.xml')
+                          "
+                        />
+                        <SvgFileXmlIcon
+                          v-if="
+                            !option.children?.length &&
+                            checkFileType(option.title, '.xml') &&
+                            !checkFileType(option.title, 'pom.xml')
+                          "
+                        />
+                        <SvgFileSqlIcon
+                          v-if="!option.children?.length && checkFileType(option.title, '.sql')"
+                        />
+                      </NIcon>
+                      <span>{{ option.title }}</span>
+                    </div>
                   </template>
-                </ElTreeV2>
-              </template>
-            </ElAutoResizer>
+                </NTree>
           </div>
-        </ResizablePanel>
-        <ResizableHandle />
-        <ResizablePanel :default-size="65">
-          <ElCard style="height: 100%" body-style="height:90%">
+          <NCard style="height: 100%">
             <template #header>
               <div class="card-header">
                 <span>
@@ -326,34 +311,28 @@ const allNodeKeys = computed(() => {
                 </span>
               </div>
             </template>
-            <ElAutoResizer>
-              <template #default="{ height }">
-                <ElScrollbar :height="height">
-                  <ElLink
-                    style="position: absolute; right: 20px; z-index: 999"
-                    title="复制"
-                    @click="onCopy"
-                  >
-                    <template #icon>
+            <NScrollbar :style="{ height: `${height}px` }">
+                  <div style="position: relative; padding: 20px">
+                    <a
+                      style="position: absolute; top: 10px; right: 20px; z-index: 999; display: flex; gap: 4px; align-items: center; cursor: pointer"
+                      title="复制"
+                      @click="onCopy"
+                    >
                       <SvgCopyIcon />
-                    </template>
-                    <template #default>复制</template>
-                  </ElLink>
-                  <CnCodeView
-                    v-if="currentPreview"
-                    :type="
-                      'vue' === currentPreview?.fileName.split('.')[1]
-                        ? 'vue'
-                        : 'javascript'
-                    "
-                    :code-json="currentPreview!.content"
-                  />
-                </ElScrollbar>
-              </template>
-            </ElAutoResizer>
-          </ElCard>
-        </ResizablePanel>
-      </ResizablePanelGroup>
+                      <span>复制</span>
+                    </a>
+                    <CnCodeView
+                      v-if="currentPreview"
+                      :type="
+                        'vue' === currentPreview?.fileName.split('.')[1]
+                          ? 'vue'
+                          : 'javascript'
+                      "
+                      :code-json="currentPreview!.content"
+                    />
+                  </div>
+            </NScrollbar>
+          </NCard>
     </div>
   </Modal>
 </template>

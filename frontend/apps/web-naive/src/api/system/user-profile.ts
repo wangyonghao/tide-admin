@@ -2,6 +2,9 @@ import http from '#/api/http';
 
 /* ==================== API 定义 ==================== */
 export const userProfileApi = {
+  detail: () => {
+    return http.get(`/user/profile`);
+  },
   /** 上传头像 */
   uploadAvatar: (data: FormData) => {
     return http.patch(`/user/profile/avatar`, data);

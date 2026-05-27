@@ -5,19 +5,17 @@ import type { Option } from '#/types/global';
 import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
-import { MsNestClockFarsightAnalogOutline } from '@vben/icons';
 import { $t } from '@vben/locales';
-import { encryptByRsa } from '@vben/utils';
 
-import { ElButton, ElInput, ElInputNumber, ElMessage } from 'element-plus';
+import { NButton, NInput, NInputNumber, useMessage } from 'naive-ui';
 
 import { useVbenForm } from '#/adapter/form';
 import { addJob, listGroup, updateJob } from '#/api/schedule';
-import CronModal from '#/components/GenCron/CronModal/index.vue';
 import { useDict } from '#/hooks';
+import { encryptByRsa } from '#/utils/crypto';
 import { defaultFormValueGetter, useBeforeCloseDiff } from '#/utils/popup';
 
-import { useEditFormSchema } from './dataScope';
+import { useEditFormSchema } from './data-scope';
 
 const emits = defineEmits(['success']);
 const dataId = ref<number | string>('');
@@ -25,6 +23,7 @@ const isUpdate = computed(() => !!dataId.value);
 const visible = ref(false);
 const groupList = ref<Option[]>([]);
 const args = ref<any[]>([]);
+const message = useMessage();
 const {
   job_trigger_type_enum,
   job_task_type_enum,
@@ -91,13 +90,13 @@ const [Modal, drawerApi] = useVbenModal({
     try {
       if (isUpdate.value) {
         await updateJob(deptFormApi.form.values, dataId.value);
-        ElMessage.success($t('pages.common.modifySuccess'));
+        message.success($t('pages.common.modifySuccess'));
       } else {
         await addJob({
           ...deptFormApi.form.values,
           adminPassword: encryptByRsa(deptFormApi.form.values.adminPassword),
         });
-        ElMessage.success($t('pages.common.addSuccess'));
+        message.success($t('pages.common.addSuccess'));
       }
       resetInitialized();
       emits('success');
@@ -130,7 +129,7 @@ const [Modal, drawerApi] = useVbenModal({
             const parsedArgs = JSON.parse(deptFormApi.form.values.argsStr);
             args.value = parsedArgs.map((arg: any) => ({ value: arg }));
           } catch (error: any) {
-            ElMessage.error(error);
+            message.error(error);
           }
         }
         visible.value = true;
@@ -158,30 +157,28 @@ const openGeneratorCron = (cron: string) => {
     <div class="mx-auto flex h-full w-full flex-col">
       <EditForm>
         <template #triggerInterval>
-          <ElInputNumber
-            v-model="deptFormApi.form.values.triggerInterval"
+          <NInputNumber
+            v-model:value="deptFormApi.form.values.triggerInterval"
             :clearable="true"
             v-if="deptFormApi.form.values.triggerType === 2"
             style="width: 100%"
-            controls-position="right"
           >
             <template #suffix>{{ $t('pages.common.second') }}</template>
-          </ElInputNumber>
-          <ElInput
-            v-model="deptFormApi.form.values.triggerInterval"
-            :clearable="true"
-            v-if="deptFormApi.form.values.triggerType === 3"
-            style="width: 100%"
-          >
-            <template #append>
-              <ElButton
-                :icon="MsNestClockFarsightAnalogOutline"
-                @click="
-                  openGeneratorCron(deptFormApi.form.values.triggerInterval)
-                "
-              />
-            </template>
-          </ElInput>
+          </NInputNumber>
+          <div v-if="deptFormApi.form.values.triggerType === 3" style=" display: flex; gap: 8px;width: 100%;">
+            <NInput
+              v-model:value="deptFormApi.form.values.triggerInterval"
+              :clearable="true"
+              style="flex: 1"
+            />
+            <NButton
+              @click="
+                openGeneratorCron(deptFormApi.form.values.triggerInterval)
+              "
+            >
+              生成表达式
+            </NButton>
+          </div>
         </template>
       </EditForm>
       <CronModal

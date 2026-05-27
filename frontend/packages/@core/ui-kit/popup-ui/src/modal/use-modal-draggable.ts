@@ -1,5 +1,4 @@
 /**
- * @copy https://github.com/element-plus/element-plus/blob/dev/packages/hooks/use-draggable/index.ts
  * 调整部分细节
  */
 

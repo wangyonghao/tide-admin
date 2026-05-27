@@ -1,6 +1,6 @@
-import type { PageQuery, PageRes } from '#/types/api';
+import type { PageQuery, PageResult } from '#/types/api';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 任务日志类型 */
 export interface JobLogResp {
@@ -71,7 +71,7 @@ export interface JobLogPageQuery extends JobLogQuery, PageQuery {}
 
 /** 查询任务日志列表 */
 export function listJobLog(query: JobLogPageQuery) {
-  return http.get<PageRes<JobLogResp[]>>(`/schedule/log`, {
+  return http.get<PageResult<JobLogResp[]>>(`/schedule/log`, {
     params: query,
   });
 }

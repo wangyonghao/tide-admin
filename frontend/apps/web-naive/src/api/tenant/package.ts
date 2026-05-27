@@ -65,7 +65,7 @@ export function listAllTenantPackage() {
 
 /** 查询套餐菜单 */
 export function listTenantPackageMenu() {
-  return http.get<any>(`/tenant/package/menu/tree`, {
+  return http.get<TenantPackageResp[]>(`/tenant/package/menu/tree`, {
     params: { isSimple: false },
   });
 }

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { FormInst, FormRules, TreeSelectOption } from 'naive-ui';
 
-import type { DeptResp } from '#/api/system/dept';
+import type { DeptResult } from '#/api/system/dept';
 
 import { computed, ref, watch } from 'vue';
 
@@ -15,6 +15,7 @@ import {
   NFormItem,
   NInput,
   NInputNumber,
+  NSelect,
   NSpace,
   NSwitch,
   NTreeSelect,
@@ -22,10 +23,11 @@ import {
 } from 'naive-ui';
 
 import { deptApi } from '#/api/system/dept';
+import { useDict } from '#/hooks/app';
 
 interface Props {
   visible?: boolean;
-  data?: DeptResp;
+  data?: DeptResult;
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -40,6 +42,9 @@ const emits = defineEmits<{
 
 const message = useMessage();
 
+// 加载部门类型字典
+const { dept_type } = useDict('dept_type');
+
 // 状态
 const formRef = ref<FormInst | null>(null);
 const loading = ref(false);
@@ -48,7 +53,9 @@ const deptOptions = ref<TreeSelectOption[]>([]);
 const formModel = ref({
   id: '',
   parentId: undefined as string | undefined,
+  code: '',
   name: '',
+  type: undefined as string | undefined,
   sort: 1,
   description: '',
   status: 1,
@@ -67,10 +74,21 @@ const rules: FormRules = {
     message: $t('ui.formRules.selectRequired'),
     trigger: ['blur', 'change'],
   },
+  code: {
+    required: true,
+    message: $t('ui.formRules.required'),
+    trigger: ['blur', 'input'],
+  },
   name: {
     required: true,
     message: $t('ui.formRules.required'),
     trigger: ['blur', 'input'],
+  },
+  type: {
+    type: 'string',
+    required: true,
+    message: $t('ui.formRules.selectRequired'),
+    trigger: ['blur', 'change'],
   },
   sort: {
     type: 'number',
@@ -83,7 +101,7 @@ const rules: FormRules = {
 // 加载部门列表
 async function loadDeptOptions() {
   try {
-    const deptArray = await deptApi.list({});
+    const deptArray = await deptApi.tree({});
     deptOptions.value = convertToTreeSelectOptions(deptArray);
   } catch (error) {
     console.error('Failed to load dept options:', error);
@@ -91,14 +109,12 @@ async function loadDeptOptions() {
 }
 
 // 转换为TreeSelect需要的格式
-function convertToTreeSelectOptions(depts: DeptResp[]): TreeSelectOption[] {
+function convertToTreeSelectOptions(depts: DeptResult[]): TreeSelectOption[] {
   return depts.map((dept) => ({
     label: dept.name,
     key: dept.id,
     value: dept.id,
-    children: dept.children
-      ? convertToTreeSelectOptions(dept.children)
-      : undefined,
+    children: dept.children ? convertToTreeSelectOptions(dept.children) : undefined,
   }));
 }
 
@@ -107,7 +123,9 @@ function resetForm() {
   formModel.value = {
     id: '',
     parentId: undefined,
+    code: '',
     name: '',
+    type: undefined,
     sort: 1,
     description: '',
     status: 1,
@@ -123,7 +141,9 @@ async function loadDeptDetail(id: string) {
     formModel.value = {
       id: res.id,
       parentId: res.parentId,
+      code: res.code,
       name: res.name,
+      type: res.type?.toString(),
       sort: res.sort,
       description: res.description,
       status: res.status,
@@ -141,11 +161,16 @@ async function handleSubmit() {
     await formRef.value?.validate();
     loading.value = true;
 
+    const submitData = {
+      ...formModel.value,
+      type: parseInt(formModel.value.type || '1'),
+    };
+
     if (isUpdate.value) {
-      await deptApi.update(formModel.value, formModel.value.id);
+      await deptApi.update(submitData, formModel.value.id);
       message.success($t('pages.common.modifySuccess'));
     } else {
-      await deptApi.create(formModel.value);
+      await deptApi.create(submitData);
       message.success($t('pages.common.addSuccess'));
     }
 
@@ -202,13 +227,28 @@ watch(
             :placeholder="$t('ui.formRules.selectRequired')"
             clearable
             default-expand-all
-            check-strategy="child"
+          />
+        </NFormItem>
+        <NFormItem :label="$t('system.dept.code')" path="code">
+          <NInput
+            v-model:value="formModel.code"
+            :placeholder="$t('ui.formRules.required')"
           />
         </NFormItem>
         <NFormItem :label="$t('system.dept.name')" path="name">
           <NInput
             v-model:value="formModel.name"
             :placeholder="$t('ui.formRules.required')"
+          />
+        </NFormItem>
+        <NFormItem :label="$t('system.dept.type')" path="type">
+          <NSelect
+            v-model:value="formModel.type"
+            :options="dept_type"
+            :placeholder="$t('ui.formRules.selectRequired')"
+            clearable
+            label-field="label"
+            value-field="value"
           />
         </NFormItem>
         <NFormItem :label="$t('system.dept.sort')" path="sort">

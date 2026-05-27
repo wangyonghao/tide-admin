@@ -17,6 +17,7 @@
     "updateTime": "update time"
   },
   "dept": {
+    "code": "Code",
     "createTime": "Create time",
     "createUserString": "Creator",
     "description": "Description",
@@ -26,6 +27,7 @@
     "parentId": "Parent Dept",
     "sort": "Sort",
     "status": "Status",
+    "type": "Dept Type",
     "updateTime": "Update time",
     "updateUserString": "Update"
   },

@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui';
 
-import type { DeptResp } from '#/api/system/dept';
+import type { DeptResult } from '#/api/system/dept';
 import type { UserResp } from '#/api/system/user';
 import type { Option } from '#/types/global';
 
@@ -23,7 +23,7 @@ const dialog = useDialog();
 
 // ==================== 部门树逻辑 ====================
 const deptSearchKeyword = ref('');
-const deptData = ref<DeptResp[]>([]);
+const deptData = ref<DeptResult[]>([]);
 const selectedDeptKeys = ref<string[]>([]);
 const selectedDeptId = ref<string | undefined>(undefined);
 
@@ -46,14 +46,26 @@ const deptNodeProps = ({ option }: { option: any }) => {
   };
 };
 
+// 加载部门列表
 async function loadDeptData() {
   try {
-    const res = await deptApi.list({});
-    deptData.value = Array.isArray(res) ? res : [];
+    const deptArray = await deptApi.tree({});
+    deptData.value = convertToTreeOptions(deptArray);
   } catch (error) {
-    console.error('加载部门树失败:', error);
+    console.error('Failed to load dept options:', error);
   }
 }
+
+// 转换为TreeSelect需要的格式
+function convertToTreeOptions(depts: DeptResult[]): TreeSelectOption[] {
+  return depts.map((dept) => ({
+    name: dept.name,
+    key: dept.id,
+    value: dept.id,
+    children: dept.children ? convertToTreeOptions(dept.children) : undefined,
+  }));
+}
+
 
 async function loadRoleOptions() {
   try {
@@ -91,69 +103,16 @@ const userPagination = ref({
 });
 
 const userColumns: DataTableColumns<UserResp> = [
-  {
-    title: '序号',
-    key: 'index',
-    width: 60,
-    fixed: 'left',
+  { title: '序号', key: 'index', width: 60, fixed: 'left',
     render: (_row, index) =>
-      (userPagination.value.page - 1) * userPagination.value.pageSize +
-      index +
-      1,
+      (userPagination.value.page - 1) * userPagination.value.pageSize + index + 1,
   },
   { title: '昵称', key: 'nickname', minWidth: 100, fixed: 'left' },
   { title: '用户名', key: 'username', minWidth: 100 },
-  {
-    title: '部门',
-    key: 'deptName',
-    minWidth: 100,
-    render(row) {
-      return row.deptName || '-';
-    },
-  },
-  {
-    title: '角色',
-    key: 'roleNames',
-    width: 120,
-    render(row) {
-      return row.roleNames || '-';
-    },
-  },
-  // {
-  //   title: '用户类型',
-  //   key: 'userType',
-  //   width: 110,
-  //   render(row) {
-  //     const typeMap: Record<string, { type: 'info' | 'success' | 'warning'; label: string }> = {
-  //       admin: { type: 'info', label: '后台管理员' },
-  //       pc: { type: 'success', label: 'PC前台' },
-  //       app: { type: 'warning', label: 'App/小程序' }
-  //     }
-  //     const t = typeMap[row.userType || 'admin'] || { type: 'info', label: row.userType || '未知' }
-  //     return h(NTag, { type: t.type, size: 'small' }, { default: () => t.label })
-  //   }
-  // },
-  {
-    title: '手机号',
-    key: 'phone',
-    width: 120,
-    render(row) {
-      return row.phone || '-';
-    },
-  },
-  // {
-  //   title: '离职',
-  //   key: 'isQuit',
-  //   width: 80,
-  //   render(row) {
-  //     const quit = row.isQuit === 1
-  //     return h(NTag, { type: quit ? 'error' : 'success', size: 'small' }, { default: () => (quit ? '是' : '否') })
-  //   }
-  // },
-  {
-    title: '状态',
-    key: 'status',
-    width: 80,
+  { title: '部门', key: 'deptName', minWidth: 100, render(row) { return row.deptName || '-'; } },
+  { title: '角色', key: 'roleNames', width: 120, render(row) { return row.roleNames || '-'; } },
+  { title: '手机号', key: 'phone', width: 120, render(row) { return row.phone || '-'; } },
+  { title: '状态', key: 'status', width: 80,
     render(row) {
       const statusMap: Record<
         number,
@@ -172,38 +131,14 @@ const userColumns: DataTableColumns<UserResp> = [
       );
     },
   },
-  {
-    title: '操作',
-    key: 'action',
-    width: 130,
-    fixed: 'right',
+  { title: '操作', key: 'action', width: 130, fixed: 'right',
     render(row) {
       const dropdownOptions = [
-        {
-          label: '详情',
-          key: 'detail',
-          icon: () => h(IconifyIcon, { icon: 'lucide:eye' }),
-        },
-        {
-          label: '修改',
-          key: 'edit',
-          icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }),
-        },
-        {
-          label: '重置密码',
-          key: 'resetPwd',
-          icon: () => h(IconifyIcon, { icon: 'lucide:key' }),
-        },
-        {
-          type: 'divider',
-          key: 'divider',
-        },
-        {
-          label: '删除',
-          key: 'delete',
-          icon: () =>
-            h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }),
-        },
+        { label: '详情', key: 'detail', icon: () => h(IconifyIcon, { icon: 'lucide:eye' }), },
+        { label: '修改', key: 'edit', icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }), },
+        { label: '重置密码', key: 'resetPwd', icon: () => h(IconifyIcon, { icon: 'lucide:key' }), },
+        { type: 'divider', key: 'divider', },
+        { label: '删除', key: 'delete', icon: () => h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }), },
       ];
 
       return h(

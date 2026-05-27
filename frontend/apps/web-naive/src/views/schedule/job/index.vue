@@ -1,27 +1,23 @@
 <script setup lang="ts">
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { DictItemResp } from '#/api';
 import type { JobResp } from '#/api/schedule';
 
 import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
-import { useAccess } from '@vben/access';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
-import { parseCron } from '@vben/utils';
 
 import {
-  ElButton,
-  ElLink,
-  ElMessage,
-  ElPopconfirm,
-  ElPopover,
-  ElSpace,
-  ElSwitch,
-  ElTimeline,
-  ElTimelineItem,
-} from 'element-plus';
+  NButton,
+  NPopconfirm,
+  NPopover,
+  NSpace,
+  NSwitch,
+  NTimeline,
+  NTimelineItem,
+  useMessage,
+} from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
@@ -31,12 +27,14 @@ import {
   triggerJob,
   updateJobStatus,
 } from '#/api/schedule';
-import { DictTag } from '#/components/dict';
 import { useDict } from '#/hooks';
+import { useUserStore } from '#/store/user';
+import { parseCron } from '#/utils/cron';
 
-import { useGridFieldColumns, useGridSearchFormSchema } from './dataScope';
-import PackageEditDrawer from './EditDrawer.vue';
+import { useGridFieldColumns, useGridSearchFormSchema } from './data-scope';
+import PackageEditDrawer from './edit-drawer.vue';
 
+const message = useMessage();
 const {
   job_status_enum,
   job_trigger_type_enum,
@@ -51,7 +49,7 @@ const {
   'job_block_strategy_enum',
 );
 const groupList = ref<{ label: string; value: string }[]>([]);
-const { hasAccessByCodes } = useAccess();
+const userStore = useUserStore()
 
 // 查询任务组列表
 const getGroupList = async () => {
@@ -138,7 +136,7 @@ const handleAdd = () => {
 const handleDelete = async (row: JobResp) => {
   try {
     await deleteJob(row.id);
-    ElMessage.success($t('pages.common.deleteSuccess'));
+    message.success($t('pages.common.deleteSuccess'));
     await tableGridApi.query();
     return true;
   } catch {
@@ -149,7 +147,7 @@ const handleDelete = async (row: JobResp) => {
 // 执行
 const onTrigger = (record: JobResp) => {
   triggerJob(record.id).then(() => {
-    ElMessage.success($t('schedule.job.executeRequestIssued'));
+    message.success($t('schedule.job.executeRequestIssued'));
   });
 };
 
@@ -161,7 +159,7 @@ const onUpdateStatus = (record: JobResp) => {
       : $t('common.disabledSuccess');
   updateJobStatus({ jobStatus: record.jobStatus }, record.id)
     .then(() => {
-      ElMessage.success(msg);
+      message.success(msg);
     })
     .catch(() => {
       record.jobStatus = record.jobStatus === 1 ? 0 : 1;
@@ -190,41 +188,41 @@ onMounted(() => {
   <Page auto-content-height>
     <TableGrid>
       <template #toolbar-tools>
-        <ElSpace>
+        <NSpace>
           <span v-access:code="['tenant:package:create']">
-            <ElButton type="primary" @click="handleAdd">
+            <NButton type="primary" @click="handleAdd">
               {{ $t('pages.common.add') }}
-            </ElButton>
+            </NButton>
           </span>
-        </ElSpace>
+        </NSpace>
       </template>
       <template #triggerType="{ row }">
         <div class="flex flex-row items-center justify-center">
-          <DictTag
+          <!-- <DictTag
             :value="row.triggerType"
-            :dict-list="(job_trigger_type_enum as DictItemResp[]) ?? []"
-          />
+            :dict-list="(job_trigger_type_enum) ?? []"
+          /> -->
           :&nbsp;
           <span v-if="row.triggerType === 2">{{ row.triggerInterval }} 秒</span>
           <span v-else>
-            <ElPopover
+            <NPopover
               :title="$t('schedule.job.lastFiveTimes')"
-              position="bottom"
-              width="225px"
+              placement="bottom"
+              style="width: 225px"
             >
-              <template #reference>
-                <ElLink type="primary">{{ row.triggerInterval }}</ElLink>
+              <template #trigger>
+                <a class="text-primary cursor-pointer">{{ row.triggerInterval }}</a>
               </template>
-              <ElTimeline style="max-width: 225px; margin-top: 20px">
-                <ElTimelineItem
+              <NTimeline style="max-width: 225px; margin-top: 20px">
+                <NTimelineItem
                   v-for="(item, index) in parseCron(row.triggerInterval).split(
                     '\n',
                   )"
                   :key="index"
-                  :timestamp="item"
+                  :title="item"
                 />
-              </ElTimeline>
-            </ElPopover>
+              </NTimeline>
+            </NPopover>
           </span>
         </div>
       </template>
@@ -235,64 +233,62 @@ onMounted(() => {
           >
             <DictTag
               :value="row.taskType"
-              :dict-list="(job_task_type_enum as DictItemResp[]) ?? []"
+              :dict-list="(job_task_type_enum) ?? []"
             />
           </span>
           <span>{{ row.executorInfo }}</span>
         </div>
       </template>
       <template #jobStatus="{ row }">
-        <ElSwitch
-          v-model="row.jobStatus"
-          :active-value="1"
-          :inactive-value="0"
-          :disabled="!hasAccessByCodes(['tool:job:update'])"
-          @change="onUpdateStatus(row)"
+        <NSwitch
+          v-model:value="row.jobStatus"
+          :checked-value="1"
+          :unchecked-value="0"
+          :disabled="!userStore.hasPermission('tool:job:update')"
+          @update:value="onUpdateStatus(row)"
         />
       </template>
       <template #action="{ row }">
-        <ElSpace>
+        <NSpace>
           <span v-access:code="['schedule:job:trigger']">
-            <ElPopconfirm
+            <NPopconfirm
               :title="$t('ui.actionMessage.confirmExecute', [row.jobName])"
-              icon-color="red"
-              @confirm="onTrigger(row)"
-              trigger="hover"
-              width="200px"
+              positive-text="确认"
+              negative-text="取消"
+              @positive-click="onTrigger(row)"
             >
-              <template #reference>
-                <ElButton type="primary" link text>
+              <template #trigger>
+                <NButton type="primary" text>
                   {{ $t('pages.common.execute') }}
-                </ElButton>
+                </NButton>
               </template>
-            </ElPopconfirm>
+            </NPopconfirm>
           </span>
           <span v-access:code="['schedule:job:update']">
-            <ElButton type="primary" @click="handleEdit(row)" link text>
+            <NButton type="primary" @click="handleEdit(row)" text>
               {{ $t('pages.common.edit') }}
-            </ElButton>
+            </NButton>
           </span>
           <span v-access:code="['schedule:log:list']">
-            <ElButton type="primary" @click="onLog(row)" link text>
+            <NButton type="primary" @click="onLog(row)" text>
               {{ $t('schedule.job.viewLog') }}
-            </ElButton>
+            </NButton>
           </span>
           <span v-access:code="['schedule:job:delete']">
-            <ElPopconfirm
+            <NPopconfirm
               :title="$t('ui.actionMessage.deleteConfirm', [row.jobName])"
-              icon-color="red"
-              trigger="hover"
-              @confirm="handleDelete(row)"
-              width="200px"
+              positive-text="确认"
+              negative-text="取消"
+              @positive-click="handleDelete(row)"
             >
-              <template #reference>
-                <ElButton type="danger" link text>
+              <template #trigger>
+                <NButton type="error" text>
                   {{ $t('pages.common.delete') }}
-                </ElButton>
+                </NButton>
               </template>
-            </ElPopconfirm>
+            </NPopconfirm>
           </span>
-        </ElSpace>
+        </NSpace>
       </template>
     </TableGrid>
     <EditorWindow @success="tableGridApi.query()" />

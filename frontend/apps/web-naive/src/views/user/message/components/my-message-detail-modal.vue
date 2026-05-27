@@ -5,9 +5,8 @@ import { computed, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
-import { getUserMessage } from '#/api/system/user-message';
+import { userMessageApi } from '#/api/system/user-message';
 
-import AiEditor from './view/components/index.vue';
 
 defineOptions({ name: 'NoticePopup' });
 
@@ -34,7 +33,7 @@ const [Modal, modalApi] = useVbenModal({
     if (isOpen) {
       contentLoading.value = true;
       const record = modalApi.getData<MessageResp>();
-      const data = await getUserMessage(record.id);
+      const data = await userMessageApi.detail(record.id);
       currentMessage.value = data;
       contentLoading.value = false;
     }
@@ -65,7 +64,7 @@ const getTitle = computed(() => {
           </div>
           <div style="flex: 1">
             <div class="content-loading" v-loading="contentLoading">
-              <AiEditor v-model:model-value="currentNoticeContent" />
+              <!-- <AiEditor v-model:model-value="currentNoticeContent" /> -->
             </div>
           </div>
         </div>

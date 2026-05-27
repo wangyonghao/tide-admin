@@ -11,10 +11,8 @@ import {
   NButton,
   NDivider,
 } from 'naive-ui';
-import { useI18n } from 'vue-i18n';
+import { $t } from '@vben/locales';
 import { message } from '#/adapter/naive';
-
-const { t } = useI18n();
 
 // 通知设置
 const notificationSettings = ref({
@@ -31,29 +29,29 @@ const alertLevel = ref('warning');
 
 // 保存设置
 const handleSave = () => {
-  message.success(t('page.profile.notification.saveSuccess'));
+  message.success($t('page.profile.notification.saveSuccess'));
 };
 
 // 告警级别选项
 const alertLevelOptions = [
-  { label: t('page.profile.notification.info'), value: 'info' },
-  { label: t('page.profile.notification.warning'), value: 'warning' },
-  { label: t('page.profile.notification.error'), value: 'error' },
-  { label: t('page.profile.notification.critical'), value: 'critical' },
+  { label: $t('page.profile.notification.info'), value: 'info' },
+  { label: $t('page.profile.notification.warning'), value: 'warning' },
+  { label: $t('page.profile.notification.error'), value: 'error' },
+  { label: $t('page.profile.notification.critical'), value: 'critical' },
 ];
 
 // 通知类型选项
 const noticeTypeOptions = [
-  { label: t('page.profile.notification.systemMessage'), value: 'systemMessage' },
-  { label: t('page.profile.notification.taskReminder'), value: 'taskReminder' },
-  { label: t('page.profile.notification.securityAlert'), value: 'securityAlert' },
-  { label: t('page.profile.notification.operationLog'), value: 'operationLog' },
+  { label: $t('page.profile.notification.systemMessage'), value: 'systemMessage' },
+  { label: $t('page.profile.notification.taskReminder'), value: 'taskReminder' },
+  { label: $t('page.profile.notification.securityAlert'), value: 'securityAlert' },
+  { label: $t('page.profile.notification.operationLog'), value: 'operationLog' },
 ];
 </script>
 
 <template>
   <div class="notification-settings">
-    <h3 class="text-lg font-semibold mb-6">{{ t('page.profile.tabs.notification') }}</h3>
+    <h3 class="text-lg font-semibold mb-6">{{ $t('page.profile.tabs.notification') }}</h3>
 
     <NSpace vertical :size="24">
       <!-- 通知渠道 -->
@@ -63,8 +61,8 @@ const noticeTypeOptions = [
         <NSpace vertical :size="16">
           <div class="flex items-center justify-between">
             <div>
-              <div class="font-medium mb-1">{{ t('page.profile.notification.systemNotice') }}</div>
-              <div class="text-sm text-gray-500">{{ t('page.profile.notification.enableSystemNotice') }}</div>
+              <div class="font-medium mb-1">{{ $t('page.profile.notification.systemNotice') }}</div>
+              <div class="text-sm text-gray-500">{{ $t('page.profile.notification.enableSystemNotice') }}</div>
             </div>
             <NSwitch v-model:value="notificationSettings.systemNotice" />
           </div>
@@ -73,8 +71,8 @@ const noticeTypeOptions = [
 
           <div class="flex items-center justify-between">
             <div>
-              <div class="font-medium mb-1">{{ t('page.profile.notification.emailNotice') }}</div>
-              <div class="text-sm text-gray-500">{{ t('page.profile.notification.enableEmailNotice') }}</div>
+              <div class="font-medium mb-1">{{ $t('page.profile.notification.emailNotice') }}</div>
+              <div class="text-sm text-gray-500">{{ $t('page.profile.notification.enableEmailNotice') }}</div>
             </div>
             <NSwitch v-model:value="notificationSettings.emailNotice" />
           </div>
@@ -83,8 +81,8 @@ const noticeTypeOptions = [
 
           <div class="flex items-center justify-between">
             <div>
-              <div class="font-medium mb-1">{{ t('page.profile.notification.smsNotice') }}</div>
-              <div class="text-sm text-gray-500">{{ t('page.profile.notification.enableSmsNotice') }}</div>
+              <div class="font-medium mb-1">{{ $t('page.profile.notification.smsNotice') }}</div>
+              <div class="text-sm text-gray-500">{{ $t('page.profile.notification.enableSmsNotice') }}</div>
             </div>
             <NSwitch v-model:value="notificationSettings.smsNotice" />
           </div>
@@ -93,7 +91,7 @@ const noticeTypeOptions = [
 
       <!-- 通知类型 -->
       <NCard :bordered="false" class="shadow-sm">
-        <h4 class="font-medium mb-4">{{ t('page.profile.notification.noticeTypes') }}</h4>
+        <h4 class="font-medium mb-4">{{ $t('page.profile.notification.noticeTypes') }}</h4>
         
         <NCheckboxGroup v-model:value="noticeTypes">
           <NSpace vertical :size="12">
@@ -110,7 +108,7 @@ const noticeTypeOptions = [
 
       <!-- 告警级别 -->
       <NCard :bordered="false" class="shadow-sm">
-        <h4 class="font-medium mb-4">{{ t('page.profile.notification.alertLevel') }}</h4>
+        <h4 class="font-medium mb-4">{{ $t('page.profile.notification.alertLevel') }}</h4>
         
         <NRadioGroup v-model:value="alertLevel">
           <NSpace vertical :size="12">
@@ -128,7 +126,7 @@ const noticeTypeOptions = [
       <!-- 保存按钮 -->
       <div class="flex justify-end">
         <NButton type="primary" @click="handleSave">
-          {{ t('page.profile.basic.save') }}
+          {{ $t('page.profile.basic.save') }}
         </NButton>
       </div>
     </NSpace>

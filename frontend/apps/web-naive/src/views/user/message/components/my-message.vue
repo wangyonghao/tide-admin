@@ -11,11 +11,9 @@ import { NButton, NSpace, NTag, useDialog, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { userMessageApi } from '#/api/system/user-message';
-import { DictTag } from '#/components/dict';
 import { useDict } from '#/hooks';
-import mittBus from '#/utils/mitt';
 
-import MyMessageDetailModal from './MyMessageDetailModal.vue';
+import MyMessageDetailModal from './my-message-detail-modal.vue';
 
 defineOptions({ name: 'UserMyMessage' });
 
@@ -199,7 +197,7 @@ const [DetailModal, formModalApi] = useVbenModal({
 
 // 表格更新回调
 const onDetailModalClose = () => {
-  mittBus.emit('count-refresh');
+  // mittBus.emit('count-refresh');
   tableGridApi.reload();
 };
 </script>

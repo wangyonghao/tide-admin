@@ -11,13 +11,7 @@ import { $t } from '@vben/locales';
 import { NButton, useDialog, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import {
-  deleteApp,
-  exportApp,
-  getAppList,
-  getSecretKey,
-  resetSecretKey,
-} from '#/api';
+import { openAppApi } from '#/api/open';
 
 import { useColumns, useGridFormSchema } from './data';
 import AppDetail from './modules/detail.vue';
@@ -48,7 +42,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     proxyConfig: {
       ajax: {
         query: async ({ page }, formValues) => {
-          return await getAppList({
+          return await openAppApi.list({
             current: page.currentPage,
             size: page.pageSize,
             ...formValues,
@@ -117,7 +111,7 @@ function onDetail(row: OpenAppApi.AppResp) {
 }
 
 function onDelete(row: OpenAppApi.AppResp) {
-  deleteApp(row.id)
+  openAppApi.delete(row.id)
     .then(() => {
       message.success(`删除应用 "${row.name}" 成功`);
       onRefresh();
@@ -129,7 +123,7 @@ function onDelete(row: OpenAppApi.AppResp) {
 
 async function onShowSecret(row: OpenAppApi.AppResp) {
   try {
-    const { secretKey } = await getSecretKey(row.id);
+    const { secretKey } = await openAppApi.getSecretKey(row.id);
     row.secretKey = secretKey;
   } catch {
     message.error('获取密钥失败');
@@ -146,7 +140,7 @@ async function onResetSecret(row: OpenAppApi.AppResp) {
       `确定要重置应用 "${row.name}" 的密钥吗？重置后原密钥将失效。`,
       '确认重置密钥',
     );
-    await resetSecretKey(row.id);
+    await openAppApi.resetSecretKey(row.id);
     message.success('密钥重置成功');
     gridApi.query();
   } catch (error: any) {
@@ -195,7 +189,7 @@ function onCreate() {
 // 导出
 async function onExport() {
   try {
-    const blob = await exportApp(gridApi.formApi.form.values);
+    const blob = await openAppApi.export(gridApi.formApi.form.values);
     const url = window.URL.createObjectURL(blob);
     const link = document.createElement('a');
     link.href = url;

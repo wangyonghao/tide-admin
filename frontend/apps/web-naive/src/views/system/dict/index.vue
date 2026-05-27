@@ -168,7 +168,7 @@ async function loadTableData() {
   tableLoading.value = true;
   try {
     // 构建查询条件
-    const description = [
+    const keyword = [
       searchForm.value.dictType,
       searchForm.value.value,
       searchForm.value.label,
@@ -179,19 +179,12 @@ async function loadTableData() {
     const res = await dictApi.page({
       page: pagination.value.page,
       size: pagination.value.pageSize,
-      description: description || undefined,
+      keyword: keyword || undefined,
       dictType: searchForm.value.dictType,
+      status: searchForm.value.enabled,
     });
 
-    // 根据状态过滤
-    let filteredData = res.list;
-    if (searchForm.value.enabled !== undefined) {
-      filteredData = filteredData.filter(
-        (item) => item.enabled === searchForm.value.enabled,
-      );
-    }
-
-    tableData.value = filteredData;
+    tableData.value = res.list;
     pagination.value.itemCount = res.total;
   } catch (error) {
     console.error('加载字典数据失败:', error);
@@ -279,75 +272,27 @@ onMounted(() => {
 </script>
 
 <template>
-  <Page>
-    <div class="h-full bg-background p-4">
-      <!-- 查询表单 -->
-      <NForm
-        :model="searchForm"
-        label-placement="left"
-        label-width="auto"
-        class="mb-4"
-      >
-        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-          <NFormItem label="字典类型" path="dictType">
-            <NInput
-              v-model:value="searchForm.dictType"
-              placeholder="请输入字典类型"
-              clearable
-              @keyup.enter="handleSearch"
-            />
-          </NFormItem>
-          <NFormItem label="字典值" path="value">
-            <NInput
-              v-model:value="searchForm.value"
-              placeholder="请输入字典值"
-              clearable
-              @keyup.enter="handleSearch"
-            />
-          </NFormItem>
-          <NFormItem label="显示名称" path="label">
-            <NInput
-              v-model:value="searchForm.label"
-              placeholder="请输入显示名称"
-              clearable
-              @keyup.enter="handleSearch"
-            />
-          </NFormItem>
-          <NFormItem label="状态" path="enabled">
-            <NSelect
-              v-model:value="searchForm.enabled"
-              :options="statusOptions"
-              placeholder="请选择状态"
-              clearable
-            />
-          </NFormItem>
-        </div>
-        <div class="flex justify-end gap-2">
-          <NButton @click="handleReset">
-            <template #icon>
-              <IconifyIcon icon="lucide:rotate-ccw" />
+  <Page auto-content-height>
+    <!-- 查询表单 -->
+    <div class="flex flex-col bg-background w-full p-4">
+      <div class="flex items-center justify-between gap-2 pb-4">
+        <div class="w-64">
+          <NInput
+                v-model:value="searchForm.keyword"
+                placeholder="搜索字典类型/字典值/显示名称"
+                clearable
+                class="w-[340px]"
+                @keyup.enter="handleSearch"
+          >
+            <template #prefix>
+              <NIcon><SearchOutline /></NIcon>
             </template>
-            重置
-          </NButton>
-          <NButton type="primary" @click="handleSearch">
-            <template #icon>
-              <IconifyIcon icon="lucide:search" />
-            </template>
-            查询
-          </NButton>
+          </NInput>
         </div>
-      </NForm>
-
-      <!-- 操作按钮 -->
-      <div class="flex justify-end mb-4">
-        <NButton type="primary" @click="handleAdd">
-          <template #icon>
-            <IconifyIcon icon="lucide:plus" />
-          </template>
-          新建字典项
-        </NButton>
+        <NSpace>
+          <NButton type="primary" @click="handleAdd">新建字典项</NButton>
+        </NSpace>
       </div>
-
       <!-- 数据表格 -->
       <NDataTable
         :columns="columns"
@@ -359,7 +304,6 @@ onMounted(() => {
         remote
       />
     </div>
-
     <!-- 编辑抽屉 -->
     <DictEditDrawer
       v-model:visible="editDrawerVisible"

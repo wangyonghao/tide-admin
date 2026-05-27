@@ -1,6 +1,6 @@
-import type { PageQuery, PageRes } from '#/types/api';
+import type { PageQuery, PageResult } from '#/types/api';
 
-import { requestClient as http } from '#/api/request';
+import http from '#/api/http';
 
 /** 任务类型 */
 export interface JobResp {
@@ -114,7 +114,7 @@ export function listGroup() {
 
 /** 查询任务列表 */
 export function listJob(query: JobPageQuery) {
-  return http.get<PageRes<JobResp[]>>(`/schedule/job`, {
+  return http.get<PageResult<JobResp[]>>(`/schedule/job`, {
     params: query,
   });
 }

@@ -23,6 +23,7 @@
     "updateTime": "修改时间"
   },
   "dept": {
+    "code": "编码",
     "createTime": "创建时间",
     "createUserString": "创建人",
     "deleteTitle": "删除部门",
@@ -34,6 +35,7 @@
     "parentId": "上级部门",
     "sort": "排序",
     "status": "状态",
+    "type": "部门类型",
     "updateTime": "更新时间",
     "updateUserString": "更新人"
   },
