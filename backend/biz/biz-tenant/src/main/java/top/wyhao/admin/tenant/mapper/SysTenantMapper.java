@@ -5,8 +5,6 @@ import org.apache.ibatis.annotations.Mapper;
 import top.wyhao.admin.tenant.model.entity.Tenant;
 import top.wyhao.cmn.db.model.BaseMapper;
 
-import java.util.List;
-
 /**
  * 租户 Mapper
  *
@@ -16,13 +14,4 @@ import java.util.List;
 @Mapper
 public interface SysTenantMapper extends BaseMapper<Tenant> {
 
-    /**
-     * 根据套餐 ID 查询数量
-     *
-     * @param packageIds 套餐 ID 列表
-     * @return 租户数量
-     */
-    default Long countByPackageIds(List<Long> packageIds) {
-        return this.lambdaQuery().in(Tenant::getPackageId, packageIds).count();
-    }
 }

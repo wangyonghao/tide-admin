@@ -21,13 +21,12 @@ import top.wyhao.admin.system.model.query.ConfigQuery;
 import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -48,7 +47,7 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public PageResult<ConfigResult> page(ConfigQuery query, PageQuery pageQuery) {
         QueryWrapper<SysConfig> queryWrapper = this.buildQueryWrapper(query);
-        QueryWrapperUtil.applySort(queryWrapper, query.getSort(), SysConfig.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysConfig.class);
         IPage<ConfigResult> page = configMapper.selectConfigPage(
                 new Page<>(pageQuery.getPage(), pageQuery.getSize()),
                 queryWrapper
@@ -221,9 +220,9 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public void export(ConfigQuery query, SortQuery sortQuery, HttpServletResponse response) {
+    public void export(ConfigQuery query, HttpServletResponse response) {
         QueryWrapper<SysConfig> queryWrapper = this.buildQueryWrapper(query);
-        QueryWrapperUtil.applySort(queryWrapper, sortQuery.getSort(), SysConfig.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysConfig.class);
         List<SysConfig> list = configMapper.selectList(queryWrapper);
 
         List<ConfigResult> resultList = list.stream()

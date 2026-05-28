@@ -50,7 +50,7 @@ import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
 import top.wyhao.admin.system.model.result.user.UserResult;
 import top.wyhao.admin.system.service.*;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
@@ -67,7 +67,6 @@ import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -116,7 +115,7 @@ public class UserServiceImpl implements UserService {
     @Override
     public PageResult<UserResult> page(UserQuery query, PageQuery pageQuery) {
         QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
-        QueryWrapperUtil.applySort(queryWrapper, query.getSort(), SysUser.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysUser.class);
         IPage<UserResult> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
         return PageResult.build(page, UserResult.class);
     }
@@ -342,10 +341,11 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void export(UserQuery query, SortQuery sortQuery, HttpServletResponse response) {
+    public void export(UserQuery query, HttpServletResponse response) {
         // 构建查询条件
         QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
-        QueryWrapperUtil.applySort(queryWrapper, sortQuery.getSort(), SysUser.class);
+        // 应用排序条件
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysUser.class);
 
         // 查询用户列表
         List<UserDetailResult> userList = userMapper.selectUserList(queryWrapper);

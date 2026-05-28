@@ -19,7 +19,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Schema(description = "应用响应参数")
-public class AppResp implements Serializable {
+public class AppResult implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

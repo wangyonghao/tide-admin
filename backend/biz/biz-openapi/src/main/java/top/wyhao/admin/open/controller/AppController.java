@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.open.model.query.AppQuery;
 import top.wyhao.admin.open.model.req.AppReq;
-import top.wyhao.admin.open.model.resp.AppResp;
+import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.service.AppService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.SortQuery;
@@ -42,21 +42,8 @@ public class AppController {
      */
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @GetMapping
-    public PageResult<AppResp> page(@Valid AppQuery query, @Valid PageQuery pageQuery) {
-        return appService.findPage(query, pageQuery);
-    }
-
-    /**
-     * 查询列表
-     *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @return 列表信息
-     */
-    @Operation(summary = "查询列表", description = "查询列表")
-    @GetMapping("/list")
-    public List<AppResp> list(@Valid AppQuery query, @Valid SortQuery sortQuery) {
-        return appService.list(query, sortQuery);
+    public PageResult<AppResult> page(@Valid AppQuery query, @Valid PageQuery pageQuery) {
+        return appService.page(query, pageQuery);
     }
 
     /**
@@ -111,12 +98,11 @@ public class AppController {
      * 导出
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @param response  响应对象
      */
     @Operation(summary = "导出数据", description = "导出数据")
     @GetMapping("/export")
-    public void export(@Valid AppQuery query, @Valid SortQuery sortQuery, HttpServletResponse response) {
-        appService.export(query, sortQuery, response);
+    public void export(@Valid AppQuery query, HttpServletResponse response) {
+        appService.export(query, response);
     }
 }

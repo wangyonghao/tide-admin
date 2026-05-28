@@ -19,7 +19,6 @@ import top.wyhao.admin.system.model.result.log.OperationLogResult;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 /**
  * 操作日志 API
@@ -59,7 +58,7 @@ public class OperationLogController {
     @Operation(summary = "导出操作日志", description = "导出操作日志")
     @SaCheckPermission("monitor:log:export")
     @GetMapping("/export/operation")
-    public void exportOperationLog(@Valid LogQuery query, @Valid SortQuery sortQuery, HttpServletResponse response) {
+    public void exportOperationLog(@Valid LogQuery query, HttpServletResponse response) {
         operationLogService.exportOperationLog(query, response);
     }
 }

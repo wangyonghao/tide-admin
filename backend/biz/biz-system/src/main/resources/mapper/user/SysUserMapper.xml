@@ -21,7 +21,7 @@
             t1.is_builtin,
             t1.pwd_update_time,
             t1.dept_id,
-            t2.dept_name AS deptName
+            t2.name AS deptName
         FROM sys_user AS t1
         LEFT JOIN sys_dept AS t2 ON t2.id = t1.dept_id
     </sql>

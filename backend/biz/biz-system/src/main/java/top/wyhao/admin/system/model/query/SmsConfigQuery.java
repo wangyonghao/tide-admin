@@ -4,7 +4,7 @@ package top.wyhao.admin.system.model.query;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.cmn.db.query.Query;
+import top.wyhao.cmn.db.query.QueryCondition;
 import top.wyhao.cmn.db.query.QueryType;
 
 import java.io.Serial;
@@ -28,27 +28,27 @@ public class SmsConfigQuery implements Serializable {
      * 名称
      */
     @Schema(description = "名称", example = "短信配置1")
-    @Query(type = QueryType.LIKE)
+    @QueryCondition(type = QueryType.LIKE)
     private String name;
 
     /**
      * 厂商
      */
     @Schema(description = "厂商", example = "cloopen")
-    @Query(type = QueryType.EQ)
+    @QueryCondition(type = QueryType.EQ)
     private String supplier;
 
     /**
      * Access Key
      */
     @Schema(description = "Access Key", example = "7aaf0708674db3ee05676ecbc2f31b7b")
-    @Query(type = QueryType.EQ)
+    @QueryCondition(type = QueryType.EQ)
     private String accessKey;
 
     /**
      * 状态
      */
     @Schema(description = "状态", example = "1")
-    @Query(type = QueryType.EQ)
+    @QueryCondition(type = QueryType.EQ)
     private StatusEnum status;
 }

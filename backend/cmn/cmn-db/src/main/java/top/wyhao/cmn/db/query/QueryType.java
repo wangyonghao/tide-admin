@@ -3,9 +3,6 @@ package top.wyhao.cmn.db.query;
 
 /**
  * 查询类型枚举
- *
-
- * @since 1.0.0
  */
 public enum QueryType {
 
@@ -52,12 +49,12 @@ public enum QueryType {
     /**
      * LIKE '%值'，例如：WHERE nickname LIKE '%s'
      */
-    LIKE_LEFT,
+    LEFT_LIKE,
 
     /**
      * LIKE '值%'，例如：WHERE nickname LIKE 's%'
      */
-    LIKE_RIGHT,
+    RIGHT_LIKE,
 
     /**
      * 包含查询，例如：WHERE age IN (10, 20, 30)
@@ -77,5 +74,6 @@ public enum QueryType {
     /**
      * 非空查询，例如：WHERE email IS NOT NULL
      */
-    IS_NOT_NULL,;
+    IS_NOT_NULL,
+    ;
 }

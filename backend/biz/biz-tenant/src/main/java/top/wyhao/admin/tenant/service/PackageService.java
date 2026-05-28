@@ -5,12 +5,11 @@ import cn.hutool.core.lang.tree.Tree;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import top.wyhao.admin.tenant.model.query.PackageQuery;
-import top.wyhao.admin.tenant.model.req.PackageReq;
+import top.wyhao.admin.tenant.model.req.PackageRequest;
 import top.wyhao.admin.tenant.model.resp.PackageDetailResp;
 import top.wyhao.admin.tenant.model.resp.PackageResp;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.List;
 
@@ -31,17 +30,17 @@ public interface PackageService {
 
     PageResult<PackageResp> findPage(@Valid PackageQuery query, @Valid PageQuery pageQuery);
 
-    List<PackageResp> list(@Valid PackageQuery query, @Valid SortQuery sortQuery);
+    List<PackageResp> list(@Valid PackageQuery query);
 
-    List<Tree<Long>> tree(@Valid PackageQuery query, @Valid SortQuery sortQuery, boolean b);
+    List<Tree<Long>> tree(@Valid PackageQuery query, boolean b);
 
     void delete(List<Long> id);
 
-    void export(@Valid PackageQuery query, @Valid SortQuery sortQuery, HttpServletResponse response);
+    void export(@Valid PackageQuery query, HttpServletResponse response);
 
     PackageDetailResp get(Long id);
 
-    Long create(@Valid PackageReq req);
+    Long create(@Valid PackageRequest req);
 
-    void update(@Valid PackageReq req, Long id);
+    void update(@Valid PackageRequest req, Long id);
 }

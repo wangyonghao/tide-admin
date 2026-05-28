@@ -3,7 +3,6 @@ package top.wyhao.admin.system.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -16,7 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "公告查询条件")
-public class NoticeQuery extends SortQuery {
+public class NoticeQuery {
 
     /**
      * 标题
@@ -35,4 +34,10 @@ public class NoticeQuery extends SortQuery {
      */
     @Schema(hidden = true)
     private Long userId;
+
+    /**
+     * 排序条件
+     */
+    @Schema(description = "排序条件", example = "createTime,desc")
+    private String[] sort;
 }

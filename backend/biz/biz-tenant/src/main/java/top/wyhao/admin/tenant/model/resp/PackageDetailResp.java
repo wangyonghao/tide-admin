@@ -17,10 +17,6 @@ import java.util.List;
 @Data
 @Schema(description = "套餐详情响应参数")
 public class PackageDetailResp extends PackageResp {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     /**
      * 关联的菜单 ID 列表
      */

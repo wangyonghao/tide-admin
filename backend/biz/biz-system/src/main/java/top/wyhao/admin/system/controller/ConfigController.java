@@ -234,7 +234,7 @@ public class ConfigController {
     @Operation(summary = "导出")
     @SaCheckPermission("system:config:export")
     @GetMapping("/export")
-    public void export(@Valid ConfigQuery query, @Valid SortQuery sortQuery, HttpServletResponse response) {
-        configService.export(query, sortQuery, response);
+    public void export(@Valid ConfigQuery query, HttpServletResponse response) {
+        configService.export(query, response);
     }
 }

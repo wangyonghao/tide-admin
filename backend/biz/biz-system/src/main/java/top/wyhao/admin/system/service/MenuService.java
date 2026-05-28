@@ -7,7 +7,6 @@ import top.wyhao.admin.system.model.bo.MenuRequest;
 import top.wyhao.admin.system.model.query.MenuQuery;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
 import top.wyhao.admin.system.model.result.MenuVO;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.List;
 
@@ -47,9 +46,9 @@ public interface MenuService {
      */
     List<MenuVO> listByRoleIds(List<Long> roleIds);
 
-    List<MenuVO> list(@Valid MenuQuery query, @Valid SortQuery sortQuery);
+    List<MenuVO> list(@Valid MenuQuery query);
 
-    void export(@Valid MenuQuery query, @Valid SortQuery sortQuery, HttpServletResponse response);
+    void export(@Valid MenuQuery query, HttpServletResponse response);
 
 
 }

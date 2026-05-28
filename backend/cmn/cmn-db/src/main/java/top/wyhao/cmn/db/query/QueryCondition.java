@@ -5,15 +5,11 @@ import java.lang.annotation.*;
 
 /**
  * 查询注解
- *
-
-
- * @since 1.0.0
  */
-@Target(ElementType.FIELD)
+@Target({ElementType.FIELD, ElementType.RECORD_COMPONENT})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface Query {
+public @interface QueryCondition {
 
     /**
      * 列名（注意：列名是数据库字段名，而不是实体类字段名。如果命名是数据库关键字的，请使用转义符包裹）

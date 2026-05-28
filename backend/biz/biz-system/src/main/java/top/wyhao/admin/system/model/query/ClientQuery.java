@@ -4,7 +4,7 @@ package top.wyhao.admin.system.model.query;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.cmn.db.query.Query;
+import top.wyhao.cmn.db.query.QueryCondition;
 import top.wyhao.cmn.db.query.QueryType;
 
 import java.io.Serial;
@@ -29,20 +29,20 @@ public class ClientQuery implements Serializable {
      * 客户端类型
      */
     @Schema(description = "客户端类型", example = "PC")
-    @Query(type = QueryType.EQ)
+    @QueryCondition(type = QueryType.EQ)
     private String clientType;
 
     /**
      * 认证类型
      */
     @Schema(description = "认证类型", example = "ACCOUNT")
-    @Query(type = QueryType.IN)
+    @QueryCondition(type = QueryType.IN)
     private List<String> authType;
 
     /**
      * 状态
      */
     @Schema(description = "状态", example = "1")
-    @Query(type = QueryType.EQ)
+    @QueryCondition(type = QueryType.EQ)
     private StatusEnum status;
 }

@@ -1,6 +1,5 @@
 package top.wyhao.admin.tenant.controller;
 
-import cn.hutool.core.lang.tree.Tree;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -9,12 +8,11 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.tenant.model.query.TenantQuery;
-import top.wyhao.admin.tenant.model.req.TenantReq;
+import top.wyhao.admin.tenant.model.req.TenantRequest;
 import top.wyhao.admin.tenant.model.resp.TenantDetailResp;
 import top.wyhao.admin.tenant.model.resp.TenantResp;
 import top.wyhao.admin.tenant.service.TenantService;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.SortQuery;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.LabelValueResult;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -50,26 +48,12 @@ public class TenantController {
      * 查询列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 列表信息
      */
     @Operation(summary = "查询列表", description = "查询列表")
     @GetMapping("/list")
-    public List<TenantResp> list(@Valid TenantQuery query, @Valid SortQuery sortQuery) {
-        return tenantService.list(query, sortQuery);
-    }
-
-    /**
-     * 查询树列表
-     *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @return 树列表信息
-     */
-    @Operation(summary = "查询树列表", description = "查询树列表")
-    @GetMapping("/tree")
-    public List<Tree<Long>> tree(@Valid TenantQuery query, @Valid SortQuery sortQuery) {
-        return tenantService.tree(query, sortQuery, false);
+    public List<TenantResp> list(@Valid TenantQuery query) {
+        return tenantService.list(query);
     }
 
     /**
@@ -93,7 +77,7 @@ public class TenantController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping
-    public IdResult<Long> create(@RequestBody @Valid TenantReq req) {
+    public IdResult<Long> create(@RequestBody @Valid TenantRequest req) {
         return new IdResult<>(tenantService.create(req));
     }
 
@@ -106,7 +90,7 @@ public class TenantController {
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @PutMapping("/{id}")
-    public void update(@RequestBody @Valid TenantReq req, @PathVariable("id") Long id) {
+    public void update(@RequestBody @Valid TenantRequest req, @PathVariable("id") Long id) {
         tenantService.update(req, id);
     }
 
@@ -127,12 +111,11 @@ public class TenantController {
      * 查询字典列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 字典列表信息
      */
     @Operation(summary = "查询字典列表", description = "查询字典列表（下拉选项等场景）")
     @GetMapping("/dict")
-    public List<LabelValueResult> dict(@Valid TenantQuery query, @Valid SortQuery sortQuery) {
-        return tenantService.dict(query, sortQuery);
+    public List<LabelValueResult> dict(@Valid TenantQuery query) {
+        return tenantService.dict(query);
     }
 }

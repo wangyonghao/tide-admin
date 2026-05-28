@@ -19,7 +19,7 @@ import top.wyhao.admin.system.model.result.log.OperationLogDetailResult;
 import top.wyhao.admin.system.model.result.log.OperationLogExportResp;
 import top.wyhao.admin.system.model.result.log.OperationLogResult;
 import top.wyhao.admin.system.service.OperationLogService;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -55,8 +55,8 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     @Override
     public PageResult<OperationLogResult> page(LogQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysOperationLog> queryWrapper = QueryWrapperUtil.build(query);
-        QueryWrapperUtil.applySort(queryWrapper, query.getSort(), SysOperationLog.class);
+        QueryWrapper<SysOperationLog> queryWrapper = WrapperUtil.build(query);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysOperationLog.class);
         IPage<SysOperationLog> page = operationLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()),queryWrapper);
         return PageResult.build(page, OperationLogResult.class);
     }
@@ -87,8 +87,8 @@ public class OperationLogServiceImpl implements OperationLogService {
      * @return 列表信息
      */
     private List<OperationLogResult> list(LogQuery query) {
-        QueryWrapper<SysOperationLog> queryWrapper = QueryWrapperUtil.build(query);
-        QueryWrapperUtil.applySort(queryWrapper, query.getSort(), SysOperationLog.class);
+        QueryWrapper<SysOperationLog> queryWrapper = WrapperUtil.build(query);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysOperationLog.class);
         return operationLogMapper.selectLogList(queryWrapper);
     }
 

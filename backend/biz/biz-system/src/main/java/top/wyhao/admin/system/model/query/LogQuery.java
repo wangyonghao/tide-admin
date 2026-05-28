@@ -5,9 +5,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.cmn.db.query.Query;
+import top.wyhao.cmn.db.query.QueryCondition;
 import top.wyhao.cmn.db.query.QueryType;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "日志查询条件")
-public class LogQuery extends SortQuery {
+public class LogQuery {
     /**
      * 业务对象类型
      */
@@ -42,7 +41,7 @@ public class LogQuery extends SortQuery {
      * 日志描述
      */
     @Schema(description = "日志描述", example = "新增数据")
-    @Query(type = QueryType.LIKE)
+    @QueryCondition(type = QueryType.LIKE)
     private String operation;
 
     /**
@@ -50,7 +49,7 @@ public class LogQuery extends SortQuery {
      */
     @Schema(description = "操作时间", example = "2023-08-08 00:00:00,2023-08-08 23:59:59")
     @Size(max = 2, message = "操作时间必须是一个范围")
-    @Query(type = QueryType.BETWEEN)
+    @QueryCondition(type = QueryType.BETWEEN)
     private List<LocalDateTime> createTime;
 
     /**
@@ -58,4 +57,10 @@ public class LogQuery extends SortQuery {
      */
     @Schema(description = "状态", example = "1")
     private StatusEnum status;
+
+    /**
+     * 排序条件
+     */
+    @Schema(description = "排序条件", example = "createTime,desc")
+    private String[] sort;
 }

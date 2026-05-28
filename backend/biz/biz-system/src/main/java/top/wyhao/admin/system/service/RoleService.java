@@ -39,10 +39,9 @@ public interface RoleService {
      * 查询列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 列表信息
      */
-    List<RoleResult> list(@Valid RoleQuery query, @Valid SortQuery sortQuery);
+    List<RoleResult> list(@Valid RoleQuery query);
 
     /**
      * 查询详情
@@ -79,10 +78,9 @@ public interface RoleService {
      * 导出
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @param response  响应对象
      */
-    void export(@Valid RoleQuery query, @Valid SortQuery sortQuery, HttpServletResponse response);
+    void export(@Valid RoleQuery query, HttpServletResponse response);
 
     /**
      * 修改角色权限

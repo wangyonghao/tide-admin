@@ -4,12 +4,11 @@ package top.wyhao.admin.tenant.service;
 import cn.hutool.core.lang.tree.Tree;
 import jakarta.validation.Valid;
 import top.wyhao.admin.tenant.model.query.TenantQuery;
-import top.wyhao.admin.tenant.model.req.TenantReq;
+import top.wyhao.admin.tenant.model.req.TenantRequest;
 import top.wyhao.admin.tenant.model.resp.TenantDetailResp;
 import top.wyhao.admin.tenant.model.resp.TenantResp;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
@@ -23,7 +22,7 @@ import java.util.List;
  */
 public interface TenantService {
 
-    Long create(TenantReq req);
+    Long create(TenantRequest req);
 
     /**
      * 根据域名查询
@@ -58,15 +57,15 @@ public interface TenantService {
 
     PageResult<TenantResp> findPage(@Valid TenantQuery query, @Valid PageQuery pageQuery);
 
-    void update(@Valid TenantReq req, Long id);
+    void update(@Valid TenantRequest req, Long id);
 
-    List<LabelValueResult> dict(@Valid TenantQuery query, @Valid SortQuery sortQuery);
+    List<LabelValueResult> dict(@Valid TenantQuery query);
 
     TenantDetailResp get(Long id);
 
     void delete(List<Long> ids);
 
-    List<TenantResp> list(@Valid TenantQuery query, @Valid SortQuery sortQuery);
+    List<TenantResp> list(@Valid TenantQuery query);
 
-    List<Tree<Long>> tree(@Valid TenantQuery query, @Valid SortQuery sortQuery, boolean b);
+    List<Tree<Long>> tree(@Valid TenantQuery query, boolean b);
 }

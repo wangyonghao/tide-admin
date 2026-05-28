@@ -10,7 +10,6 @@ import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import top.wyhao.starter.core.constant.RegexConstants;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.enums.StatusEnum;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -25,11 +24,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @Schema(description = "租户创建或修改请求参数")
-public class TenantReq implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class TenantRequest{
     /**
      * 名称
      */

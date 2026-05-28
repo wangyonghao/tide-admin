@@ -4,9 +4,8 @@ package top.wyhao.admin.system.model.query;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.cmn.db.query.Query;
+import top.wyhao.cmn.db.query.QueryCondition;
 import top.wyhao.cmn.db.query.QueryType;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 /**
  * 部门查询条件
@@ -16,18 +15,24 @@ import top.wyhao.starter.web.core.model.SortQuery;
  */
 @Data
 @Schema(description = "部门查询条件")
-public class DeptQuery extends SortQuery {
+public class DeptQuery {
     /**
      * 关键词
      */
     @Schema(description = "关键词", example = "测试部")
-    @Query(columns = {"name", "code"}, type = QueryType.LIKE)
+    @QueryCondition(columns = {"name", "code"}, type = QueryType.LIKE)
     private String keyword;
 
     /**
      * 状态
      */
     @Schema(description = "状态", example = "1")
-    @Query(type = QueryType.EQ)
+    @QueryCondition(type = QueryType.EQ)
     private StatusEnum status;
+
+    /**
+     * 排序条件
+     */
+    @Schema(description = "排序条件", example = "createTime,desc")
+    private String[] sort;
 }

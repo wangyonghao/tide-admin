@@ -22,7 +22,7 @@ import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.cmn.db.dialect.DatabaseType;
 import top.wyhao.cmn.db.util.DBMetaUtils;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
@@ -53,8 +53,8 @@ public class DeptServiceImpl implements DeptService {
 
     @Override
     public PageResult<DeptResult> page(DeptQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysDept> queryWrapper = QueryWrapperUtil.build(query);
-        QueryWrapperUtil.applySort(queryWrapper, query.getSort(), SysDept.class);
+        QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysDept.class);
         IPage<SysDept> page = baseMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
         return PageResult.build(page, DeptResult.class);
     }
@@ -148,10 +148,10 @@ public class DeptServiceImpl implements DeptService {
         }
         if (ObjectUtil.notEqual(req.getStatus(), oldDept.getStatus())) {
             List<SysDept> children = this.listChildren(id);
-            long enabledChildrenCount = children.stream().filter(d -> StatusEnum.ENABLE.name().equals(d.getStatus())).count();
-            BizAssert.isTrue(StatusEnum.DISABLE.name().equals(req.getStatus()) && enabledChildrenCount > 0, "禁用 [{}] 前，请先禁用其所有下级部门", oldDept.getName());
+            long enabledChildrenCount = children.stream().filter(d -> StatusEnum.ENABLE.getValue().equals(d.getStatus())).count();
+            BizAssert.isTrue(StatusEnum.DISABLE.getValue().equals(req.getStatus()) && enabledChildrenCount > 0, "禁用 [{}] 前，请先禁用其所有下级部门", oldDept.getName());
             SysDept oldParentDept = this.getByParentId(oldDept.getParentId());
-            BizAssert.isTrue(StatusEnum.ENABLE.name().equals(req.getStatus()) && StatusEnum.DISABLE.name()
+            BizAssert.isTrue(StatusEnum.ENABLE.getValue().equals(req.getStatus()) && StatusEnum.DISABLE.getValue()
                     .equals(oldParentDept.getStatus()), "启用 [{}] 前，请先启用其所有上级部门", oldDept.getName());
         }
     }
@@ -188,9 +188,9 @@ public class DeptServiceImpl implements DeptService {
      * @return 列表信息
      */
     protected <E> List<E> list(DeptQuery query, Class<E> targetClass) {
-        QueryWrapper<SysDept> queryWrapper = QueryWrapperUtil.build(query);
+        QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
         // 设置排序
-        QueryWrapperUtil.applySort(queryWrapper, query.getSort(), SysDept.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysDept.class);
         List<SysDept> entityList = baseMapper.selectList(queryWrapper);
         if (SysDept.class == targetClass) {
             return (List<E>) entityList;

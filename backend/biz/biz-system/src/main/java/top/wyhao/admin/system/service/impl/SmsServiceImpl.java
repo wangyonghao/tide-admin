@@ -18,12 +18,11 @@ import top.wyhao.admin.system.model.result.SmsLogResult;
 import top.wyhao.admin.system.otp.enums.OtpScene;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.SmsService;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -43,7 +42,7 @@ public class SmsServiceImpl implements SmsService {
 
     @Override
     public void export(SmsLogQuery query, HttpServletResponse response) {
-        QueryWrapper<SysSmsLog> queryWrapper = QueryWrapperUtil.build(query);
+        QueryWrapper<SysSmsLog> queryWrapper = WrapperUtil.build(query);
         List<SmsLogResult> list = sysSmsLogMapper.selectObjs(queryWrapper);
 
         ExcelUtils.export(list, "短信日志.xlsx", SmsLogResult.class, response);
@@ -60,13 +59,13 @@ public class SmsServiceImpl implements SmsService {
 
     @Override
     public PageResult<SmsLogResult> page(SmsLogQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysSmsLog> queryWrapper = QueryWrapperUtil.build(query);
+        QueryWrapper<SysSmsLog> queryWrapper = WrapperUtil.build(query);
         IPage<SysSmsLog> resultPage = sysSmsLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
         return PageResult.build(resultPage, SmsLogResult.class);
     }
 
     @Override
-    public List<SmsLogResult> list(SmsLogQuery query, SortQuery sortQuery) {
+    public List<SmsLogResult> list(SmsLogQuery query) {
         return List.of();
     }
 

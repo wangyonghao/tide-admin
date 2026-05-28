@@ -35,7 +35,7 @@ import top.wyhao.admin.system.model.result.role.RoleUserResult;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.RoleMenuService;
 import top.wyhao.admin.system.service.RoleService;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.enums.DataScopeEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
@@ -46,7 +46,6 @@ import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -73,14 +72,14 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
 
     @Override
     public PageResult<RoleResult> page(RoleQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysRole> wrapper = QueryWrapperUtil.build(query, query.getSort());
+        QueryWrapper<SysRole> wrapper = WrapperUtil.build(query, WrapperUtil.parseSort(query.getSort()));
         IPage<SysRole> page = roleMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), wrapper);
         return PageResult.build(page, RoleResult.class);
     }
 
     @Override
-    public List<RoleResult> list(RoleQuery query, SortQuery sortQuery) {
-        QueryWrapper<SysRole> wrapper = QueryWrapperUtil.build(query, sortQuery.getSort());
+    public List<RoleResult> list(RoleQuery query) {
+        QueryWrapper<SysRole> wrapper = WrapperUtil.build(query, WrapperUtil.parseSort(query.getSort()));
         List<SysRole> entities = roleMapper.selectList(wrapper);
         return entities.stream()
                 .map(this::convertToRoleResp)
@@ -173,9 +172,9 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
 
 
     @Override
-    public void export(RoleQuery query, SortQuery sortQuery, HttpServletResponse response) {
+    public void export(RoleQuery query, HttpServletResponse response) {
         // 实现导出逻辑
-        List<RoleResult> list = list(query, sortQuery);
+        List<RoleResult> list = list(query);
         // 使用Excel工具导出数据到response
         ExcelUtils.export(list, "角色数据", RoleResult.class, response);
     }

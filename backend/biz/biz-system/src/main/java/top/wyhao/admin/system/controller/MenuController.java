@@ -14,7 +14,6 @@ import top.wyhao.admin.system.model.query.MenuQuery;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
 import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.MenuService;
-import top.wyhao.starter.web.core.model.SortQuery;
 import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;
@@ -96,26 +95,24 @@ public class MenuController {
     /**
      * 导出
      *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @param response  响应对象
+     * @param query    查询条件
+     * @param response 响应对象
      */
     @Operation(summary = "导出数据", description = "导出数据")
     @GetMapping("/system/menu/export")
-    public void export(@Valid MenuQuery query, @Valid SortQuery sortQuery, HttpServletResponse response) {
-        menuService.export(query, sortQuery, response);
+    public void export(@Valid MenuQuery query, HttpServletResponse response) {
+        menuService.export(query, response);
     }
 
     /**
      * 查询树型字典列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 树型字典列表信息
      */
     @Operation(summary = "查询树型字典列表", description = "查询树型结构字典列表（树型结构下拉选项等场景）")
     @GetMapping("/system/menu/dict/tree")
-    public List<MenuTreeVO> treeDict(@Valid MenuQuery query, @Valid SortQuery sortQuery) {
+    public List<MenuTreeVO> treeDict(@Valid MenuQuery query) {
         return menuService.tree(query);
     }
 }

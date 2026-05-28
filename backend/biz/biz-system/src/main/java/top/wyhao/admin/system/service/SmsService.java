@@ -9,7 +9,6 @@ import top.wyhao.admin.system.model.result.SmsLogResult;
 import top.wyhao.admin.system.otp.enums.OtpScene;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.List;
 
@@ -26,7 +25,7 @@ public interface SmsService {
 
     PageResult<SmsLogResult> page(@Valid SmsLogQuery query, @Valid PageQuery pageQuery);
 
-    List<SmsLogResult> list(@Valid SmsLogQuery query, @Valid SortQuery sortQuery);
+    List<SmsLogResult> list(@Valid SmsLogQuery query);
 
     void logAsync(SmsLogRequest req);
 

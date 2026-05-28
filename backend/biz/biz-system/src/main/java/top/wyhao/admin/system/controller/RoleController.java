@@ -23,7 +23,6 @@ import top.wyhao.admin.system.service.RoleService;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;
@@ -59,13 +58,12 @@ public class RoleController {
      * 查询列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 列表信息
      */
     @Operation(summary = "查询列表", description = "查询列表")
     @GetMapping("/system/role/list")
-    public List<RoleResult> list(@Valid RoleQuery query, @Valid SortQuery sortQuery) {
-        return roleService.list(query, sortQuery);
+    public List<RoleResult> list(@Valid RoleQuery query) {
+        return roleService.list(query);
     }
     /**
      * 查询详情
@@ -120,14 +118,13 @@ public class RoleController {
     /**
      * 导出
      *
-     * @param query     查询条件
-     * @param sortQuery 排序查询条件
-     * @param response  响应对象
+     * @param query    查询条件
+     * @param response 响应对象
      */
     @Operation(summary = "导出数据", description = "导出数据")
     @GetMapping("/system/role/export")
-    public void export(@Valid RoleQuery query, @Valid SortQuery sortQuery, HttpServletResponse response) {
-        roleService.export(query, sortQuery, response);
+    public void export(@Valid RoleQuery query, HttpServletResponse response) {
+        roleService.export(query, response);
     }
 
     /**

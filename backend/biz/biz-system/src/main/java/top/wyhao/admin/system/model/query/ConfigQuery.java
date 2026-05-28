@@ -3,7 +3,6 @@ package top.wyhao.admin.system.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 /**
  * 系统配置查询条件
@@ -13,7 +12,7 @@ import top.wyhao.starter.web.core.model.SortQuery;
  */
 @Data
 @Schema(description = "系统配置查询条件")
-public class ConfigQuery extends SortQuery {
+public class ConfigQuery {
 
     /**
      * 配置键（模糊查询）
@@ -26,4 +25,10 @@ public class ConfigQuery extends SortQuery {
      */
     @Schema(description = "关键词", example = "站点")
     private String searchWords;
+
+    /**
+     * 排序条件
+     */
+    @Schema(description = "排序条件", example = "createTime,desc")
+    private String[] sort;
 }

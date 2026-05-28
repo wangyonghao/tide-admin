@@ -13,7 +13,6 @@ import top.wyhao.admin.system.model.result.user.UserImportResp;
 import top.wyhao.admin.system.model.result.user.UserResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.io.IOException;
 import java.util.List;
@@ -149,7 +148,7 @@ public interface UserService {
 
     Long create(@Valid UserRequest req);
 
-    void export(@Valid UserQuery query, @Valid SortQuery sortQuery, HttpServletResponse response);
+    void export(@Valid UserQuery query, HttpServletResponse response);
 
     void update(Long id, @Valid UserRequest req);
 

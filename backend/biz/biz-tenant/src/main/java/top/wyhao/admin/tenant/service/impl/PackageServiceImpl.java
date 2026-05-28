@@ -9,14 +9,13 @@ import top.wyhao.admin.tenant.mapper.SysTenantMapper;
 import top.wyhao.admin.tenant.mapper.TenantPackageMapper;
 import top.wyhao.admin.tenant.model.entity.TenantPackage;
 import top.wyhao.admin.tenant.model.query.PackageQuery;
-import top.wyhao.admin.tenant.model.req.PackageReq;
+import top.wyhao.admin.tenant.model.req.PackageRequest;
 import top.wyhao.admin.tenant.model.resp.PackageDetailResp;
 import top.wyhao.admin.tenant.model.resp.PackageResp;
 import top.wyhao.admin.tenant.service.PackageService;
 import top.wyhao.starter.core.util.validation.BizAssert;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.List;
 
@@ -34,18 +33,13 @@ public class PackageServiceImpl implements PackageService {
     private final SysTenantMapper tenantMapper;
 
     @Override
-    public Long create(PackageReq req) {
+    public Long create(PackageRequest req) {
         return 0L;
     }
 
     @Override
-    public void update(PackageReq req, Long id) {
+    public void update(PackageRequest req, Long id) {
 
-    }
-
-
-    public void beforeDelete(List<Long> ids) {
-        BizAssert.isTrue(tenantMapper.countByPackageIds(ids) > 0, "所选套餐存在关联租户，不允许删除");
     }
 
     @Override
@@ -59,22 +53,22 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public List<PackageResp> list(PackageQuery query, SortQuery sortQuery) {
+    public List<PackageResp> list(PackageQuery query) {
         return List.of();
     }
 
     @Override
-    public List<Tree<Long>> tree(PackageQuery query, SortQuery sortQuery, boolean b) {
+    public List<Tree<Long>> tree(PackageQuery query, boolean b) {
         return List.of();
     }
 
     @Override
     public void delete(List<Long> id) {
-
+//        BizAssert.isTrue(tenantMapper.countByPackageIds(ids) > 0, "所选套餐存在关联租户，不允许删除");
     }
 
     @Override
-    public void export(PackageQuery query, SortQuery sortQuery, HttpServletResponse response) {
+    public void export(PackageQuery query, HttpServletResponse response) {
 
     }
 

@@ -23,9 +23,10 @@ public class TenantApiImpl implements TenantApi {
 
     @Override
     public void bindAdminUser(Long tenantId, Long userId) {
-        baseMapper.lambdaUpdate().set(Tenant::getAdminUser, userId).eq(Tenant::getId, tenantId).update();
-        // 更新租户缓存
-        Tenant entity = baseMapper.selectById(tenantId);
-        RedisUtils.set(TenantConstants.TENANT_KEY_PREFIX + tenantId, entity);
+//        baseMapper.lambdaUpdate().set(Tenant::getAdminUser, userId).eq(Tenant::getId, tenantId).update();
+//        // 更新租户缓存
+//        Tenant entity = baseMapper.selectById(tenantId);
+//        RedisUtils.set(TenantConstants.TENANT_KEY_PREFIX + tenantId, entity);
+        // todo 计划删除TenantApiImpl
     }
 }

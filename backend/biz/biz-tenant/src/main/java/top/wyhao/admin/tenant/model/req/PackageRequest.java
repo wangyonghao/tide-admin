@@ -21,7 +21,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "套餐创建或修改请求参数")
-public class PackageReq implements Serializable {
+public class PackageRequest implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;

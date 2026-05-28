@@ -14,7 +14,7 @@ import top.wyhao.admin.tenant.constant.TenantConstants;
 import top.wyhao.admin.tenant.mapper.SysTenantMapper;
 import top.wyhao.admin.tenant.model.entity.Tenant;
 import top.wyhao.admin.tenant.model.query.TenantQuery;
-import top.wyhao.admin.tenant.model.req.TenantReq;
+import top.wyhao.admin.tenant.model.req.TenantRequest;
 import top.wyhao.admin.tenant.model.resp.TenantDetailResp;
 import top.wyhao.admin.tenant.model.resp.TenantResp;
 import top.wyhao.admin.tenant.service.PackageService;
@@ -34,7 +34,6 @@ import top.wyhao.starter.tenant.util.TenantUtils;
 import top.wyhao.starter.web.core.model.LabelValueResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -61,7 +60,7 @@ public class TenantServiceImpl implements TenantService {
     private final SysTenantMapper baseMapper;
 
     @Override
-    public Long create(TenantReq req) {
+    public Long create(TenantRequest req) {
         this.checkNameRepeat(req.getName(), null);
         this.checkDomainRepeat(req.getDomain(), null);
         // 检查套餐状态
@@ -77,20 +76,6 @@ public class TenantServiceImpl implements TenantService {
         return entity.getId();
     }
 
-
-    public void beforeUpdate(TenantReq req, Long id) {
-        this.checkNameRepeat(req.getName(), id);
-        this.checkDomainRepeat(req.getDomain(), id);
-        Tenant tenant = baseMapper.selectById(id);
-        // 变更套餐
-        if (!tenant.getPackageId().equals(req.getPackageId())) {
-            packageService.checkStatus(req.getPackageId());
-        }
-    }
-
-    public void afterUpdate(TenantReq req, Tenant entity) {
-        RedisUtils.deleteByPattern(TenantConstants.TENANT_KEY_PREFIX + StringConstants.ASTERISK);
-    }
 
 
     public void beforeDelete(List<Long> ids) {
@@ -121,7 +106,7 @@ public class TenantServiceImpl implements TenantService {
     public Long getIdByCode(String code) {
         return baseMapper.lambdaQuery()
             .select(Tenant::getId)
-            .eq(Tenant::getCode, code)
+            .eq(Tenant::getDisplayID, code)
             .oneOpt()
             .map(Tenant::getId)
             .orElse(null);
@@ -137,8 +122,6 @@ public class TenantServiceImpl implements TenantService {
         BizAssert.throwIfEqual(StatusEnum.DISABLE, tenant.getStatus(), "租户已被禁用");
         BizAssert.isTrue(tenant.getExpireTime() != null && tenant.getExpireTime()
             .isBefore(LocalDateTime.now()), "租户已过期");
-        // 检查套餐
-        packageService.checkStatus(tenant.getPackageId());
     }
 
     @Override
@@ -202,7 +185,7 @@ public class TenantServiceImpl implements TenantService {
         String code;
         do {
             code = idGeneratorProvider.getRequired(TenantConstants.CODE_GENERATOR_KEY).generateAsString();
-        } while (baseMapper.lambdaQuery().eq(Tenant::getCode, code).exists());
+        } while (baseMapper.lambdaQuery().eq(Tenant::getDisplayID, code).exists());
         return code;
     }
 
@@ -213,13 +196,14 @@ public class TenantServiceImpl implements TenantService {
      * @return 租户 ID 列表
      */
     private List<Long> listIdByPackageId(Long id) {
-        return baseMapper.lambdaQuery()
-            .select(Tenant::getId)
-            .eq(Tenant::getPackageId, id)
-            .list()
-            .stream()
-            .map(Tenant::getId)
-            .toList();
+//        return baseMapper.lambdaQuery()
+//            .select(Tenant::getId)
+//            .eq(Tenant::getPackageId, id)
+//            .list()
+//            .stream()
+//            .map(Tenant::getId)
+//            .toList();
+        return null; // todo 待实现
     }
 
     @Override
@@ -228,12 +212,16 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public void update(TenantReq req, Long id) {
+    public void update(TenantRequest req, Long id) {
+        this.checkNameRepeat(req.getName(), id);
+        this.checkDomainRepeat(req.getDomain(), id);
+        Tenant tenant = baseMapper.selectById(id);
 
+        RedisUtils.deleteByPattern(TenantConstants.TENANT_KEY_PREFIX + StringConstants.ASTERISK);
     }
 
     @Override
-    public List<LabelValueResult> dict(TenantQuery query, SortQuery sortQuery) {
+    public List<LabelValueResult> dict(TenantQuery query) {
         return List.of();
     }
 
@@ -248,12 +236,12 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    public List<TenantResp> list(TenantQuery query, SortQuery sortQuery) {
+    public List<TenantResp> list(TenantQuery query) {
         return List.of();
     }
 
     @Override
-    public List<Tree<Long>> tree(TenantQuery query, SortQuery sortQuery, boolean b) {
+    public List<Tree<Long>> tree(TenantQuery query, boolean b) {
         return List.of();
     }
 }

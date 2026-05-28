@@ -5,7 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,7 +17,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "用户查询条件")
-public class UserQuery extends SortQuery {
+public class UserQuery {
     /**
      * 关键词
      */
@@ -56,4 +55,10 @@ public class UserQuery extends SortQuery {
      */
     @Schema(description = "角色 ID", example = "1")
     private Long roleId;
+
+    /**
+     * 排序条件
+     */
+    @Schema(description = "排序条件", example = "createTime,desc")
+    private String[] sort;
 }

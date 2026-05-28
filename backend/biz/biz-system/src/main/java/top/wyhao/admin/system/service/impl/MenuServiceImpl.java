@@ -20,7 +20,7 @@ import top.wyhao.admin.system.model.result.MenuTreeVO;
 import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.UserService;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.constant.StringConstants;
@@ -28,8 +28,6 @@ import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
 import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.starter.web.core.model.SortQuery;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +49,7 @@ public class MenuServiceImpl implements MenuService {
                 .orderByAsc(SysMenu::getSort);
 
         if (query != null) {
-            QueryWrapperUtil.applySort(wrapper, query.getSort(), SysMenu.class);
+            WrapperUtil.applySort(wrapper, WrapperUtil.parseSort(query.getSort()), SysMenu.class);
         }
         List<SysMenu> menus = menuMapper.selectList(wrapper);
         return buildPermissionTree(menus);
@@ -103,12 +101,12 @@ public class MenuServiceImpl implements MenuService {
 
 
     @Override
-    public List<MenuVO> list(MenuQuery query, SortQuery sortQuery) {
+    public List<MenuVO> list(MenuQuery query) {
         return List.of();
     }
 
     @Override
-    public void export(MenuQuery query, SortQuery sortQuery, HttpServletResponse response) {
+    public void export(MenuQuery query, HttpServletResponse response) {
 
     }
 

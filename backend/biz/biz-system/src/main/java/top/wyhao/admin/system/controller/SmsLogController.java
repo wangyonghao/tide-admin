@@ -13,7 +13,6 @@ import top.wyhao.admin.system.model.result.SmsLogResult;
 import top.wyhao.admin.system.service.SmsService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.List;
 
@@ -47,13 +46,12 @@ public class SmsLogController {
      * 查询列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 列表信息
      */
     @Operation(summary = "查询列表", description = "查询列表")
     @GetMapping("/system/sms/log/list")
-    public List<SmsLogResult> list(@Valid SmsLogQuery query, @Valid SortQuery sortQuery) {
-        return smsService.list(query, sortQuery);
+    public List<SmsLogResult> list(@Valid SmsLogQuery query) {
+        return smsService.list(query);
     }
 
     /**

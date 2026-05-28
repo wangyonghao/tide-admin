@@ -9,13 +9,12 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.tenant.model.query.PackageQuery;
-import top.wyhao.admin.tenant.model.req.PackageReq;
+import top.wyhao.admin.tenant.model.req.PackageRequest;
 import top.wyhao.admin.tenant.model.resp.PackageDetailResp;
 import top.wyhao.admin.tenant.model.resp.PackageResp;
 import top.wyhao.admin.tenant.service.PackageService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.IdResult;
 
@@ -52,26 +51,24 @@ public class PackageController {
      * 查询列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 列表信息
      */
     @Operation(summary = "查询列表", description = "查询列表")
     @GetMapping("/list")
-    public List<PackageResp> list(@Valid PackageQuery query, @Valid SortQuery sortQuery) {
-        return baseService.list(query, sortQuery);
+    public List<PackageResp> list(@Valid PackageQuery query) {
+        return baseService.list(query);
     }
 
     /**
      * 查询树列表
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @return 树列表信息
      */
     @Operation(summary = "查询树列表", description = "查询树列表")
     @GetMapping("/tree")
-    public List<Tree<Long>> tree(@Valid PackageQuery query, @Valid SortQuery sortQuery) {
-        return baseService.tree(query, sortQuery, false);
+    public List<Tree<Long>> tree(@Valid PackageQuery query) {
+        return baseService.tree(query, false);
     }
 
     /**
@@ -95,7 +92,7 @@ public class PackageController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping
-    public IdResult<Long> create(@RequestBody @Valid PackageReq req) {
+    public IdResult<Long> create(@RequestBody @Valid PackageRequest req) {
         return new IdResult<>(baseService.create(req));
     }
 
@@ -108,7 +105,7 @@ public class PackageController {
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @PutMapping("/{id}")
-    public void update(@RequestBody @Valid PackageReq req, @PathVariable("id") Long id) {
+    public void update(@RequestBody @Valid PackageRequest req, @PathVariable("id") Long id) {
         baseService.update(req, id);
     }
 

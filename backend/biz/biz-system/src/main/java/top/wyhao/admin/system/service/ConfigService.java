@@ -10,7 +10,6 @@ import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.starter.web.core.model.SortQuery;
 
 import java.util.List;
 
@@ -180,10 +179,9 @@ public interface ConfigService {
      * 导出
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @param response  响应对象
      */
-    void export(ConfigQuery query, SortQuery sortQuery, HttpServletResponse response);
+    void export(ConfigQuery query, HttpServletResponse response);
 
     String getSmsTemplate(String name);
 }

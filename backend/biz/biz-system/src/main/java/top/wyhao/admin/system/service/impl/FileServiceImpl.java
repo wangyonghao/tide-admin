@@ -20,7 +20,7 @@ import top.wyhao.admin.system.model.enums.FileType;
 import top.wyhao.admin.system.model.query.FileQuery;
 import top.wyhao.admin.system.model.result.file.FileResult;
 import top.wyhao.admin.system.service.FileService;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.exception.BadRequestException;
 import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -88,7 +88,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public List<SysFile> list(FileQuery query) {
-        return fileMapper.selectList(QueryWrapperUtil.build(query));
+        return fileMapper.selectList(WrapperUtil.build(query));
     }
 
     /**
@@ -140,7 +140,7 @@ public class FileServiceImpl implements FileService {
 
     @Override
     public PageResult<FileResult> page(FileQuery query, PageQuery pageQuery) {
-        IPage<SysFile> page = fileMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), QueryWrapperUtil.build(query));
+        IPage<SysFile> page = fileMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), WrapperUtil.build(query));
         return PageResult.build(page, FileResult.class);
     }
 

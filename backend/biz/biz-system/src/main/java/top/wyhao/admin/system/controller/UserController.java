@@ -123,13 +123,12 @@ public class UserController {
      * 导出
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @param response  响应对象
      */
     @SaCheckPermission("system:user:export")
     @GetMapping("/export")
-    public void export(@Valid UserQuery query, @Valid SortQuery sortQuery, HttpServletResponse response) {
-        userService.export(query, sortQuery, response);
+    public void export(@Valid UserQuery query, HttpServletResponse response) {
+        userService.export(query, response);
     }
 
     @SaCheckPermission("system:user:export")

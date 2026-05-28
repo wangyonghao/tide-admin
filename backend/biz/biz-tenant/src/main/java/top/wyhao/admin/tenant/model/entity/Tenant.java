@@ -17,54 +17,32 @@ import java.time.LocalDateTime;
  * @since 2024/11/26 17:20
  */
 @Data
-@TableName("tenant")
+@TableName("sys_tenant")
 public class Tenant extends BaseEntity {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     /**
      * 名称
      */
     private String name;
-
-    /**
-     * 编码
-     */
-    private String code;
-
-    /**
-     * 域名
-     */
+    /** 简称 */
+    private String shortName;
+    /** 域名 */
     private String domain;
-
-    /**
-     * 过期时间
-     */
+    /** 租户编号（由用户自定义，未定义时系统自动生成）*/
+    private String displayID;
+    /** 联系人名称 */
+    private String contactName;
+    /** 联系人邮箱 */
+    private String contactEmail;
+    /** 联系人手机 */
+    private String contactMobile;
+    /** 联系人邮编 */
+    private String postcode;
+    /** 联系地址 */
+    private String address;
+    /** 过期时间 */
     private LocalDateTime expireTime;
-
-    /**
-     * 描述
-     */
-    private String description;
-
-    /**
-     * 状态
-     */
-    private StatusEnum status;
-
-    /**
-     * 管理员用户
-     */
-    private Long adminUser;
-
-    /**
-     * 管理员用户名
-     */
-    private String adminUsername;
-
-    /**
-     * 套餐 ID
-     */
-    private Long packageId;
+    /** 备注 */
+    private String remark;
+    /** 状态 */
+    private Integer status;
 }

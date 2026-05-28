@@ -41,7 +41,6 @@ public interface OperationLogService {
      * 导出登录日志
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @param response  响应对象
      */
     void exportLoginLog(LogQuery query, HttpServletResponse response);
@@ -50,7 +49,6 @@ public interface OperationLogService {
      * 导出操作日志
      *
      * @param query     查询条件
-     * @param sortQuery 排序查询条件
      * @param response  响应对象
      */
     void exportOperationLog(LogQuery query, HttpServletResponse response);

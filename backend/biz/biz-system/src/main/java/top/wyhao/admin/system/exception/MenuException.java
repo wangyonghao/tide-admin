@@ -24,10 +24,10 @@ public class MenuException extends BusinessException {
     }
 
     public static MenuException titleExist(String name) {
-        return new MenuException("TITLE_EXIST",StrUtil.format("标题为 [{}] 的菜单已存在", name));
+        return MenuException.of("TITLE_EXIST",StrUtil.format("标题为 [{}] 的菜单已存在", name));
     }
 
-    public static void notFound() {
-        throw new MenuException("MENU_NOT_FOUND");
+    public static MenuException notFound() {
+        return MenuException.of("MENU_NOT_FOUND");
     }
 }

@@ -5,7 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.admin.system.model.enums.ConfigCategory;
 import top.wyhao.starter.core.validation.EnumValue;
-import top.wyhao.cmn.db.query.Query;
+import top.wyhao.cmn.db.query.QueryCondition;
 import top.wyhao.cmn.db.query.QueryType;
 
 import java.io.Serial;
@@ -29,14 +29,14 @@ public class SettingsQuery implements Serializable {
      * 键列表
      */
     @Schema(description = "键列表", example = "SITE_TITLE,SITE_COPYRIGHT")
-    @Query(type = QueryType.IN)
+    @QueryCondition(type = QueryType.IN)
     private List<String> code;
 
     /**
      * 类别
      */
     @Schema(description = "类别", example = "SITE")
-    @Query(type = QueryType.EQ)
+    @QueryCondition(type = QueryType.EQ)
     @EnumValue(value = ConfigCategory.class, message = "类别无效")
     private String category;
 }

@@ -8,6 +8,7 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.StrUtil;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
@@ -22,11 +23,11 @@ import top.wyhao.admin.open.model.entity.SysApp;
 import top.wyhao.admin.open.model.query.AppQuery;
 import top.wyhao.admin.open.model.req.AppReq;
 import top.wyhao.admin.open.model.resp.AppDetailResp;
-import top.wyhao.admin.open.model.resp.AppResp;
+import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.model.resp.AppSecretResp;
 import top.wyhao.admin.open.service.AppService;
 import top.wyhao.cmn.db.model.impl.BaseServiceImpl;
-import top.wyhao.cmn.db.util.QueryWrapperUtil;
+import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.util.ReflectUtils;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -45,8 +46,9 @@ import java.util.Optional;
  * @since 2024/10/17 16:03
  */
 @Service
-public class AppServiceImpl extends BaseServiceImpl<SysAppMapper, SysApp> implements AppService {
+public class AppServiceImpl implements AppService {
 
+    private SysAppMapper baseMapper;
     private List<Field> queryFields;
 
     @Override
@@ -58,7 +60,7 @@ public class AppServiceImpl extends BaseServiceImpl<SysAppMapper, SysApp> implem
                 .substring(0, 30));
         req.setSecretKey(this.generateSecret());
 
-        SysApp entity = BeanUtil.copyProperties(req, getEntityClass());
+        SysApp entity = BeanUtil.copyProperties(req, SysApp.class);
         baseMapper.insert(entity);
         return entity.getId();
     }
@@ -66,7 +68,7 @@ public class AppServiceImpl extends BaseServiceImpl<SysAppMapper, SysApp> implem
 
     @Override
     public AppSecretResp getSecret(Long id) {
-        SysApp app = super.getById(id);
+        SysApp app = baseMapper.selectById(id);
         AppSecretResp appSecretResp = new AppSecretResp();
         appSecretResp.setAccessKey(app.getAccessKey());
         appSecretResp.setSecretKey(app.getSecretKey());
@@ -75,7 +77,6 @@ public class AppServiceImpl extends BaseServiceImpl<SysAppMapper, SysApp> implem
 
     @Override
     public void resetSecret(Long id) {
-        super.getById(id);
         SysApp app = new SysApp();
         app.setSecretKey(this.generateSecret());
         baseMapper.update(app, Wrappers.lambdaQuery(SysApp.class).eq(SysApp::getId, id));
@@ -99,27 +100,18 @@ public class AppServiceImpl extends BaseServiceImpl<SysAppMapper, SysApp> implem
 
     // 实现 CrudService 的其他方法
     @Override
-    public PageResult<AppResp> findPage(AppQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysApp> queryWrapper = this.buildQueryWrapper(query);
-        QueryWrapperUtil.applySort(queryWrapper, query.getSort(),SysApp.class);
+    public PageResult<AppResult> page(AppQuery query, PageQuery pageQuery) {
+        QueryWrapper<SysApp> queryWrapper = WrapperUtil.build(query);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()),SysApp.class);
         IPage<SysApp> page = baseMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, AppResp.class);
-    }
-
-    @Override
-    public List<AppResp> list(AppQuery query, SortQuery sortQuery) {
-        QueryWrapper<SysApp> queryWrapper = this.buildQueryWrapper(query);
-        // 设置排序
-        QueryWrapperUtil.applySort(queryWrapper, sortQuery.getSort(),SysApp.class);
-        List<SysApp> entityList = baseMapper.selectList(queryWrapper);
-        return BeanUtil.copyToList(entityList, AppResp.class);
+        return PageResult.build(page, AppResult.class);
     }
 
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void update(AppReq req, Long id) {
-        SysApp entity = this.getById(id);
+        SysApp entity = baseMapper.selectById(id);
         BeanUtil.copyProperties(req, entity, CopyOptions.create().ignoreNullValue());
         baseMapper.updateById(entity);
     }
@@ -131,51 +123,12 @@ public class AppServiceImpl extends BaseServiceImpl<SysAppMapper, SysApp> implem
     }
 
     @Override
-    public void export(AppQuery query, SortQuery sortQuery, HttpServletResponse response) {
-        QueryWrapper<SysApp> queryWrapper = this.buildQueryWrapper(query);
+    public void export(AppQuery query, HttpServletResponse response) {
+        QueryWrapper<SysApp> queryWrapper = WrapperUtil.build(query);
         // 设置排序
-        this.sort(queryWrapper, sortQuery);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysApp.class);
         List<SysApp> entityList = baseMapper.selectList(queryWrapper);
         List<AppDetailResp> list = BeanUtil.copyToList(entityList, AppDetailResp.class);
         ExcelUtils.export(list, "导出数据", AppDetailResp.class, response);
     }
-
-    public List<Field> getQueryFields() {
-        if (this.queryFields == null) {
-            this.queryFields = ReflectUtils.getNonStaticFields(AppQuery.class);
-        }
-        return queryFields;
-    }
-
-    protected void sort(QueryWrapper<SysApp> queryWrapper, SortQuery sortQuery) {
-        if (sortQuery == null || sortQuery.getSort().isUnsorted()) {
-            return;
-        }
-        Sort sort = sortQuery.getSort();
-        for (Sort.Order order : sort) {
-            String property = order.getProperty();
-            String checkProperty;
-            // 携带表别名则获取 . 后面的字段名
-            if (property.contains(StringConstants.DOT)) {
-                checkProperty = CollUtil.getLast(CharSequenceUtil.split(property, StringConstants.DOT));
-            } else {
-                checkProperty = property;
-            }
-            Optional<Field> optional = getEntityFields().stream()
-                .filter(field -> checkProperty.equals(field.getName()))
-                .findFirst();
-
-            if(optional.isEmpty()){
-                throw new ValidationException(StrUtil.format("无效的排序字段 [{}]", property));
-            }
-            queryWrapper.orderBy(true, order.isAscending(), CharSequenceUtil.toUnderlineCase(property));
-        }
-    }
-
-    protected QueryWrapper<SysApp> buildQueryWrapper(AppQuery query) {
-        QueryWrapper<SysApp> queryWrapper = new QueryWrapper<>();
-        // 解析并拼接查询条件
-        return QueryWrapperUtil.build(query, this.getQueryFields(), queryWrapper);
-    }
-
 }
