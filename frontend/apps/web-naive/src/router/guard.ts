@@ -56,15 +56,12 @@ export function addRoutes(router: Router, menus: RouteItem[]) {
             },
           });
           addedRouteNames.add(routeName);
-        } else if (menu.component) {
-          // 普通菜单，加载组件
-          const componentName = menu.component.startsWith('/')
-            ? menu.component.slice(1)
-            : menu.component;
-          const componentPath = `/src/views/${componentName}.vue`;
-
+        } else {
+          // 文件路由：根据路径自动推导组件
+          const componentPath = `/src/views/${menuPath}/index.vue`;
           const component =
             pageMap[componentPath] ||
+            pageMap[`/src/views/${menuPath}.vue`] ||
             (() => import('#/views/_core/fallback/not-found.vue'));
 
           router.addRoute('Root', {

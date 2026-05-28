@@ -1,4 +1,5 @@
-// / <reference types="vite/client" />
+/// <reference types="vite/client" />
+/// <reference types="vue-router/auto" />
 
 /** 声明环境变量的类型 */
 interface ImportMetaEnv {

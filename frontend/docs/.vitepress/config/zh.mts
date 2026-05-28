@@ -5,7 +5,7 @@ import { defineConfig } from 'vitepress';
 import { version } from '../../../package.json';
 
 export const zh = defineConfig({
-  description: 'Vben Admin & 企业级管理系统框架',
+  description: 'Tide Admin & 企业级管理系统',
   lang: 'zh-Hans',
   themeConfig: {
     darkModeSwitchLabel: '主题',
@@ -43,10 +43,37 @@ export const zh = defineConfig({
       '/commercial/': { base: '/commercial/', items: sidebarCommercial() },
       '/components/': { base: '/components/', items: sidebarComponents() },
       '/guide/': { base: '/guide/', items: sidebarGuide() },
+      '/manual/': { base: '/manual/', items: sidebarManual() },
     },
     sidebarMenuLabel: '菜单',
   },
 });
+
+function sidebarManual(): DefaultTheme.SidebarItem[] {
+  return [
+    {
+      collapsed: false,
+      text: '用户手册',
+      items: [
+        {
+          link: 'introduction/vben',
+          text: '关于 Vben Admin',
+        },
+        {
+          link: 'introduction/why',
+          text: '为什么选择我们?',
+        },
+        { link: 'introduction/quick-start', text: '快速开始' },
+        { link: 'introduction/thin', text: '精简版本' },
+        {
+          base: '/',
+          link: 'components/introduction',
+          text: '组件文档',
+        },
+      ],
+    },
+  ];
+}
 
 function sidebarGuide(): DefaultTheme.SidebarItem[] {
   return [
@@ -203,6 +230,11 @@ function sidebarComponents(): DefaultTheme.SidebarItem[] {
 
 function nav(): DefaultTheme.NavItem[] {
   return [
+    {
+      activeMatch: '^/(manual)/',
+      text: '帮助中心',
+      link: '/manual',
+    },
     {
       activeMatch: '^/(guide|components)/',
       text: '文档',

@@ -1,5 +1,4 @@
 import process from 'node:process';
-
 import { defineConfig } from '@vben/vite-config';
 
 import { loadEnv } from 'vite';

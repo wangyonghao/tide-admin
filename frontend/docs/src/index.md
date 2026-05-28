@@ -4,11 +4,11 @@ layout: home
 sidebar: false
 
 hero:
-  name: Vben Admin
-  text: 企业级管理系统框架
+  name: Tide Admin
+  text: 企业级管理系统
   tagline: 全新升级，开箱即用，简单高效
   image:
-    src: https://unpkg.com/@vbenjs/static-source@0.1.7/source/logo-v1.webp
+    src: /logo.svg
     alt: Vben Admin
   actions:
     - theme: brand

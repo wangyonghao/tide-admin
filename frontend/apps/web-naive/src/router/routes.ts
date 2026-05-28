@@ -78,8 +78,7 @@ const routes: RouteRecordRaw[] = [
           {
             path: '/user/notice',
             name: 'UserNotice',
-            component: () =>
-              import('#/views/user/message/components/view/index.vue'),
+            component: () => import('#/views/user/message/components/view/index.vue'),
             meta: { title: '查看公告' },
           },
         ],
@@ -174,3 +173,5 @@ const routes: RouteRecordRaw[] = [
 ];
 
 export { fallbackNotFoundRoute, routes };
+
+
