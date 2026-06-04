@@ -11,7 +11,7 @@ import top.wyhao.admin.system.mapper.SysUserSocialMapper;
 import top.wyhao.admin.system.model.enums.SocialSource;
 import top.wyhao.admin.system.service.UserSocialService;
 import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,9 +60,9 @@ public class UserSocialServiceImpl implements UserSocialService {
         List<SysUserSocial> userSocialList = this.listByUserId(userId);
         Set<String> boundSocialSet = CollUtils.mapToSet(userSocialList, SysUserSocial::getSource);
         String description = SocialSource.valueOf(source).getDescription();
-        BizAssert.isTrue(boundSocialSet.contains(source), "您已经绑定过了 [{}] 平台，请先解绑", description);
+        Check.when(boundSocialSet.contains(source), "您已经绑定过了 [{}] 平台，请先解绑", description);
         SysUserSocial userSocial = this.getBySourceAndOpenId(source, openId);
-        BizAssert.throwIfNotNull(userSocial, "[{}] 平台账号 [{}] 已被其他用户绑定", description, authUser.getUsername());
+        Check.throwIfNotNull(userSocial, "[{}] 平台账号 [{}] 已被其他用户绑定", description, authUser.getUsername());
         userSocial = new SysUserSocial();
         userSocial.setUserId(userId);
         userSocial.setSource(source);

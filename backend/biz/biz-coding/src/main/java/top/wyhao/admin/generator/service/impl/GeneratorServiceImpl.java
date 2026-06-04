@@ -45,7 +45,7 @@ import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.BaseEnum;
 import top.wyhao.starter.core.exception.SystemException;
 import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.util.HttpUtil;
@@ -139,7 +139,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         // 获取数据库对应的类型映射配置
         DatabaseType databaseType = DBMetaUtils.getDatabaseType(dataSource);
         Map<String, List<String>> typeMappingMap = generatorProperties.getTypeMappings().get(databaseType);
-        BizAssert.throwIfEmpty(typeMappingMap, "请先配置对应数据库的类型映射");
+        Check.throwIfEmpty(typeMappingMap, "请先配置对应数据库的类型映射");
         Set<Map.Entry<String, List<String>>> typeMappingEntrySet = typeMappingMap.entrySet();
         // 新增或更新字段配置
         Map<String, GenFieldConfig> fieldConfigMap = fieldConfigList.stream()
@@ -276,9 +276,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         List<GeneratePreviewResp> generatePreviewList = new ArrayList<>();
         // 初始化配置
         GenConfig genConfig = genConfigMapper.selectById(tableName);
-        BizAssert.isNull(genConfig, "请先进行数据表 [{}] 生成配置", tableName);
+        Check.isNull(genConfig, "请先进行数据表 [{}] 生成配置", tableName);
         List<GenFieldConfig> fieldConfigList = fieldConfigMapper.selectListByTableName(tableName);
-        BizAssert.throwIfEmpty(fieldConfigList, "请先进行数据表 [{}] 字段配置", tableName);
+        Check.throwIfEmpty(fieldConfigList, "请先进行数据表 [{}] 字段配置", tableName);
 
         InnerGenConfig innerGenConfig = new InnerGenConfig(genConfig);
         List<String> imports = new ArrayList<>();

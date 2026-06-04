@@ -57,7 +57,7 @@ public class OtpService {
     /**
      * 发送验证码
      */
-    public OtpSendResult sendByMail(OtpSendRequest req) {
+    public OtpSendResult.Result sendByMail(OtpSendRequest.Request req) {
         // 1. 参数校验
         validateSendRequest(req);
 
@@ -72,32 +72,32 @@ public class OtpService {
         // 5. 渲染模板
         String content = templateService.render(
                 OtpChannel.EMAIL,
-                req.getScene(),
-                req.getLocale(),
+                req.scene(),
+                req.locale(),
                 code,
                 otpProperties.getCode().getExpiresIn(),
-                req.getTarget(),
+                req.target(),
                 ip
         );
 
         // 6. 发送验证码
         ChannelService channelService = getChannelService(OtpChannel.EMAIL);
-        String subject = getSubject(req.getScene());
-        channelService.send(req.getTarget(), subject, content);
+        String subject = getSubject(req.scene());
+        channelService.send(req.target(), subject, content);
 
         // 7. 存储会话数据
         long now = System.currentTimeMillis() / 1000;
         OtpSession session = OtpSession.builder()
                 .uuid(uuid)
                 .channel(OtpChannel.EMAIL)
-                .scene(req.getScene())
-                .target(req.getTarget())
+                .scene(req.scene())
+                .target(req.target())
                 .code(code)
                 .createdAt(now)
                 .expiresAt(now + otpProperties.getCode().getExpiresIn())
                 .verified(false)
                 .failCount(0)
-                .locale(req.getLocale())
+                .locale(req.locale())
                 .build();
 
         String sessionKey = SESSION_KEY_PREFIX + uuid;
@@ -109,20 +109,16 @@ public class OtpService {
         );
 
         // 8. 更新限流计数器
-        updateRateLimitCounters(OtpChannel.EMAIL, req.getTarget(), ip);
+        updateRateLimitCounters(OtpChannel.EMAIL, req.target(), ip);
 
         // 9. 记录日志
         log.info("OTP 发送成功: uuid={}, channel={}, scene={}, target={}",
-                uuid, OtpChannel.EMAIL, req.getScene(), req.getTarget());
+                uuid, OtpChannel.EMAIL, req.scene(), req.target());
 
-        return OtpSendResult.builder()
-                .otpUuid(uuid)
-                .expiresIn(otpProperties.getCode().getExpiresIn())
-                .message("验证码已发送")
-                .build();
+        return new OtpSendResult.Result(uuid, otpProperties.getCode().getExpiresIn(), "验证码已发送");
     }
 
-    public OtpSendResult sendBySms(OtpSendRequest req) {
+    public OtpSendResult.Result sendBySms(OtpSendRequest.Request req) {
         // 1. 参数校验
         validateSendRequest(req);
 
@@ -132,21 +128,21 @@ public class OtpService {
         String code = OtpCodeGenerator.generate(otpProperties.getCode().getLength());
 
         // 3. 发送验证码
-        smsService.sendOtp(req.getTarget(), req.getScene());
+        smsService.sendOtp(req.target(), req.scene());
 
         // 4. 存储会话数据
         long now = System.currentTimeMillis() / 1000;
         OtpSession session = OtpSession.builder()
                 .uuid(uuid)
                 .channel(OtpChannel.SMS)
-                .scene(req.getScene())
-                .target(req.getTarget())
+                .scene(req.scene())
+                .target(req.target())
                 .code(code)
                 .createdAt(now)
                 .expiresAt(now + otpProperties.getCode().getExpiresIn())
                 .verified(false)
                 .failCount(0)
-                .locale(req.getLocale())
+                .locale(req.locale())
                 .build();
 
         String sessionKey = SESSION_KEY_PREFIX + uuid;
@@ -159,22 +155,18 @@ public class OtpService {
 
         // 9. 记录日志
         log.info("OTP 发送成功: uuid={}, channel={}, scene={}, target={}",
-                uuid, OtpChannel.SMS, req.getScene(), req.getTarget());
+                uuid, OtpChannel.SMS, req.scene(), req.target());
 
-        return OtpSendResult.builder()
-                .otpUuid(uuid)
-                .expiresIn(otpProperties.getCode().getExpiresIn())
-                .message("验证码已发送")
-                .build();
+        return new OtpSendResult.Result(uuid, otpProperties.getCode().getExpiresIn(), "验证码已发送");
     }
 
 
     /**
      * 验证验证码
      */
-    public OtpVerifyResult verify(OtpVerifyRequest req) {
+    public OtpVerifyResult.Result verify(OtpVerifyRequest.Request req) {
         // 1. 查询会话数据
-        String sessionKey = SESSION_KEY_PREFIX + req.getOtpUuid();
+        String sessionKey = SESSION_KEY_PREFIX + req.otpUuid();
         String sessionJson = stringRedisTemplate.opsForValue().get(sessionKey);
 
         if (StrUtil.isBlank(sessionJson)) {
@@ -196,17 +188,17 @@ public class OtpService {
         }
 
         // 4. 检查失败次数
-        String failKey = FAIL_KEY_PREFIX + req.getOtpUuid();
+        String failKey = FAIL_KEY_PREFIX + req.otpUuid();
         long failCount = rateLimiter.getCount(failKey);
         if (failCount >= otpProperties.getRateLimit().getMaxFail()) {
             throw OtpException.locked();
         }
 
         // 5. 验证码比对
-        if (!req.getCode().equals(session.getCode())) {
+        if (!req.code().equals(session.getCode())) {
             // 失败计数 +1
             failCount = rateLimiter.increment(failKey, otpProperties.getCode().getExpiresIn());
-            log.warn("OTP 验证失败: uuid={}, failCount={}", req.getOtpUuid(), failCount);
+            log.warn("OTP 验证失败: uuid={}, failCount={}", req.otpUuid(), failCount);
             throw OtpException.invalid();
         }
 
@@ -222,20 +214,17 @@ public class OtpService {
         // 7. 删除失败计数
         rateLimiter.delete(failKey);
 
-        log.info("OTP 验证成功: uuid={}", req.getOtpUuid());
+        log.info("OTP 验证成功: uuid={}", req.otpUuid());
 
-        return OtpVerifyResult.builder()
-                .verified(true)
-                .message("验证成功")
-                .build();
+        return new OtpVerifyResult.Result(true, "验证成功");
     }
 
     /**
      * 验证发送请求
      */
-    private void validateSendRequest(OtpSendRequest req) {
+    private void validateSendRequest(OtpSendRequest.Request req) {
         ChannelService channelService = getChannelService(OtpChannel.EMAIL);
-        if (!channelService.validateTarget(req.getTarget())) {
+        if (!channelService.validateTarget(req.target())) {
             throw OtpException.invalidTarget("目标地址格式错误");
         }
     }

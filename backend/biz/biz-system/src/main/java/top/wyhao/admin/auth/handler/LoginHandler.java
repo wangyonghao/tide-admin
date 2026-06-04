@@ -1,13 +1,12 @@
 
 package top.wyhao.admin.auth.handler;
 
-import top.wyhao.admin.auth.model.LoginRequest;
 import top.wyhao.admin.auth.model.LoginResult;
 
 /**
  * 登录处理器
  */
-public interface LoginHandler<T extends LoginRequest> {
+public interface LoginHandler<T> {
 
     /**
      * 登录

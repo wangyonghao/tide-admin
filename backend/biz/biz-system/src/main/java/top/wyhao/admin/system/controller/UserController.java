@@ -15,10 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.system.model.bo.user.UserImportRequest;
-import top.wyhao.admin.system.model.bo.user.UserRequest;
-import top.wyhao.admin.system.model.query.UserQuery;
-import top.wyhao.admin.system.model.result.user.UserDetailResult;
-import top.wyhao.admin.system.model.result.user.UserResult;
+import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.core.exception.SystemException;
 import top.wyhao.starter.core.model.Result;
@@ -49,7 +46,7 @@ public class UserController {
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @SaCheckPermission("system:user:list")
     @GetMapping
-    public PageResult<UserResult> page(@Valid UserQuery query, @Valid PageQuery pageQuery) {
+    public PageResult<UserModel.Result> page(@Valid UserModel.Query query, @Valid PageQuery pageQuery) {
         return userService.page(query, pageQuery);
     }
 
@@ -61,7 +58,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:list")
     @GetMapping("/{id}")
-    public UserDetailResult get(@PathVariable Long id) {
+    public UserModel.Detail get(@PathVariable Long id) {
         return userService.detail(id);
     }
 
@@ -73,7 +70,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:create")
     @PostMapping
-    public IdResult<Long> create(@RequestBody @Validated(UserRequest.Create.class) UserRequest request) {
+    public IdResult<Long> create(@RequestBody @Validated(UserModel.Request.Create.class) UserModel.Request request) {
         return new IdResult<>(userService.create(request));
     }
 
@@ -85,7 +82,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:edit")
     @PatchMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody @Validated(UserRequest.Update.class) UserRequest request) {
+    public void update(@PathVariable Long id, @RequestBody @Validated(UserModel.Request.Update.class) UserModel.Request request) {
         userService.update(id, request);
     }
 
@@ -127,7 +124,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:export")
     @GetMapping("/export")
-    public void export(@Valid UserQuery query, HttpServletResponse response) {
+    public void export(@Valid UserModel.Query query, HttpServletResponse response) {
         userService.export(query, response);
     }
 

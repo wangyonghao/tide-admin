@@ -1,8 +1,7 @@
 package top.wyhao.admin.system.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import top.wyhao.admin.system.model.query.LoginLogQuery;
-import top.wyhao.admin.system.model.result.log.LoginLogResult;
+import top.wyhao.admin.system.model.LoginLogModel;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -32,15 +31,7 @@ public interface LoginLogService {
      * @param pageQuery 分页查询条件
      * @return 分页列表信息
      */
-    PageResult<LoginLogResult> page(LoginLogQuery query, PageQuery pageQuery);
-
-    /**
-     * 查询详情
-     *
-     * @param id ID
-     * @return 详情信息
-     */
-    LoginLogResult detail(Long id);
+    PageResult<LoginLogModel> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery);
 
     /**
      * 导出登录日志
@@ -48,7 +39,7 @@ public interface LoginLogService {
      * @param query    查询条件
      * @param response 响应对象
      */
-    void export(LoginLogQuery query, HttpServletResponse response);
+    void export(LoginLogModel.LoginLogQuery query, HttpServletResponse response);
 
     /**
      * 清理过期日志

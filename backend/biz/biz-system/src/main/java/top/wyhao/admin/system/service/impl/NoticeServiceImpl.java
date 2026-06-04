@@ -8,12 +8,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.entity.SysNotice;
 import top.wyhao.admin.system.mapper.SysNoticeMapper;
-import top.wyhao.admin.system.model.bo.MessageRequest;
-import top.wyhao.admin.system.model.bo.NoticeRequest;
+import top.wyhao.admin.system.model.MessageModel;
 import top.wyhao.admin.system.model.enums.*;
-import top.wyhao.admin.system.model.query.NoticeQuery;
-import top.wyhao.admin.system.model.result.NoticeDetailResult;
-import top.wyhao.admin.system.model.result.NoticeResult;
+import top.wyhao.admin.system.model.NotificationModel;
 import top.wyhao.admin.system.model.result.dashboard.DashboardNoticeResp;
 import top.wyhao.admin.system.service.MessageService;
 import top.wyhao.admin.system.service.NoticeLogService;
@@ -21,7 +18,7 @@ import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.exception.BadRequestException;
 import top.wyhao.starter.core.exception.SystemException;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -44,14 +41,14 @@ public class NoticeServiceImpl implements NoticeService {
 
 
     @Override
-    public PageResult<NoticeResult> page(NoticeQuery query, PageQuery pageQuery) {
-        IPage<NoticeResult> page = noticeMapper.selectNoticePage(new Page<>(pageQuery.getPage(), pageQuery
+    public PageResult<NotificationModel> page(NotificationModel.NoticeQuery query, PageQuery pageQuery) {
+        IPage<NotificationModel> page = noticeMapper.selectNoticePage(new Page<>(pageQuery.getPage(), pageQuery
                 .getSize()), query);
         return PageResult.build(page);
     }
 
     @Override
-    public NoticeDetailResult detail(Long id) {
+    public NotificationModel.Detail detail(Long id) {
         SysNotice entity = noticeMapper.selectById(id);
         if (entity == null) {
             throw new BadRequestException("NOTICE_NOT_FOUND", "公告不存在");
@@ -61,15 +58,18 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public Long create(NoticeRequest req) {
-        if (!NoticeStatus.DRAFT.equals(req.getStatus())) {
-            if (Boolean.TRUE.equals(req.getIsTiming())) {
+    public Long create(NotificationModel.Request req) {
+        if (!NoticeStatus.DRAFT.equals(req.status())) {
+            if (Boolean.TRUE.equals(req.isTiming())) {
                 // 待发布
-                req.setStatus(NoticeStatus.PENDING);
+                req = new NotificationModel.Request(req.title(), req.content(), req.type(), req.noticeScope(),
+                        req.noticeUsers(), req.noticeMethods(), req.isTiming(), req.publishTime(), req.isTop(), 
+                        NoticeStatus.PENDING);
             } else {
                 // 已发布
-                req.setStatus(NoticeStatus.PUBLISHED);
-                req.setPublishTime(LocalDateTime.now());
+                req = new NotificationModel.Request(req.title(), req.content(), req.type(), req.noticeScope(),
+                        req.noticeUsers(), req.noticeMethods(), req.isTiming(), LocalDateTime.now(), req.isTop(), 
+                        NoticeStatus.PUBLISHED);
             }
         }
         SysNotice entity = new SysNotice();
@@ -87,35 +87,40 @@ public class NoticeServiceImpl implements NoticeService {
     }
 
     @Override
-    public void update(NoticeRequest req, Long id) {
+    public void update(NotificationModel.Request req, Long id) {
         SysNotice oldNotice = noticeMapper.selectById(id);
         switch (oldNotice.getStatus()) {
             case PUBLISHED -> {
-                BizAssert.throwIfNotEqual(req.getStatus(), oldNotice.getStatus(), "公告已发布，不允许修改状态");
-                BizAssert.throwIfNotEqual(req.getIsTiming(), oldNotice.getIsTiming(), "公告已发布，不允许修改定时发布信息");
-                BizAssert.throwIfNotEqual(req.getNoticeScope(), oldNotice.getNoticeScope(), "公告已发布，不允许修改通知范围");
+                Check.throwIfNotEqual(req.status(), oldNotice.getStatus(), "公告已发布，不允许修改状态");
+                Check.throwIfNotEqual(req.isTiming(), oldNotice.getIsTiming(), "公告已发布，不允许修改定时发布信息");
+                Check.throwIfNotEqual(req.noticeScope(), oldNotice.getNoticeScope(), "公告已发布，不允许修改通知范围");
                 if (NoticeScopes.USER.equals(oldNotice.getNoticeScope())) {
-                    BizAssert.throwIfNotEmpty(CollUtil.disjunction(req.getNoticeUsers(), oldNotice
+                    Check.throwIfNotEmpty(CollUtil.disjunction(req.noticeUsers(), oldNotice
                             .getNoticeUsers()), "公告已发布，不允许修改通知用户");
                 }
-                BizAssert.isTrue(!CollUtil.isEqualList(req.getNoticeMethods(), oldNotice
+                Check.when(!CollUtil.isEqualList(req.noticeMethods(), oldNotice
                         .getNoticeMethods()), "公告已发布，不允许修改通知方式");
                 // 修正定时发布信息
                 if (Boolean.TRUE.equals(oldNotice.getIsTiming())) {
-                    BizAssert.throwIfNotEqual(req.getPublishTime(), oldNotice.getPublishTime(), "公告已发布，不允许修改定时发布信息");
+                    Check.throwIfNotEqual(req.publishTime(), oldNotice.getPublishTime(), "公告已发布，不允许修改定时发布信息");
                 }
-                req.setPublishTime(oldNotice.getPublishTime());
+                req = new NotificationModel.Request(req.title(), req.content(), req.type(), req.noticeScope(),
+                        req.noticeUsers(), req.noticeMethods(), req.isTiming(), oldNotice.getPublishTime(), 
+                        req.isTop(), req.status());
             }
             case DRAFT, PENDING -> {
                 // 已发布
-                if (NoticeStatus.PUBLISHED.equals(req.getStatus())) {
-                    if (Boolean.TRUE.equals(req.getIsTiming())) {
+                if (NoticeStatus.PUBLISHED.equals(req.status())) {
+                    if (Boolean.TRUE.equals(req.isTiming())) {
                         // 待发布
-                        req.setStatus(NoticeStatus.PENDING);
+                        req = new NotificationModel.Request(req.title(), req.content(), req.type(), req.noticeScope(),
+                                req.noticeUsers(), req.noticeMethods(), req.isTiming(), req.publishTime(), 
+                                req.isTop(), NoticeStatus.PENDING);
                     } else {
                         // 已发布
-                        req.setStatus(NoticeStatus.PUBLISHED);
-                        req.setPublishTime(LocalDateTime.now());
+                        req = new NotificationModel.Request(req.title(), req.content(), req.type(), req.noticeScope(),
+                                req.noticeUsers(), req.noticeMethods(), req.isTiming(), LocalDateTime.now(), 
+                                req.isTop(), NoticeStatus.PUBLISHED);
                     }
                 }
             }
@@ -161,10 +166,12 @@ public class NoticeServiceImpl implements NoticeService {
         List<Integer> noticeMethods = notice.getNoticeMethods();
         if (CollUtil.isNotEmpty(noticeMethods) && noticeMethods.contains(NoticeMethods.SYSTEM_MESSAGE.getValue())) {
             MessageTemplates template = MessageTemplates.NOTICE_PUBLISH;
-            MessageRequest req = new MessageRequest(MessageType.SYSTEM);
-            req.setTitle(template.getTitle());
-            req.setContent(template.getContent().formatted(notice.getTitle()));
-            req.setPath(template.getPath().formatted(notice.getId()));
+            MessageModel.Request req = new MessageModel.Request(
+                    template.getTitle(),
+                    template.getContent().formatted(notice.getTitle()),
+                    MessageType.SYSTEM,
+                    template.getPath().formatted(notice.getId())
+            );
             // 新增消息
             messageService.add(req, notice.getNoticeUsers());
         }
@@ -186,27 +193,38 @@ public class NoticeServiceImpl implements NoticeService {
         return noticeMapper.selectDashboardList(userId);
     }
 
-    private NoticeDetailResult convertToNoticeDetailResp(SysNotice entity) {
-        NoticeDetailResult resp = new NoticeDetailResult();
-        resp.setId(entity.getId());
-        resp.setTitle(entity.getTitle());
-        resp.setContent(entity.getContent());
-        resp.setStatus(entity.getStatus());
-        resp.setCreateTime(entity.getCreateTime());
-        resp.setUpdateTime(entity.getUpdateTime());
-        // 设置其他属性...
-        return resp;
+    private NotificationModel.Detail convertToNoticeDetailResp(SysNotice entity) {
+        return new NotificationModel.Detail(
+                entity.getId(),
+                entity.getCreateUser(),
+                null, // createUserString - 需要从其他地方获取
+                entity.getCreateTime(),
+                null, // disabled
+                entity.getUpdateUser(),
+                null, // updateUserString - 需要从其他地方获取
+                entity.getUpdateTime(),
+                entity.getTitle(),
+                entity.getType(),
+                entity.getContent(),
+                entity.getNoticeScope(),
+                entity.getNoticeUsers(),
+                entity.getNoticeMethods(),
+                entity.getIsTiming(),
+                entity.getPublishTime(),
+                entity.getIsTop(),
+                entity.getStatus()
+        );
     }
 
-    private void updateEntityFromReq(SysNotice entity, NoticeRequest req) {
-        entity.setTitle(req.getTitle());
-        entity.setContent(req.getContent());
-        entity.setStatus(req.getStatus());
-        entity.setIsTiming(req.getIsTiming());
-        entity.setPublishTime(req.getPublishTime());
-        entity.setNoticeScope(req.getNoticeScope());
-        entity.setNoticeUsers(req.getNoticeUsers());
-        entity.setNoticeMethods(req.getNoticeMethods());
+    private void updateEntityFromReq(SysNotice entity, NotificationModel.Request req) {
+        entity.setTitle(req.title());
+        entity.setContent(req.content());
+        entity.setStatus(req.status());
+        entity.setIsTiming(req.isTiming());
+        entity.setPublishTime(req.publishTime());
+        entity.setNoticeScope(req.noticeScope());
+        entity.setNoticeUsers(req.noticeUsers());
+        entity.setNoticeMethods(req.noticeMethods());
         // 设置其他属性...
     }
 }

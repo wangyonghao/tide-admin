@@ -18,7 +18,6 @@ import org.springframework.scheduling.annotation.AsyncConfigurer;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import top.wyhao.starter.core.constant.PropertiesConstants;
-import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.exception.SystemException;
 
 import java.util.Arrays;

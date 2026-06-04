@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.admin.auth.model.OnlineUserResult;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -46,19 +46,19 @@ public class OnlineUserController {
             try {
                 SaSession session = StpUtil.getSessionBySessionId(sessionId);
                 if (session != null) {
-                    OnlineUserResult online = new OnlineUserResult();
-                    online.setSessionId(sessionId);
-                    online.setToken(session.getToken());
-
                     long loginTime = session.get("loginTime", session.getCreateTime());
-                    online.setLoginTime(formatTime(loginTime));
-                    online.setLoginName(session.get("loginName", ""));
-                    online.setIp(session.get("ipaddr", ""));
-                    online.setLocation(session.get("loginLocation", ""));
-                    online.setBrowser(session.get("browser", ""));
-                    online.setOs(session.get("os", ""));
                     long lastAccessTime =  StpUtil.getStpLogic().getTokenLastActiveTime(session.getToken());
-                    online.setLastActiveTime(formatTime(lastAccessTime));
+                    OnlineUserResult online = new OnlineUserResult(
+                            sessionId,
+                            session.getToken(),
+                            session.get("loginName", ""),
+                            session.get("ipaddr", ""),
+                            session.get("loginLocation", ""),
+                            session.get("browser", ""),
+                            session.get("os", ""),
+                            formatTime(loginTime),
+                            formatTime(lastAccessTime)
+                    );
                     onlineUsers.add(online);
                 }
             } catch (Exception e) {
@@ -82,7 +82,7 @@ public class OnlineUserController {
     @DeleteMapping("/monitor/online/{token}")
     public void kickout(@PathVariable String token) {
         String currentToken = LoginUtil.getTokenValue();
-        BizAssert.throwIfEqual(token, currentToken, "不能强退自己");
+        Check.throwIfEqual(token, currentToken, "不能强退自己");
         LoginUtil.kickout(token);
     }
 

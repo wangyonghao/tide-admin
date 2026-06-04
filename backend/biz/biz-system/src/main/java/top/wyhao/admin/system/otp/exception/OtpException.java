@@ -1,7 +1,7 @@
 package top.wyhao.admin.system.otp.exception;
 
 import lombok.Getter;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 
 /**
  * OTP 自定义异常
@@ -9,7 +9,7 @@ import top.wyhao.starter.core.exception.BusinessException;
 
  */
 @Getter
-public class OtpException extends BusinessException {
+public class OtpException extends BizException {
 
     /**
      * 错误码

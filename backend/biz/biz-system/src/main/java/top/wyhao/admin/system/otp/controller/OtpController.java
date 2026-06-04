@@ -36,7 +36,7 @@ public class OtpController {
 
     private final OtpService otpService;
 
-    @Operation(summary = "发送验证码", description = "发送邮件或短信验证码")
+    @Operation(summary = "邮件发送验证码", description = "发送邮件或短信验证码")
     @RateLimiters({
             @RateLimiter(name = OTP_KEY_PREFIX + "MIN", key = "#req + ':' + T(cn.hutool.extra.spring.SpringUtil).getProperty('captcha.sms.templateId')", rate = 2, interval = 1, unit = TimeUnit.MINUTES, message = "获取验证码操作太频繁，请稍后再试"),
             @RateLimiter(name = OTP_KEY_PREFIX + "HOUR", key = "#phone + ':' + T(cn.hutool.extra.spring.SpringUtil).getProperty('captcha.sms.templateId')", rate = 8, interval = 1, unit = TimeUnit.HOURS, message = "获取验证码操作太频繁，请稍后再试"),
@@ -45,19 +45,19 @@ public class OtpController {
             @RateLimiter(name = OTP_KEY_PREFIX, key = "#phone", rate = 30, interval = 1, unit = TimeUnit.MINUTES, type = LimitType.IP, message = "获取验证码操作太频繁，请稍后再试")})
 
     @PostMapping("/v1/otp/mail/send")
-    public OtpSendResult sendByMail(@Valid @RequestBody OtpSendRequest req) {
+    public OtpSendResult.Result sendByMail(@Valid @RequestBody OtpSendRequest.Request req) {
         return otpService.sendByMail(req);
     }
 
     @PostMapping("/v1/otp/sms/send")
-    public OtpSendResult sendBySms(@Valid @RequestBody OtpSendRequest req) {
+    public OtpSendResult.Result sendBySms(@Valid @RequestBody OtpSendRequest.Request req) {
         return otpService.sendBySms(req);
     }
 
 
     @Operation(summary = "验证验证码", description = "验证用户输入的验证码")
     @PostMapping("/v1/otp/verify")
-    public OtpVerifyResult verify(@Valid @RequestBody OtpVerifyRequest req) {
+    public OtpVerifyResult.Result verify(@Valid @RequestBody OtpVerifyRequest.Request req) {
         return otpService.verify(req);
     }
 }

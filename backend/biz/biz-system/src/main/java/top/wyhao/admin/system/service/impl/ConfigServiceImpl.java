@@ -16,14 +16,13 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.cmn.sms.SmsConfig;
 import top.wyhao.admin.system.entity.SysConfig;
 import top.wyhao.admin.system.mapper.SysConfigMapper;
-import top.wyhao.admin.system.model.bo.ConfigRequest;
-import top.wyhao.admin.system.model.query.ConfigQuery;
+import top.wyhao.admin.system.model.ConfigModel;
 import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.model.MailConfig;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -45,9 +44,9 @@ public class ConfigServiceImpl implements ConfigService {
     private final SysConfigMapper configMapper;
 
     @Override
-    public PageResult<ConfigResult> page(ConfigQuery query, PageQuery pageQuery) {
+    public PageResult<ConfigResult> page(ConfigModel.Query query, PageQuery pageQuery) {
         QueryWrapper<SysConfig> queryWrapper = this.buildQueryWrapper(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysConfig.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysConfig.class);
         IPage<ConfigResult> page = configMapper.selectConfigPage(
                 new Page<>(pageQuery.getPage(), pageQuery.getSize()),
                 queryWrapper
@@ -58,7 +57,7 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public ConfigResult detail(Long id) {
         SysConfig configDO = configMapper.selectById(id);
-        BizAssert.notNull(configDO, "配置不存在");
+        Check.notNull(configDO, "配置不存在");
 
         return BeanUtil.copyProperties(configDO, ConfigResult.class);
     }
@@ -68,7 +67,7 @@ public class ConfigServiceImpl implements ConfigService {
         QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("config_key", configKey);
         SysConfig configDO = configMapper.selectOne(queryWrapper);
-        BizAssert.notNull(configDO, "配置不存在");
+        Check.notNull(configDO, "配置不存在");
 
         return BeanUtil.copyProperties(configDO, ConfigResult.class);
     }
@@ -119,10 +118,10 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     public void checkMailConfig(MailConfig mailConfig) {
-        BizAssert.notNull(mailConfig, "邮件配置不存在");
-        BizAssert.notBlank(mailConfig.getHost(), "邮件服务器地址未配置");
-        BizAssert.notBlank(mailConfig.getUsername(), "发件人邮箱未配置");
-        BizAssert.notBlank(mailConfig.getPassword(), "邮箱密码未配置");
+        Check.notNull(mailConfig, "邮件配置不存在");
+        Check.notBlank(mailConfig.getHost(), "邮件服务器地址未配置");
+        Check.notBlank(mailConfig.getUsername(), "发件人邮箱未配置");
+        Check.notBlank(mailConfig.getPassword(), "邮箱密码未配置");
     }
 
     @Override
@@ -166,9 +165,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long create(ConfigRequest request) {
+    public Long create(ConfigModel.Request request) {
         // 检查唯一性
-        this.checkUnique(request.getConfigKey(), null);
+        this.checkUnique(request.configKey(), null);
 
         SysConfig configDO = BeanUtil.copyProperties(request, SysConfig.class);
         configMapper.insert(configDO);
@@ -177,37 +176,37 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(Long id, ConfigRequest request) {
+    public void update(Long id, ConfigModel.Request request) {
         SysConfig oldConfig = configMapper.selectById(id);
-        BizAssert.notNull(oldConfig, "配置不存在");
+        Check.notNull(oldConfig, "配置不存在");
 
         // 检查唯一性（排除自己）
-        if (CharSequenceUtil.isNotBlank(request.getConfigKey())) {
-            this.checkUnique(request.getConfigKey(), id);
+        if (CharSequenceUtil.isNotBlank(request.configKey())) {
+            this.checkUnique(request.configKey(), id);
         }
 
         SysConfig configDO = BeanUtil.copyProperties(request, SysConfig.class);
         configDO.setId(id);
 
         int updated = configMapper.updateById(configDO);
-        BizAssert.isTrue(updated > 0, "更新失败，配置可能已被修改，请刷新后重试");
+        Check.when(updated > 0, "更新失败，配置可能已被修改，请刷新后重试");
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateByKey(String configKey, ConfigRequest request) {
+    public void updateByKey(String configKey, ConfigModel.Request request) {
         QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("config_key", configKey);
         SysConfig existConfig = configMapper.selectOne(queryWrapper);
-        BizAssert.notNull(existConfig, "配置不存在");
+        Check.notNull(existConfig, "配置不存在");
 
         SysConfig configDO = new SysConfig();
         configDO.setId(existConfig.getId());
-        configDO.setConfigValue(request.getConfigValue());
-        configDO.setDescription(request.getDescription());
+        configDO.setConfigValue(request.configValue());
+        configDO.setDescription(request.description());
 
         int updated = configMapper.updateById(configDO);
-        BizAssert.isTrue(updated > 0, "更新失败，配置可能已被修改，请刷新后重试");
+        Check.when(updated > 0, "更新失败，配置可能已被修改，请刷新后重试");
     }
 
     @Override
@@ -220,9 +219,9 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public void export(ConfigQuery query, HttpServletResponse response) {
+    public void export(ConfigModel.Query query, HttpServletResponse response) {
         QueryWrapper<SysConfig> queryWrapper = this.buildQueryWrapper(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysConfig.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysConfig.class);
         List<SysConfig> list = configMapper.selectList(queryWrapper);
 
         List<ConfigResult> resultList = list.stream()
@@ -249,7 +248,7 @@ public class ConfigServiceImpl implements ConfigService {
             updateConfig.setConfigValue(configValue);
 
             int updated = configMapper.updateById(updateConfig);
-            BizAssert.isTrue(updated > 0, "更新配置失败");
+            Check.when(updated > 0, "更新配置失败");
         } else {
             // 创建新配置
             SysConfig newConfig = new SysConfig();
@@ -267,9 +266,9 @@ public class ConfigServiceImpl implements ConfigService {
      * @param query 查询条件
      * @return 查询包装器
      */
-    private QueryWrapper<SysConfig> buildQueryWrapper(ConfigQuery query) {
-        String configKey = query.getConfigKey();
-        String searchWords = query.getSearchWords();
+    private QueryWrapper<SysConfig> buildQueryWrapper(ConfigModel.Query query) {
+        String configKey = query.configKey();
+        String searchWords = query.searchWords();
 
         return new QueryWrapper<SysConfig>()
                 .like(CharSequenceUtil.isNotBlank(configKey), "config_key", configKey)
@@ -294,6 +293,6 @@ public class ConfigServiceImpl implements ConfigService {
         }
 
         Long count = configMapper.selectCount(queryWrapper);
-        BizAssert.isTrue(count == 0, "配置键已存在");
+        Check.when(count == 0, "配置键已存在");
     }
 }

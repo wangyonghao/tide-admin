@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "安全配置")
-public class SecurityConfigVO implements Serializable {
+public class SecurityConfigVO {
 
     @Serial
     private static final long serialVersionUID = 1L;

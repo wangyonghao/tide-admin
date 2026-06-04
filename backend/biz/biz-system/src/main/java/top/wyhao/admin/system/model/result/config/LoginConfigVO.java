@@ -15,10 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "登录配置")
-public class LoginConfigVO implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
+public class LoginConfigVO{
 
     /**
      * 是否开启验证码

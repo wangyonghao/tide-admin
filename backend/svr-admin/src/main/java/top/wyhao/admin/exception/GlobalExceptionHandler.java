@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
 import top.wyhao.admin.system.otp.exception.OtpException;
 import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.model.Result;
 
 import java.util.HashMap;
@@ -69,9 +69,9 @@ public class GlobalExceptionHandler {
      * 业务校验异常处理(如密码错误、库存不足)
      * 属于业务逻辑分支流程，应提供用户友好、清晰的提示，由用户自行处理
      */
-    @ExceptionHandler(BusinessException.class)
+    @ExceptionHandler(BizException.class)
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
-    public Result<Void> handleBusinessException(BusinessException e, HttpServletRequest request) {
+    public Result<Void> handleBusinessException(BizException e, HttpServletRequest request) {
         log.debug("业务阻断：request={} {} code={}, message={}", request.getMethod(), request.getRequestURI(), e.getCode(), e.getMessage());
         log.debug("root cause",e);
 

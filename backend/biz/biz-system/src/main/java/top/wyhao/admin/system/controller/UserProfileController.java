@@ -20,11 +20,8 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.entity.SysUserSocial;
 import top.wyhao.admin.system.model.bo.user.UserBasicInfoUpdateReq;
-import top.wyhao.admin.system.model.bo.user.UserEmailUpdateRequest;
-import top.wyhao.admin.system.model.bo.user.UserPasswordUpdateReq;
-import top.wyhao.admin.system.model.bo.user.UserPhoneUpdateReq;
+import top.wyhao.admin.system.model.ProfileModel;
 import top.wyhao.admin.system.model.enums.SocialSource;
-import top.wyhao.admin.system.model.result.AvatarResult;
 import top.wyhao.admin.system.model.result.user.UserSocialBindResp;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.admin.system.service.UserSocialService;
@@ -59,10 +56,10 @@ public class UserProfileController {
 
     @Operation(summary = "修改头像", description = "用户修改个人头像")
     @PatchMapping("/user/profile/avatar")
-    public AvatarResult updateAvatar(@NotNull(message = "头像不能为空") MultipartFile avatarFile) throws IOException {
+    public ProfileModel.AvatarResult updateAvatar(@NotNull(message = "头像不能为空") MultipartFile avatarFile) throws IOException {
         ValidationUtils.throwIf(avatarFile::isEmpty, "头像不能为空");
         String newAvatar = userService.updateAvatar(avatarFile, UserContextHolder.getUserId());
-        return AvatarResult.builder().avatar(newAvatar).build();
+        return new ProfileModel.AvatarResult(newAvatar);
     }
 
     @Operation(summary = "修改基础信息", description = "修改用户基础信息")
@@ -73,33 +70,33 @@ public class UserProfileController {
 
     @Operation(summary = "修改密码", description = "修改用户登录密码")
     @PatchMapping("/user/profile/password")
-    public void updatePassword(@RequestBody @Valid UserPasswordUpdateReq updateReq) {
-        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
-        String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getNewPassword(), "新密码解密失败");
+    public void updatePassword(@RequestBody @Valid ProfileModel.PasswordUpdate updateReq) {
+        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.oldPassword(), DECRYPT_FAILED);
+        String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.newPassword(), "新密码解密失败");
         userService.updatePassword(oldPassword, newPassword, UserContextHolder.getUserId());
     }
 
     @Operation(summary = "修改手机号", description = "修改手机号")
     @PatchMapping("/user/profile/phone")
-    public void updatePhone(@RequestBody @Valid UserPhoneUpdateReq updateReq) {
-        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
-        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + updateReq.getPhone();
+    public void updatePhone(@RequestBody @Valid ProfileModel.PhoneUpdate updateReq) {
+        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.oldPassword(), DECRYPT_FAILED);
+        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + updateReq.phone();
         String captcha = RedisUtils.get(captchaKey);
         ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
-        ValidationUtils.throwIfNotEqualIgnoreCase(updateReq.getCaptcha(), captcha, "验证码不正确");
+        ValidationUtils.throwIfNotEqualIgnoreCase(updateReq.captcha(), captcha, "验证码不正确");
         RedisUtils.delete(captchaKey);
-        userService.updatePhone(updateReq.getPhone(), oldPassword, UserContextHolder.getUserId());
+        userService.updatePhone(updateReq.phone(), oldPassword, UserContextHolder.getUserId());
     }
 
     @Operation(summary = "修改邮箱", description = "修改用户邮箱")
     @PatchMapping("/user/profile/email")
-    public void updateEmail(@RequestBody @Valid UserEmailUpdateRequest request) {
-        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(request.getOldPassword(), DECRYPT_FAILED);
-        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + request.getEmail();
+    public void updateEmail(@RequestBody @Valid ProfileModel.EmailUpdate request) {
+        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(request.oldPassword(), DECRYPT_FAILED);
+        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + request.email();
         String captcha = RedisUtils.getAndDelete(captchaKey);
         ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
-        ValidationUtils.throwIfNotEqualIgnoreCase(request.getCaptcha(), captcha, "验证码不正确");
-        userService.updateEmail(request.getEmail(), oldPassword, UserContextHolder.getUserId());
+        ValidationUtils.throwIfNotEqualIgnoreCase(request.captcha(), captcha, "验证码不正确");
+        userService.updateEmail(request.email(), oldPassword, UserContextHolder.getUserId());
     }
 
     @Operation(summary = "查询绑定的三方账号", description = "查询绑定的三方账号")

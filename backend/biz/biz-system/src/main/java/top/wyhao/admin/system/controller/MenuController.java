@@ -9,8 +9,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.bo.MenuRequest;
-import top.wyhao.admin.system.model.query.MenuQuery;
+import top.wyhao.admin.system.model.MenuModel;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
 import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.MenuService;
@@ -38,7 +37,7 @@ public class MenuController {
      */
     @Operation(summary = "查询树列表", description = "查询树列表")
     @GetMapping("/system/menu")
-    public List<MenuTreeVO> tree(@Valid MenuQuery query) {
+    public List<MenuTreeVO> tree(@Valid MenuModel.MenuQuery query) {
         return menuService.tree(query);
     }
 
@@ -63,7 +62,7 @@ public class MenuController {
      */
     @Operation(summary = "创建菜单", description = "创建菜单")
     @PostMapping("/system/menu")
-    public IdResult<Long> create(@RequestBody @Valid MenuRequest req) {
+    public IdResult<Long> create(@RequestBody @Valid MenuModel.Request req) {
         return new IdResult<>(menuService.create(req));
     }
 
@@ -76,7 +75,7 @@ public class MenuController {
     @Operation(summary = "修改菜单", description = "修改菜单")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @PutMapping("/system/menu/{id}")
-    public void update(@RequestBody @Validated(MenuRequest.Update.class) MenuRequest req, @PathVariable Long id) {
+    public void update(@RequestBody @Validated(MenuModel.Update.class) MenuModel.Request req, @PathVariable Long id) {
         menuService.update(id, req);
     }
 
@@ -100,7 +99,7 @@ public class MenuController {
      */
     @Operation(summary = "导出数据", description = "导出数据")
     @GetMapping("/system/menu/export")
-    public void export(@Valid MenuQuery query, HttpServletResponse response) {
+    public void export(@Valid MenuModel.MenuQuery query, HttpServletResponse response) {
         menuService.export(query, response);
     }
 
@@ -112,7 +111,7 @@ public class MenuController {
      */
     @Operation(summary = "查询树型字典列表", description = "查询树型结构字典列表（树型结构下拉选项等场景）")
     @GetMapping("/system/menu/dict/tree")
-    public List<MenuTreeVO> treeDict(@Valid MenuQuery query) {
+    public List<MenuTreeVO> treeDict(@Valid MenuModel.MenuQuery query) {
         return menuService.tree(query);
     }
 }

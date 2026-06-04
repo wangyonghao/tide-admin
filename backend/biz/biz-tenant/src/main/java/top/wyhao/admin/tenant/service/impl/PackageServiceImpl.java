@@ -13,7 +13,7 @@ import top.wyhao.admin.tenant.model.req.PackageRequest;
 import top.wyhao.admin.tenant.model.resp.PackageDetailResp;
 import top.wyhao.admin.tenant.model.resp.PackageResp;
 import top.wyhao.admin.tenant.service.PackageService;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -84,7 +84,7 @@ public class PackageServiceImpl implements PackageService {
      * @param id   ID
      */
     private void checkNameRepeat(String name, Long id) {
-        BizAssert.isTrue(baseMapper.lambdaQuery()
+        Check.when(baseMapper.lambdaQuery()
             .eq(TenantPackage::getName, name)
             .ne(id != null, TenantPackage::getId, id)
             .exists(), "名称为 [{}] 的套餐已存在", name);

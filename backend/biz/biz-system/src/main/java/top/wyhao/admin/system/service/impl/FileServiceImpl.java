@@ -16,13 +16,12 @@ import top.wyhao.admin.cmn.oss.FileStorage;
 import top.wyhao.admin.cmn.oss.FileStorageFactory;
 import top.wyhao.admin.system.entity.SysFile;
 import top.wyhao.admin.system.mapper.SysFileMapper;
+import top.wyhao.admin.system.model.FileModel;
 import top.wyhao.admin.system.model.enums.FileType;
-import top.wyhao.admin.system.model.query.FileQuery;
-import top.wyhao.admin.system.model.result.file.FileResult;
 import top.wyhao.admin.system.service.FileService;
 import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.exception.BadRequestException;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -87,7 +86,7 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public List<SysFile> list(FileQuery query) {
+    public List<SysFile> list(FileModel.Query query) {
         return fileMapper.selectList(WrapperUtil.build(query));
     }
 
@@ -105,7 +104,7 @@ public class FileServiceImpl implements FileService {
         String ext = FileNameUtil.extName(file.getOriginalFilename());
         List<String> allExtensions = FileType.getAllExtensions();
         if (!allExtensions.contains(ext)) {
-            throw new BusinessException("FILE_UNSUPPORTED_TYPE", StrUtil.format("不支持的文件类型，仅支持 {} 格式的文件", String.join(",", allExtensions)));
+            throw new BizException("FILE_UNSUPPORTED_TYPE", StrUtil.format("不支持的文件类型，仅支持 {} 格式的文件", String.join(",", allExtensions)));
         }
         // 获取存储实例
         FileStorage storage = fileStorageFactory.getStorage();
@@ -139,16 +138,16 @@ public class FileServiceImpl implements FileService {
     }
 
     @Override
-    public PageResult<FileResult> page(FileQuery query, PageQuery pageQuery) {
+    public PageResult<FileModel.Result> page(FileModel.Query query, PageQuery pageQuery) {
         IPage<SysFile> page = fileMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), WrapperUtil.build(query));
-        return PageResult.build(page, FileResult.class);
+        return PageResult.build(page, FileModel.Result.class);
     }
 
     @Override
     public SysFile detail(Long id) {
         SysFile file = fileMapper.selectById(id);
         if (file == null) {
-            throw new BusinessException("FILE_NOT_FOUND", "文件不存在");
+            throw new BizException("FILE_NOT_FOUND", "文件不存在");
         }
         return file;
     }

@@ -12,9 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.entity.SysFile;
-import top.wyhao.admin.system.model.bo.FileRequest;
-import top.wyhao.admin.system.model.query.FileQuery;
-import top.wyhao.admin.system.model.result.file.FileResult;
+import top.wyhao.admin.system.model.FileModel;
 import top.wyhao.admin.system.service.FileService;
 import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -29,7 +27,6 @@ import java.util.List;
  * API 层只处理元数据与权限，底层路由到OSS（Object Storage Service - 文件存储服务），如 本地文件存储/MinIO/腾讯云COS/阿里云OSS/
  * </p>
  *
-
  * @since 2026/5/13
  */
 @Tag(name = "文件管理 API")
@@ -40,21 +37,21 @@ public class FileController {
 
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @GetMapping("/system/file")
-    public PageResult<FileResult> page(@Valid FileQuery query, @Valid PageQuery pageQuery) {
+    public PageResult<FileModel.Result> page(@Valid FileModel.Query query, @Valid PageQuery pageQuery) {
         return fileService.page(query, pageQuery);
     }
 
     @Operation(summary = "查询列表", description = "查询列表")
     @GetMapping("/system/file/list")
-    public List<FileResult> list(@Valid FileQuery query) {
+    public List<FileModel.Result> list(@Valid FileModel.Query query) {
         List<SysFile> files = fileService.list(query);
-        return BeanUtil.copyToList(files, FileResult.class);
+        return BeanUtil.copyToList(files, FileModel.Result.class);
     }
 
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/system/file/{id}")
-    public FileResult detail(@PathVariable Long id) {
+    public FileModel.Result detail(@PathVariable Long id) {
         SysFile sysFile = fileService.detail(id);
         return toFileResult(sysFile);
     }
@@ -62,9 +59,9 @@ public class FileController {
 
     @Operation(summary = "上传文件", description = "上传文件")
     @PostMapping("/system/file")
-    public FileResult upload(@RequestPart @NotNull(message = "文件不能为空") MultipartFile file,
-                             @RequestPart FileRequest request) {
-        SysFile sysFile = fileService.upload(file, request.getPath());
+    public FileModel.Result upload(@RequestPart @NotNull(message = "文件不能为空") MultipartFile file,
+                                   @RequestPart FileModel.Request request) {
+        SysFile sysFile = fileService.upload(file, request.path());
         return toFileResult(sysFile);
     }
 
@@ -104,7 +101,7 @@ public class FileController {
     }
 
 
-    private FileResult toFileResult(SysFile sysFile) {
-        return BeanUtil.copyProperties(sysFile, FileResult.class);
+    private FileModel.Result toFileResult(SysFile sysFile) {
+        return BeanUtil.copyProperties(sysFile, FileModel.Result.class);
     }
 }

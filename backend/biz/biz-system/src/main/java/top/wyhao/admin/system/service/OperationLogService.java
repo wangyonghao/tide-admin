@@ -4,9 +4,7 @@ package top.wyhao.admin.system.service;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
-import top.wyhao.admin.system.model.query.LogQuery;
-import top.wyhao.admin.system.model.result.log.OperationLogDetailResult;
-import top.wyhao.admin.system.model.result.log.OperationLogResult;
+import top.wyhao.admin.system.model.OperationLogModel;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.log.OperationLog;
@@ -27,7 +25,7 @@ public interface OperationLogService {
      * @param pageQuery 分页查询条件
      * @return 分页列表信息
      */
-    PageResult<OperationLogResult> page(LogQuery query, PageQuery pageQuery);
+    PageResult<OperationLogModel.Result> page(OperationLogModel.LogQuery query, PageQuery pageQuery);
 
     /**
      * 查询详情
@@ -35,15 +33,7 @@ public interface OperationLogService {
      * @param id ID
      * @return 详情信息
      */
-    OperationLogDetailResult detail(Long id);
-
-    /**
-     * 导出登录日志
-     *
-     * @param query     查询条件
-     * @param response  响应对象
-     */
-    void exportLoginLog(LogQuery query, HttpServletResponse response);
+    OperationLogModel.Detail detail(Long id);
 
     /**
      * 导出操作日志
@@ -51,5 +41,5 @@ public interface OperationLogService {
      * @param query     查询条件
      * @param response  响应对象
      */
-    void exportOperationLog(LogQuery query, HttpServletResponse response);
+    void export(OperationLogModel.LogQuery query, HttpServletResponse response);
 }

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="top.wyhao.admin.system.mapper.SysOperationLogMapper">
-    <select id="selectLogPage" resultType="top.wyhao.admin.system.model.result.log.OperationLogResult">
+    <select id="selectLogPage" resultType="top.wyhao.admin.system.model.OperationLogModel">
         SELECT
             t1.id,
             t1.object_type,
@@ -17,7 +17,7 @@
         ${ew.customSqlSegment}
     </select>
 
-    <select id="selectLogList" resultType="top.wyhao.admin.system.model.result.log.OperationLogResult">
+    <select id="selectLogList" resultType="top.wyhao.admin.system.model.OperationLogModel">
         SELECT
             t1.id,
             t1.description,

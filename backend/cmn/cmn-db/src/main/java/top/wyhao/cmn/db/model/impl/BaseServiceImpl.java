@@ -23,7 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.cmn.db.model.BaseService;
 import top.wyhao.starter.core.util.ReflectUtils;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 
 import java.io.Serializable;
 import java.lang.reflect.Field;
@@ -298,7 +298,7 @@ public abstract class BaseServiceImpl<M extends BaseMapper<T>, T> implements Bas
     protected T getById(Serializable id, boolean isCheckExists) {
         T entity = baseMapper.selectById(id);
         if (isCheckExists) {
-            BizAssert.throwIfNotExists(entity, ClassUtil.getClassName(this.getEntityClass(), true), "ID", id);
+            Check.throwIfNotExists(entity, ClassUtil.getClassName(this.getEntityClass(), true), "ID", id);
         }
         return entity;
     }

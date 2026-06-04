@@ -7,10 +7,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.bo.NoticeRequest;
-import top.wyhao.admin.system.model.query.NoticeQuery;
-import top.wyhao.admin.system.model.result.NoticeDetailResult;
-import top.wyhao.admin.system.model.result.NoticeResult;
+import top.wyhao.admin.system.model.NotificationModel;
 import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -41,7 +38,7 @@ public class NoticeController {
      */
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @GetMapping("/system/notice")
-    public PageResult<NoticeResult> page(@Valid NoticeQuery query, @Valid PageQuery pageQuery) {
+    public PageResult<NotificationModel> page(@Valid NotificationModel.NoticeQuery query, @Valid PageQuery pageQuery) {
         return noticeService.page(query, pageQuery);
     }
 
@@ -54,7 +51,7 @@ public class NoticeController {
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/system/notice/{id}")
-    public NoticeDetailResult detail(@PathVariable Long id) {
+    public NotificationModel.Detail detail(@PathVariable Long id) {
         return noticeService.detail(id);
     }
 
@@ -66,7 +63,7 @@ public class NoticeController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping("/system/notice")
-    public IdResult<Long> create(@RequestBody @Valid NoticeRequest req) {
+    public IdResult<Long> create(@RequestBody @Valid NotificationModel.Request req) {
         return new IdResult<>(noticeService.create(req));
     }
 
@@ -79,7 +76,7 @@ public class NoticeController {
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @PutMapping("/system/notice/{id}")
-    public void update(@RequestBody @Valid NoticeRequest req, @PathVariable Long id) {
+    public void update(@RequestBody @Valid NotificationModel.Request req, @PathVariable Long id) {
         noticeService.update(req, id);
     }
 

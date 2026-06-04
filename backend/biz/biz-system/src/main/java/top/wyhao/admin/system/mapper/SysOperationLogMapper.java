@@ -11,7 +11,7 @@ import top.wyhao.admin.system.entity.SysOperationLog;
 import top.wyhao.admin.system.model.result.dashboard.DashboardAccessTrendResp;
 import top.wyhao.admin.system.model.result.dashboard.DashboardChartCommonResp;
 import top.wyhao.admin.system.model.result.dashboard.DashboardOverviewCommonResp;
-import top.wyhao.admin.system.model.result.log.OperationLogResult;
+import top.wyhao.admin.system.model.OperationLogModel;
 import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.starter.core.constant.CacheConstants;
 
@@ -34,8 +34,8 @@ public interface SysOperationLogMapper extends BaseMapper<SysOperationLog> {
      * @param queryWrapper 查询条件
      * @return 分页列表信息
      */
-    IPage<OperationLogResult> selectLogPage(@Param("page") IPage<SysOperationLog> page,
-                                            @Param(Constants.WRAPPER) QueryWrapper<SysOperationLog> queryWrapper);
+    IPage<OperationLogModel> selectLogPage(@Param("page") IPage<SysOperationLog> page,
+                                           @Param(Constants.WRAPPER) QueryWrapper<SysOperationLog> queryWrapper);
 
     /**
      * 查询列表
@@ -43,7 +43,7 @@ public interface SysOperationLogMapper extends BaseMapper<SysOperationLog> {
      * @param queryWrapper 查询条件
      * @return 列表信息
      */
-    List<OperationLogResult> selectLogList(@Param(Constants.WRAPPER) QueryWrapper<SysOperationLog> queryWrapper);
+    List<OperationLogModel> selectLogList(@Param(Constants.WRAPPER) QueryWrapper<SysOperationLog> queryWrapper);
 
     /**
      * 查询仪表盘 PV 总览

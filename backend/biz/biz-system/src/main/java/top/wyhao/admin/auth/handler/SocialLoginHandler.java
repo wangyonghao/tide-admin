@@ -20,8 +20,8 @@ import org.springframework.stereotype.Component;
 import top.wyhao.admin.auth.LoginHelper;
 import top.wyhao.admin.auth.model.SocialLoginRequest;
 import top.wyhao.admin.auth.model.LoginResult;
+import top.wyhao.admin.system.model.MessageModel;
 import top.wyhao.admin.system.model.SystemConstants;
-import top.wyhao.admin.system.model.bo.MessageRequest;
 import top.wyhao.admin.system.entity.SysDept;
 import top.wyhao.admin.system.entity.SysUser;
 import top.wyhao.admin.system.entity.SysUserSocial;
@@ -34,9 +34,9 @@ import top.wyhao.starter.core.constant.RegexConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.model.LoginUser;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
 
 import java.time.LocalDateTime;
@@ -47,7 +47,7 @@ import java.util.Collections;
  */
 @Component
 @RequiredArgsConstructor
-public class SocialLoginHandler implements LoginHandler<SocialLoginRequest> {
+public class SocialLoginHandler implements LoginHandler<SocialLoginRequest.Request> {
 
     private final JustAuthProperties authProperties;
     private final ApplicationProperties applicationProperties;
@@ -60,15 +60,15 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest> {
     private final OperationLogService operationLogService;
     private final LoginLogService loginLogService;
 
-    public LoginResult login(SocialLoginRequest req) {
+    public LoginResult login(SocialLoginRequest.Request req) {
         if (StpUtil.isLogin()) {
             StpUtil.logout();
         }
         // 获取第三方登录信息
-        AuthRequest authRequest = this.getAuthRequest(req.getSource());
+        AuthRequest authRequest = this.getAuthRequest(req.source());
         AuthCallback callback = new AuthCallback();
-        callback.setCode(req.getCode());
-        callback.setState(req.getState());
+        callback.setCode(req.code());
+        callback.setState(req.state());
         AuthResponse<AuthUser> response = authRequest.login(callback);
         ValidationUtils.throwIf(!response.ok(), response.getMsg());
         AuthUser authUser = response.getData();
@@ -124,10 +124,7 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest> {
         // 登录并缓存用户信息
         LoginHelper.doLogin(loginUser);
 
-        return LoginResult.builder()
-                .code("200")
-                .token(LoginUtil.getTokenValue())
-                .build();
+        return new LoginResult("200", LoginUtil.getTokenValue(), null);
     }
 
     /**
@@ -141,7 +138,7 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest> {
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw new BusinessException("platform_not_support","暂不支持 [%s] 平台账号登录".formatted(source));
+            throw new BizException("platform_not_support","暂不支持 [%s] 平台账号登录".formatted(source));
         }
     }
 
@@ -152,9 +149,12 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest> {
      */
     private void sendSecurityMsg(SysUser user) {
         MessageTemplates template = MessageTemplates.SOCIAL_REGISTER;
-        MessageRequest req = new MessageRequest(MessageType.SECURITY);
-        req.setTitle(template.getTitle().formatted(applicationProperties.getName()));
-        req.setContent(template.getContent().formatted(user.getNickname()));
+        MessageModel.Request req = new MessageModel.Request(
+                template.getTitle().formatted(applicationProperties.getName()),
+                template.getContent().formatted(user.getNickname()),
+                MessageType.SECURITY,
+                null
+        );
         messageService.add(req, CollUtil.toList(user.getId().toString()));
     }
 
@@ -164,9 +164,9 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest> {
      * @param user 用户信息
      */
     private void checkUserStatus(SysUser user) {
-        BizAssert.throwIfEqual(StatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
+        Check.throwIfEqual(StatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
         SysDept dept = deptService.getById(user.getDeptId());
-        BizAssert.throwIfEqual(StatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
+        Check.throwIfEqual(StatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
     }
 
 }

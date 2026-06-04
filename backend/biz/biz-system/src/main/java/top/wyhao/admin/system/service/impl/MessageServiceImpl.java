@@ -2,7 +2,6 @@
 package top.wyhao.admin.system.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -13,14 +12,9 @@ import top.wyhao.admin.system.entity.SysMessage;
 import top.wyhao.admin.system.entity.SysMessageLog;
 import top.wyhao.admin.system.mapper.SysMessageLogMapper;
 import top.wyhao.admin.system.mapper.SysMessageMapper;
-import top.wyhao.admin.system.model.bo.MessageRequest;
 import top.wyhao.admin.system.model.enums.MessageType;
 import top.wyhao.admin.system.model.enums.NoticeScopes;
-import top.wyhao.admin.system.model.query.MessageQuery;
-import top.wyhao.admin.system.model.result.message.MessageDetailResult;
-import top.wyhao.admin.system.model.result.message.MessageResult;
-import top.wyhao.admin.system.model.result.message.MessageUnreadResult;
-import top.wyhao.admin.system.model.result.message.MessageUnreadResp;
+import top.wyhao.admin.system.model.MessageModel;
 import top.wyhao.admin.system.service.MessageService;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.messaging.websocket.util.WebSocketUtils;
@@ -46,14 +40,14 @@ public class MessageServiceImpl implements MessageService {
     private final SysMessageLogMapper messageLogMapper;
 
     @Override
-    public PageResult<MessageResult> page(MessageQuery query, PageQuery pageQuery) {
-        IPage<MessageResult> page = baseMapper.selectMessagePage(new Page<>(pageQuery.getPage(), pageQuery
+    public PageResult<MessageModel> page(MessageModel.MessageQuery query, PageQuery pageQuery) {
+        IPage<MessageModel> page = baseMapper.selectMessagePage(new Page<>(pageQuery.getPage(), pageQuery
             .getSize()), query);
         return PageResult.build(page);
     }
 
     @Override
-    public MessageDetailResult get(Long id) {
+    public MessageModel.Result get(Long id) {
         return baseMapper.selectMessageById(id);
     }
 
@@ -80,31 +74,30 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageUnreadResp countUnreadByUserId(Long userId, Boolean isDetail) {
-        MessageUnreadResp result = new MessageUnreadResp();
+    public MessageModel.UnreadResult countUnreadByUserId(Long userId, Boolean isDetail) {
         Long total = 0L;
+        List<MessageModel.UnreadCount> detailList = null;
         if (Boolean.TRUE.equals(isDetail)) {
-            List<MessageUnreadResult> detailList = new ArrayList<>();
+            detailList = new ArrayList<>();
             for (MessageType messageType : MessageType.values()) {
-                MessageUnreadResult resp = new MessageUnreadResult();
-                resp.setType(messageType);
                 Long count = baseMapper.selectUnreadCountByUserIdAndType(userId, messageType.getValue());
-                resp.setCount(count);
-                detailList.add(resp);
+                detailList.add(new MessageModel.UnreadCount(messageType, count));
                 total += count;
             }
-            result.setDetails(detailList);
         } else {
             total = baseMapper.selectUnreadCountByUserIdAndType(userId, null);
         }
-        result.setTotal(total);
-        return result;
+        return new MessageModel.UnreadResult(total, detailList);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void add(MessageRequest req, List<String> userIdList) {
-        SysMessage message = BeanUtil.copyProperties(req, SysMessage.class);
+    public void add(MessageModel.Request req, List<String> userIdList) {
+        SysMessage message = new SysMessage();
+        message.setTitle(req.title());
+        message.setContent(req.content());
+        message.setType(req.type());
+        message.setPath(req.path());
         message.setScope(CollUtil.isEmpty(userIdList) ? NoticeScopes.ALL : NoticeScopes.USER);
         message.setUsers(userIdList);
         baseMapper.insert(message);

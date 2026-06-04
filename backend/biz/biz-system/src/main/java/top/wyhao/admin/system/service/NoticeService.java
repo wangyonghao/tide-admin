@@ -3,11 +3,8 @@ package top.wyhao.admin.system.service;
 
 import top.wyhao.admin.system.model.enums.NoticeMethods;
 import top.wyhao.admin.system.entity.SysNotice;
-import top.wyhao.admin.system.model.query.NoticeQuery;
-import top.wyhao.admin.system.model.bo.NoticeRequest;
 import top.wyhao.admin.system.model.result.dashboard.DashboardNoticeResp;
-import top.wyhao.admin.system.model.result.NoticeDetailResult;
-import top.wyhao.admin.system.model.result.NoticeResult;
+import top.wyhao.admin.system.model.NotificationModel;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import jakarta.validation.Valid;
@@ -30,7 +27,7 @@ public interface NoticeService {
      * @param pageQuery 分页查询条件
      * @return 分页列表信息
      */
-    PageResult<NoticeResult> page(NoticeQuery query, PageQuery pageQuery);
+    PageResult<NotificationModel> page(NotificationModel.NoticeQuery query, PageQuery pageQuery);
 
     /**
      * 查询详情
@@ -38,7 +35,7 @@ public interface NoticeService {
      * @param id ID
      * @return 详情信息
      */
-    NoticeDetailResult detail(Long id);
+    NotificationModel.Detail detail(Long id);
 
     /**
      * 创建
@@ -46,7 +43,7 @@ public interface NoticeService {
      * @param req 创建请求参数
      * @return 自增 ID
      */
-    Long create(@Valid NoticeRequest req);
+    Long create(@Valid NotificationModel.Request req);
 
     /**
      * 修改
@@ -54,7 +51,7 @@ public interface NoticeService {
      * @param req 修改请求参数
      * @param id  ID
      */
-    void update(@Valid NoticeRequest req, Long id);
+    void update(@Valid NotificationModel.Request req, Long id);
 
     /**
      * 删除

@@ -24,7 +24,7 @@ import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.captcha.graphic.core.GraphicCaptchaService;
 import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.core.util.TemplateUtils;
 import top.wyhao.starter.core.validation.Mobile;
@@ -64,19 +64,20 @@ public class CaptchaController {
         LoginConfigVO loginConfigVO = configService.getLoginConfig();
         boolean loginCaptchaEnabled = loginConfigVO.getCaptchaEnabled();
         if (!loginCaptchaEnabled) {
-            return CaptchaImageResult.builder().isEnabled(false).build();
+            return new CaptchaImageResult(null, null, null, false);
         }
         Captcha captcha = graphicCaptchaService.createCaptchaImage();
         long expireTime = LocalDateTimeUtil.toEpochMilli(LocalDateTime.now().plusSeconds(captchaProperties.getExpirationInSeconds()));
 
-        CaptchaImageResult vo = CaptchaImageResult.builder()
-                .uuid(IdUtil.fastUUID())
-                .img(captcha.toBase64())
-                .expireTime(expireTime)
-                .isEnabled(true)
-                .build();
+        String uuid = IdUtil.fastUUID();
+        CaptchaImageResult vo = new CaptchaImageResult(
+                uuid,
+                captcha.toBase64(),
+                expireTime,
+                true
+        );
 
-        RedisUtils.set(CAPTCHA_KEY + vo.getUuid(), captcha.text(), Duration.ofSeconds(captchaProperties.getExpirationInSeconds()));
+        RedisUtils.set(CAPTCHA_KEY + vo.uuid(), captcha.text(), Duration.ofSeconds(captchaProperties.getExpirationInSeconds()));
         return vo;
     }
 
@@ -149,7 +150,7 @@ public class CaptchaController {
         String templateId = "";
         boolean isSuccess = smsClient.send(phone, templateId, (LinkedHashMap<String, String>)valueMap);
         if(!isSuccess){
-            throw new BusinessException("验证码发送失败");
+            throw new BizException("验证码发送失败");
         }
         // 保存验证码
         String captchaKey = CAPTCHA_KEY + phone;

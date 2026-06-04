@@ -15,7 +15,7 @@ import top.wyhao.admin.schedule.model.req.JobStatusReq;
 import top.wyhao.admin.schedule.model.req.JobTriggerReq;
 import top.wyhao.admin.schedule.model.resp.JobResp;
 import top.wyhao.admin.schedule.service.JobService;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
@@ -45,7 +45,7 @@ public class JobController {
     @SaCheckPermission("schedule:job:create")
     @PostMapping
     public void create(@RequestBody @Valid JobReq req) {
-        BizAssert.isTrue(!baseService.create(req), "任务创建失败");
+        Check.when(!baseService.create(req), "任务创建失败");
     }
 
     @Operation(summary = "修改任务", description = "修改任务")
@@ -53,14 +53,14 @@ public class JobController {
     @SaCheckPermission("schedule:job:update")
     @PutMapping("/{id}")
     public void update(@RequestBody @Valid JobReq req, @PathVariable Long id) {
-        BizAssert.isTrue(!baseService.update(req, id), "任务修改失败");
+        Check.when(!baseService.update(req, id), "任务修改失败");
     }
 
     @Operation(summary = "修改任务状态", description = "修改任务状态")
     @SaCheckPermission("schedule:job:update")
     @PatchMapping("/{id}/status")
     public void updateStatus(@RequestBody @Valid JobStatusReq req, @PathVariable Long id) {
-        BizAssert.isTrue(!baseService.updateStatus(req, id), "任务状态修改失败");
+        Check.when(!baseService.updateStatus(req, id), "任务状态修改失败");
     }
 
     @Operation(summary = "删除任务", description = "删除任务")
@@ -68,7 +68,7 @@ public class JobController {
     @SaCheckPermission("schedule:job:delete")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        BizAssert.isTrue(!baseService.delete(id), "任务删除失败");
+        Check.when(!baseService.delete(id), "任务删除失败");
     }
 
     @Operation(summary = "执行任务", description = "执行任务")
@@ -78,7 +78,7 @@ public class JobController {
     public void trigger(@PathVariable Long id) {
         JobTriggerReq req = new JobTriggerReq();
         req.setJobId(id);
-        BizAssert.isTrue(!baseService.trigger(req), "任务执行失败");
+        Check.when(!baseService.trigger(req), "任务执行失败");
     }
 
     @Operation(summary = "查询任务分组列表", description = "查询任务分组列表")

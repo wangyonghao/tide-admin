@@ -2,10 +2,8 @@
 package top.wyhao.admin.system.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import top.wyhao.admin.system.model.bo.DeptRequest;
+import top.wyhao.admin.system.model.DeptModel;
 import top.wyhao.admin.system.entity.SysDept;
-import top.wyhao.admin.system.model.query.DeptQuery;
-import top.wyhao.admin.system.model.result.DeptResult;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -23,7 +21,7 @@ public interface DeptService{
      * @param pageQuery 分页查询条件
      * @return 分页信息
      */
-    PageResult<DeptResult> page(DeptQuery query, PageQuery pageQuery);
+    PageResult<DeptModel.Result> page(DeptModel.Query query, PageQuery pageQuery);
 
     /**
      * 查询列表
@@ -31,7 +29,7 @@ public interface DeptService{
      * @param query     查询条件
      * @return 列表信息
      */
-    List<DeptResult> list(DeptQuery query);
+    List<DeptModel.Result> list(DeptModel.Query query);
 
     /**
      * 查询部门树
@@ -39,7 +37,7 @@ public interface DeptService{
      * @param query     查询条件
      * @return 树列表信息
      */
-    List<DeptResult> tree(DeptQuery query);
+    List<DeptModel.Result> tree(DeptModel.Query query);
 
     /**
      * 查询详情
@@ -47,7 +45,7 @@ public interface DeptService{
      * @param id ID
      * @return 详情信息
      */
-    DeptResult get(Long id);
+    DeptModel.Result get(Long id);
 
     /**
      * 创建
@@ -55,7 +53,7 @@ public interface DeptService{
      * @param req 创建请求参数
      * @return 自增 ID
      */
-    Long create(DeptRequest req);
+    Long create(DeptModel.Request req);
 
     /**
      * 修改
@@ -63,7 +61,7 @@ public interface DeptService{
      * @param req 修改请求参数
      * @param id  ID
      */
-    void update(DeptRequest req, Long id);
+    void update(DeptModel.Request req, Long id);
 
     /**
      * 删除
@@ -78,7 +76,7 @@ public interface DeptService{
      * @param query     查询条件
      * @param response  响应对象
      */
-    void export(DeptQuery query, HttpServletResponse response);
+    void export(DeptModel.Query query, HttpServletResponse response);
 
     /**
      * 查询子部门列表

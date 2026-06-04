@@ -22,11 +22,7 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "仪表盘-通用总览响应参数")
-public class DashboardOverviewCommonResp implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class DashboardOverviewCommonResp {
     /**
      * 总数
      */

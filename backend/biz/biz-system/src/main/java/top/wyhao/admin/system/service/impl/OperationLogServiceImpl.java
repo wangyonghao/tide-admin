@@ -13,15 +13,11 @@ import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.entity.SysOperationLog;
 import top.wyhao.admin.system.mapper.SysOperationLogMapper;
-import top.wyhao.admin.system.model.query.LogQuery;
-import top.wyhao.admin.system.model.result.log.LoginLogExportResult;
-import top.wyhao.admin.system.model.result.log.OperationLogDetailResult;
-import top.wyhao.admin.system.model.result.log.OperationLogExportResp;
-import top.wyhao.admin.system.model.result.log.OperationLogResult;
+import top.wyhao.admin.system.model.OperationLogModel;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.cmn.db.util.WrapperUtil;
-import top.wyhao.starter.core.exception.BusinessException;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -54,48 +50,42 @@ public class OperationLogServiceImpl implements OperationLogService {
 
 
     @Override
-    public PageResult<OperationLogResult> page(LogQuery query, PageQuery pageQuery) {
+    public PageResult<OperationLogModel.Result> page(OperationLogModel.LogQuery query, PageQuery pageQuery) {
         QueryWrapper<SysOperationLog> queryWrapper = WrapperUtil.build(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysOperationLog.class);
-        IPage<SysOperationLog> page = operationLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()),queryWrapper);
-        return PageResult.build(page, OperationLogResult.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysOperationLog.class);
+        IPage<SysOperationLog> page = operationLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
+        return PageResult.build(page, OperationLogModel.Result.class);
     }
 
     @Override
-    public OperationLogDetailResult detail(Long id) {
+    public OperationLogModel.Detail detail(Long id) {
         SysOperationLog sysOperationLog = this.require(id);
-        BizAssert.throwIfNotExists(sysOperationLog, "LogDO", "ID", id);
-        return BeanUtil.copyProperties(sysOperationLog, OperationLogDetailResult.class);
+        Check.throwIfNotExists(sysOperationLog, "LogDO", "ID", id);
+        return BeanUtil.copyProperties(sysOperationLog, OperationLogModel.Detail.class);
     }
 
     @Override
-    public void exportLoginLog(LogQuery query, HttpServletResponse response) {
-        List<LoginLogExportResult> list = BeanUtil.copyToList(this.list(query), LoginLogExportResult.class);
-        ExcelUtils.export(list, "导出登录日志数据", LoginLogExportResult.class, response);
-    }
-
-    @Override
-    public void exportOperationLog(LogQuery query, HttpServletResponse response) {
-        List<OperationLogExportResp> list = BeanUtil.copyToList(this.list(query), OperationLogExportResp.class);
-        ExcelUtils.export(list, "导出操作日志数据", OperationLogExportResp.class, response);
+    public void export(OperationLogModel.LogQuery query, HttpServletResponse response) {
+        List<OperationLogModel.Excel> list = BeanUtil.copyToList(this.list(query), OperationLogModel.Excel.class);
+        ExcelUtils.export(list, "导出操作日志数据", OperationLogModel.Excel.class, response);
     }
 
     /**
      * 查询列表
      *
-     * @param query     查询条件
+     * @param query 查询条件
      * @return 列表信息
      */
-    private List<OperationLogResult> list(LogQuery query) {
+    private List<OperationLogModel> list(OperationLogModel.LogQuery query) {
         QueryWrapper<SysOperationLog> queryWrapper = WrapperUtil.build(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysOperationLog.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysOperationLog.class);
         return operationLogMapper.selectLogList(queryWrapper);
     }
 
-    private SysOperationLog require(Long id){
-        SysOperationLog operationLog =  operationLogMapper.selectById(id);
-        if(operationLog == null){
-            throw new BusinessException("OPERATIONLOG_NOT_FOUND", "操作日志不存在");
+    private SysOperationLog require(Long id) {
+        SysOperationLog operationLog = operationLogMapper.selectById(id);
+        if (operationLog == null) {
+            throw new BizException("OPERATIONLOG_NOT_FOUND", "操作日志不存在");
         }
         return operationLog;
     }

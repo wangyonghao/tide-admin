@@ -1,9 +1,9 @@
 package top.wyhao.admin.system.exception;
 
 import cn.hutool.core.util.StrUtil;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 
-public class DeptException extends BusinessException {
+public class DeptException extends BizException {
     public DeptException(String message) {
         super(message);
     }

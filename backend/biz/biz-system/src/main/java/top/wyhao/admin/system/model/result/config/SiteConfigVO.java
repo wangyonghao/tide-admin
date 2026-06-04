@@ -15,7 +15,7 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "站点配置")
-public class SiteConfigVO implements Serializable {
+public class SiteConfigVO{
 
     @Serial
     private static final long serialVersionUID = 1L;

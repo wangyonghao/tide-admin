@@ -8,9 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.bo.DeptRequest;
-import top.wyhao.admin.system.model.query.DeptQuery;
-import top.wyhao.admin.system.model.result.DeptResult;
+import top.wyhao.admin.system.model.DeptModel;
 import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.web.core.model.IdResult;
@@ -36,7 +34,7 @@ public class DeptController {
      */
     @Operation(summary = "查询树列表", description = "查询树列表")
     @GetMapping("/system/dept/tree")
-    public List<DeptResult> tree(@Valid DeptQuery query) {
+    public List<DeptModel.Result> tree(@Valid DeptModel.Query query) {
         return deptService.tree(query);
     }
 
@@ -49,7 +47,7 @@ public class DeptController {
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/system/dept/{id}")
-    public DeptResult get(@PathVariable Long id) {
+    public DeptModel.Result get(@PathVariable Long id) {
         return deptService.get(id);
     }
 
@@ -61,7 +59,7 @@ public class DeptController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping("/system/dept")
-    public IdResult<Long> create(@RequestBody @Valid DeptRequest req) {
+    public IdResult<Long> create(@RequestBody @Valid DeptModel.Request req) {
         return new IdResult<>(deptService.create(req));
     }
 
@@ -74,7 +72,7 @@ public class DeptController {
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @PatchMapping("/system/dept/{id}")
-    public void update(@RequestBody @Valid DeptRequest req, @PathVariable Long id) {
+    public void update(@RequestBody @Valid DeptModel.Request req, @PathVariable Long id) {
         deptService.update(req, id);
     }
 
@@ -109,7 +107,7 @@ public class DeptController {
      */
     @Operation(summary = "导出数据", description = "导出数据")
     @GetMapping("/system/dept/export")
-    public void export(@Valid DeptQuery query, HttpServletResponse response) {
+    public void export(@Valid DeptModel.Query query, HttpServletResponse response) {
         deptService.export(query, response);
     }
 
@@ -122,7 +120,7 @@ public class DeptController {
      */
     @Operation(summary = "查询部门树", description = "查询树型结构字典列表（树型结构下拉选项等场景）")
     @GetMapping("/dict/tree")
-    public Result<List<DeptResult>> treeDict(@Valid DeptQuery query) {
+    public Result<List<DeptModel.Result>> treeDict(@Valid DeptModel.Query query) {
         return Result.ok(deptService.tree(query));
     }
 }

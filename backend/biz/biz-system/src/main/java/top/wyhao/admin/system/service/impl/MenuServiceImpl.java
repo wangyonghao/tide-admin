@@ -13,9 +13,8 @@ import top.wyhao.admin.system.entity.SysMenu;
 import top.wyhao.admin.system.exception.MenuException;
 import top.wyhao.admin.system.mapper.SysMenuMapper;
 import top.wyhao.admin.system.model.SystemConstants;
-import top.wyhao.admin.system.model.bo.MenuRequest;
+import top.wyhao.admin.system.model.MenuModel;
 import top.wyhao.admin.system.model.enums.MenuType;
-import top.wyhao.admin.system.model.query.MenuQuery;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
 import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.MenuService;
@@ -27,7 +26,7 @@ import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -42,14 +41,14 @@ public class MenuServiceImpl implements MenuService {
     private final SysMenuMapper menuMapper;
 
     @Override
-    public List<MenuTreeVO> tree(MenuQuery query) {
+    public List<MenuTreeVO> tree(MenuModel.MenuQuery query) {
         LambdaQueryWrapper<SysMenu> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysMenu::getStatus, StatusEnum.ENABLE.getValue())
                 .orderByAsc(SysMenu::getParentId)
                 .orderByAsc(SysMenu::getSort);
 
         if (query != null) {
-            WrapperUtil.applySort(wrapper, WrapperUtil.parseSort(query.getSort()), SysMenu.class);
+            WrapperUtil.applySort(wrapper, WrapperUtil.parseSort(query.sort()), SysMenu.class);
         }
         List<SysMenu> menus = menuMapper.selectList(wrapper);
         return buildPermissionTree(menus);
@@ -101,12 +100,12 @@ public class MenuServiceImpl implements MenuService {
 
 
     @Override
-    public List<MenuVO> list(MenuQuery query) {
+    public List<MenuVO> list(MenuModel.MenuQuery query) {
         return List.of();
     }
 
     @Override
-    public void export(MenuQuery query, HttpServletResponse response) {
+    public void export(MenuModel.MenuQuery query, HttpServletResponse response) {
 
     }
 
@@ -114,17 +113,20 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public MenuVO get(Long id) {
         SysMenu sysMenu = menuMapper.selectById(id);
-        BizAssert.isNull(sysMenu, "菜单不存在");
+        Check.isNull(sysMenu, "菜单不存在");
         return BeanUtil.copyProperties(sysMenu, MenuVO.class);
     }
 
     @Override
-    public Long create(MenuRequest req) {
-        this.checkNameUnique(req.getName(), req.getParentId(), null);
+    public Long create(MenuModel.Request req) {
+        this.checkNameUnique(req.name(), req.parentId(), null);
 
         // 目录类型菜单，默认为 Layout
-        if (MenuType.DIR.equals(req.getType())) {
-            req.setComponent(CharSequenceUtil.blankToDefault(req.getComponent(), "Layout"));
+        if (MenuType.DIR.equals(req.type())) {
+            // 对于 record 类型，需要创建新的实例
+            req = new MenuModel.Request(req.id(), req.type(), req.icon(), req.sort(), req.permission(),
+                    req.path(), req.name(), CharSequenceUtil.blankToDefault(req.component(), "Layout"), 
+                    req.redirect(), req.isExternal(), req.isCache(), req.isHidden(), req.parentId(), req.status());
         }
         RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
         SysMenu menuDO = BeanUtil.copyProperties(req, SysMenu.class);
@@ -133,10 +135,10 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public void update(Long id, MenuRequest req) {
+    public void update(Long id, MenuModel.Request req) {
 
-        if(StrUtil.isNotBlank(req.getName())){
-            this.checkNameUnique(req.getName(), req.getParentId(), id);
+        if(StrUtil.isNotBlank(req.name())){
+            this.checkNameUnique(req.name(), req.parentId(), id);
         }
 
 

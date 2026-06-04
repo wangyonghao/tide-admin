@@ -9,15 +9,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.bo.RoleMemberRemoveRequest;
 import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
-import top.wyhao.admin.system.model.bo.RoleRequest;
-import top.wyhao.admin.system.model.query.RoleQuery;
-import top.wyhao.admin.system.model.query.RoleUserQuery;
+import top.wyhao.admin.system.model.RoleModel;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
-import top.wyhao.admin.system.model.result.role.RoleDetailResult;
-import top.wyhao.admin.system.model.result.role.RoleResult;
-import top.wyhao.admin.system.model.result.role.RoleUserResult;
+import top.wyhao.admin.system.model.RoleUserModel;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.RoleService;
 import top.wyhao.starter.core.model.Result;
@@ -50,7 +45,7 @@ public class RoleController {
      */
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @GetMapping("/system/role")
-    public PageResult<RoleResult> page(@Valid RoleQuery query, @Valid PageQuery pageQuery) {
+    public PageResult<RoleModel.Result> page(@Valid RoleModel.Query query, @Valid PageQuery pageQuery) {
         return roleService.page(query, pageQuery);
     }
 
@@ -62,7 +57,7 @@ public class RoleController {
      */
     @Operation(summary = "查询列表", description = "查询列表")
     @GetMapping("/system/role/list")
-    public List<RoleResult> list(@Valid RoleQuery query) {
+    public List<RoleModel.Result> list(@Valid RoleModel.Query query) {
         return roleService.list(query);
     }
     /**
@@ -74,7 +69,7 @@ public class RoleController {
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/system/role/{id}")
-    public RoleDetailResult detail(@PathVariable Long id) {
+    public RoleModel.Detail detail(@PathVariable Long id) {
         return roleService.detail(id);
     }
 
@@ -86,7 +81,7 @@ public class RoleController {
      */
     @Operation(summary = "创建数据", description = "创建数据")
     @PostMapping("/system/role")
-    public Result<IdResult<Long>> create(@RequestBody @Valid RoleRequest req) {
+    public Result<IdResult<Long>> create(@RequestBody @Valid RoleModel.Request req) {
         return Result.ok(new IdResult<>(roleService.create(req)));
     }
 
@@ -99,7 +94,7 @@ public class RoleController {
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @PutMapping("/system/role/{id}")
-    public void update(@RequestBody @Valid RoleRequest req, @PathVariable Long id) {
+    public void update(@RequestBody @Valid RoleModel.Request req, @PathVariable Long id) {
         roleService.update(req, id);
     }
 
@@ -123,7 +118,7 @@ public class RoleController {
      */
     @Operation(summary = "导出数据", description = "导出数据")
     @GetMapping("/system/role/export")
-    public void export(@Valid RoleQuery query, HttpServletResponse response) {
+    public void export(@Valid RoleModel.Query query, HttpServletResponse response) {
         roleService.export(query, response);
     }
 
@@ -136,15 +131,15 @@ public class RoleController {
     @Operation(summary = "查询角色成员", description = "查询角色成员")
     @Parameter(name = "id", description = "角色 ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/system/role/{id}/user")
-    public List<RoleUserResult> pageMember(@PathVariable Long id, RoleUserQuery query) {
-        return roleService.pageMember(id, query);
+    public List<RoleUserModel> pageMember(@PathVariable Long id, RoleUserModel.Query query, PageQuery pageQuery) {
+        return roleService.pageMember(id, query, pageQuery);
     }
 
     @Operation(summary = "删除角色成员", description = "删除角色成员")
     @Parameter(name = "id", description = "角色 ID", example = "1", in = ParameterIn.PATH)
     @DeleteMapping("/system/role/{id}/user")
-    public void deleteMember(@PathVariable Long id, @Validated @RequestBody RoleMemberRemoveRequest request) {
-        roleService.deleteMember(id, request.getUserIds());
+    public void deleteMember(@PathVariable Long id, @Validated @RequestBody RoleUserModel.Remove request) {
+        roleService.deleteMember(id, request.userIds());
     }
 
 

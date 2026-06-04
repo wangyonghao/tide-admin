@@ -28,7 +28,7 @@ import top.wyhao.starter.core.model.TenantBO;
 import top.wyhao.starter.core.spi.RoleApi;
 import top.wyhao.starter.core.spi.RoleMenuApi;
 import top.wyhao.starter.core.spi.TenantDataApi;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.tenant.config.TenantProperties;
 import top.wyhao.starter.tenant.util.TenantUtils;
 import top.wyhao.starter.web.core.model.LabelValueResult;
@@ -119,8 +119,8 @@ public class TenantServiceImpl implements TenantService {
             return;
         }
         Tenant tenant = baseMapper.selectById(id);
-        BizAssert.throwIfEqual(StatusEnum.DISABLE, tenant.getStatus(), "租户已被禁用");
-        BizAssert.isTrue(tenant.getExpireTime() != null && tenant.getExpireTime()
+        Check.throwIfEqual(StatusEnum.DISABLE, tenant.getStatus(), "租户已被禁用");
+        Check.when(tenant.getExpireTime() != null && tenant.getExpireTime()
             .isBefore(LocalDateTime.now()), "租户已过期");
     }
 
@@ -157,7 +157,7 @@ public class TenantServiceImpl implements TenantService {
      * @param id   ID
      */
     private void checkNameRepeat(String name, Long id) {
-        BizAssert.isTrue(baseMapper.lambdaQuery()
+        Check.when(baseMapper.lambdaQuery()
             .eq(Tenant::getName, name)
             .ne(id != null, Tenant::getId, id)
             .exists(), "名称为 [{}] 的租户已存在", name);
@@ -170,7 +170,7 @@ public class TenantServiceImpl implements TenantService {
      * @param id     ID
      */
     private void checkDomainRepeat(String domain, Long id) {
-        BizAssert.isTrue(baseMapper.lambdaQuery()
+        Check.when(baseMapper.lambdaQuery()
             .eq(Tenant::getDomain, domain)
             .ne(id != null, Tenant::getId, id)
             .exists(), "域名为 [{}] 的租户已存在", domain);

@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
 <mapper namespace="top.wyhao.admin.system.mapper.SysNoticeMapper">
 
-    <resultMap id="notice" type="top.wyhao.admin.system.model.result.NoticeResult">
+    <resultMap id="notice" type="top.wyhao.admin.system.model.NotificationModel">
         <id property="id" column="id" />
         <result property="noticeMethods" column="notice_methods" typeHandler="com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler" />
     </resultMap>

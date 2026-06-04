@@ -39,16 +39,13 @@ import top.wyhao.admin.system.mapper.SysMenuMapper;
 import top.wyhao.admin.system.mapper.SysUserRoleMapper;
 import top.wyhao.admin.system.mapper.SysUserMapper;
 import top.wyhao.admin.system.mapper.SysUserPasswordHistoryMapper;
+import top.wyhao.admin.system.model.FileModel;
 import top.wyhao.admin.system.model.SystemConstants;
-import top.wyhao.admin.system.model.bo.FileRequest;
 import top.wyhao.admin.system.model.bo.user.*;
-import top.wyhao.admin.system.model.query.FileQuery;
-import top.wyhao.admin.system.model.query.UserQuery;
 import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
-import top.wyhao.admin.system.model.result.user.UserDetailResult;
 import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
-import top.wyhao.admin.system.model.result.user.UserResult;
+import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.admin.system.service.*;
 import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.common.security.util.LoginUtil;
@@ -59,11 +56,11 @@ import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.RsaUtils;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -106,43 +103,43 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserDetailResult detail(Long id) {
+    public UserModel.Detail detail(Long id) {
         SysUser userDO = userMapper.selectById(id);
-        BizAssert.notNull(userDO, "用户不存在");
-        return BeanUtil.copyProperties(userDO, UserDetailResult.class);
+        Check.notNull(userDO, "用户不存在");
+        return BeanUtil.copyProperties(userDO, UserModel.Detail.class);
     }
 
     @Override
-    public PageResult<UserResult> page(UserQuery query, PageQuery pageQuery) {
+    public PageResult<UserModel.Result> page(UserModel.Query query, PageQuery pageQuery) {
         QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysUser.class);
-        IPage<UserResult> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, UserResult.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysUser.class);
+        IPage<UserModel.Result> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
+        return PageResult.build(page, UserModel.Result.class);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Long create(UserRequest request) {
+    public Long create(UserModel.Request request) {
         /* 入参格式校验 */
-        String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(request.getPassword()));
-        BizAssert.notBlank(rawPassword, "密码解密失败");
-        BizAssert.isTrue(ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
-        this.checkEmailUnique(request.getEmail(), null);
-        this.checkPhoneUnique(request.getPhone(), null);
-        this.checkUsernameUnique(request.getUsername());
-
+        String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(request.password()));
+        Check.notBlank(rawPassword, "密码解密失败");
+        Check.when(ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
+        this.checkEmailUnique(request.email(), null);
+        this.checkPhoneUnique(request.phone(), null);
+        this.checkUsernameUnique(request.username());
+    
         SysUser newUser = BeanUtil.copyProperties(request, SysUser.class);
         /* 业务逻辑校验 */
-
-
-
+    
+    
+    
         /* 执行业务 */
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         SecurityConfigVO loginConfig = configService.getSecurityConfig();
         newUser.setPwdExpireDate(LocalDate.now().plusDays(loginConfig.getPasswordExpireDays()));
         userMapper.insert(newUser);
-
-        // 保存用户和角色关联
-        roleService.assignRolesToUser(request.getRoleIds(), newUser.getId());
+    
+        // 保存用户和角色的关联
+        roleService.assignRolesToUser(request.roleIds(), newUser.getId());
         return newUser.getId();
     }
 
@@ -155,32 +152,32 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @CacheUpdate(key = "#userId", value = "#userBO.nickname", name = CacheConstants.USER_KEY_PREFIX)
-    public void update(Long userId, UserRequest userRequest) {
+    public void update(Long userId, UserModel.Request userRequest) {
         SysUser oldUser = this.getById(userId);
-
+    
         if (StatusEnum.DISABLE.getValue().equals(oldUser.getStatus())) {
             if (oldUser.getIsBuiltin()) {
-                throw new BusinessException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许禁用");
+                throw new BizException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许禁用");
             }
         }
-        if (CollUtil.isNotEmpty(userRequest.getRoleIds())) {
-            throw new BusinessException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许变更角色");
+        if (CollUtil.isNotEmpty(userRequest.roleIds())) {
+            throw new BizException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许变更角色");
         }
-        if (StrUtil.isNotBlank(userRequest.getEmail())) {
-            this.checkEmailUnique(userRequest.getEmail(), userId);
+        if (StrUtil.isNotBlank(userRequest.email())) {
+            this.checkEmailUnique(userRequest.email(), userId);
         }
-        if (StrUtil.isNotBlank(userRequest.getPhone())) {
-            this.checkPhoneUnique(userRequest.getPhone(), userId);
+        if (StrUtil.isNotBlank(userRequest.phone())) {
+            this.checkPhoneUnique(userRequest.phone(), userId);
         }
-
+    
         SysUser updateUser = BeanUtil.toBean(userRequest, SysUser.class);
         updateUser.setId(userId);
         userMapper.updateById(updateUser);
-        // 保存用户和角色关联
-        roleService.assignRolesToUser(userRequest.getRoleIds(), userId);
-
+        // 保存用户和角色的关联
+        roleService.assignRolesToUser(userRequest.roleIds(), userId);
+    
         // 用户被禁用，则踢出在线用户
-        if (StatusEnum.DISABLE.equals(userRequest.getStatus())) {
+        if (StatusEnum.DISABLE.equals(userRequest.status())) {
             LoginUtil.kickout(userId);
         }
     }
@@ -188,16 +185,16 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @CacheInvalidate(key = "#ids", name = CacheConstants.USER_KEY_PREFIX, multi = true)
     public void delete(List<Long> ids) {
-        BizAssert.isTrue(CollUtil.contains(ids, LoginUtil.getUserId()), "不允许删除当前用户");
+        Check.when(CollUtil.contains(ids, LoginUtil.getUserId()), "不允许删除当前用户");
         List<SysUser> list = userMapper.lambdaQuery()
                 .select(SysUser::getId, SysUser::getNickname, SysUser::getIsBuiltin)
                 .in(SysUser::getId, ids)
                 .list();
         List<Long> idList = CollUtils.mapToList(list, SysUser::getId);
         Collection<Long> subtractIds = CollUtil.subtract(ids, idList);
-        BizAssert.throwIfNotEmpty(subtractIds, "所选用户 [{}] 不存在", CollUtil.join(subtractIds, StringConstants.COMMA));
+        Check.throwIfNotEmpty(subtractIds, "所选用户 [{}] 不存在", CollUtil.join(subtractIds, StringConstants.COMMA));
         Optional<SysUser> builtinUser = list.stream().filter(SysUser::getIsBuiltin).findFirst();
-        BizAssert.isTrue(builtinUser::isPresent, "所选用户 [{}] 是系统内置用户，不允许删除", builtinUser.orElseGet(SysUser::new)
+        Check.when(builtinUser::isPresent, "所选用户 [{}] 是系统内置用户，不允许删除", builtinUser.orElseGet(SysUser::new)
                 .getNickname());
         // 删除用户和角色关联
         userRoleMapper.lambdaUpdate().in(SysUserRole::getUserId, ids).remove();
@@ -224,36 +221,36 @@ public class UserServiceImpl implements UserService {
                     .doReadSync();
         } catch (Exception e) {
             log.error("用户导入数据文件解析异常：{}", e.getMessage(), e);
-            throw new BusinessException("IMPORT_FORMAT_ERROR", "数据文件解析异常");
+            throw new BizException("IMPORT_FORMAT_ERROR", "数据文件解析异常");
         }
         // 总计行数
         userImportResp.setTotalRows(importRowList.size());
-        BizAssert.throwIfEmpty(importRowList, "数据文件格式不正确");
+        Check.throwIfEmpty(importRowList, "数据文件格式不正确");
         // 有效行数：过滤无效数据
         List<UserImportRowReq> validRowList = this.filterImportData(importRowList);
         userImportResp.setValidRows(validRowList.size());
-        BizAssert.throwIfEmpty(validRowList, "数据文件格式不正确");
+        Check.throwIfEmpty(validRowList, "数据文件格式不正确");
 
         // 检测表格内数据是否合法
         Set<String> seenEmails = new HashSet<>();
         boolean hasDuplicateEmail = validRowList.stream()
                 .map(UserImportRowReq::getEmail)
                 .anyMatch(email -> email != null && !seenEmails.add(email));
-        BizAssert.isTrue(hasDuplicateEmail, "存在重复邮箱，请检测数据");
+        Check.when(hasDuplicateEmail, "存在重复邮箱，请检测数据");
         Set<String> seenPhones = new HashSet<>();
         boolean hasDuplicatePhone = validRowList.stream()
                 .map(UserImportRowReq::getPhone)
                 .anyMatch(phone -> phone != null && !seenPhones.add(phone));
-        BizAssert.isTrue(hasDuplicatePhone, "存在重复手机，请检测数据");
+        Check.when(hasDuplicatePhone, "存在重复手机，请检测数据");
 
         // 校验是否存在无效角色
         List<String> roleNames = validRowList.stream().map(UserImportRowReq::getRoleName).distinct().toList();
         int existRoleCount = roleService.countByNames(roleNames);
-        BizAssert.isTrue(existRoleCount < roleNames.size(), "存在无效角色，请检查数据");
+        Check.when(existRoleCount < roleNames.size(), "存在无效角色，请检查数据");
         // 校验是否存在无效部门（支持多级部门解析）
         Set<String> deptNames = CollUtils.mapToSet(validRowList, UserImportRowReq::getDeptName);
         int existDeptCount = countValidMultiLevelDepts(deptNames);
-        BizAssert.isTrue(existDeptCount < deptNames.size(), "存在无效部门，请检查部门名称或部门层级是否正确");
+        Check.when(existDeptCount < deptNames.size(), "存在无效部门，请检查部门名称或部门层级是否正确");
 
         // 查询重复用户
         userImportResp
@@ -279,10 +276,10 @@ public class UserServiceImpl implements UserService {
         try {
             String data = RedisUtils.get(CacheConstants.DATA_IMPORT_KEY + req.getImportKey());
             importUserList = JSONUtil.toList(data, UserImportRowReq.class);
-            BizAssert.isTrue(CollUtil.isEmpty(importUserList), "导入已过期，请重新上传");
+            Check.when(CollUtil.isEmpty(importUserList), "导入已过期，请重新上传");
         } catch (Exception e) {
             log.error("导入异常:", e);
-            throw new BusinessException("IMPORTATION_EXPIRED", "导入已过期，请重新上传");
+            throw new BizException("IMPORTATION_EXPIRED", "导入已过期，请重新上传");
         }
         // 已存在数据查询
         List<String> existEmails = listExistByField(importUserList, row -> row.getEmail(), SysUser::getEmail);
@@ -290,8 +287,8 @@ public class UserServiceImpl implements UserService {
         List<SysUser> existUserList = listByUsernames(CollUtils
                 .mapToList(importUserList, UserImportRowReq::getUsername));
         List<String> existUsernames = CollUtils.mapToList(existUserList, SysUser::getUsername);
-        BizAssert
-                .isTrue(isExitImportUser(req, importUserList, existUsernames, existEmails, existPhones), "数据不符合导入策略，已退出导入");
+        Check
+                .when(isExitImportUser(req, importUserList, existUsernames, existEmails, existPhones), "数据不符合导入策略，已退出导入");
 
         // 基础数据准备
         Map<String, Long> userMap = existUserList.stream()
@@ -341,17 +338,17 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void export(UserQuery query, HttpServletResponse response) {
+    public void export(UserModel.Query query, HttpServletResponse response) {
         // 构建查询条件
         QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
         // 应用排序条件
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysUser.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysUser.class);
 
         // 查询用户列表
-        List<UserDetailResult> userList = userMapper.selectUserList(queryWrapper);
+        List<UserModel.Detail> userList = userMapper.selectUserList(queryWrapper);
 
         // 导出Excel
-        ExcelUtils.export(userList, "用户数据", UserDetailResult.class, response);
+        ExcelUtils.export(userList, "用户数据", UserModel.Detail.class, response);
     }
 
     @Override
@@ -370,7 +367,7 @@ public class UserServiceImpl implements UserService {
     public String resetPassword(Long id) {
         SysUser userDO = userMapper.selectById(id);
         if (userDO == null) {
-            throw new BusinessException("USER_NOT_FOUND", "用户不存在");
+            throw new BizException("USER_NOT_FOUND", "用户不存在");
         }
         // 生成12位安全随机密码
         String newPassword = generateSecurePassword(12);
@@ -439,7 +436,7 @@ public class UserServiceImpl implements UserService {
         // 校验头像文件类型和大小
         checkAvatar(avatarFile);
 
-        UserDetailResult user = this.detail(userId);
+        UserModel.Detail user = this.detail(userId);
 
         // 上传新头像
         SysFile avatar = uploadAvatarFile(avatarFile, userId);
@@ -454,27 +451,21 @@ public class UserServiceImpl implements UserService {
     }
 
 
-    private void deleteOldAvatarFile(UserDetailResult user) {
-        String oldAvatar = user.getAvatar();
+    private void deleteOldAvatarFile(UserModel.Detail user) {
+        String oldAvatar = user.avatar();
         if (CharSequenceUtil.isNotBlank(oldAvatar)) {
-            fileService.delete(user.getId(), "user_avatar");
+            fileService.delete(user.id(), "user_avatar");
         }
     }
 
     private SysFile uploadAvatarFile(MultipartFile avatarFile, Long userId) {
         String avatarPath = "/user/avatar";
-        FileRequest fileRequest = new FileRequest();
-        fileRequest.setBizId(userId);
-        fileRequest.setBizType("user_avatar");
-        fileRequest.setPath(avatarPath);
         return fileService.upload(avatarFile, avatarPath);
     }
 
     private Long getAvatarFileId(String bizId, String bizType) {
-        FileQuery fileQuery = new FileQuery();
-        fileQuery.setBizId(bizId);
-        fileQuery.setBizType(bizType);
-        List<SysFile> files = fileService.list(fileQuery);
+        FileModel.Query query = new FileModel.Query(null, null, null, bizType, bizId, null);
+        List<SysFile> files = fileService.list(query);
         if (CollUtil.isEmpty(files)) {
             return null;
         }
@@ -488,13 +479,13 @@ public class UserServiceImpl implements UserService {
      */
     private void checkAvatar(MultipartFile avatarFile) {
         String avatarImageType = FileNameUtil.extName(avatarFile.getOriginalFilename());
-        BizAssert.isTrue(!CharSequenceUtil.equalsAnyIgnoreCase(avatarImageType, avatarSupportSuffix), "头像仅支持 {} 格式的图片", String
+        Check.when(!CharSequenceUtil.equalsAnyIgnoreCase(avatarImageType, avatarSupportSuffix), "头像仅支持 {} 格式的图片", String
                 .join(StringConstants.COMMA, avatarSupportSuffix));
 
         long avatarMaxSize = 1024 * 1024 * 2; // 2MB
         long avatarSize = avatarFile.getSize();
         if (avatarSize > avatarMaxSize) {
-            throw new BusinessException("FILE_SIZE_EXCEEDED", StrUtil.format("头像大小不能超过 {} MB", avatarMaxSize / 1024 / 1024));
+            throw new BizException("FILE_SIZE_EXCEEDED", StrUtil.format("头像大小不能超过 {} MB", avatarMaxSize / 1024 / 1024));
         }
     }
 
@@ -512,10 +503,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePassword(String oldPassword, String newPassword, Long id) {
-        BizAssert.throwIfEqual(newPassword, oldPassword, "新密码不能与当前密码相同");
+        Check.throwIfEqual(newPassword, oldPassword, "新密码不能与当前密码相同");
         SysUser oldUser = this.getById(id);
         if (CharSequenceUtil.isNotBlank(oldUser.getPassword())) {
-            BizAssert.isTrue(!passwordEncoder.matches(oldPassword, oldUser.getPassword()), "当前密码不正确");
+            Check.when(!passwordEncoder.matches(oldPassword, oldUser.getPassword()), "当前密码不正确");
         }
         // 校验密码合法性
         int passwordRepetitionTimes = this.checkPassword(newPassword, oldUser);
@@ -541,8 +532,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePhone(String newPhone, String oldPassword, Long id) {
         SysUser user = userMapper.selectById(id);
-        BizAssert.isTrue(!passwordEncoder.matches(oldPassword, user.getPassword()), "当前密码不正确");
-        BizAssert.throwIfEqual(newPhone, user.getPhone(), "新手机号不能与当前手机号相同");
+        Check.when(!passwordEncoder.matches(oldPassword, user.getPassword()), "当前密码不正确");
+        Check.throwIfEqual(newPhone, user.getPhone(), "新手机号不能与当前手机号相同");
         this.checkPhoneUnique(newPhone, id);
         SysUser updateUser = new SysUser();
         updateUser.setId(id);
@@ -554,8 +545,8 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateEmail(String newEmail, String oldPassword, Long id) {
         SysUser user = this.getById(id);
-        BizAssert.isTrue(!passwordEncoder.matches(oldPassword, user.getPassword()), "当前密码不正确");
-        BizAssert.throwIfEqual(newEmail, user.getEmail(), "新邮箱不能与当前邮箱相同");
+        Check.when(!passwordEncoder.matches(oldPassword, user.getPassword()), "当前密码不正确");
+        Check.throwIfEqual(newEmail, user.getEmail(), "新邮箱不能与当前邮箱相同");
         this.checkEmailUnique(newEmail, id);
 
         SysUser updateUser = new SysUser();
@@ -604,16 +595,16 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectRoleCodesByUserId(userId);
     }
 
-    private QueryWrapper<SysUser> buildQueryWrapper(UserQuery query) {
-        String description = query.getKeyword();
-        StatusEnum status = query.getStatus();
-        List<LocalDateTime> createTimeList = query.getCreateTime();
-        Long deptId = query.getDeptId();
-        List<Long> userIdList = query.getUserIds();
+    private QueryWrapper<SysUser> buildQueryWrapper(UserModel.Query query) {
+        String description = query.keyword();
+        StatusEnum status = query.status();
+        List<LocalDateTime> createTimeList = query.createTime();
+        Long deptId = query.deptId();
+        List<Long> userIdList = query.userIds();
         // 获取排除用户 ID 列表
         List<Long> excludeUserIdList = null;
-        if (query.getRoleId() != null) {
-            excludeUserIdList = roleService.listMemberIds(query.getRoleId());
+        if (query.roleId() != null) {
+            excludeUserIdList = roleService.listMemberIds(query.roleId());
         }
         return new QueryWrapper<SysUser>().and(CharSequenceUtil.isNotBlank(description),
                         q -> q.like("t1.username", description)
@@ -780,7 +771,7 @@ public class UserServiceImpl implements UserService {
                 .eq(SysUser::getUsername, username)
                 .exists();
         if (isExists) {
-            throw new BusinessException("USERNAME_EXISTS", "用户名已被占用");
+            throw new BizException("USERNAME_EXISTS", "用户名已被占用");
         }
     }
 
@@ -793,7 +784,7 @@ public class UserServiceImpl implements UserService {
                 .ne(ObjectUtil.isNotNull(selfUserId), SysUser::getId, selfUserId)
                 .exists();
         if (isEmailExists) {
-            throw new BusinessException("EMAIL_EXISTS", "邮箱已被占用");
+            throw new BizException("EMAIL_EXISTS", "邮箱已被占用");
         }
     }
 
@@ -809,7 +800,7 @@ public class UserServiceImpl implements UserService {
                 .ne(ObjectUtil.isNotNull(selfUserId), SysUser::getId, selfUserId)
                 .exists();
         if (isExists) {
-            throw new BusinessException("PHONE_EXISTS", "手机号已被占用");
+            throw new BizException("PHONE_EXISTS", "手机号已被占用");
         }
     }
 
@@ -834,7 +825,7 @@ public class UserServiceImpl implements UserService {
      */
     private SysUser getById(Long id) {
         SysUser user = userMapper.selectById(id);
-        BizAssert.isNull(user, "用户不存在");
+        Check.isNull(user, "用户不存在");
         return user;
     }
 
@@ -849,7 +840,7 @@ public class UserServiceImpl implements UserService {
      * @return 有效部门数量
      */
     private int countValidMultiLevelDepts(Set<String> deptNames) {
-        BizAssert.throwIfEmpty(deptNames, "部门名称集合不能为空");
+        Check.throwIfEmpty(deptNames, "部门名称集合不能为空");
 
         int validCount = 0;
         List<String> invalidDepts = new ArrayList<>();
@@ -863,7 +854,7 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        BizAssert.isTrue(CollUtil.isNotEmpty(invalidDepts), "以下部门无效或存在歧义：{}", String.join(", ", invalidDepts));
+        Check.when(CollUtil.isNotEmpty(invalidDepts), "以下部门无效或存在歧义：{}", String.join(", ", invalidDepts));
 
         return validCount;
     }
@@ -878,12 +869,12 @@ public class UserServiceImpl implements UserService {
      * @return 部门名称到ID的映射
      */
     private Map<String, Long> buildMultiLevelDeptMapping(List<String> deptNames) {
-        BizAssert.throwIfEmpty(deptNames, "部门名称列表不能为空");
+        Check.throwIfEmpty(deptNames, "部门名称列表不能为空");
 
         Map<String, Long> deptMap = new HashMap<>();
         for (String deptName : deptNames) {
             SysDept dept = findDeptByHierarchicalPath(deptName);
-            BizAssert.isNull(dept, "部门 [{}] 不存在或存在歧义", deptName);
+            Check.isNull(dept, "部门 [{}] 不存在或存在歧义", deptName);
             deptMap.put(deptName, dept.getId());
         }
         return deptMap;
@@ -904,7 +895,7 @@ public class UserServiceImpl implements UserService {
      * @return 部门信息，未找到时返回null
      */
     private SysDept findDeptByHierarchicalPath(String deptPath) {
-        BizAssert.notBlank(deptPath, "部门路径不能为空");
+        Check.notBlank(deptPath, "部门路径不能为空");
         return deptPath.contains(StringConstants.SLASH)
                 ? findMultiLevelDept(deptPath)
                 : findSingleLevelDept(deptPath.trim());
@@ -921,7 +912,7 @@ public class UserServiceImpl implements UserService {
      */
     private SysDept findMultiLevelDept(String deptPath) {
         String[] pathParts = deptPath.split(StringConstants.SLASH);
-        BizAssert.isTrue(pathParts.length == 0, "部门路径格式错误：{}", deptPath);
+        Check.when(pathParts.length == 0, "部门路径格式错误：{}", deptPath);
 
         // 从根部门开始逐级查找
         SysDept currentDept = null;
@@ -929,7 +920,7 @@ public class UserServiceImpl implements UserService {
 
         for (String part : pathParts) {
             String trimmedPart = part.trim();
-            BizAssert.notBlank(trimmedPart, "部门路径包含空名称：{}", deptPath);
+            Check.notBlank(trimmedPart, "部门路径包含空名称：{}", deptPath);
 
             // 查找当前层级下指定名称的部门
             currentDept = deptMapper.lambdaQuery()
@@ -937,7 +928,7 @@ public class UserServiceImpl implements UserService {
                     .eq(SysDept::getParentId, parentId)
                     .one();
 
-            BizAssert.isNull(currentDept, "找不到部门 [{}] 在路径 [{}] 中", trimmedPart, deptPath);
+            Check.isNull(currentDept, "找不到部门 [{}] 在路径 [{}] 中", trimmedPart, deptPath);
             parentId = currentDept.getId(); // 更新父级ID为当前部门ID
         }
 
@@ -958,8 +949,8 @@ public class UserServiceImpl implements UserService {
         // 查找所有同名部门
         List<SysDept> deptList = deptMapper.lambdaQuery().eq(SysDept::getName, deptName).list();
 
-        BizAssert.throwIfEmpty(deptList, "部门 [{}] 不存在", deptName);
-        BizAssert.isTrue(deptList.size() > 1, "存在多个同名部门 [{}]，请使用完整层级路径，如：公司名:{}", deptName, deptName);
+        Check.throwIfEmpty(deptList, "部门 [{}] 不存在", deptName);
+        Check.when(deptList.size() > 1, "存在多个同名部门 [{}]，请使用完整层级路径，如：公司名:{}", deptName, deptName);
 
         return deptList.get(0);
     }

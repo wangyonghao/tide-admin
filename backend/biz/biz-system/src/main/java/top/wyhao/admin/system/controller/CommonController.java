@@ -30,25 +30,10 @@ import java.util.List;
 @Validated
 @RestController("systemCommonController")
 @RequiredArgsConstructor
-@RequestMapping("/system/common")
 public class CommonController {
 
-    private final FileService fileService;
     private final DictService dictService;
 
 
-    @Operation(summary = "查询字典", description = "查询字典列表")
-    @Parameter(name = "dictType", description = "字典类型", example = "notice_type", in = ParameterIn.PATH)
-    @GetMapping("/dict/{dictType}")
-    public List<LabelValueResult<String>> listDict(@PathVariable String dictType) {
-        return dictService.listByDictType(dictType);
-    }
 
-    @SaIgnore
-    @Operation(summary = "查询租户开启状态", description = "查询租户开启状态")
-    @GetMapping("/dict/option/tenant")
-    @Cached(key = "'TENANT'", name = CacheConstants.CONFIG_KEY_PREFIX)
-    public Boolean tenantEnabled() {
-        return TenantContextHolder.isTenantEnabled();
-    }
 }

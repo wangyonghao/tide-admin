@@ -18,10 +18,6 @@ import java.util.List;
 @Data
 @Schema(description = "用户角色修改请求参数")
 public class UserRoleUpdateReq implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
     /**
      * 角色 ID 列表
      */

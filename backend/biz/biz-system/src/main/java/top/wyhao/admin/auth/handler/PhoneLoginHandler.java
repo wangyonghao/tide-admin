@@ -18,7 +18,7 @@ import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.model.LoginUser;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
 
 /**
@@ -26,16 +26,16 @@ import top.wyhao.starter.core.util.validation.ValidationUtils;
  */
 @RequiredArgsConstructor
 @Component
-public class PhoneLoginHandler implements LoginHandler<PhoneLoginRequest> {
+public class PhoneLoginHandler implements LoginHandler<PhoneLoginRequest.Request> {
     private final UserService userService;
     private final OperationLogService operationLogService;
     private final DeptService deptService;
     private final LoginLogService loginLogService;
 
-    public LoginResult login(PhoneLoginRequest req) {
+    public LoginResult login(PhoneLoginRequest.Request req) {
         this.preLogin(req);
         // 验证手机号
-        SysUser user = userService.getByPhone(req.getPhone());
+        SysUser user = userService.getByPhone(req.phone());
         ValidationUtils.throwIfNull(user, "此手机号未绑定本系统账号");
         // 检查用户状态
         checkUserStatus(user);
@@ -49,18 +49,15 @@ public class PhoneLoginHandler implements LoginHandler<PhoneLoginRequest> {
         // 登录并记录登录日志
         LoginHelper.doLogin(loginUser);
 
-        return LoginResult.builder()
-                .code("200")
-                .token(LoginUtil.getTokenValue())
-                .build();
+        return new LoginResult("200", LoginUtil.getTokenValue(), null);
     }
 
-    public void preLogin(PhoneLoginRequest req) {
-        String phone = req.getPhone();
+    public void preLogin(PhoneLoginRequest.Request req) {
+        String phone = req.phone();
         String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + phone;
         String captcha = RedisUtils.get(captchaKey);
         ValidationUtils.throwIfBlank(captcha, "验证码已失效");
-        ValidationUtils.throwIfNotEqualIgnoreCase(req.getCaptcha(), captcha, "验证码已失效");
+        ValidationUtils.throwIfNotEqualIgnoreCase(req.captcha(), captcha, "验证码已失效");
         RedisUtils.delete(captchaKey);
     }
 
@@ -70,8 +67,8 @@ public class PhoneLoginHandler implements LoginHandler<PhoneLoginRequest> {
      * @param user 用户信息
      */
     private void checkUserStatus(SysUser user) {
-        BizAssert.throwIfEqual(StatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
+        Check.throwIfEqual(StatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
         SysDept dept = deptService.getById(user.getDeptId());
-        BizAssert.throwIfEqual(StatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
+        Check.throwIfEqual(StatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
     }
 }

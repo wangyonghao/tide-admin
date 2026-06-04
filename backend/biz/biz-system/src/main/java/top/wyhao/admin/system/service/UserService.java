@@ -6,11 +6,9 @@ import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.model.bo.user.*;
 import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.model.query.UserQuery;
-import top.wyhao.admin.system.model.result.user.UserDetailResult;
 import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
-import top.wyhao.admin.system.model.result.user.UserResult;
+import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -140,17 +138,17 @@ public interface UserService {
      */
     Long countByDeptIds(List<Long> deptIds);
 
-    UserDetailResult detail(Long id);
+    UserModel.Detail detail(Long id);
 
-    PageResult<UserResult> page(UserQuery query, PageQuery pageQuery);
+    PageResult<UserModel.Result> page(UserModel.Query query, PageQuery pageQuery);
 
     Long save(SysUser user);
 
-    Long create(@Valid UserRequest req);
+    Long create(@Valid UserModel.Request req);
 
-    void export(@Valid UserQuery query, HttpServletResponse response);
+    void export(@Valid UserModel.Query query, HttpServletResponse response);
 
-    void update(Long id, @Valid UserRequest req);
+    void update(Long id, @Valid UserModel.Request req);
 
     void delete(List<Long> id);
 

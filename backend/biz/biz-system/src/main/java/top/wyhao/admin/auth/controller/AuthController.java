@@ -1,16 +1,19 @@
 
 package top.wyhao.admin.auth.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.dev33.satoken.exception.NotLoginException;
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.convert.Convert;
 import cn.hutool.extra.spring.SpringUtil;
+import cn.hutool.json.JSONUtil;
 import com.xkcoding.justauth.autoconfigure.JustAuthProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.AuthRequestBuilder;
@@ -24,22 +27,25 @@ import top.wyhao.admin.auth.handler.PhoneLoginHandler;
 import top.wyhao.admin.auth.handler.SocialLoginHandler;
 import top.wyhao.admin.auth.model.*;
 import top.wyhao.admin.auth.model.enums.AuthType;
+import top.wyhao.admin.system.model.LoginLogModel;
 import top.wyhao.admin.system.model.bo.user.UserPasswordResetRequest;
+import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.exception.BadRequestException;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.util.RsaUtils;
 import top.wyhao.starter.core.util.validation.Validator;
+import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.Map;
 
 /**
- * 认证 API
-
+ * 用户认证 API
  */
-@Tag(name = "认证 API")
+@Tag(name = "用户认证 API")
 @RestController
 @RequiredArgsConstructor
 public class AuthController {
@@ -47,36 +53,43 @@ public class AuthController {
 
     private final UserService userService;
     private final MenuService menuService;
+    private final LoginLogService loginLogService;
 
     @SaIgnore
     @Operation(summary = "登录", description = "用户登录")
     @PostMapping("/auth/login")
-    public LoginResult login(@RequestBody @Valid LoginRequest req) {
-        if (req.getAuthType() == null) {
-            req.setAuthType(AuthType.ACCOUNT);
+    public LoginResult login(@RequestBody @Valid Object reqObj) {
+        // 需要根据 JSON 中的 authType 字段来判断具体的请求类型
+        if (!(reqObj instanceof Map)) {
+            throw new BadRequestException("AUTH_REQUEST_INVALID", "请求参数格式错误");
         }
+        
+        Map<String, Object> reqMap = (Map<String, Object>) reqObj;
+        String authTypeStr = (String) reqMap.get("authType");
+        AuthType authType = authTypeStr != null ? AuthType.valueOf(authTypeStr) : AuthType.ACCOUNT;
+        
         LoginResult loginResult;
-        switch (req.getAuthType()) {
+        switch (authType) {
             case ACCOUNT: // 账号密码登录
-                AccountLoginRequest accountReq = (AccountLoginRequest) req;
+                AccountLoginRequest.Request accountReq = JSONUtil.toBean(JSONUtil.toJsonStr(reqMap), AccountLoginRequest.Request.class);
                 Validator.validate(accountReq);
                 AccountLoginHandler accountLoginHandler = SpringUtil.getBean(AccountLoginHandler.class);
                 loginResult = accountLoginHandler.login(accountReq);
                 break;
             case SOCIAL: // 社交账号登录
-                SocialLoginRequest socialReq = (SocialLoginRequest) req;
+                SocialLoginRequest.Request socialReq = JSONUtil.toBean(JSONUtil.toJsonStr(reqMap), SocialLoginRequest.Request.class);
                 Validator.validate(socialReq);
                 SocialLoginHandler socialLoginHandler = SpringUtil.getBean(SocialLoginHandler.class);
                 loginResult = socialLoginHandler.login(socialReq);
                 break;
             case EMAIL: // 邮箱登录
-                EmailLoginRequest emailReq = (EmailLoginRequest) req;
+                EmailLoginRequest.Request emailReq = JSONUtil.toBean(JSONUtil.toJsonStr(reqMap), EmailLoginRequest.Request.class);
                 Validator.validate(emailReq);
                 EmailLoginHandler emailLoginHandler = SpringUtil.getBean(EmailLoginHandler.class);
                 loginResult = emailLoginHandler.login(emailReq);
                 break;
             case PHONE:  // 手机登录
-                PhoneLoginRequest phoneReq = (PhoneLoginRequest) req;
+                PhoneLoginRequest.Request phoneReq = JSONUtil.toBean(JSONUtil.toJsonStr(reqMap), PhoneLoginRequest.Request.class);
                 Validator.validate(phoneReq);
                 PhoneLoginHandler phoneLoginHandler = SpringUtil.getBean(PhoneLoginHandler.class);
                 loginResult = phoneLoginHandler.login(phoneReq);
@@ -96,7 +109,7 @@ public class AuthController {
         String newPasswordEnc = body.get("newPassword");
         Object userIdObj = SaTempUtil.parseToken(tempToken);
         if (userIdObj == null) {
-            throw new BusinessException("TEMPTOKEN_EXPIRED", "临时令牌无效或已过期");
+            throw new BizException("TEMPTOKEN_EXPIRED", "临时令牌无效或已过期");
         }
         String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(newPasswordEnc, "新密码解密失败");
         UserPasswordResetRequest resetReq = new UserPasswordResetRequest();
@@ -120,21 +133,19 @@ public class AuthController {
     @GetMapping("/auth/{source}")
     public SocialAuthorizeUrlResult socialLogin(@PathVariable String source) {
         AuthRequest authRequest = this.getAuthRequest(source);
-        return SocialAuthorizeUrlResult.builder()
-                .authorizeUrl(authRequest.authorize(AuthStateUtils.createState()))
-                .build();
+        return new SocialAuthorizeUrlResult(authRequest.authorize(AuthStateUtils.createState()));
     }
 
     @Operation(summary = "获取认证信息", description = "获取认证信息")
     @GetMapping("/auth/info")
     public AuthInfoResult getAuthInfo() {
         Long userId = LoginUtil.getUserId();
-        AuthInfoResult authInfoResult = new AuthInfoResult();
-        authInfoResult.setUser(userService.detail(userId));
-        authInfoResult.setRoles(userService.findUserRoles(userId));
-        authInfoResult.setPermissions(userService.findUserPermissions(userId));
-        authInfoResult.setMenus(menuService.getMenuTreeByUserId(userId));
-        return authInfoResult;
+        return new AuthInfoResult(
+                userService.detail(userId),
+                userService.findUserRoles(userId),
+                userService.findUserPermissions(userId),
+                menuService.getMenuTreeByUserId(userId)
+        );
     }
 
     private AuthRequest getAuthRequest(String source) {
@@ -142,7 +153,22 @@ public class AuthController {
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw new BusinessException("PLATFORM_NOT_SUPPORT", "暂不支持 [%s] 平台账号登录".formatted(source));
+            throw new BizException("PLATFORM_NOT_SUPPORT", "暂不支持 [%s] 平台账号登录".formatted(source));
         }
+    }
+
+
+
+    @Operation(summary = "查询登录日志", description = "分页查询登录日志列表")
+    @GetMapping("/auth/login-log")
+    public PageResult<LoginLogModel> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery) {
+        return loginLogService.page(query, pageQuery);
+    }
+
+    @Operation(summary = "导出", description = "导出登录日志数据")
+    @SaCheckPermission("monitor:log:export")
+    @GetMapping("/auth/login-log/export")
+    public void export(LoginLogModel.LoginLogQuery query, HttpServletResponse response) {
+        loginLogService.export(query, response);
     }
 }

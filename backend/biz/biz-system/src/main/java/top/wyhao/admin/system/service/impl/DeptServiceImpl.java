@@ -14,9 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.entity.SysDept;
 import top.wyhao.admin.system.exception.DeptException;
 import top.wyhao.admin.system.mapper.SysDeptMapper;
-import top.wyhao.admin.system.model.bo.DeptRequest;
-import top.wyhao.admin.system.model.query.DeptQuery;
-import top.wyhao.admin.system.model.result.DeptResult;
+import top.wyhao.admin.system.model.DeptModel;
 import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.UserService;
@@ -25,7 +23,7 @@ import top.wyhao.cmn.db.util.DBMetaUtils;
 import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -52,73 +50,85 @@ public class DeptServiceImpl implements DeptService {
     private final SysDeptMapper baseMapper;
 
     @Override
-    public PageResult<DeptResult> page(DeptQuery query, PageQuery pageQuery) {
+    public PageResult<DeptModel.Result> page(DeptModel.Query query, PageQuery pageQuery) {
         QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysDept.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysDept.class);
         IPage<SysDept> page = baseMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, DeptResult.class);
+        return PageResult.build(page, DeptModel.Result.class);
     }
 
     @Override
-    public List<DeptResult> list(DeptQuery query) {
-        return this.list(query, DeptResult.class);
+    public List<DeptModel.Result> list(DeptModel.Query query) {
+        return this.list(query, DeptModel.Result.class);
     }
 
     @Override
-    public List<DeptResult> tree(DeptQuery query) {
-        List<DeptResult> list = this.list(query, DeptResult.class);
+    public List<DeptModel.Result> tree(DeptModel.Query query) {
+        List<DeptModel.Result> list = this.list(query, DeptModel.Result.class);
         return TreeUtils.flatToTree(list,
-                DeptResult::getId,
-                DeptResult::getParentId,
-                DeptResult::getChildren,
-                DeptResult::setChildren);
+                DeptModel.Result::id,
+                DeptModel.Result::parentId,
+                DeptModel.Result::children,
+                (item, children) -> new DeptModel.Result(
+                        item.id(),
+                        item.name(),
+                        item.code(),
+                        item.type(),
+                        item.parentId(),
+                        item.sort(),
+                        item.isBuiltin(),
+                        item.description(),
+                        item.status(),
+                        item.disabled(),
+                        children
+                ));
     }
 
     @Override
-    public DeptResult get(Long id) {
+    public DeptModel.Result get(Long id) {
         SysDept entity = baseMapper.selectById(id);
-        return BeanUtil.toBean(entity, DeptResult.class);
+        return BeanUtil.toBean(entity, DeptModel.Result.class);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long create(DeptRequest req) {
+    public Long create(DeptModel.Request req) {
         // 验证部门名称是否已存在
-        this.checkNameExist(req.getName(), req.getParentId(), null);
+        this.checkNameExist(req.name(), req.parentId(), null);
 
         SysDept entity = new SysDept();
-        entity.setCode(req.getCode());
-        entity.setName(req.getName());
-        entity.setType(req.getType());
-        entity.setParentId(req.getParentId());
+        entity.setCode(req.code());
+        entity.setName(req.name());
+        entity.setType(req.type());
+        entity.setParentId(req.parentId());
         entity.setAncestors(this.calcDeptPath(entity.getParentId()));
-        entity.setDescription(req.getDescription());
-        entity.setSort(req.getSort());
-        entity.setStatus(req.getStatus());
+        entity.setDescription(req.description());
+        entity.setSort(req.sort());
+        entity.setStatus(req.status());
         baseMapper.insert(entity);
         return entity.getId();
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(DeptRequest req, Long id) {
+    public void update(DeptModel.Request req, Long id) {
         this.checkCanUpdate(req, id);
 
         // type、isBuiltin 不可变更
         SysDept updateEntity = new SysDept();
         updateEntity.setId(id);
-        updateEntity.setCode(req.getCode());
-        updateEntity.setName(req.getName());
-        updateEntity.setParentId(req.getParentId());
-        updateEntity.setAncestors(this.calcDeptPath(req.getParentId()));
-        updateEntity.setDescription(req.getDescription());
-        updateEntity.setSort(req.getSort());
-        updateEntity.setStatus(req.getStatus());
+        updateEntity.setCode(req.code());
+        updateEntity.setName(req.name());
+        updateEntity.setParentId(req.parentId());
+        updateEntity.setAncestors(this.calcDeptPath(req.parentId()));
+        updateEntity.setDescription(req.description());
+        updateEntity.setSort(req.sort());
+        updateEntity.setStatus(req.status());
         baseMapper.updateById(updateEntity);
 
         // 变更上级部门时，更新所有下级的 ancestors
         SysDept oldEntity = baseMapper.selectById(id);
-        if (ObjectUtil.notEqual(req.getParentId(), oldEntity.getParentId())) {
+        if (ObjectUtil.notEqual(req.parentId(), oldEntity.getParentId())) {
             baseMapper.lambdaUpdate()
                     .set(SysDept::getAncestors, updateEntity.getAncestors())
                     .likeLeft(SysDept::getAncestors, oldEntity.getAncestors()).update();
@@ -134,24 +144,24 @@ public class DeptServiceImpl implements DeptService {
         return dept;
     }
 
-    public void checkCanUpdate(DeptRequest req, Long id) {
+    public void checkCanUpdate(DeptModel.Request req, Long id) {
         // 检查名称是否重复
-        if (Objects.nonNull(req.getParentId())){
-            this.checkNameExist(req.getName(), req.getParentId(), id);
+        if (Objects.nonNull(req.parentId())){
+            this.checkNameExist(req.name(), req.parentId(), id);
         }
 
         SysDept oldDept = this.require(id);
 
         if (Boolean.TRUE.equals(oldDept.getIsBuiltin())) {
-            BizAssert.throwIfEqual(StatusEnum.DISABLE.name(), req.getStatus(), "[{}] 是系统内置部门，不允许禁用", oldDept.getName());
-            BizAssert.throwIfNotEqual(req.getParentId(), oldDept.getParentId(), "[{}] 是系统内置部门，不允许变更上级部门", oldDept.getName());
+            Check.throwIfEqual(StatusEnum.DISABLE.name(), req.status(), "[{}] 是系统内置部门，不允许禁用", oldDept.getName());
+            Check.throwIfNotEqual(req.parentId(), oldDept.getParentId(), "[{}] 是系统内置部门，不允许变更上级部门", oldDept.getName());
         }
-        if (ObjectUtil.notEqual(req.getStatus(), oldDept.getStatus())) {
+        if (ObjectUtil.notEqual(req.status(), oldDept.getStatus())) {
             List<SysDept> children = this.listChildren(id);
             long enabledChildrenCount = children.stream().filter(d -> StatusEnum.ENABLE.getValue().equals(d.getStatus())).count();
-            BizAssert.isTrue(StatusEnum.DISABLE.getValue().equals(req.getStatus()) && enabledChildrenCount > 0, "禁用 [{}] 前，请先禁用其所有下级部门", oldDept.getName());
+            Check.when(StatusEnum.DISABLE.getValue().equals(req.status()) && enabledChildrenCount > 0, "禁用 [{}] 前，请先禁用其所有下级部门", oldDept.getName());
             SysDept oldParentDept = this.getByParentId(oldDept.getParentId());
-            BizAssert.isTrue(StatusEnum.ENABLE.getValue().equals(req.getStatus()) && StatusEnum.DISABLE.getValue()
+            Check.when(StatusEnum.ENABLE.getValue().equals(req.status()) && StatusEnum.DISABLE.getValue()
                     .equals(oldParentDept.getStatus()), "启用 [{}] 前，请先启用其所有上级部门", oldDept.getName());
         }
     }
@@ -165,19 +175,19 @@ public class DeptServiceImpl implements DeptService {
                 .in(SysDept::getId, ids)
                 .list();
         Optional<SysDept> builtinData = list.stream().filter(SysDept::getIsBuiltin).findFirst();
-        BizAssert.isTrue(builtinData::isEmpty, "所选部门 [{}] 是系统内置部门，不允许删除", builtinData.orElseGet(SysDept::new)
+        Check.when(builtinData::isEmpty, "所选部门 [{}] 是系统内置部门，不允许删除", builtinData.orElseGet(SysDept::new)
                 .getName());
-        BizAssert.isTrue(this.countChildren(ids) <= 0, "所选部门存在下级部门，不允许删除");
-        BizAssert.isTrue(userService.countByDeptIds(ids) <=0, "所选部门存在用户关联，请解除关联后重试");
+        Check.when(this.countChildren(ids) <= 0, "所选部门存在下级部门，不允许删除");
+        Check.when(userService.countByDeptIds(ids) <=0, "所选部门存在用户关联，请解除关联后重试");
         // 删除角色和部门关联
         roleDeptService.deleteByDeptIds(ids);
         baseMapper.deleteByIds(ids);
     }
 
     @Override
-    public void export(DeptQuery query, HttpServletResponse response) {
-        List<DeptResult> list = this.list(query, DeptResult.class);
-        ExcelUtils.export(list, "导出数据", DeptResult.class, response);
+    public void export(DeptModel.Query query, HttpServletResponse response) {
+        List<DeptModel.Result> list = this.list(query, DeptModel.Result.class);
+        ExcelUtils.export(list, "导出数据", DeptModel.Result.class, response);
     }
 
     /**
@@ -187,10 +197,10 @@ public class DeptServiceImpl implements DeptService {
      * @param targetClass 指定类型
      * @return 列表信息
      */
-    protected <E> List<E> list(DeptQuery query, Class<E> targetClass) {
+    protected <E> List<E> list(DeptModel.Query query, Class<E> targetClass) {
         QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
         // 设置排序
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysDept.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysDept.class);
         List<SysDept> entityList = baseMapper.selectList(queryWrapper);
         if (SysDept.class == targetClass) {
             return (List<E>) entityList;
@@ -247,7 +257,7 @@ public class DeptServiceImpl implements DeptService {
      */
     private SysDept getByParentId(Long parentId) {
         SysDept parentDept = baseMapper.selectById(parentId);
-        BizAssert.isNull(parentDept, "上级部门不存在");
+        Check.isNull(parentDept, "上级部门不存在");
         return parentDept;
     }
 

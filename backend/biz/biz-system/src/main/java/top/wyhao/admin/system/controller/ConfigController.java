@@ -11,16 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.admin.system.model.query.ConfigQuery;
+import top.wyhao.admin.system.model.ConfigModel;
+import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.core.UserContextHolder;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.model.MailConfig;
-import top.wyhao.starter.core.util.validation.BizAssert;
-import top.wyhao.starter.web.core.model.SortQuery;
+import top.wyhao.starter.core.util.validation.Check;
 
 /**
  * 系统配置 API
@@ -126,14 +126,14 @@ public class ConfigController {
     public void sendTestMail(MailConfig mailConfig) {
         // 获取当前登录用户
         top.wyhao.starter.core.model.LoginUser loginUser = top.wyhao.starter.core.UserContextHolder.getCurrentUser();
-        BizAssert.notNull(loginUser, "用户未登录");
+        Check.notNull(loginUser, "用户未登录");
 
         Long userId = UserContextHolder.getUserId();
 
         // 获取用户详细信息（包含邮箱）
-        top.wyhao.admin.system.model.result.user.UserDetailResult userDetail = userService.detail(userId);
-        BizAssert.notNull(userDetail, "用户信息不存在");
-        BizAssert.notBlank(userDetail.getEmail(), "用户邮箱为空，请先设置邮箱地址");
+        UserModel.Detail userDetail = userService.detail(userId);
+        Check.notNull(userDetail, "用户信息不存在");
+        Check.notBlank(userDetail.email(), "用户邮箱为空，请先设置邮箱地址");
 
         // 发送测试邮件
         String subject = "【系统测试】邮件配置测试";
@@ -143,16 +143,16 @@ public class ConfigController {
                         "如果您收到此邮件，说明邮件配置已成功！\n\n" +
                         "发送时间：%s\n\n" +
                         "此邮件由系统自动发送，请勿回复。",
-                userDetail.getUsername(),
+                userDetail.username(),
                 java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         );
 
         try {
-            mailService.sendTestMail(mailConfig, userDetail.getEmail(), subject, content);
-            log.info("测试邮件发送成功，收件人：{}", userDetail.getEmail());
+            mailService.sendTestMail(mailConfig, userDetail.email(), subject, content);
+            log.info("测试邮件发送成功，收件人：{}", userDetail.email());
         } catch (Exception e) {
             log.error("测试邮件发送失败", e);
-            throw new BusinessException("测试邮件发送失败：" + e.getMessage());
+            throw new BizException("测试邮件发送失败：" + e.getMessage());
         }
 
     }
@@ -234,7 +234,7 @@ public class ConfigController {
     @Operation(summary = "导出")
     @SaCheckPermission("system:config:export")
     @GetMapping("/export")
-    public void export(@Valid ConfigQuery query, HttpServletResponse response) {
+    public void export(@Valid ConfigModel.Query query, HttpServletResponse response) {
         configService.export(query, response);
     }
 }

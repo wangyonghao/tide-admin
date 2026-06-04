@@ -15,14 +15,12 @@ import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.entity.SysLoginLog;
 import top.wyhao.admin.system.mapper.SysLoginLogMapper;
 import top.wyhao.admin.system.model.enums.LoginDeviceEnum;
-import top.wyhao.admin.system.model.query.LoginLogQuery;
-import top.wyhao.admin.system.model.result.log.LoginLogExportResult;
-import top.wyhao.admin.system.model.result.log.LoginLogResult;
+import top.wyhao.admin.system.model.LoginLogModel;
 import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.util.IpUtils;
-import top.wyhao.starter.core.util.validation.BizAssert;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -33,7 +31,6 @@ import java.util.List;
 /**
  * 登录日志 Service 实现
  *
-
  * @since 2026/05/08
  */
 @Slf4j
@@ -85,9 +82,9 @@ public class LoginLogServiceImpl implements LoginLogService {
     }
 
     @Override
-    public PageResult<LoginLogResult> page(LoginLogQuery query, PageQuery pageQuery) {
+    public PageResult<LoginLogModel> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery) {
         LambdaQueryWrapper<SysLoginLog> queryWrapper = buildQueryWrapper(query);
-        
+
         // 排序：默认按登录时间倒序
         queryWrapper.orderByDesc(SysLoginLog::getLoginTime);
 
@@ -96,25 +93,18 @@ public class LoginLogServiceImpl implements LoginLogService {
                 queryWrapper
         );
 
-        return PageResult.build(page, LoginLogResult.class);
+        return PageResult.build(page, LoginLogModel.class);
     }
 
     @Override
-    public LoginLogResult detail(Long id) {
-        SysLoginLog loginLog = loginLogMapper.selectById(id);
-        BizAssert.throwIfNotExists(loginLog, "SysLoginLog", "ID", id);
-        return BeanUtil.copyProperties(loginLog, LoginLogResult.class);
-    }
-
-    @Override
-    public void export(LoginLogQuery query, HttpServletResponse response) {
+    public void export(LoginLogModel.LoginLogQuery query, HttpServletResponse response) {
         LambdaQueryWrapper<SysLoginLog> queryWrapper = buildQueryWrapper(query);
         queryWrapper.orderByDesc(SysLoginLog::getLoginTime);
-        
+
         List<SysLoginLog> list = loginLogMapper.selectList(queryWrapper);
-        List<LoginLogExportResult> exportList = BeanUtil.copyToList(list, LoginLogExportResult.class);
-        
-        ExcelUtils.export(exportList, "登录日志数据", LoginLogExportResult.class, response);
+        List<LoginLogModel.Excel> exportList = BeanUtil.copyToList(list, LoginLogModel.Excel.class);
+
+        ExcelUtils.export(exportList, "登录日志数据", LoginLogModel.Excel.class, response);
     }
 
     @Override
@@ -122,7 +112,7 @@ public class LoginLogServiceImpl implements LoginLogService {
         LocalDateTime expireTime = LocalDateTime.now().minusDays(retentionDays);
         LambdaQueryWrapper<SysLoginLog> queryWrapper = new LambdaQueryWrapper<>();
         queryWrapper.lt(SysLoginLog::getLoginTime, expireTime);
-        
+
         int count = loginLogMapper.delete(queryWrapper);
         log.info("清理过期登录日志完成，清理数量: {}, 留存天数: {}", count, retentionDays);
         return count;
@@ -131,39 +121,39 @@ public class LoginLogServiceImpl implements LoginLogService {
     /**
      * 构建查询条件
      */
-    private LambdaQueryWrapper<SysLoginLog> buildQueryWrapper(LoginLogQuery query) {
+    private LambdaQueryWrapper<SysLoginLog> buildQueryWrapper(LoginLogModel.LoginLogQuery query) {
         LambdaQueryWrapper<SysLoginLog> queryWrapper = new LambdaQueryWrapper<>();
 
         // 用户名模糊查询
-        if (CharSequenceUtil.isNotBlank(query.getUsername())) {
-            queryWrapper.like(SysLoginLog::getUsername, query.getUsername());
+        if (CharSequenceUtil.isNotBlank(query.username())) {
+            queryWrapper.like(SysLoginLog::getUsername, query.username());
         }
 
         // IP地址模糊查询
-        if (CharSequenceUtil.isNotBlank(query.getIpAddress())) {
-            queryWrapper.like(SysLoginLog::getIpAddress, query.getIpAddress());
+        if (CharSequenceUtil.isNotBlank(query.ipAddress())) {
+            queryWrapper.like(SysLoginLog::getIpAddress, query.ipAddress());
         }
 
         // 登录状态精确查询
-        if (query.getLoginStatus() != null) {
-            queryWrapper.eq(SysLoginLog::getLoginStatus, query.getLoginStatus().getValue());
+        if (query.loginStatus() != null) {
+            queryWrapper.eq(SysLoginLog::getLoginStatus, query.loginStatus().getValue());
         }
 
         // 登录时间范围查询
-        if (query.getLoginTimeStart() != null) {
-            queryWrapper.ge(SysLoginLog::getLoginTime, query.getLoginTimeStart());
+        if (query.loginTimeStart() != null) {
+            queryWrapper.ge(SysLoginLog::getLoginTime, query.loginTimeStart());
         }
-        if (query.getLoginTimeEnd() != null) {
-            queryWrapper.le(SysLoginLog::getLoginTime, query.getLoginTimeEnd());
+        if (query.loginTimeEnd() != null) {
+            queryWrapper.le(SysLoginLog::getLoginTime, query.loginTimeEnd());
         }
 
         // 租户ID查询（超级管理员可以查询所有租户）
         if (!UserContextHolder.isSuperadmin()) {
             // 非超级管理员，只能查询当前租户
             queryWrapper.eq(SysLoginLog::getTenantId, LoginUtil.getTenantId());
-        } else if (query.getTenantId() != null) {
+        } else if (query.tenantId() != null) {
             // 超级管理员指定了租户ID
-            queryWrapper.eq(SysLoginLog::getTenantId, query.getTenantId());
+            queryWrapper.eq(SysLoginLog::getTenantId, query.tenantId());
         }
 
         return queryWrapper;

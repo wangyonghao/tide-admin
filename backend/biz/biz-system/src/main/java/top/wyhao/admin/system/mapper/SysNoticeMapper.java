@@ -6,8 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysNotice;
-import top.wyhao.admin.system.model.query.NoticeQuery;
-import top.wyhao.admin.system.model.result.NoticeResult;
+import top.wyhao.admin.system.model.NotificationModel;
 import top.wyhao.admin.system.model.result.dashboard.DashboardNoticeResp;
 import top.wyhao.cmn.db.model.BaseMapper;
 
@@ -29,7 +28,7 @@ public interface SysNoticeMapper extends BaseMapper<SysNotice> {
      * @param query 查询条件
      * @return 公告列表
      */
-    IPage<NoticeResult> selectNoticePage(@Param("page") Page<SysNotice> page, @Param("query") NoticeQuery query);
+    IPage<NotificationModel> selectNoticePage(@Param("page") Page<SysNotice> page, @Param("query") NotificationModel.NoticeQuery query);
 
     /**
      * 查询未读公告 ID 列表

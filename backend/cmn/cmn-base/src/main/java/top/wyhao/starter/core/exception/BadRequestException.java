@@ -7,7 +7,7 @@ package top.wyhao.starter.core.exception;
 
  * @since 1.0.0
  */
-public class BadRequestException extends BusinessException {
+public class BadRequestException extends BizException {
     public BadRequestException(String code, Object[] args) {
         super(code, args);
     }

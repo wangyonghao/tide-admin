@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.schedule.model.exception;
 
-import top.wyhao.starter.core.exception.BusinessException;
 import top.wyhao.starter.core.exception.SystemException;
 
 /**

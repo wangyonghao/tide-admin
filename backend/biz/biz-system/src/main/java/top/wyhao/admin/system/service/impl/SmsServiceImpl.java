@@ -12,14 +12,12 @@ import org.springframework.stereotype.Service;
 import top.wyhao.admin.cmn.sms.SmsClient;
 import top.wyhao.admin.system.entity.SysSmsLog;
 import top.wyhao.admin.system.mapper.SysSmsLogMapper;
-import top.wyhao.admin.system.model.bo.SmsLogRequest;
-import top.wyhao.admin.system.model.query.SmsLogQuery;
-import top.wyhao.admin.system.model.result.SmsLogResult;
+import top.wyhao.admin.system.model.SmsLogModel;
 import top.wyhao.admin.system.otp.enums.OtpScene;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.SmsService;
 import top.wyhao.cmn.db.util.WrapperUtil;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -30,7 +28,6 @@ import java.util.List;
 /**
  * 短信日志业务实现
  *
-
  * @since 2026/05/18
  */
 @Service
@@ -41,37 +38,37 @@ public class SmsServiceImpl implements SmsService {
     private final SmsClient client;
 
     @Override
-    public void export(SmsLogQuery query, HttpServletResponse response) {
+    public void export(SmsLogModel.SmsLogQuery query, HttpServletResponse response) {
         QueryWrapper<SysSmsLog> queryWrapper = WrapperUtil.build(query);
-        List<SmsLogResult> list = sysSmsLogMapper.selectObjs(queryWrapper);
+        List<SmsLogModel.Result> list = sysSmsLogMapper.selectObjs(queryWrapper);
 
-        ExcelUtils.export(list, "短信日志.xlsx", SmsLogResult.class, response);
+        ExcelUtils.export(list, "短信日志.xlsx", SmsLogModel.Result.class, response);
     }
 
     @Override
-    public SmsLogResult get(Long id) {
+    public SmsLogModel.Result get(Long id) {
         SysSmsLog smsLog = sysSmsLogMapper.selectById(id);
         if (smsLog == null) {
-           throw new BusinessException("记录不存在");
+            throw new BizException("记录不存在");
         }
-        return BeanUtil.toBean(smsLog, SmsLogResult.class);
+        return BeanUtil.toBean(smsLog, SmsLogModel.Result.class);
     }
 
     @Override
-    public PageResult<SmsLogResult> page(SmsLogQuery query, PageQuery pageQuery) {
+    public PageResult<SmsLogModel.Result> page(SmsLogModel.SmsLogQuery query, PageQuery pageQuery) {
         QueryWrapper<SysSmsLog> queryWrapper = WrapperUtil.build(query);
         IPage<SysSmsLog> resultPage = sysSmsLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(resultPage, SmsLogResult.class);
+        return PageResult.build(resultPage, SmsLogModel.Result.class);
     }
 
     @Override
-    public List<SmsLogResult> list(SmsLogQuery query) {
+    public List<SmsLogModel.Result> list(SmsLogModel.SmsLogQuery query) {
         return List.of();
     }
 
     @Async
     @Override
-    public void logAsync(SmsLogRequest req) {
+    public void logAsync(SmsLogModel.Request req) {
         SysSmsLog sysSmsLog = new SysSmsLog();
         BeanUtil.copyProperties(req, sysSmsLog);
         sysSmsLogMapper.insert(sysSmsLog);
@@ -86,7 +83,7 @@ public class SmsServiceImpl implements SmsService {
         client.send(phone, getTemplateId(scene), params);
     }
 
-    private String getTemplateId(OtpScene scene){
+    private String getTemplateId(OtpScene scene) {
         return configService.getSmsTemplate(scene.name());
     }
 }

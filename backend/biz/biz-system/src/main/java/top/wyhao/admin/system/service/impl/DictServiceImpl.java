@@ -9,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.admin.system.mapper.SysDictMapper;
-import top.wyhao.admin.system.model.DictRecord;
+import top.wyhao.admin.system.model.DictModel;
 import top.wyhao.admin.system.service.DictService;
 import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.util.CollUtils;
@@ -29,7 +29,7 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> implements DictService {
     @Override
-    public IPage<SysDict> page(DictRecord.Query query, PageQuery pageQuery) {
+    public IPage<SysDict> page(DictModel.Query query, PageQuery pageQuery) {
         // 构建查询条件（WrapperUtil 现在支持 Record 参数上的 @Query 注解）
         QueryWrapper<SysDict> queryWrapper = WrapperUtil.build(query);
         // 分页查询

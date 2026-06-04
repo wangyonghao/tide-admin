@@ -1,12 +1,12 @@
 package top.wyhao.admin.system.exception;
 
 import cn.hutool.core.util.StrUtil;
-import top.wyhao.starter.core.exception.BusinessException;
+import top.wyhao.starter.core.exception.BizException;
 
 /**
  * 菜单 业务异常
  */
-public class MenuException extends BusinessException {
+public class MenuException extends BizException {
     public MenuException(String message) {
         super(message);
     }
