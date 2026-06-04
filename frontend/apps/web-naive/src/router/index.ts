@@ -5,6 +5,7 @@ import {
 } from 'vue-router';
 import { createRouterGuard } from './guard';
 import { routes } from './routes';
+
 /**
  *  @zh_CN 创建vue-router实例
  */
