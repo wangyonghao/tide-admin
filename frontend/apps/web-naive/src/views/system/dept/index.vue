@@ -52,7 +52,7 @@ const createColumns = (): DataTableColumns<DeptResult> => {
         );
       },
     },
-    { title: $t('system.dept.description'), key: 'remark', align: 'left', ellipsis: { tooltip: true } },
+    { title: $t('system.dept.description'), key: 'description', align: 'left', ellipsis: { tooltip: true } },
     { title: $t('pages.common.operation'), key: 'action', align: 'center', width: 150, fixed: 'right',
       render: (row) => {
         return h(NSpace,

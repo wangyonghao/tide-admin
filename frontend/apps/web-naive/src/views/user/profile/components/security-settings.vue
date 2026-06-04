@@ -22,7 +22,7 @@ import {
   userProfileApi,
   type BindSocialAccountRes,
 } from '#/api/system/user-profile';
-import { loginLogApi, type LoginLogResult } from '#/api/system/login-log';
+import { loginLogApi, type LoginLogResult } from '#/api/auth/login-log';
 import { encryptByRsa } from '#/utils/crypto';
 
 const userStore = useUserStore();

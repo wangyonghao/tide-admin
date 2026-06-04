@@ -3,8 +3,6 @@ import {
   createWebHashHistory,
   createWebHistory,
 } from 'vue-router';
-import { routes as autoRoutes, handleHotUpdate } from 'vue-router/auto-routes'
-console.log(autoRoutes);
 import { createRouterGuard } from './guard';
 import { routes } from './routes';
 /**
@@ -31,8 +29,3 @@ const router = createRouter({
 createRouterGuard(router);
 
 export default router;
-
-// 运行时更新路由而无需重新加载页面
-if (import.meta.hot) {
-  handleHotUpdate(router) 
-} 

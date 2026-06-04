@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui';
-import type { LoginLogResult } from '#/api/system/login-log';
+import type { LoginLogResult } from '#/api/auth/login-log';
 
 import { h, onMounted, ref } from 'vue';
 
@@ -17,7 +17,7 @@ import {
   NTag,
 } from 'naive-ui';
 
-import { loginLogApi } from '#/api/system/login-log';
+import { loginLogApi } from '#/api/auth/login-log';
 
 // ==================== 搜索表单 ====================
 const searchForm = ref({

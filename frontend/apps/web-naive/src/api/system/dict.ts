@@ -1,5 +1,5 @@
 import type { PageQuery, PageResult } from '#/types/api';
-
+import type { Option } from '#/types/global';
 import http from '#/api/http';
 
 /* ==================== API 定义 ==================== */
@@ -23,6 +23,10 @@ export const dictApi = {
   /** 清除字典缓存 */
   clearCache: (dictType: string) => {
     return http.delete(`/system/dict/cache/${dictType}`);
+  },
+    /** 查询字典列表 */
+  listDict: (code: string) => {
+    return http.get<Option[]>(`/system/dict/${code}`);
   },
 };
 

@@ -12,7 +12,7 @@ import {
 } from 'naive-ui';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
-import { loginLogApi, type LoginLogResult } from '#/api/system/login-log';
+import { loginLogApi, type LoginLogResult } from '#/api/auth/login-log';
 import { message } from '#/adapter/naive';
 
 const userStore = useUserStore();

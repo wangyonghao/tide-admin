@@ -5,19 +5,13 @@ import http from '#/api/http';
 export const loginLogApi = {
   /** 分页查询登录日志列表 */
   list: (query: LoginLogPageQuery) => {
-    return http.get<PageResult<LoginLogResult[]>>('/system/login-log', {
+    return http.get<PageResult<LoginLogResult[]>>('/auth/login-log', {
       params: query,
     });
   },
-
-  /** 查询登录日志详情 */
-  detail: (id: string) => {
-    return http.get<LoginLogResult>(`/system/login-log/${id}`);
-  },
-
   /** 导出登录日志 */
   export: (query: LoginLogQuery) => {
-    return http.download('/system/login-log/export', { params: query });
+    return http.download('/auth/login-log/export', { params: query });
   },
 };
 
