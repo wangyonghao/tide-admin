@@ -45,22 +45,16 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      # 6. 定义镜像名称与标签（统一管理）
-      - name: 7.Set Docker Image Tag
-        id: docker_tag
-        run: |
-          echo "IMAGE_NAME=wangyonghao/tide-admin" >> $GITHUB_ENV
-          echo "IMAGE_TAG=latest" >> $GITHUB_ENV
       # 7. 构建多架构镜像并推送到 DockerHub
       - name: 8.Build & Push Image
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
-          context: .
+          context: ./_build/tide-api
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
+          tags: wangyonghao/tide-admin:latest
           # 若Dockerfile不在根目录/有自定义名称，添加：
-          file: ./_build/tide-api/Dockerfile
+          file: Dockerfile
       # # 8. 拷贝到服务器
       # - name: Copy artifacts for tide-api
       #   uses: appleboy/scp-action@v1
