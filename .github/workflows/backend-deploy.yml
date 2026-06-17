@@ -30,31 +30,25 @@ jobs:
           sed -i.bak '/<repositories>/,/<\/repositories>/d' ./backend/pom.xml
           sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' ./backend/pom.xml
           mvn -B package -q --file ./backend/pom.xml
-      # 4. Maven 打包
-      - name: 4.Copy artifacts
-        run: | 
-          mkdir -p ./_build/tide-api/app
-          cp -r ./backend/svr-admin/target/app/ ./_build/tide-api/app/
-          cp ./backend/svr-admin/Dockerfile ./_build/tide-api/
       # 4. 初始化 Docker Buildx（多架构构建必备）
-      - name: 5.Set up Docker Buildx
+      - name: 4.Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       # 5. 登录 DockerHub
-      - name: 6.Login to DockerHub
+      - name: 5.Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       # 7. 构建多架构镜像并推送到 DockerHub
-      - name: 8.Build & Push Image
+      - name: 6.Build & Push Image
         uses: docker/build-push-action@v7
         with:
-          context: ./_build/tide-api
+          context: ./backend/svr-admin/target/
           push: true
           platforms: linux/amd64,linux/arm64
           tags: wangyonghao/tide-admin:latest
           # 若Dockerfile不在根目录/有自定义名称，添加：
-          file: Dockerfile
+          file: ./backend/svr-admin/Dockerfile
       # # 8. 拷贝到服务器
       # - name: Copy artifacts for tide-api
       #   uses: appleboy/scp-action@v1
