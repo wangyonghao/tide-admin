@@ -15,44 +15,44 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       # 1. 拉取代码
-      - name: 1. Checkout
+      - name: 1.Checkout
         uses: actions/checkout@v5
       # 2. 安装 Java 环境
-      - name: Set up JDK
+      - name: 2.Set up JDK
         uses: actions/setup-java@v5
         with:
           distribution: "temurin"
           java-version: 17
           cache: "maven" # 缓存 Maven 依赖，加速构建
       # 3. Maven 打包
-      - name: 2. Maven Package
+      - name: 3.Maven Package
         run: |
           sed -i.bak '/<repositories>/,/<\/repositories>/d' ./backend/pom.xml
           sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' ./backend/pom.xml
           mvn -B package -q --file ./backend/pom.xml
       # 4. Maven 打包
-      - name: 3. Copy artifacts
+      - name: 4.Copy artifacts
         run: | 
           mkdir -p ./_build/tide-api/app
           cp -r ./backend/svr-admin/target/app/ ./_build/tide-api/app/
           cp ./backend/svr-admin/Dockerfile ./_build/tide-api/
       # 4. 初始化 Docker Buildx（多架构构建必备）
-      - name: 4. Set up Docker Buildx
+      - name: 5.Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       # 5. 登录 DockerHub
-      - name: 5. Login to DockerHub
+      - name: 6.Login to DockerHub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
       # 6. 定义镜像名称与标签（统一管理）
-      - name: Set Docker Image Tag
+      - name: 7.Set Docker Image Tag
         id: docker_tag
         run: |
           echo "IMAGE_NAME=wangyonghao/tide-admin" >> $GITHUB_ENV
           echo "IMAGE_TAG=latest" >> $GITHUB_ENV
       # 7. 构建多架构镜像并推送到 DockerHub
-      - name: Build & Push Image
+      - name: 8.Build & Push Image
         uses: docker/build-push-action@v6
         with:
           context: .
