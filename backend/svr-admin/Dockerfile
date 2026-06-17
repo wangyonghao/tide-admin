@@ -1,5 +1,4 @@
-# eclipse-temurin:17-jammy
-FROM bellsoft/liberica-openjdk-debian:17.0.14
+FROM eclipse-temurin:17-jre-alpine
 
 LABEL top.wyhao.image.authors="wangyonghao@163.com"
 
