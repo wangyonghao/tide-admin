@@ -21,7 +21,7 @@ permissions:
 
 jobs:
   post-update:
-    if: github.repository == 'wangyonghao/wyh-admin'
+    if: github.repository == 'wangyonghao/tide-admin'
     # if: ${{ github.actor == 'dependabot[bot]' }}
     runs-on: ${{ matrix.os }}
     strategy:

@@ -1,7 +1,7 @@
 --- ### Spring 配置
 spring:
   application:
-    name: tide-admin-schedule-server
+    name: tide-schedule
   ## 环境配置
   profiles:
     # 启用的环境

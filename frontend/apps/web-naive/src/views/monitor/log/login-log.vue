@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type { DataTableColumns } from 'naive-ui';
-import type { LoginLogResult } from '#/api/auth/login-log';
+import type { LoginLogResult } from '#/api/auth';
 
 import { h, onMounted, ref } from 'vue';
 
@@ -17,7 +17,7 @@ import {
   NTag,
 } from 'naive-ui';
 
-import { loginLogApi } from '#/api/auth/login-log';
+import { authApi } from '#/api/auth';
 
 // ==================== 搜索表单 ====================
 const searchForm = ref({
@@ -104,7 +104,7 @@ async function loadTableData() {
       loginTimeEnd = new Date(searchForm.value.loginTime[1]) .toISOString() .slice(0, 19) .replace('T', ' ');
     }
 
-    const res = await loginLogApi.list({
+    const res = await authApi.listLoginLog({
       page: tablePagination.value.page,
       size: tablePagination.value.pageSize,
       username: searchForm.value.username || undefined,
@@ -154,7 +154,7 @@ function handleExport() {
       .replace('T', ' ');
   }
 
-  loginLogApi.export({
+  authApi.exportLoginLog({
     username: searchForm.value.username || undefined,
     ipAddress: searchForm.value.ipAddress || undefined,
     loginStatus: searchForm.value.loginStatus || undefined,

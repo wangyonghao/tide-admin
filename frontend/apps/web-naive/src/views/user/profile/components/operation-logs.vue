@@ -12,7 +12,7 @@ import {
 } from 'naive-ui';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
-import { loginLogApi, type LoginLogResult } from '#/api/auth/login-log';
+import { authApi, type LoginLogResult } from '#/api/auth';
 import { message } from '#/adapter/naive';
 
 const userStore = useUserStore();
@@ -100,7 +100,7 @@ const fetchLogs = async () => {
       params.loginTimeEnd = new Date(filters.value.dateRange[1]).toISOString();
     }
 
-    const res = await loginLogApi.lis$t(params);
+    const res = await authApi.listLoginLog(params);
     tableData.value = res.list || [];
     pagination.value.itemCount = res.total || 0;
   } catch (error) {
@@ -126,7 +126,7 @@ const handleExport = async () => {
       params.loginTimeEnd = new Date(filters.value.dateRange[1]).toISOString();
     }
 
-    await loginLogApi.expor$t(params);
+    await authApi.exportLoginLog(params);
     message.success($t('page.profile.logs.exportSuccess'));
   } catch (error) {
     console.error('导出失败:', error);

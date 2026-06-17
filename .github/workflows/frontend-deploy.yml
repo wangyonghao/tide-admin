@@ -11,7 +11,7 @@ on:
 jobs:
   deploy-playground-ftp:
     name: Deploy Push Playground Ftp
-    if: github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, '[skip ci]') && github.repository == 'wangyonghao/wyh-admin'
+    if: github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, '[skip ci]') && github.repository == 'wangyonghao/tide-admin'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code

@@ -189,8 +189,8 @@ profile/
 - `unbindSocialAccount` - 解绑三方账号
 
 ### 日志相关
-- `loginLogApi.list` - 获取登录日志列表
-- `loginLogApi.export` - 导出登录日志
+- `authApi.listLoginLog` - 获取登录日志列表
+- `authApi.exportLoginLog` - 导出登录日志
 
 ## 安全与合规
 

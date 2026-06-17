@@ -1,8 +1,8 @@
 ### 应用配置
 application:
-  id: wyhao-admin
+  id: tide-admin
   # 名称
-  name: wyhao-admin
+  name: tide-admin
   # 描述
   description: 持续迭代优化的前后端分离中后台管理系统框架，开箱即用，持续提供舒适的开发体验。
   # 版本

@@ -22,7 +22,7 @@ import {
   userProfileApi,
   type BindSocialAccountRes,
 } from '#/api/system/user-profile';
-import { loginLogApi, type LoginLogResult } from '#/api/auth/login-log';
+import { authApi, type LoginLogResult } from '#/api/auth';
 import { encryptByRsa } from '#/utils/crypto';
 
 const userStore = useUserStore();
@@ -63,7 +63,7 @@ const loadingSocial = ref(false);
 const fetchLoginDevices = async () => {
   try {
     loadingDevices.value = true;
-    const res = await loginLogApi.list({
+    const res = await authApi.listLoginLog({
       username: userStore.user?.username,
       loginStatus: 'SUCCESS',
       page: 1,
