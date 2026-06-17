@@ -2,6 +2,7 @@ FROM eclipse-temurin:17-jre-jammy
 
 LABEL top.wyhao.image.authors="wangyonghao@163.com"
 
+ls -l ./app
 COPY ./app/lib/. /app/lib/
 COPY ./app/config/. /app/config/
 COPY ./app/bin/*.jar /app/bin/app.jar
