@@ -80,15 +80,14 @@ jobs:
       #     source: ./backend/scripts/docker/*
       #     target: /opt/tide-admin/
       #     strip_components: 2
-      # # 8. 远程服务器执行部署脚本
-      # - name: Start
-      #   uses: appleboy/ssh-action@v1
-      #   with:
-      #     host: ${{ secrets.SSH_HOST }}
-      #     port: ${{ secrets.SSH_PORT }}
-      #     username: ${{ secrets.SSH_USER }}
-      #     key: ${{ secrets.SSH_KEY }}
-      #     script: |
-      #       cd /opt/tide-admin
-      #       docker-compose up -d --force-recreate --build api
-      #       docker images | grep none | awk '{print $3}' | xargs -r docker rmi
+      # 8. 远程服务器执行部署脚本
+      - name: Start
+        uses: appleboy/ssh-action@v1
+        with:
+          host: ${{ secrets.SSH_HOST }}
+          port: ${{ secrets.SSH_PORT }}
+          username: ${{ secrets.SSH_USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd /opt/tide-admin
+            docker-compose pull && docker-compose up -d --force-recreate
