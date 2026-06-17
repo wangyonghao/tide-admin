@@ -27,8 +27,8 @@ jobs:
       # 3、Maven 打包
       - name: Maven Package
         run: |
-          sed -i.bak '/<repositories>/,/<\/repositories>/d' pom.xml
-          sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' pom.xml
+          sed -i.bak '/<repositories>/,/<\/repositories>/d' ./backend/pom.xml
+          sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' ./backend/pom.xml
           mvn -B package --file ./backend/pom.xml
           mkdir ./_build/tide-api/app
           cp ./backend/svr-admin/target/app/ ./_build/tide-api/app/
