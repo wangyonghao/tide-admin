@@ -30,7 +30,7 @@ jobs:
           sed -i.bak '/<repositories>/,/<\/repositories>/d' ./backend/pom.xml
           sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' ./backend/pom.xml
           mvn -B package --file ./backend/pom.xml
-          mkdir ./_build/tide-api/app
+          mkdir -p ./_build/tide-api/app
           cp ./backend/svr-admin/target/app/ ./_build/tide-api/app/
           cp ./backend/svr-admin/Dockerfile ./_build/tide-api/
       # 4. 初始化 Docker Buildx（多架构构建必备）
@@ -57,7 +57,7 @@ jobs:
           platforms: linux/amd64,linux/arm64
           tags: ${{ env.IMAGE_NAME }}:${{ env.IMAGE_TAG }}
           # 若Dockerfile不在根目录/有自定义名称，添加：
-          # file: ./tide-admin/Dockerfile
+          file: ./_build/tide-api/Dockerfile
       # # 8. 拷贝到服务器
       # - name: Copy artifacts for tide-api
       #   uses: appleboy/scp-action@v1
