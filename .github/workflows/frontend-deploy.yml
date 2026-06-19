@@ -11,7 +11,6 @@ on:
 jobs:
   build-deploy:
     name: Build and Deploy
-    if: github.actor != 'dependabot[bot]' && !contains(github.event.head_commit.message, '[skip ci]') && github.repository == 'wangyonghao/wyh-admin'
     runs-on: ubuntu-latest
     steps:
       - name: 1.Checkout
