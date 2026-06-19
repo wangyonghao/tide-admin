@@ -13,16 +13,24 @@ jobs:
     name: Build and Deploy
     runs-on: ubuntu-latest
     steps:
-      - name: 1.Checkout
+      - name: 1. Checkout code
         uses: actions/checkout@v6
-      - name: 2.Setup Node
-        uses: pnpm/action-setup@v5
+      - name: 2. Setup pnpm
+        uses: pnpm/action-setup@v6
         with:
-          version: 9
-          cache: "pnpm"
-      - name: 3. Build
-        run: pnpm run build:naive
-      - name: 4. Upload dist.zip
+          version: 10
+      - name: 3. Setup Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          cache: 'pnpm'
+          cache-dependency-path: frontend/pnpm-lock.yaml
+      - name: 4. Install deps & Build
+        run: |
+          cd ./frontend
+          pnpm install --frozen-lockfile
+          pnpm run build:naive          
+      - name: 5. Upload dist.zip
         uses: appleboy/scp-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
@@ -31,8 +39,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: ./frontend/apps/web-naive/dist.zip
           target: /opt/1panel/www/sites/tide.wyhao.top/
-          strip_components: 3
-      - name: 5. Unzip dist.zip
+      - name: 6. Deploy site
         uses: appleboy/ssh-action@v1
         with:
           host: ${{ secrets.SSH_HOST }}
