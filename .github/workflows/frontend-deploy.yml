@@ -38,6 +38,7 @@ jobs:
           key: ${{ secrets.SSH_KEY }}
           source: ./frontend/apps/web-naive/dist.zip
           target: /opt/1panel/www/sites/tide.wyhao.top/
+          debug: true
       - name: 6. Deploy site
         uses: appleboy/ssh-action@v1
         with:
