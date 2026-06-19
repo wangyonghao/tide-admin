@@ -10,7 +10,7 @@ import { h, onMounted, ref } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
-import { Page } from '@Vben/common-ui'
+import { Page } from '@vben/common-ui'
 import { NButton, NDataTable, NDropdown, NIcon, NInput, NModal, NSpace, NSplit, NTag, NTree, useDialog, useMessage, } from 'naive-ui';
 
 import { deptApi,roleApi,userApi } from '#/api/system';
