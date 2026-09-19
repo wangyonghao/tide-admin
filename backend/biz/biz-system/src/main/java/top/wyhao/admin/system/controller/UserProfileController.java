@@ -58,7 +58,7 @@ public class UserProfileController {
     @PatchMapping("/user/profile/avatar")
     public ProfileModel.AvatarResult updateAvatar(@NotNull(message = "头像不能为空") MultipartFile avatarFile) throws IOException {
         ValidationUtils.throwIf(avatarFile::isEmpty, "头像不能为空");
-        String newAvatar = userService.updateAvatar(avatarFile, UserContextHolder.getUserId());
+        Long newAvatar = userService.updateAvatar(avatarFile, UserContextHolder.getUserId());
         return new ProfileModel.AvatarResult(newAvatar);
     }
 

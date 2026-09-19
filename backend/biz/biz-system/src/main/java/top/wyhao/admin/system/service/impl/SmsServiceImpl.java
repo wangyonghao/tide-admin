@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -10,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.cmn.sms.SmsClient;
+import top.wyhao.admin.system.assembler.SmsLogAssembler;
 import top.wyhao.admin.system.entity.SysSmsLog;
 import top.wyhao.admin.system.mapper.SysSmsLogMapper;
 import top.wyhao.admin.system.model.SmsLogModel;
@@ -36,6 +36,7 @@ public class SmsServiceImpl implements SmsService {
     private final ConfigService configService;
     private final SysSmsLogMapper sysSmsLogMapper;
     private final SmsClient client;
+    private final SmsLogAssembler smsLogAssembler;
 
     @Override
     public void export(SmsLogModel.SmsLogQuery query, HttpServletResponse response) {
@@ -51,14 +52,14 @@ public class SmsServiceImpl implements SmsService {
         if (smsLog == null) {
             throw new BizException("记录不存在");
         }
-        return BeanUtil.toBean(smsLog, SmsLogModel.Result.class);
+        return smsLogAssembler.toResult(smsLog);
     }
 
     @Override
     public PageResult<SmsLogModel.Result> page(SmsLogModel.SmsLogQuery query, PageQuery pageQuery) {
         QueryWrapper<SysSmsLog> queryWrapper = WrapperUtil.build(query);
         IPage<SysSmsLog> resultPage = sysSmsLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(resultPage, SmsLogModel.Result.class);
+        return PageResult.build(resultPage, smsLogAssembler::toResultList);
     }
 
     @Override
@@ -69,8 +70,7 @@ public class SmsServiceImpl implements SmsService {
     @Async
     @Override
     public void logAsync(SmsLogModel.Request req) {
-        SysSmsLog sysSmsLog = new SysSmsLog();
-        BeanUtil.copyProperties(req, sysSmsLog);
+        SysSmsLog sysSmsLog = smsLogAssembler.toEntity(req);
         sysSmsLogMapper.insert(sysSmsLog);
     }
 

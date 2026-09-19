@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.admin.system.service.DictService;
-import top.wyhao.admin.system.service.FileService;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.tenant.context.TenantContextHolder;
 import top.wyhao.starter.web.core.model.LabelValueResult;

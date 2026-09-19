@@ -4,6 +4,7 @@ import { NCard, NTag, NSpace, NDivider, NText } from 'naive-ui';
 import { VbenAvatar } from '@vben-core/shadcn-ui';
 import { $t } from '#/locales';
 import type { UserProfile } from '#/api/auth';
+import { resolveFilePreviewUrl } from '#/api/system/file';
 
 interface Props {
   userInfo?: UserProfile;
@@ -70,7 +71,7 @@ const maskedEmail = computed(() => {
     <div class="text-center">
       <!-- 头像 -->
       <VbenAvatar
-        :src="userInfo?.avatar"
+        :src="resolveFilePreviewUrl(userInfo?.avatar)"
         :alt="userInfo?.nickname || 'User'"
         :size="100"
         class="mb-4 mx-auto"

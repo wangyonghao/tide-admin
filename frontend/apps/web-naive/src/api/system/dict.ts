@@ -13,11 +13,11 @@ export const dictApi = {
     return http.post('/system/dict', data);
   },
   /** 修改字典 */
-  update: (id: number, data: DictRequest) => {
+  update: (id: string, data: DictRequest) => {
     return http.put(`/system/dict/${id}`, data);
   },
   /** 批量删除字典 */
-  delete: (ids: number[]) => {
+  delete: (ids: string[]) => {
     return http.delete('/system/dict', { data: ids });
   },
   /** 清除字典缓存 */
@@ -37,7 +37,7 @@ export const dictApi = {
  */
 export interface DictResult {
   /** ID */
-  id: number;
+  id: string;
   /** 字典类型 */
   dictType: string;
   /** 字典值 */

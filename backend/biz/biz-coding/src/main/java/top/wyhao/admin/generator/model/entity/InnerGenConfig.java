@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.generator.model.entity;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
@@ -90,8 +89,7 @@ public class InnerGenConfig extends GenConfig {
     public InnerGenConfig() {
     }
 
-    public InnerGenConfig(GenConfig genConfig) {
-        BeanUtil.copyProperties(genConfig, this);
+    public void initDerivedFields() {
         this.setDatetime(DateUtil.date().toString("yyyy/MM/dd HH:mm"));
         this.setApiName(StrUtil.lowerFirst(this.getClassNamePrefix()));
     }

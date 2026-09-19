@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.wyhao</groupId>
+        <artifactId>cmn-storage</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>cmn-storage-minio</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <description>MinIO / RustFS 存储实现 - 两者均兼容 S3 协议，共用 MinIO SDK</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-storage-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.minio</groupId>
+            <artifactId>minio</artifactId>
+            <version>8.5.7</version>
+        </dependency>
+    </dependencies>
+</project>

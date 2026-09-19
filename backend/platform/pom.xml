@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.wyhao</groupId>
+        <artifactId>wyh-admin</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>platform</artifactId>
+    <packaging>pom</packaging>
+    <name>${project.artifactId}</name>
+    <description>平台基础能力模块 - 提供通用的、与具体业务无关的基础能力（文件服务、加密工具等）</description>
+
+    <modules>
+        <!-- 文件服务：领域模型 + 服务逻辑（仅依赖 cmn-storage-api） -->
+        <module>file-service</module>
+        <!-- 文件服务：HTTP API -->
+        <module>file-api</module>
+    </modules>
+</project>

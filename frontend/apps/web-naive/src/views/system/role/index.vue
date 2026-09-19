@@ -42,7 +42,7 @@ const userStore = useUserStore();
 
 // ==================== 左侧角色列表状态 ====================
 const roleData = ref<RoleResp[]>([]);
-const selectedRoleId = ref<null | number | string>(null);
+const selectedRoleId = ref<null | string>(null);
 const roleSearchKeyword = ref('');
 const roleLoading = ref(false);
 
@@ -187,7 +187,7 @@ const detailLoading = ref(false);
 
 // 权限相关
 const menuTree = ref<any>([]);
-const selectKeys = ref<any>([]);
+const selectKeys = ref<string[]>([]);
 const permissionTreeLoaded = ref(false);
 
 // 用户表格相关
@@ -354,7 +354,7 @@ async function loadPermissionData() {
       selectedRoleId.value.toString(),
     );
     roleDetail.value = fullRoleDetail;
-    selectKeys.value = fullRoleDetail.menuIds;
+    selectKeys.value = (fullRoleDetail.menuIds ?? []).map(String);
 
     if (!permissionTreeLoaded.value) {
       const menus = await roleApi.treePermission();
@@ -375,7 +375,7 @@ const handleRefreshPermission = async () => {
       detailLoading.value = true;
       const detail = await roleApi.detail(String(roleDetail.value.id));
       roleDetail.value = detail;
-      selectKeys.value = detail.menuIds;
+      selectKeys.value = (detail.menuIds ?? []).map(String);
       if (permissionTreeLoaded.value) {
         menuTree.value = await roleApi.treePermission();
       }

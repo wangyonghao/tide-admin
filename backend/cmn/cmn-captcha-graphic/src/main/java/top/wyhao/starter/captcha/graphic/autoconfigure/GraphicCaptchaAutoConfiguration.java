@@ -9,7 +9,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import top.wyhao.starter.captcha.graphic.core.GraphicCaptchaService;
+import top.wyhao.starter.captcha.graphic.core.ImageCaptchaService;
 import top.wyhao.starter.core.constant.PropertiesConstants;
 
 /**
@@ -30,8 +30,8 @@ public class GraphicCaptchaAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public GraphicCaptchaService graphicCaptchaService(GraphicCaptchaProperties properties) {
-        return new GraphicCaptchaService(properties);
+    public ImageCaptchaService graphicCaptchaService(GraphicCaptchaProperties properties) {
+        return new ImageCaptchaService(properties);
     }
 
     @PostConstruct

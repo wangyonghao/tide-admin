@@ -14,22 +14,25 @@
   <url>https://github.com/wangyonghao/wyh-admin</url>
 
   <modules>
-    <module>svr-admin</module>
+    <module>tide-bootstrap</module>
     <module>svr-job</module>
     <module>biz</module>
     <module>cmn</module>
+    <module>platform</module>
+    <module>interfaces</module>
   </modules>
 
   <properties>
     <!-- 项目版本号 -->
     <revision>4.1.0-SNAPSHOT</revision>
 
-    <!-- Java 版本 -->
-    <java.version>17</java.version>
-
-    <!-- 项目编码 -->
+    <!-- Maven 内置配置 -->
+    <maven.compiler.release>17</maven.compiler.release>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+
+    <!-- Java 版本 -->
+    <java.version>17</java.version>
 
     <!-- Core Framework Versions -->
     <spring-boot.version>3.4.13</spring-boot.version>
@@ -89,6 +92,8 @@
     <ttl.version>2.14.5</ttl.version>
     <ip2region.version>3.4.7</ip2region.version>
     <hutool.version>5.8.41</hutool.version>
+    <mapstruct.version>1.6.3</mapstruct.version>
+    <lombok-mapstruct-binding.version>0.2.0</lombok-mapstruct-binding.version>
     <snakeyaml.version>2.5</snakeyaml.version>
     <nashorn.version>15.7</nashorn.version>
 
@@ -375,6 +380,23 @@
         <version>${hutool.version}</version>
       </dependency>
 
+      <!-- MapStruct（编译期对象映射，替代运行时 BeanUtil.copyProperties） -->
+      <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+        <version>${mapstruct.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct-processor</artifactId>
+        <version>${mapstruct.version}</version>
+      </dependency>
+      <dependency>
+        <groupId>org.projectlombok</groupId>
+        <artifactId>lombok-mapstruct-binding</artifactId>
+        <version>${lombok-mapstruct-binding.version}</version>
+      </dependency>
+
       <!-- SnakeYAML（适用于 Java 的 YAML 1.1 解析器和发射器） -->
       <dependency>
         <groupId>org.yaml</groupId>
@@ -419,7 +441,7 @@
       <!-- API 模块（存放 Controller 层代码，打包部署的模块） -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>svr-admin</artifactId>
+        <artifactId>tide-bootstrap</artifactId>
         <version>${revision}</version>
       </dependency>
 
@@ -575,10 +597,49 @@
         <version>${revision}</version>
       </dependency>
 
-      <!-- 存储模块 -->
+      <!-- 对象存储基础设施（cmn-storage） -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-oss</artifactId>
+        <artifactId>cmn-storage-core</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>cmn-storage-local</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>cmn-storage-aliyun</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>cmn-storage-minio</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>cmn-storage-cos</artifactId>
+        <version>${revision}</version>
+      </dependency>
+
+      <!-- 文件服务模块（平台基础能力） -->
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>file-service</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>file-api</artifactId>
+        <version>${revision}</version>
+      </dependency>
+
+      <!-- 加密工具模块 -->
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>crypto-util</artifactId>
         <version>${revision}</version>
       </dependency>
 
@@ -679,11 +740,20 @@
         <configuration>
           <compilerArgument>-parameters</compilerArgument>
           <release>${java.version}</release>
-          <!-- 添加 Lombok 注解处理器 -->
           <annotationProcessorPaths>
+            <path>
+              <groupId>org.mapstruct</groupId>
+              <artifactId>mapstruct-processor</artifactId>
+              <version>${mapstruct.version}</version>
+            </path>
             <path>
               <groupId>org.projectlombok</groupId>
               <artifactId>lombok</artifactId>
+            </path>
+            <path>
+              <groupId>org.projectlombok</groupId>
+              <artifactId>lombok-mapstruct-binding</artifactId>
+              <version>${lombok-mapstruct-binding.version}</version>
             </path>
           </annotationProcessorPaths>
         </configuration>

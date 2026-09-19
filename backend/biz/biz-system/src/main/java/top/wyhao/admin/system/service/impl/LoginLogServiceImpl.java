@@ -1,6 +1,5 @@
 package top.wyhao.admin.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.http.useragent.UserAgent;
 import cn.hutool.http.useragent.UserAgentUtil;
@@ -12,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import top.wyhao.admin.system.assembler.LoginLogAssembler;
 import top.wyhao.admin.system.entity.SysLoginLog;
 import top.wyhao.admin.system.mapper.SysLoginLogMapper;
 import top.wyhao.admin.system.model.enums.LoginDeviceEnum;
@@ -24,6 +24,7 @@ import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,6 +40,7 @@ import java.util.List;
 public class LoginLogServiceImpl implements LoginLogService {
 
     private final SysLoginLogMapper loginLogMapper;
+    private final LoginLogAssembler loginLogAssembler;
 
     @Async
     @Override
@@ -82,7 +84,7 @@ public class LoginLogServiceImpl implements LoginLogService {
     }
 
     @Override
-    public PageResult<LoginLogModel> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery) {
+    public PageResult<LoginLogModel.Result> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery) {
         LambdaQueryWrapper<SysLoginLog> queryWrapper = buildQueryWrapper(query);
 
         // 排序：默认按登录时间倒序
@@ -93,7 +95,7 @@ public class LoginLogServiceImpl implements LoginLogService {
                 queryWrapper
         );
 
-        return PageResult.build(page, LoginLogModel.class);
+        return PageResult.build(page, loginLogAssembler::toResultList);
     }
 
     @Override
@@ -102,7 +104,7 @@ public class LoginLogServiceImpl implements LoginLogService {
         queryWrapper.orderByDesc(SysLoginLog::getLoginTime);
 
         List<SysLoginLog> list = loginLogMapper.selectList(queryWrapper);
-        List<LoginLogModel.Excel> exportList = BeanUtil.copyToList(list, LoginLogModel.Excel.class);
+        List<LoginLogModel.Excel> exportList = loginLogAssembler.toExcelList(list);
 
         ExcelUtils.export(exportList, "登录日志数据", LoginLogModel.Excel.class, response);
     }

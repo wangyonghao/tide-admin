@@ -95,5 +95,11 @@
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-cache</artifactId>
       </dependency>
+
+      <!-- MapStruct（编译期类型转换，由 cmn-web 向业务模块传递） -->
+      <dependency>
+        <groupId>org.mapstruct</groupId>
+        <artifactId>mapstruct</artifactId>
+      </dependency>
     </dependencies>
 </project>

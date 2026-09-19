@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
@@ -9,6 +8,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.admin.system.assembler.MenuAssembler;
 import top.wyhao.admin.system.entity.SysMenu;
 import top.wyhao.admin.system.exception.MenuException;
 import top.wyhao.admin.system.mapper.SysMenuMapper;
@@ -39,6 +39,7 @@ public class MenuServiceImpl implements MenuService {
 
     private final UserService userService;
     private final SysMenuMapper menuMapper;
+    private final MenuAssembler menuAssembler;
 
     @Override
     public List<MenuTreeVO> tree(MenuModel.MenuQuery query) {
@@ -84,7 +85,7 @@ public class MenuServiceImpl implements MenuService {
             List<SysMenu> menuList = menuMapper.lambdaQuery()
                     .eq(SysMenu::getStatus, "1")
                     .list();
-            return BeanUtil.copyToList(menuList, MenuVO.class);
+            return menuAssembler.toVOList(menuList);
         }
 
         // 否则根据角色ID列表获取菜单 - 遍历每个角色ID并合并菜单列表
@@ -95,7 +96,7 @@ public class MenuServiceImpl implements MenuService {
         }
 
         // 去重并转换为响应对象
-        return BeanUtil.copyToList(allMenus.stream().distinct().toList(), MenuVO.class);
+        return menuAssembler.toVOList(allMenus.stream().distinct().toList());
     }
 
 
@@ -114,7 +115,7 @@ public class MenuServiceImpl implements MenuService {
     public MenuVO get(Long id) {
         SysMenu sysMenu = menuMapper.selectById(id);
         Check.isNull(sysMenu, "菜单不存在");
-        return BeanUtil.copyProperties(sysMenu, MenuVO.class);
+        return menuAssembler.toVO(sysMenu);
     }
 
     @Override
@@ -129,7 +130,7 @@ public class MenuServiceImpl implements MenuService {
                     req.redirect(), req.isExternal(), req.isCache(), req.isHidden(), req.parentId(), req.status());
         }
         RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
-        SysMenu menuDO = BeanUtil.copyProperties(req, SysMenu.class);
+        SysMenu menuDO = menuAssembler.toEntity(req);
         menuMapper.insert(menuDO);
         return menuDO.getId();
     }
@@ -142,7 +143,8 @@ public class MenuServiceImpl implements MenuService {
         }
 
 
-        SysMenu entity = BeanUtil.copyProperties(req, SysMenu.class, "type");
+        SysMenu entity = new SysMenu();
+        menuAssembler.update(req, entity);
         entity.setId(id);
         menuMapper.updateById(entity);
         RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
@@ -206,7 +208,7 @@ public class MenuServiceImpl implements MenuService {
 
 
     private List<MenuTreeVO> buildPermissionTree(List<SysMenu> menus) {
-        List<MenuTreeVO> flat = BeanUtil.copyToList(menus, MenuTreeVO.class);
+        List<MenuTreeVO> flat = menuAssembler.toTreeVOList(menus);
         return TreeUtils.flatToTree(flat,
                 MenuTreeVO::getId,
                 MenuTreeVO::getParentId,

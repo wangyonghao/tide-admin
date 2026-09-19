@@ -29,7 +29,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.entity.SysDept;
-import top.wyhao.admin.system.entity.SysFile;
 import top.wyhao.admin.system.entity.SysRole;
 import top.wyhao.admin.system.entity.SysUserRole;
 import top.wyhao.admin.system.entity.SysUser;
@@ -39,14 +38,16 @@ import top.wyhao.admin.system.mapper.SysMenuMapper;
 import top.wyhao.admin.system.mapper.SysUserRoleMapper;
 import top.wyhao.admin.system.mapper.SysUserMapper;
 import top.wyhao.admin.system.mapper.SysUserPasswordHistoryMapper;
-import top.wyhao.admin.system.model.FileModel;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.bo.user.*;
 import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
 import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
 import top.wyhao.admin.system.model.UserModel;
+import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.service.*;
+import top.wyhao.file.core.domain.File;
+import top.wyhao.file.core.service.FileService;
 import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
@@ -97,6 +98,7 @@ public class UserServiceImpl implements UserService {
     private final SysUserRoleMapper userRoleMapper;
     private final SysMenuMapper menuMapper;
     private final ConfigService configService;
+    private final UserAssembler userAssembler;
 
     @Value("${avatar.support-suffix}")
     private String[] avatarSupportSuffix;
@@ -106,7 +108,7 @@ public class UserServiceImpl implements UserService {
     public UserModel.Detail detail(Long id) {
         SysUser userDO = userMapper.selectById(id);
         Check.notNull(userDO, "用户不存在");
-        return BeanUtil.copyProperties(userDO, UserModel.Detail.class);
+        return userAssembler.toDetail(userDO);
     }
 
     @Override
@@ -114,7 +116,7 @@ public class UserServiceImpl implements UserService {
         QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
         WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysUser.class);
         IPage<UserModel.Result> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, UserModel.Result.class);
+        return PageResult.build(page);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -127,7 +129,7 @@ public class UserServiceImpl implements UserService {
         this.checkPhoneUnique(request.phone(), null);
         this.checkUsernameUnique(request.username());
     
-        SysUser newUser = BeanUtil.copyProperties(request, SysUser.class);
+        SysUser newUser = userAssembler.toEntity(request);
         /* 业务逻辑校验 */
     
     
@@ -170,7 +172,7 @@ public class UserServiceImpl implements UserService {
             this.checkPhoneUnique(userRequest.phone(), userId);
         }
     
-        SysUser updateUser = BeanUtil.toBean(userRequest, SysUser.class);
+        SysUser updateUser = userAssembler.toEntity(userRequest);
         updateUser.setId(userId);
         userMapper.updateById(updateUser);
         // 保存用户和角色的关联
@@ -431,51 +433,33 @@ public class UserServiceImpl implements UserService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public String updateAvatar(MultipartFile avatarFile, Long userId) {
-
-        // 校验头像文件类型和大小
+    public Long updateAvatar(MultipartFile avatarFile, Long userId) {
         checkAvatar(avatarFile);
 
         UserModel.Detail user = this.detail(userId);
+        Long oldAvatarFileId = user.avatar();
 
-        // 上传新头像
-        SysFile avatar = uploadAvatarFile(avatarFile, userId);
+        File uploaded = fileService.upload(avatarFile, userId);
+        userMapper.lambdaUpdate()
+                .set(SysUser::getAvatar, uploaded.getId())
+                .eq(SysUser::getId, userId)
+                .update();
 
-        // 更新用户头像
-        userMapper.lambdaUpdate().set(SysUser::getAvatar, avatar.getOssUrl()).eq(SysUser::getId, userId).update();
-
-        // 删除旧头像文件
-//        deleteOldAvatarFile(user);
-
-        return avatar.getOssUrl();
-    }
-
-
-    private void deleteOldAvatarFile(UserModel.Detail user) {
-        String oldAvatar = user.avatar();
-        if (CharSequenceUtil.isNotBlank(oldAvatar)) {
-            fileService.delete(user.id(), "user_avatar");
+        if (oldAvatarFileId != null) {
+            try {
+                fileService.delete(oldAvatarFileId, userId);
+            } catch (Exception e) {
+                log.warn("删除旧头像文件失败: fileId={}", oldAvatarFileId, e);
+            }
         }
-    }
 
-    private SysFile uploadAvatarFile(MultipartFile avatarFile, Long userId) {
-        String avatarPath = "/user/avatar";
-        return fileService.upload(avatarFile, avatarPath);
-    }
-
-    private Long getAvatarFileId(String bizId, String bizType) {
-        FileModel.Query query = new FileModel.Query(null, null, null, bizType, bizId, null);
-        List<SysFile> files = fileService.list(query);
-        if (CollUtil.isEmpty(files)) {
-            return null;
-        }
-        return files.get(0).getId();
+        return uploaded.getId();
     }
 
     /**
      * 校验头像文件类型和大小
      *
-     * @param avatarFile
+     * @param avatarFile 头像文件
      */
     private void checkAvatar(MultipartFile avatarFile) {
         String avatarImageType = FileNameUtil.extName(avatarFile.getOriginalFilename());
@@ -520,6 +504,10 @@ public class UserServiceImpl implements UserService {
         addPasswordHistory(id, oldUser.getPassword(), passwordRepetitionTimes);
         // 修改后登出
         StpUtil.logout();
+    }
+
+    public void matchPassword(){
+
     }
 
     private void addPasswordHistory(Long userId, String password, int passwordRepetitionTimes) {

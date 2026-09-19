@@ -1,5 +1,6 @@
-export type ID = number | string;
-export type IDS = (number | string)[];
+/** 业务主键。雪花 ID 超出 JS 安全整数，前后端一律按字符串传递。 */
+export type ID = string;
+export type IDS = string[];
 
 export interface BaseEntity {
   /** 创建人 */

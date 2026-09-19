@@ -42,7 +42,7 @@ export const roleApi = {
     return http.post(`/system/role/${id}/user`, userIds);
   },
   /** 取消分配角色给用户 */
-  removeMember(id: number | string | undefined, userIds: Array<number | string>) {
+  removeMember(id: string | undefined, userIds: string[]) {
     return http.delete(`/system/role/${id}/user`, { data: {userIds}, });
   },
   /** 查询角色字典 */
@@ -62,7 +62,7 @@ export interface RoleUserResp {
   isBuiltin?: boolean;
   deptId: string;
   deptName: string;
-  roleIds: Array<number>;
+  roleIds: string[];
   roleNames: Array<string>;
   disabled: boolean;
 }
@@ -98,8 +98,8 @@ export interface RoleDetailResp extends BaseEntity {
   isBuiltin: string;
   menuCheckStrictly: boolean;
   deptCheckStrictly: boolean;
-  menuIds: Array<number>;
-  deptIds: Array<number>;
+  menuIds: string[];
+  deptIds: string[];
 }
 
 export interface RoleQuery {

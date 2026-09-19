@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.wyhao</groupId>
+        <artifactId>platform</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>file-service</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <description>文件核心模块 - 领域模型与服务逻辑，仅依赖存储 SPI，不依赖任何存储 SDK</description>
+
+    <dependencies>
+        <!-- 本地存储 -->
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-storage-core</artifactId>
+        </dependency>
+
+        <!-- 数据访问模块 -->
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-db</artifactId>
+        </dependency>
+
+        <!-- Spring Web（Multipart 上传支持） -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+        </dependency>
+
+        <!-- Servlet API -->
+        <dependency>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <scope>provided</scope>
+        </dependency>
+
+        <!-- Swagger 注解 -->
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+        </dependency>
+    </dependencies>
+</project>

@@ -267,7 +267,7 @@ function handleAdd(parentId?: string) {
   modalTitle.value = '新增菜单';
   Object.assign(formData, {
     id: undefined,
-    parentId: parentId || 0,
+    parentId: parentId || '0',
     name: '',
     type: 1,
     path: '',

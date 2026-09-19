@@ -139,8 +139,8 @@ async function loadDeptDetail(id: string) {
     loading.value = true;
     const res = await deptApi.get(id);
     formModel.value = {
-      id: res.id,
-      parentId: res.parentId,
+      id: String(res.id),
+      parentId: res.parentId == null || res.parentId === '' ? undefined : String(res.parentId),
       code: res.code,
       name: res.name,
       type: res.type?.toString(),

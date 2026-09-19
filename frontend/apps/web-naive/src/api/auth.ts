@@ -82,7 +82,7 @@ export interface UserProfile {
   gender: 0 | 1 | 2;
   email: string;
   phone: string;
-  avatar: string;
+  avatar: string | null;
   pwdUpdateTime: string;
   pwdExpireDate: string;
   pwdExpired: boolean;
@@ -120,7 +120,7 @@ export interface RouteItem {
 /** 基础认证请求接口 */
 export interface AuthReq {
   clientId?: string;
-  authType?: 'ACCOUNT' | 'EMAIL' | 'PHONE' | 'SOCIAL';
+  grantType?: 'ACCOUNT' | 'EMAIL' | 'PHONE' | 'SOCIAL';
 }
 
 /** 账号登录请求参数 */

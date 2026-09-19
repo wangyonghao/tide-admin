@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.StrUtil;
@@ -16,6 +15,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.admin.system.assembler.MenuAssembler;
 import top.wyhao.admin.system.entity.SysMenu;
 import top.wyhao.admin.system.entity.SysRole;
 import top.wyhao.admin.system.entity.SysUserRole;
@@ -65,13 +65,14 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     private final SysUserRoleMapper userRoleMapper;
     private final SysMenuMapper menuMapper;
     private final SysRoleMapper roleMapper;
+    private final MenuAssembler menuAssembler;
 
     @Override
     public PageResult<RoleModel.Result> page(RoleModel.Query query, PageQuery pageQuery) {
         QueryWrapper<SysRole> wrapper = WrapperUtil.build(query, WrapperUtil.parseSort(query.sort()));
         IPage<SysRole> page = roleMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), wrapper);
 
-        return PageResult.build(page, RoleModel.Result.class);
+        return PageResult.build(page, this::convertToRoleRespList);
     }
 
     @Override
@@ -310,7 +311,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
         } else {
             menuList = menuMapper.selectListByRoleId(roleId);
         }
-        List<MenuVO> list = BeanUtil.copyToList(menuList, MenuVO.class);
+        List<MenuVO> list = menuAssembler.toVOList(menuList);
         list.forEach(this::fill);
         return list;
     }
@@ -343,6 +344,13 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
             throw new BizException("ROLE_NOT_FOUND", "角色不存在");
         }
         userRoleMapper.lambdaUpdate().eq(SysUserRole::getRoleId, roleId).in(SysUserRole::getUserId, userIds).remove();
+    }
+
+    private List<RoleModel.Result> convertToRoleRespList(List<SysRole> entities) {
+        if (entities == null || entities.isEmpty()) {
+            return List.of();
+        }
+        return entities.stream().map(this::convertToRoleResp).collect(Collectors.toList());
     }
 
     private RoleModel.Result convertToRoleResp(SysRole entity) {

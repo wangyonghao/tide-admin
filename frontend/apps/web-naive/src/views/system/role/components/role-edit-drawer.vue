@@ -45,7 +45,7 @@ const message = useMessage();
 
 const formRef = ref<FormInst | null>(null);
 const submitLoading = ref(false);
-const copiedMenuIds = ref<number[]>([]);
+const copiedMenuIds = ref<string[]>([]);
 
 const isUpdate = computed(() => !!props.editingRole?.id && !props.copyMode);
 const isCopy = computed(() => props.copyMode);
@@ -117,7 +117,7 @@ const loadRoleDetail = async (roleId: string, isCopyMode = false) => {
       formData.description = res.description ?? '';
       formData.sort = Number(res.sort) || 0;
       formData.dataScope = res.dataScope ?? '1';
-      copiedMenuIds.value = res.menuIds || [];
+      copiedMenuIds.value = (res.menuIds ?? []).map(String);
     } else {
       // 编辑模式：直接使用原数据
       formData.name = res.name ?? '';

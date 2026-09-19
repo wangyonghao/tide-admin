@@ -18,7 +18,7 @@ import { defaultFormValueGetter, useBeforeCloseDiff } from '#/utils/popup';
 import { useEditFormSchema } from './data-scope';
 
 const emits = defineEmits(['success']);
-const dataId = ref<number | string>('');
+const dataId = ref<string>('');
 const isUpdate = computed(() => !!dataId.value);
 const visible = ref(false);
 const groupList = ref<Option[]>([]);
@@ -113,7 +113,7 @@ const [Modal, drawerApi] = useVbenModal({
       try {
         drawerApi.lock(true);
         const record = drawerApi.getData<JobResp>();
-        dataId.value = record.id;
+        dataId.value = String(record.id ?? '');
         if (groupList.value.length === 0) {
           await getGroupList();
         }

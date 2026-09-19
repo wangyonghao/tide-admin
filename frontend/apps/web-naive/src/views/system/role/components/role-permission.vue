@@ -13,13 +13,13 @@ import { NButton, NCheckbox, NDataTable, useMessage } from 'naive-ui';
 import { roleApi } from '#/api/system/role';
 
 interface Permission {
-  id: number | string;
+  id: string;
   label: string;
   checked: boolean;
 }
 
 interface MenuNode {
-  id: number | string;
+  id: string;
   label: string;
   title?: string;
   name?: string;
@@ -31,10 +31,10 @@ interface MenuNode {
 }
 
 interface Props {
-  roleId?: number | string;
+  roleId?: string;
   roleDetail?: null | Partial<RoleDetailResp>;
   menuTree?: any[];
-  selectKeys?: any[];
+  selectKeys?: string[];
 }
 
 const props = withDefaults(defineProps<Props>(), {
@@ -49,18 +49,18 @@ const emits = defineEmits(['refresh']);
 const message = useMessage();
 
 // 本地状态
-const localRoleId = ref<number | string>();
+const localRoleId = ref<string>();
 const localRoleDetail = ref<RoleDetailResp>();
 const localMenuTree = ref<MenuNode[]>([]);
-const selectedMenuIds = ref<Set<number | string>>(new Set());
-const expandedRowKeys = ref<Array<number | string>>([]);
+const selectedMenuIds = ref<Set<string>>(new Set());
+const expandedRowKeys = ref<string[]>([]);
 const saving = ref(false);
 
 // 处理菜单树数据，提取权限
 function processMenuTree(menus: any[]): MenuNode[] {
   return menus.map((menu) => {
     const node: MenuNode = {
-      id: menu.id,
+      id: String(menu.id),
       label: menu.title || menu.name || '',
       title: menu.title,
       name: menu.name,
@@ -79,7 +79,7 @@ function processMenuTree(menus: any[]): MenuNode[] {
       if (hasButton) {
         // 如果包含按钮，将所有子节点都作为权限
         node.permissions = menu.children.map((child: any) => ({
-          id: child.id,
+          id: String(child.id),
           label: child.title || child.name || '',
           checked: false,
         }));
@@ -97,8 +97,8 @@ function processMenuTree(menus: any[]): MenuNode[] {
 }
 
 // 获取所有选中的ID（包括菜单和权限）
-function getAllCheckedIds(): Array<number | string> {
-  const ids: Array<number | string> = [];
+function getAllCheckedIds(): string[] {
+  const ids: string[] = [];
 
   function collectIds(nodes: MenuNode[]) {
     nodes.forEach((node) => {
@@ -125,12 +125,13 @@ function getAllCheckedIds(): Array<number | string> {
 }
 
 // 根据keys设置选中状态
-function setCheckedByKeys(keys: Array<number | string>) {
+function setCheckedByKeys(keys: string[]) {
+  const keySet = new Set(keys.map(String));
   selectedMenuIds.value = new Set();
 
   function updateNodes(nodes: MenuNode[]) {
     nodes.forEach((node) => {
-      if (keys.includes(node.id)) {
+      if (keySet.has(node.id)) {
         selectedMenuIds.value.add(node.id);
         node.checked = true;
       } else {
@@ -139,7 +140,7 @@ function setCheckedByKeys(keys: Array<number | string>) {
 
       if (node.permissions) {
         node.permissions.forEach((perm) => {
-          perm.checked = keys.includes(perm.id);
+          perm.checked = keySet.has(perm.id);
         });
       }
 
@@ -243,7 +244,7 @@ function initData() {
     localMenuTree.value = processMenuTree(props.menuTree);
   }
   if (props.selectKeys && props.selectKeys.length > 0) {
-    setCheckedByKeys(props.selectKeys);
+    setCheckedByKeys(props.selectKeys.map(String));
   }
   // 默认展开所有节点
   expandedRowKeys.value = getAllNodeKeys(localMenuTree.value);
@@ -279,8 +280,8 @@ watch(
 );
 
 // 获取所有节点的key
-function getAllNodeKeys(nodes: MenuNode[]): Array<number | string> {
-  const keys: Array<number | string> = [];
+function getAllNodeKeys(nodes: MenuNode[]): string[] {
+  const keys: string[] = [];
 
   function collect(nodes: MenuNode[]) {
     nodes.forEach((node) => {
@@ -460,7 +461,7 @@ const columns = computed<DataTableColumns<MenuNode>>(() => [
 
 // 行key
 function rowKey(row: MenuNode) {
-  return row.id;
+  return String(row.id);
 }
 </script>
 

@@ -57,7 +57,8 @@ export const useUserStore = defineStore(
         loginLoading.value = true;
         params.password = encryptByRsa(params.password) || '';
         params.clientId = import.meta.env.VITE_CLIENT_ID;
-        params.authType = AuthTypeConstants.ACCOUNT;
+        params.grantType = AuthTypeConstants.ACCOUNT;
+        delete params.authType;
         const loginResult = await authApi.login(params);
 
         // 检查是否密码过期
@@ -65,7 +66,7 @@ export const useUserStore = defineStore(
           return {
             userInfo: null,
             passwordExpired: true,
-            userId: loginResult.userId,
+            userId: loginResult.userId == null ? undefined : String(loginResult.userId),
             tempToken: loginResult.tempToken,
           };
         }
@@ -113,7 +114,9 @@ export const useUserStore = defineStore(
     async function fetchAuthInfo() {
       const info = await authApi.getAuthInfo();
 
-      user.value = info.user;
+      user.value = info.user
+        ? { ...info.user, userId: String(info.user.userId ?? '') }
+        : info.user;
       roles.value = info.roles;
       permissions.value = info.permissions;
       menus.value = info.menus;

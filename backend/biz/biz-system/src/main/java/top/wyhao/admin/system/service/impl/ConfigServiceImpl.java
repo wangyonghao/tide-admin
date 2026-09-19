@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.json.JSONUtil;
@@ -14,6 +13,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.cmn.sms.SmsConfig;
+import top.wyhao.admin.system.assembler.ConfigAssembler;
 import top.wyhao.admin.system.entity.SysConfig;
 import top.wyhao.admin.system.mapper.SysConfigMapper;
 import top.wyhao.admin.system.model.ConfigModel;
@@ -28,7 +28,6 @@ import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 系统配置业务实现
@@ -42,6 +41,7 @@ import java.util.stream.Collectors;
 public class ConfigServiceImpl implements ConfigService {
 
     private final SysConfigMapper configMapper;
+    private final ConfigAssembler configAssembler;
 
     @Override
     public PageResult<ConfigResult> page(ConfigModel.Query query, PageQuery pageQuery) {
@@ -59,7 +59,7 @@ public class ConfigServiceImpl implements ConfigService {
         SysConfig configDO = configMapper.selectById(id);
         Check.notNull(configDO, "配置不存在");
 
-        return BeanUtil.copyProperties(configDO, ConfigResult.class);
+        return configAssembler.toResult(configDO);
     }
 
     @Override
@@ -69,7 +69,7 @@ public class ConfigServiceImpl implements ConfigService {
         SysConfig configDO = configMapper.selectOne(queryWrapper);
         Check.notNull(configDO, "配置不存在");
 
-        return BeanUtil.copyProperties(configDO, ConfigResult.class);
+        return configAssembler.toResult(configDO);
     }
 
 
@@ -169,7 +169,7 @@ public class ConfigServiceImpl implements ConfigService {
         // 检查唯一性
         this.checkUnique(request.configKey(), null);
 
-        SysConfig configDO = BeanUtil.copyProperties(request, SysConfig.class);
+        SysConfig configDO = configAssembler.toEntity(request);
         configMapper.insert(configDO);
         return configDO.getId();
     }
@@ -185,7 +185,7 @@ public class ConfigServiceImpl implements ConfigService {
             this.checkUnique(request.configKey(), id);
         }
 
-        SysConfig configDO = BeanUtil.copyProperties(request, SysConfig.class);
+        SysConfig configDO = configAssembler.toEntity(request);
         configDO.setId(id);
 
         int updated = configMapper.updateById(configDO);
@@ -224,9 +224,7 @@ public class ConfigServiceImpl implements ConfigService {
         WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysConfig.class);
         List<SysConfig> list = configMapper.selectList(queryWrapper);
 
-        List<ConfigResult> resultList = list.stream()
-                .map(config -> BeanUtil.copyProperties(config, ConfigResult.class))
-                .collect(Collectors.toList());
+        List<ConfigResult> resultList = configAssembler.toResultList(list);
 
         ExcelUtils.export(resultList, "系统配置", ConfigResult.class, response);
     }

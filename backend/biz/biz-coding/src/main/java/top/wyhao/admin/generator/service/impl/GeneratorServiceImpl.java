@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.admin.generator.assembler.GenConfigAssembler;
 import top.wyhao.admin.generator.config.properties.GeneratorProperties;
 import top.wyhao.admin.generator.enums.FormTypeEnum;
 import top.wyhao.admin.generator.enums.QueryTypeEnum;
@@ -73,6 +74,7 @@ public class GeneratorServiceImpl implements GeneratorService {
     private final ApplicationProperties applicationProperties;
     private final GenGenFieldConfigMapper fieldConfigMapper;
     private final GenGenConfigMapper genConfigMapper;
+    private final GenConfigAssembler genConfigAssembler;
     private static final List<String> TIME_PACKAGE_CLASS = Arrays.asList("LocalDate", "LocalTime", "LocalDateTime");
 
     @Override
@@ -200,7 +202,7 @@ public class GeneratorServiceImpl implements GeneratorService {
         GenConfig newGenConfig = req.getGenConfig();
         GenConfig oldGenConfig = genConfigMapper.selectById(tableName);
         if (oldGenConfig != null) {
-            BeanUtil.copyProperties(newGenConfig, oldGenConfig);
+            genConfigAssembler.copy(newGenConfig, oldGenConfig);
             genConfigMapper.updateById(oldGenConfig);
         } else {
             genConfigMapper.insert(newGenConfig);
@@ -280,7 +282,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         List<GenFieldConfig> fieldConfigList = fieldConfigMapper.selectListByTableName(tableName);
         Check.throwIfEmpty(fieldConfigList, "请先进行数据表 [{}] 字段配置", tableName);
 
-        InnerGenConfig innerGenConfig = new InnerGenConfig(genConfig);
+        InnerGenConfig innerGenConfig = new InnerGenConfig();
+        genConfigAssembler.copy(genConfig, innerGenConfig);
+        innerGenConfig.initDerivedFields();
         List<String> imports = new ArrayList<>();
         // 处理枚举字段
         List<GenFieldConfig> fieldConfigRecords = CollUtils
@@ -338,8 +342,7 @@ public class GeneratorServiceImpl implements GeneratorService {
      * @return 新的属性配置信息
      */
     private GenFieldConfig convertToFieldConfig(GenFieldConfig fieldConfig, List<String> imports) {
-        GenFieldConfig result = new GenFieldConfig();
-        BeanUtil.copyProperties(fieldConfig, result);
+        GenFieldConfig result = genConfigAssembler.copy(fieldConfig);
         String dictCode = result.getDictCode();
         if (StringUtils.isBlank(dictCode)) {
             return result;

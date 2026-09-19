@@ -47,9 +47,9 @@ public class SysUser {
     @TableField(insertStrategy = FieldStrategy.NOT_EMPTY, typeHandler = EncryptTypeHandler.class)
     private String phone;
     /**
-     * 头像地址
+     * 头像文件 ID（关联 file.id）
      */
-    private String avatar;
+    private Long avatar;
     /**
      * 描述
      */

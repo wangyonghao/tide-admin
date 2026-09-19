@@ -11,7 +11,7 @@ export interface TenantPackageResp extends BaseEntity {
   menuCheckStrictly: string;
   description: string;
   status: number;
-  menuIds: [];
+  menuIds: string[];
   disabled: boolean;
 }
 

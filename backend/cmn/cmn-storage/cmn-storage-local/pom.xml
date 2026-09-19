@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>top.wyhao</groupId>
+        <artifactId>cmn-storage</artifactId>
+        <version>${revision}</version>
+    </parent>
+
+    <artifactId>cmn-storage-local</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <description>本地文件存储实现 - 使用 JDK 标准文件 API</description>
+
+    <dependencies>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-storage-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter</artifactId>
+        </dependency>
+    </dependencies>
+</project>

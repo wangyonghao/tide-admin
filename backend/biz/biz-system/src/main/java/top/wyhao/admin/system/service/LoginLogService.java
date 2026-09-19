@@ -31,7 +31,7 @@ public interface LoginLogService {
      * @param pageQuery 分页查询条件
      * @return 分页列表信息
      */
-    PageResult<LoginLogModel> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery);
+    PageResult<LoginLogModel.Result> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery);
 
     /**
      * 导出登录日志

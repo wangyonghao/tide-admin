@@ -90,10 +90,7 @@ public class ProfileModel {
 
     @Schema(description = "头像上传响应参数")
     public record AvatarResult(
-            /**
-             * 头像地址
-             */
-            @Schema(description = "头像地址", example = "https://himg.bdimg.com/sys/portrait/item/public.1.81ac9a9e.rf1ix17UfughLQjNo7XQ_w.jpg")
-            String avatar
+            @Schema(description = "头像文件 ID", example = "1001")
+            Long avatar
     ) {}
 }

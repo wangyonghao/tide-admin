@@ -48,7 +48,7 @@ export const userApi = {
     return http.put<string>(`/system/user/${id}/password/reset`);
   },
   /** 分配角色 */
-  updateRole: (data: { roleIds: Array<number | string> }, id: string) => {
+  updateRole: (data: { roleIds: string[] }, id: string) => {
     return http.put(`/system/user/${id}/role`, data);
   },
   /** 查询用户字典 */
@@ -77,7 +77,7 @@ export interface UserResp extends BaseEntity {
   /** 手机号码 */
   phone: string;
   /** 头像 */
-  avatar: string;
+  avatar: string | null;
   /** 描述 */
   description: string;
   /** 状态（1：启用；2：禁用） */
@@ -91,7 +91,7 @@ export interface UserResp extends BaseEntity {
   /** 租户ID */
   tenantId: string;
   deptName: string;
-  roleIds: Array<number | string>;
+  roleIds: string[];
   roleNames: Array<string>;
   disabled: boolean;
 }

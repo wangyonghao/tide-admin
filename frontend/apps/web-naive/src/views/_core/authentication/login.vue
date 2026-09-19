@@ -156,7 +156,7 @@ const handleSubmit = async (event?: Event) => {
     // Check if password expired
     if (result.passwordExpired) {
       passwordExpired.value = true;
-      expiredUserId.value = result.userId || '';
+      expiredUserId.value = result.userId ? String(result.userId) : '';
       expiredTempToken.value = result.tempToken || '';
     }
   } catch (error) {

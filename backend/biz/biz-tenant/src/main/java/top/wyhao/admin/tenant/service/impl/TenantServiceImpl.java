@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.tenant.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.extra.spring.SpringUtil;
@@ -10,7 +9,7 @@ import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.provider.IdGeneratorProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.tenant.constant.TenantConstants;
+import top.wyhao.admin.tenant.assembler.TenantAssembler;
 import top.wyhao.admin.tenant.mapper.SysTenantMapper;
 import top.wyhao.admin.tenant.model.entity.Tenant;
 import top.wyhao.admin.tenant.model.query.TenantQuery;
@@ -24,7 +23,6 @@ import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.model.TenantBO;
 import top.wyhao.starter.core.spi.RoleApi;
 import top.wyhao.starter.core.spi.RoleMenuApi;
 import top.wyhao.starter.core.spi.TenantDataApi;
@@ -50,6 +48,11 @@ import java.util.Set;
 @Service
 @RequiredArgsConstructor
 public class TenantServiceImpl implements TenantService {
+    /**
+     * 编码生成器 KEY
+     */
+    public static final String CODE_GENERATOR_KEY = "tenant-code";
+    public static final String TENANT_KEY_PREFIX = "TENANT:";
 
     private final Map<String, TenantDataApi> tenantDataApiMap = SpringUtil.getBeansOfType(TenantDataApi.class);
     private final PackageService packageService;
@@ -58,6 +61,7 @@ public class TenantServiceImpl implements TenantService {
     private final RoleApi roleApi;
     private final TenantProperties tenantProperties;
     private final SysTenantMapper baseMapper;
+    private final TenantAssembler tenantAssembler;
 
     @Override
     public Long create(TenantRequest req) {
@@ -68,11 +72,11 @@ public class TenantServiceImpl implements TenantService {
         // 生成租户编码
         req.setCode(this.generateCode());
         // 新增信息
-        Tenant entity = BeanUtil.copyProperties(req, Tenant.class);
+        Tenant entity = tenantAssembler.toEntity(req);
         baseMapper.insert(entity);
         // 初始化租户数据
         req.setId(entity.getId());
-        tenantDataApiMap.forEach((key, value) -> value.init(BeanUtil.copyProperties(req, TenantBO.class)));
+        tenantDataApiMap.forEach((key, value) -> value.init(tenantAssembler.toBO(req)));
         return entity.getId();
     }
 
@@ -87,11 +91,11 @@ public class TenantServiceImpl implements TenantService {
 
 
     public void afterDelete(List<Long> ids) {
-        RedisUtils.deleteByPattern(TenantConstants.TENANT_KEY_PREFIX + StringConstants.ASTERISK);
+        RedisUtils.deleteByPattern(TENANT_KEY_PREFIX + StringConstants.ASTERISK);
     }
 
     @Override
-    @Cached(name = TenantConstants.TENANT_KEY_PREFIX, key = "#domain")
+    @Cached(name = TENANT_KEY_PREFIX, key = "#domain")
     public Long getIdByDomain(String domain) {
         return baseMapper.lambdaQuery()
             .select(Tenant::getId)
@@ -102,7 +106,7 @@ public class TenantServiceImpl implements TenantService {
     }
 
     @Override
-    @Cached(name = TenantConstants.TENANT_KEY_PREFIX, key = "#code")
+    @Cached(name = TENANT_KEY_PREFIX, key = "#code")
     public Long getIdByCode(String code) {
         return baseMapper.lambdaQuery()
             .select(Tenant::getId)
@@ -176,6 +180,7 @@ public class TenantServiceImpl implements TenantService {
             .exists(), "域名为 [{}] 的租户已存在", domain);
     }
 
+
     /**
      * 生成租户编码
      *
@@ -184,7 +189,7 @@ public class TenantServiceImpl implements TenantService {
     private String generateCode() {
         String code;
         do {
-            code = idGeneratorProvider.getRequired(TenantConstants.CODE_GENERATOR_KEY).generateAsString();
+            code = idGeneratorProvider.getRequired(CODE_GENERATOR_KEY).generateAsString();
         } while (baseMapper.lambdaQuery().eq(Tenant::getDisplayID, code).exists());
         return code;
     }
@@ -217,7 +222,7 @@ public class TenantServiceImpl implements TenantService {
         this.checkDomainRepeat(req.getDomain(), id);
         Tenant tenant = baseMapper.selectById(id);
 
-        RedisUtils.deleteByPattern(TenantConstants.TENANT_KEY_PREFIX + StringConstants.ASTERISK);
+        RedisUtils.deleteByPattern(TENANT_KEY_PREFIX + StringConstants.ASTERISK);
     }
 
     @Override

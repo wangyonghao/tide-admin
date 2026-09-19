@@ -3,10 +3,7 @@ package top.wyhao.admin.tenant.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.tenant.constant.TenantConstants;
 import top.wyhao.admin.tenant.mapper.SysTenantMapper;
-import top.wyhao.admin.tenant.model.entity.Tenant;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.spi.TenantApi;
 
 /**

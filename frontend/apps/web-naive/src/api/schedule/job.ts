@@ -7,7 +7,7 @@ export interface JobResp {
   /**
    * ID
    */
-  id: number | string;
+  id: string;
 
   /**
    * 任务组
@@ -125,21 +125,21 @@ export function addJob(data: any) {
 }
 
 /** 修改任务 */
-export function updateJob(data: any, id: number | string) {
+export function updateJob(data: any, id: string) {
   return http.put(`/schedule/job/${id}`, data);
 }
 
 /** 修改任务状态 */
-export function updateJobStatus(data: any, id: number | string) {
+export function updateJobStatus(data: any, id: string) {
   return http.patch(`/schedule/job/${id}/status`, data);
 }
 
 /** 删除任务 */
-export function deleteJob(id: number | string) {
+export function deleteJob(id: string) {
   return http.delete(`/schedule/job/${id}`);
 }
 
 /** 执行任务 */
-export function triggerJob(id: number | string) {
+export function triggerJob(id: string) {
   return http.post(`/schedule/job/trigger/${id}`);
 }

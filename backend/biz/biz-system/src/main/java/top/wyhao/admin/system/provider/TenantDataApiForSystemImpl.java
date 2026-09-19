@@ -15,7 +15,6 @@ import top.wyhao.admin.system.mapper.*;
 import top.wyhao.admin.system.mapper.SysUserMapper;
 import top.wyhao.admin.system.mapper.SysUserPasswordHistoryMapper;
 import top.wyhao.admin.system.mapper.SysUserSocialMapper;
-import top.wyhao.admin.system.service.FileService;
 import top.wyhao.admin.system.service.RoleMenuService;
 import top.wyhao.admin.system.service.RoleService;
 import top.wyhao.starter.core.constant.GlobalConstants;
@@ -46,7 +45,6 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
 
     private final PackageMenuApi packageMenuApi;
     private final TenantApi tenantApi;
-    private final FileService fileService;
     private final RoleMenuService roleMenuService;
     private final SysDeptMapper deptMapper;
     private final SysRoleMapper roleMapper;

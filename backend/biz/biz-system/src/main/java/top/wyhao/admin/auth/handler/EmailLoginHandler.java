@@ -1,25 +1,21 @@
 
 package top.wyhao.admin.auth.handler;
 
-import cn.hutool.core.bean.BeanUtil;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.LoginHelper;
 import top.wyhao.admin.auth.model.EmailLoginRequest;
+import top.wyhao.admin.auth.model.LoginRequest;
 import top.wyhao.admin.auth.model.LoginResult;
-import top.wyhao.admin.system.entity.SysDept;
+import top.wyhao.admin.auth.model.enums.GrantType;
+import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.service.DeptService;
-import top.wyhao.admin.system.service.LoginLogService;
-import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.admin.system.service.UserService;
-import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.constant.CacheConstants;
-import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.model.LoginUser;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
+import top.wyhao.starter.web.http.ServletUtils;
 
 /**
  * 邮箱登录处理器
@@ -27,13 +23,17 @@ import top.wyhao.starter.core.util.validation.ValidationUtils;
 
 @RequiredArgsConstructor
 @Component
-public class EmailLoginHandler implements LoginHandler<EmailLoginRequest.Request> {
+public class EmailLoginHandler implements LoginHandler {
     private final UserService userService;
-    private final OperationLogService operationLogService;
-    private final DeptService deptService;
-    private final LoginLogService loginLogService;
+    private final UserAssembler userAssembler;
 
-    public LoginResult login(EmailLoginRequest.Request req) {
+    @Override
+    public GrantType grantType() {
+        return GrantType.EMAIL;
+    }
+
+    public LoginResult login(LoginRequest request) {
+        EmailLoginRequest req = (EmailLoginRequest)request;
         String email = req.email();
         String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + email;
         String captcha = RedisUtils.get(captchaKey);
@@ -44,28 +44,20 @@ public class EmailLoginHandler implements LoginHandler<EmailLoginRequest.Request
         SysUser user = userService.getByEmail(req.email());
         ValidationUtils.throwIfNull(user, "此邮箱未绑定本系统账号");
         // 检查用户状态
-        checkUserStatus(user);
-        // 执行认证
-        // 获取权限、角色、密码过期天数
-        LoginUser loginUser = new LoginUser();
-        BeanUtil.copyProperties(user, loginUser);
-        loginUser.setUserId(user.getId());
-        loginUser.setDeviceType("PC");
+        LoginHandlerHelper.checkUserStatus(user);
 
-        // 登录并记录登录日志
-        LoginHelper.doLogin(loginUser);
+        // 7. 登录（创建会话、签发Token）
+        LoginHandlerHelper.doLogin(user.getId());
 
-        return new LoginResult("200", LoginUtil.getTokenValue(), null);
-    }
+        // 8. 保存用户信息到会话
+        LoginHandlerHelper.setSession(userAssembler.toLoginUser(user), "PC");
 
-    /**
-     * 检查用户状态
-     *
-     * @param user 用户信息
-     */
-    private void checkUserStatus(SysUser user) {
-        Check.throwIfEqual(StatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
-        SysDept dept = deptService.getById(user.getDeptId());
-        Check.throwIfEqual(StatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
+        // 9. 记录登录成功日志
+        String ip = ServletUtils.getRequestIp();
+        HttpServletRequest httpServletRequest = ServletUtils.getRequest();
+        String userAgent = httpServletRequest != null ? httpServletRequest.getHeader("User-Agent") : null;
+        LoginHandlerHelper.loginSuccess(user.getUsername(), ip, userAgent);
+
+        return new LoginResult("200", UserContextHolder.getToken(), null);
     }
 }

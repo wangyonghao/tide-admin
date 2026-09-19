@@ -10,6 +10,7 @@ import lombok.Setter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.function.Function;
 
 /**
  * 分页信息
@@ -95,11 +96,19 @@ public class PageResult<T> {
         return pageResult;
     }
 
-    public static <T, V> PageResult<V> build(com.baomidou.mybatisplus.extension.plugins.pagination.Page<T> page, java.util.function.Function<List<T>, List<V>> converter) {
-        PageResult<V> result = new PageResult<>();
-        result.setTotal(page.getTotal());
-        result.setList(converter.apply(page.getRecords()));
-        return result;
+    /**
+     * 基于 MyBatis Plus 分页数据构建分页信息，并通过转换函数映射列表元素
+     *
+     * @param page      MyBatis Plus 分页数据
+     * @param converter 列表转换函数，通常传入 MapStruct {@code assembler::toXxxList}
+     */
+    public static <T, V> PageResult<V> build(IPage<T> page, Function<List<T>, List<V>> converter) {
+        if (page == null) {
+            return empty();
+        }
+        List<T> records = page.getRecords();
+        List<V> list = CollUtil.isEmpty(records) ? Collections.emptyList() : converter.apply(records);
+        return new PageResult<>(list, page.getTotal());
     }
 
     /**

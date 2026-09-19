@@ -50,7 +50,7 @@ const formData = reactive({
   email: '',
   phone: '',
   deptId: undefined as string | undefined,
-  roleIds: [] as Array<number | string>,
+  roleIds: [] as string[],
   status: 1,
   description: '',
 });
@@ -119,8 +119,8 @@ async function loadUserDetail() {
     formData.gender = res.gender ?? 0;
     formData.email = res.email ?? '';
     formData.phone = res.phone ?? '';
-    formData.deptId = res.deptId ?? undefined;
-    formData.roleIds = res.roleIds ?? [];
+    formData.deptId = res.deptId == null || res.deptId === '' ? undefined : String(res.deptId);
+    formData.roleIds = (res.roleIds ?? []).map(String);
     formData.status = res.status ?? 1;
     formData.description = res.description ?? '';
     // 编辑时不需要密码

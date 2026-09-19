@@ -2,13 +2,13 @@
 package top.wyhao.admin.auth.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.IdUtil;
 import cn.hutool.core.util.RandomUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.json.JSONUtil;
 import com.xkcoding.justauth.autoconfigure.JustAuthProperties;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.AuthRequestBuilder;
 import me.zhyd.oauth.config.AuthConfig;
@@ -17,18 +17,19 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.LoginHelper;
-import top.wyhao.admin.auth.model.SocialLoginRequest;
+import top.wyhao.admin.auth.model.LoginRequest;
 import top.wyhao.admin.auth.model.LoginResult;
-import top.wyhao.admin.system.model.MessageModel;
-import top.wyhao.admin.system.model.SystemConstants;
-import top.wyhao.admin.system.entity.SysDept;
+import top.wyhao.admin.auth.model.SocialLoginRequest;
+import top.wyhao.admin.auth.model.enums.GrantType;
+import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.entity.SysUser;
 import top.wyhao.admin.system.entity.SysUserSocial;
+import top.wyhao.admin.system.model.MessageModel;
+import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.enums.MessageTemplates;
 import top.wyhao.admin.system.model.enums.MessageType;
 import top.wyhao.admin.system.service.*;
-import top.wyhao.common.security.util.LoginUtil;
+import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
 import top.wyhao.starter.core.constant.RegexConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
@@ -36,8 +37,8 @@ import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.model.LoginUser;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
+import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -47,7 +48,7 @@ import java.util.Collections;
  */
 @Component
 @RequiredArgsConstructor
-public class SocialLoginHandler implements LoginHandler<SocialLoginRequest.Request> {
+public class SocialLoginHandler implements LoginHandler {
 
     private final JustAuthProperties authProperties;
     private final ApplicationProperties applicationProperties;
@@ -55,12 +56,17 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest.Reque
     private final UserService userService;
     private final UserSocialService userSocialService;
     private final RoleService roleService;
-    private final DeptService deptService;
     private final MessageService messageService;
-    private final OperationLogService operationLogService;
-    private final LoginLogService loginLogService;
+    private final UserAssembler userAssembler;
 
-    public LoginResult login(SocialLoginRequest.Request req) {
+    @Override
+    public GrantType grantType() {
+        return GrantType.SOCIAL;
+    }
+
+    @Override
+    public LoginResult login(LoginRequest request) {
+        SocialLoginRequest req = (SocialLoginRequest) request;
         if (StpUtil.isLogin()) {
             StpUtil.logout();
         }
@@ -94,37 +100,43 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest.Reque
             if (authUser.getGender() != null) {
                 user.setGender(GenderEnum.getByValue(Integer.parseInt(authUser.getGender().getCode())).getValue());
             }
-            user.setAvatar(authUser.getAvatar());
             user.setDeptId(SystemConstants.SUPER_DEPT_ID);
             user.setStatus(StatusEnum.ENABLE.getValue());
             userService.save(user);
             Long userId = user.getId();
             roleService.assignRolesToUser(Collections.singletonList(roleService
-                .getIdByCode(RoleCodeEnum.GENERAL_USER.getCode())), userId);
+                    .getIdByCode(RoleCodeEnum.GENERAL_USER.getCode())), userId);
             userSocial = new SysUserSocial();
             userSocial.setUserId(userId);
             userSocial.setSource(source);
             userSocial.setOpenId(openId);
             this.sendSecurityMsg(user);
         } else {
-            user = BeanUtil.copyProperties(userService.detail(userSocial.getUserId()), SysUser.class);
+            user = userAssembler.toEntity(userService.detail(userSocial.getUserId()));
         }
         // 检查用户状态
-        checkUserStatus(user);
+        LoginHandlerHelper.checkUserStatus(user);
         userSocial.setMetaJson(JSONUtil.toJsonStr(authUser));
         userSocial.setLastLoginTime(LocalDateTime.now());
         userSocialService.saveOrUpdate(userSocial);
         // 执行认证
         // 获取权限、角色、密码过期天数
-        LoginUser loginUser = new LoginUser();
-        BeanUtil.copyProperties(user, loginUser);
-        loginUser.setUserId(user.getId());
+        LoginUser loginUser = userAssembler.toLoginUser(user);
         loginUser.setDeviceType("PC");
 
-        // 登录并缓存用户信息
-        LoginHelper.doLogin(loginUser);
+        // 7. 登录（创建会话、签发Token）
+        LoginHandlerHelper.doLogin(user.getId());
 
-        return new LoginResult("200", LoginUtil.getTokenValue(), null);
+        // 8. 保存用户信息到会话
+        LoginHandlerHelper.setSession(loginUser, "PC");
+
+        // 9. 记录登录成功日志
+        String ip = ServletUtils.getRequestIp();
+        HttpServletRequest httpRequest = ServletUtils.getRequest();
+        String userAgent = httpRequest != null ? httpRequest.getHeader("User-Agent") : null;
+        LoginHandlerHelper.loginSuccess(user.getUsername(), ip, userAgent);
+
+        return new LoginResult("200", UserContextHolder.getToken(), null);
     }
 
     /**
@@ -138,7 +150,7 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest.Reque
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw new BizException("platform_not_support","暂不支持 [%s] 平台账号登录".formatted(source));
+            throw new BizException("platform_not_support", "暂不支持 [%s] 平台账号登录".formatted(source));
         }
     }
 
@@ -157,16 +169,4 @@ public class SocialLoginHandler implements LoginHandler<SocialLoginRequest.Reque
         );
         messageService.add(req, CollUtil.toList(user.getId().toString()));
     }
-
-    /**
-     * 检查用户状态
-     *
-     * @param user 用户信息
-     */
-    private void checkUserStatus(SysUser user) {
-        Check.throwIfEqual(StatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
-        SysDept dept = deptService.getById(user.getDeptId());
-        Check.throwIfEqual(StatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
-    }
-
 }

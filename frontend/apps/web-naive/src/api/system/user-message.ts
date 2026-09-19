@@ -17,7 +17,7 @@ export const userMessageApi = {
     });
   },
   /** 获取用户消息详情 */
-  detail: (id: number | string) => {
+  detail: (id: string) => {
     return http.get<MessageResp>(`/user/message/${id}`);
   },
   /** 删除消息 */
@@ -38,7 +38,7 @@ export const userMessageApi = {
   },
   /** 查询未读公告 ID 列表 */
   getUnreadNoticeIds: (method: string) => {
-    return http.get<number[]>(`/user/message/notice/unread/${method}`);
+    return http.get<string[]>(`/user/message/notice/unread/${method}`);
   },
   /** 分页查询用户公告 */
   listNotice: (query: NoticePageQuery) => {

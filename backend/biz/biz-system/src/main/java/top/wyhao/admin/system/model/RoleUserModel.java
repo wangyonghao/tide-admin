@@ -60,8 +60,8 @@ public class RoleUserModel {
             /**
              * 用户头像
              */
-            @Schema(description = "用户头像", example = "https://example.com/avatar.jpg")
-            String avatar,
+            @Schema(description = "用户头像文件 ID", example = "1001")
+            Long avatar,
 
             /**
              * 状态

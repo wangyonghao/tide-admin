@@ -1,84 +1,60 @@
 <script setup lang="ts">
-import type { UploadFileInfo } from 'naive-ui';
+import type { UploadCustomRequestOptions, UploadFileInfo } from 'naive-ui';
 
-import { computed, ref, watch } from 'vue';
-
-import { useUserStore } from '@/stores/user';
+import { ref, watch } from 'vue';
 
 import { message } from '#/adapter/naive';
+import { fileApi, resolveFilePreviewUrl, toFileId } from '#/api/system/file';
 
 const props = defineProps<{
-  modelValue?: string;
+  /** 头像/图片对应的 fileId */
+  modelValue?: string | null;
 }>();
 
 const emit = defineEmits<{
   (e: 'update:modelValue', value: string | undefined): void;
 }>();
 
-const userStore = useUserStore();
-
-const uploadUrl = '/api/sys/file/upload/image';
-const headers = computed(() => ({
-  Authorization: userStore.token || '',
-}));
-
-// 文件列表
 const fileList = ref<UploadFileInfo[]>([]);
 
-// 监听 modelValue 变化，回显图片
 watch(
   () => props.modelValue,
   (val) => {
-    if (val && fileList.value.length === 0) {
+    const fileId = toFileId(val);
+    if (fileId != null) {
       fileList.value = [
         {
-          id: 'default',
+          id: String(fileId),
           name: 'image',
           status: 'finished',
-          url: val,
+          url: resolveFilePreviewUrl(fileId),
         },
       ];
-    } else if (!val) {
+    } else {
       fileList.value = [];
     }
   },
   { immediate: true },
 );
 
-// 上传完成
-function handleFinish({
-  file,
-  event,
-}: {
-  event?: ProgressEvent;
-  file: UploadFileInfo;
-}) {
+async function handleUpload({ file, onFinish, onError }: UploadCustomRequestOptions) {
   try {
-    // 方案1：先校验非空，再断言（推荐）
-    if (!event?.target) {
-      message.error('上传响应解析失败：事件目标为空');
+    if (!file.file) {
+      onError();
       return;
     }
-    const response = JSON.parse((event.target as XMLHttpRequest).response);
-    if ((response.code === 0 || response.code === 200) && response.data) {
-      // 返回的是 SysFile 对象，优先使用 url
-      const data = response.data as
-        | string
-        | { filePath?: string; url?: string };
-      const url = typeof data === 'string' ? data : data.url || data.filePath;
-      if (url) {
-        emit('update:modelValue', url);
-        file.url = url;
-        file.status = 'finished';
-      }
-    }
+    const result = await fileApi.upload(file.file as File);
+    emit('update:modelValue', result.fileId);
+    file.url = resolveFilePreviewUrl(result.fileId);
+    file.status = 'finished';
+    onFinish();
   } catch (error) {
     console.error('上传失败', error);
+    message.error('上传失败');
+    onError();
   }
-  return file;
 }
 
-// 移除图片
 function handleRemove() {
   emit('update:modelValue', undefined);
   return true;
@@ -88,12 +64,10 @@ function handleRemove() {
 <template>
   <div class="image-upload">
     <n-upload
-      :action="uploadUrl"
-      :headers="headers"
       :max="1"
       list-type="image-card"
       v-model:file-list="fileList"
-      @finish="handleFinish"
+      :custom-request="handleUpload"
       @remove="handleRemove"
       accept="image/*"
     >
@@ -105,16 +79,6 @@ function handleRemove() {
 <style scoped>
 .image-upload {
   width: 100%;
-}
-
-.upload-placeholder {
-  display: flex;
-  flex-direction: column;
-  gap: 4px;
-  align-items: center;
-  justify-content: center;
-  font-size: 12px;
-  color: #999;
 }
 
 :deep(.n-upload-file-list .n-upload-file.n-upload-file--image-card-type) {

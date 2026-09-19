@@ -7,7 +7,7 @@ export interface JobLogResp {
   /**
    * ID
    */
-  id: number;
+  id: string;
   /**
    * 任务组
    */
@@ -19,7 +19,7 @@ export interface JobLogResp {
   /**
    * 任务 ID
    */
-  jobId: number;
+  jobId: string;
   /**
    * 任务状态 1待处理 2运行中  3成功 4已失败 5已停止 6已取消
    */
@@ -49,7 +49,7 @@ export interface JobLogQuery {
   /**
    * 任务 ID
    */
-  jobId?: number;
+  jobId?: string;
   /**
    * 任务组
    */
@@ -77,16 +77,16 @@ export function listJobLog(query: JobLogPageQuery) {
 }
 
 /** 查询任务日志详情 */
-export function getJobLogDetail(id: number) {
+export function getJobLogDetail(id: string) {
   return http.get<boolean>(`/schedule/log/${id}`);
 }
 
 /** 停止任务 */
-export function stopJob(id: number) {
+export function stopJob(id: string) {
   return http.post(`/schedule/log/stop/${id}`);
 }
 
 /** 重试任务 */
-export function retryJob(id: number) {
+export function retryJob(id: string) {
   return http.post(`/schedule/log/retry/${id}`);
 }

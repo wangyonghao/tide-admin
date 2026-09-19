@@ -18,6 +18,7 @@ import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
 import { message } from '#/adapter/naive';
 import { userProfileApi } from '#/api/system/user-profile';
+import { resolveFilePreviewUrl } from '#/api/system/file';
 
 const userStore = useUserStore();
 
@@ -119,7 +120,7 @@ const userInfo = computed(() => userStore.user);
       <div class="flex items-center gap-6">
         <!-- 头像 -->
         <VbenAvatar
-          :src="userInfo?.avatar"
+          :src="resolveFilePreviewUrl(userInfo?.avatar)"
           :alt="userInfo?.nickname || 'User'"
           :size="100"
           class="mb-4 mx-auto"

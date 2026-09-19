@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -11,6 +10,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.admin.system.assembler.DeptAssembler;
 import top.wyhao.admin.system.entity.SysDept;
 import top.wyhao.admin.system.exception.DeptException;
 import top.wyhao.admin.system.mapper.SysDeptMapper;
@@ -48,23 +48,27 @@ public class DeptServiceImpl implements DeptService {
     private final UserService userService;
 
     private final SysDeptMapper baseMapper;
+    private final DeptAssembler deptAssembler;
 
     @Override
     public PageResult<DeptModel.Result> page(DeptModel.Query query, PageQuery pageQuery) {
         QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
         WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysDept.class);
         IPage<SysDept> page = baseMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, DeptModel.Result.class);
+        return PageResult.build(page, deptAssembler::toResultList);
     }
 
     @Override
     public List<DeptModel.Result> list(DeptModel.Query query) {
-        return this.list(query, DeptModel.Result.class);
+        QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysDept.class);
+        List<SysDept> entityList = baseMapper.selectList(queryWrapper);
+        return deptAssembler.toResultList(entityList);
     }
 
     @Override
     public List<DeptModel.Result> tree(DeptModel.Query query) {
-        List<DeptModel.Result> list = this.list(query, DeptModel.Result.class);
+        List<DeptModel.Result> list = this.list(query);
         return TreeUtils.flatToTree(list,
                 DeptModel.Result::id,
                 DeptModel.Result::parentId,
@@ -87,7 +91,7 @@ public class DeptServiceImpl implements DeptService {
     @Override
     public DeptModel.Result get(Long id) {
         SysDept entity = baseMapper.selectById(id);
-        return BeanUtil.toBean(entity, DeptModel.Result.class);
+        return deptAssembler.toResult(entity);
     }
 
     @Override
@@ -186,26 +190,8 @@ public class DeptServiceImpl implements DeptService {
 
     @Override
     public void export(DeptModel.Query query, HttpServletResponse response) {
-        List<DeptModel.Result> list = this.list(query, DeptModel.Result.class);
+        List<DeptModel.Result> list = this.list(query);
         ExcelUtils.export(list, "导出数据", DeptModel.Result.class, response);
-    }
-
-    /**
-     * 查询列表
-     *
-     * @param query       查询条件
-     * @param targetClass 指定类型
-     * @return 列表信息
-     */
-    protected <E> List<E> list(DeptModel.Query query, Class<E> targetClass) {
-        QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
-        // 设置排序
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysDept.class);
-        List<SysDept> entityList = baseMapper.selectList(queryWrapper);
-        if (SysDept.class == targetClass) {
-            return (List<E>) entityList;
-        }
-        return BeanUtil.copyToList(entityList, targetClass);
     }
 
     @Override

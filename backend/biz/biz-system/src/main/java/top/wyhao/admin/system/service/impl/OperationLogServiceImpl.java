@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -11,6 +10,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
+import top.wyhao.admin.system.assembler.OperationLogAssembler;
 import top.wyhao.admin.system.entity.SysOperationLog;
 import top.wyhao.admin.system.mapper.SysOperationLogMapper;
 import top.wyhao.admin.system.model.OperationLogModel;
@@ -34,6 +34,7 @@ import java.util.List;
 public class OperationLogServiceImpl implements OperationLogService {
 
     private final SysOperationLogMapper operationLogMapper;
+    private final OperationLogAssembler operationLogAssembler;
 
     /**
      * 异步记录操作日志
@@ -44,7 +45,7 @@ public class OperationLogServiceImpl implements OperationLogService {
     @EventListener
     @Override
     public void create(OperationLog operationLog) {
-        SysOperationLog operLog = BeanUtil.toBean(operationLog, SysOperationLog.class);
+        SysOperationLog operLog = operationLogAssembler.toEntity(operationLog);
         operationLogMapper.insert(operLog);
     }
 
@@ -54,19 +55,19 @@ public class OperationLogServiceImpl implements OperationLogService {
         QueryWrapper<SysOperationLog> queryWrapper = WrapperUtil.build(query);
         WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysOperationLog.class);
         IPage<SysOperationLog> page = operationLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, OperationLogModel.Result.class);
+        return PageResult.build(page, operationLogAssembler::toResultList);
     }
 
     @Override
     public OperationLogModel.Detail detail(Long id) {
         SysOperationLog sysOperationLog = this.require(id);
         Check.throwIfNotExists(sysOperationLog, "LogDO", "ID", id);
-        return BeanUtil.copyProperties(sysOperationLog, OperationLogModel.Detail.class);
+        return operationLogAssembler.toDetail(sysOperationLog);
     }
 
     @Override
     public void export(OperationLogModel.LogQuery query, HttpServletResponse response) {
-        List<OperationLogModel.Excel> list = BeanUtil.copyToList(this.list(query), OperationLogModel.Excel.class);
+        List<OperationLogModel.Excel> list = operationLogAssembler.toExcelList(this.list(query));
         ExcelUtils.export(list, "导出操作日志数据", OperationLogModel.Excel.class, response);
     }
 

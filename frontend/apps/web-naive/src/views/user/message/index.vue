@@ -137,7 +137,7 @@ watch(
   },
   { immediate: true },
 );
-const change = (key: number | string) => {
+const change = (key: string) => {
   activeKey.value = key as string;
   router.replace({ path: route.path, query: { tab: key } });
 };

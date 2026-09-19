@@ -3,11 +3,10 @@ package top.wyhao.admin.auth.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
-import cn.dev33.satoken.exception.NotLoginException;
+import cn.dev33.satoken.session.SaSession;
+import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.convert.Convert;
-import cn.hutool.extra.spring.SpringUtil;
-import cn.hutool.json.JSONUtil;
 import com.xkcoding.justauth.autoconfigure.JustAuthProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -21,25 +20,23 @@ import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.auth.handler.AccountLoginHandler;
-import top.wyhao.admin.auth.handler.EmailLoginHandler;
-import top.wyhao.admin.auth.handler.PhoneLoginHandler;
-import top.wyhao.admin.auth.handler.SocialLoginHandler;
 import top.wyhao.admin.auth.model.*;
-import top.wyhao.admin.auth.model.enums.AuthType;
+import top.wyhao.admin.auth.service.AuthService;
 import top.wyhao.admin.system.model.LoginLogModel;
 import top.wyhao.admin.system.model.bo.user.UserPasswordResetRequest;
 import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.starter.core.exception.BadRequestException;
 import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.util.RsaUtils;
-import top.wyhao.starter.core.util.validation.Validator;
+import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,51 +51,20 @@ public class AuthController {
     private final UserService userService;
     private final MenuService menuService;
     private final LoginLogService loginLogService;
+    private final AuthService authService;
 
     @SaIgnore
-    @Operation(summary = "登录", description = "用户登录")
+    @Operation(summary = "登录", description = "用户统一登录入口")
     @PostMapping("/auth/login")
-    public LoginResult login(@RequestBody @Valid Object reqObj) {
-        // 需要根据 JSON 中的 authType 字段来判断具体的请求类型
-        if (!(reqObj instanceof Map)) {
-            throw new BadRequestException("AUTH_REQUEST_INVALID", "请求参数格式错误");
-        }
-        
-        Map<String, Object> reqMap = (Map<String, Object>) reqObj;
-        String authTypeStr = (String) reqMap.get("authType");
-        AuthType authType = authTypeStr != null ? AuthType.valueOf(authTypeStr) : AuthType.ACCOUNT;
-        
-        LoginResult loginResult;
-        switch (authType) {
-            case ACCOUNT: // 账号密码登录
-                AccountLoginRequest.Request accountReq = JSONUtil.toBean(JSONUtil.toJsonStr(reqMap), AccountLoginRequest.Request.class);
-                Validator.validate(accountReq);
-                AccountLoginHandler accountLoginHandler = SpringUtil.getBean(AccountLoginHandler.class);
-                loginResult = accountLoginHandler.login(accountReq);
-                break;
-            case SOCIAL: // 社交账号登录
-                SocialLoginRequest.Request socialReq = JSONUtil.toBean(JSONUtil.toJsonStr(reqMap), SocialLoginRequest.Request.class);
-                Validator.validate(socialReq);
-                SocialLoginHandler socialLoginHandler = SpringUtil.getBean(SocialLoginHandler.class);
-                loginResult = socialLoginHandler.login(socialReq);
-                break;
-            case EMAIL: // 邮箱登录
-                EmailLoginRequest.Request emailReq = JSONUtil.toBean(JSONUtil.toJsonStr(reqMap), EmailLoginRequest.Request.class);
-                Validator.validate(emailReq);
-                EmailLoginHandler emailLoginHandler = SpringUtil.getBean(EmailLoginHandler.class);
-                loginResult = emailLoginHandler.login(emailReq);
-                break;
-            case PHONE:  // 手机登录
-                PhoneLoginRequest.Request phoneReq = JSONUtil.toBean(JSONUtil.toJsonStr(reqMap), PhoneLoginRequest.Request.class);
-                Validator.validate(phoneReq);
-                PhoneLoginHandler phoneLoginHandler = SpringUtil.getBean(PhoneLoginHandler.class);
-                loginResult = phoneLoginHandler.login(phoneReq);
-                break;
-            default:
-                throw new BadRequestException("AUTH_TYPE_INVALID", "认证类型无效");
-        }
-        return loginResult;
+    public LoginResult login(@RequestBody @Valid LoginRequest loginRequest) {
+        return authService.login(loginRequest);
+    }
 
+    @Operation(summary = "登出", description = "注销用户的当前登录")
+    @Parameter(name = "Authorization", description = "令牌", required = true, example = "Bearer xxxx-xxxx-xxxx-xxxx", in = ParameterIn.HEADER)
+    @PostMapping("/auth/logout")
+    public void logout() {
+        authService.logout();
     }
 
     @SaIgnore
@@ -117,21 +83,12 @@ public class AuthController {
         userService.resetPassword(resetReq, Convert.toLong(userIdObj));
     }
 
-    @Operation(summary = "登出", description = "注销用户的当前登录")
-    @Parameter(name = "Authorization", description = "令牌", required = true, example = "Bearer xxxx-xxxx-xxxx-xxxx", in = ParameterIn.HEADER)
-    @PostMapping("/auth/logout")
-    public void logout() {
-        try {
-            LoginUtil.logout();
-        } catch (NotLoginException ignored) {
-        }
-    }
 
     @SaIgnore
     @Operation(summary = "三方账号登录授权", description = "三方账号登录授权")
     @Parameter(name = "source", description = "来源", example = "gitee", in = ParameterIn.PATH)
     @GetMapping("/auth/{source}")
-    public SocialAuthorizeUrlResult socialLogin(@PathVariable String source) {
+    public SocialAuthorizeUrlResult bind(@PathVariable String source) {
         AuthRequest authRequest = this.getAuthRequest(source);
         return new SocialAuthorizeUrlResult(authRequest.authorize(AuthStateUtils.createState()));
     }
@@ -157,11 +114,9 @@ public class AuthController {
         }
     }
 
-
-
     @Operation(summary = "查询登录日志", description = "分页查询登录日志列表")
     @GetMapping("/auth/login-log")
-    public PageResult<LoginLogModel> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery) {
+    public PageResult<LoginLogModel.Result> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery) {
         return loginLogService.page(query, pageQuery);
     }
 
@@ -170,5 +125,71 @@ public class AuthController {
     @GetMapping("/auth/login-log/export")
     public void export(LoginLogModel.LoginLogQuery query, HttpServletResponse response) {
         loginLogService.export(query, response);
+    }
+
+    @Operation(summary = "分页查询列表", description = "分页查询列表")
+    @SaCheckPermission("monitor:online:list")
+    @GetMapping("/monitor/online")
+    public PageResult<OnlineUserResult> page(@Valid String keyword, @Valid PageQuery pageQuery) {
+        int start = (pageQuery.getPage() - 1) * pageQuery.getSize();
+
+        List<String> sessionIds = StpUtil.searchTokenSessionId("", start, pageQuery.getSize(), false);
+
+        List<OnlineUserResult> onlineUsers = new ArrayList<>();
+        for (String sessionId : sessionIds) {
+            try {
+                SaSession session = StpUtil.getSessionBySessionId(sessionId);
+                if (session != null) {
+                    long loginTime = session.get("loginTime", session.getCreateTime());
+                    long lastAccessTime =  StpUtil.getStpLogic().getTokenLastActiveTime(session.getToken());
+                    OnlineUserResult online = new OnlineUserResult(
+                            sessionId,
+                            session.getToken(),
+                            session.get("loginName", ""),
+                            session.get("ipaddr", ""),
+                            session.get("loginLocation", ""),
+                            session.get("browser", ""),
+                            session.get("os", ""),
+                            formatTime(loginTime),
+                            formatTime(lastAccessTime)
+                    );
+                    onlineUsers.add(online);
+                }
+            } catch (Exception e) {
+                // 忽略无效的session
+            }
+        }
+        return PageResult.build(pageQuery.getPage(), pageQuery.getSize(), onlineUsers);
+    }
+
+
+    @Operation(summary = "强退在线用户", description = "强退在线用户")
+    @Parameter(name = "token", description = "令牌", example = "ey****J9.ey****fQ.7q****vE", in = ParameterIn.PATH)
+    @SaCheckPermission("monitor:online:kickout")
+    @DeleteMapping("/monitor/online/{token}")
+    public void kickout(@PathVariable String token) {
+        String currentToken = LoginUtil.getTokenValue();
+        Check.throwIfEqual(token, currentToken, "不能强退自己");
+        LoginUtil.kickout(token);
+    }
+
+    @Operation(summary = "批量强退在线用户", description = "批量强退在线用户")
+    @SaCheckPermission("monitor:online:kickout")
+    @DeleteMapping("/monitor/online")
+    public void batchKickout(@Valid @org.springframework.web.bind.annotation.RequestBody List<String> tokens) {
+        String currentToken = LoginUtil.getTokenValue();
+        for (String token : tokens) {
+            if (!token.equals(currentToken)) {
+                LoginUtil.kickout(token);
+            }
+        }
+    }
+
+
+    private LocalDateTime formatTime(long timestamp) {
+        return LocalDateTime.ofInstant(
+                java.time.Instant.ofEpochMilli(timestamp),
+                java.time.ZoneId.systemDefault()
+        );
     }
 }

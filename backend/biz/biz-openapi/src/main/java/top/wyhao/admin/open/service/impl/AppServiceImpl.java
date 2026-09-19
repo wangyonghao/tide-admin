@@ -1,8 +1,6 @@
 
 package top.wyhao.admin.open.service.impl;
 
-import cn.hutool.core.bean.BeanUtil;
-import cn.hutool.core.bean.copier.CopyOptions;
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.IdUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
@@ -10,8 +8,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.HttpServletResponse;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.admin.open.assembler.AppAssembler;
 import top.wyhao.admin.open.mapper.SysAppMapper;
 import top.wyhao.admin.open.model.entity.SysApp;
 import top.wyhao.admin.open.model.query.AppQuery;
@@ -35,9 +35,11 @@ import java.util.List;
  * @since 2024/10/17 16:03
  */
 @Service
+@RequiredArgsConstructor
 public class AppServiceImpl implements AppService {
 
-    private SysAppMapper baseMapper;
+    private final SysAppMapper baseMapper;
+    private final AppAssembler appAssembler;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -48,7 +50,7 @@ public class AppServiceImpl implements AppService {
                 .substring(0, 30));
         req.setSecretKey(this.generateSecret());
 
-        SysApp entity = BeanUtil.copyProperties(req, SysApp.class);
+        SysApp entity = appAssembler.toEntity(req);
         baseMapper.insert(entity);
         return entity.getId();
     }
@@ -92,7 +94,7 @@ public class AppServiceImpl implements AppService {
         QueryWrapper<SysApp> queryWrapper = WrapperUtil.build(query);
         WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()),SysApp.class);
         IPage<SysApp> page = baseMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, AppResult.class);
+        return PageResult.build(page, appAssembler::toResultList);
     }
 
 
@@ -100,7 +102,7 @@ public class AppServiceImpl implements AppService {
     @Transactional(rollbackFor = Exception.class)
     public void update(AppReq req, Long id) {
         SysApp entity = baseMapper.selectById(id);
-        BeanUtil.copyProperties(req, entity, CopyOptions.create().ignoreNullValue());
+        appAssembler.update(req, entity);
         baseMapper.updateById(entity);
     }
 
@@ -116,7 +118,7 @@ public class AppServiceImpl implements AppService {
         // 设置排序
         WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysApp.class);
         List<SysApp> entityList = baseMapper.selectList(queryWrapper);
-        List<AppDetailResp> list = BeanUtil.copyToList(entityList, AppDetailResp.class);
+        List<AppDetailResp> list = appAssembler.toDetailList(entityList);
         ExcelUtils.export(list, "导出数据", AppDetailResp.class, response);
     }
 }

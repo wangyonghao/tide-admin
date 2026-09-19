@@ -65,11 +65,10 @@ public interface UserService {
      * 上传头像
      *
      * @param avatar 头像文件
-     * @param id     ID
-     * @return 新头像路径
-     * @throws IOException /
+     * @param id     用户 ID
+     * @return 头像文件 ID
      */
-    String updateAvatar(MultipartFile avatar, Long id) throws IOException;
+    Long updateAvatar(MultipartFile avatar, Long id) throws IOException;
 
     /**
      * 修改基础信息

@@ -45,8 +45,8 @@ public class UserModel {
             @Schema(description = "性别", example = "1")
             GenderEnum gender,
 
-            @Schema(description = "头像地址", example = "https://himg.bdimg.com/sys/portrait/item/public.1.81ac9a9e.rf1ix17UfughLQjNo7XQ_w.jpg")
-            String avatar,
+            @Schema(description = "头像文件 ID", example = "1001")
+            Long avatar,
 
             @Schema(description = "邮箱", example = "c*******@126.com")
             @Sensitive(SensitiveMethod.EMAIL)
@@ -242,11 +242,11 @@ public class UserModel {
             String description,
 
             /**
-             * 头像地址
+             * 头像文件 ID
              */
-            @Schema(description = "头像地址", example = "https://himg.bdimg.com/sys/portrait/item/public.1.81ac9a9e.rf1ix17UfughLQjNo7XQ_w.jpg")
-            @ExcelProperty(value = "头像地址", order = 14)
-            String avatar,
+            @Schema(description = "头像文件 ID", example = "1001")
+            @ExcelProperty(value = "头像文件ID", order = 14)
+            Long avatar,
 
             /**
              * 最后一次修改密码时间
