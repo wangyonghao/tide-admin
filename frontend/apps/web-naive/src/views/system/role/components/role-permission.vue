@@ -234,7 +234,7 @@ const checkedCount = computed(() => {
 
 // 初始化数据
 function initData() {
-  if (props.roleId) {
+  if (props.roleId != null && props.roleId !== '') {
     localRoleId.value = props.roleId;
   }
   if (props.roleDetail) {

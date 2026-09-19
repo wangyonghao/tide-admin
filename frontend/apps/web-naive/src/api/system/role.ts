@@ -3,19 +3,31 @@ import type { Option } from '#/types/global';
 
 import http from '#/api/http';
 
+function toId(id: unknown): string {
+  return String(id);
+}
+
 /* ==================== API 定义 ==================== */
 export const roleApi = {
   /** 查询角色列表 */
-  list(query?: RolePageQuery) {
-    return http.get<RoleResp[]>(`/system/role/list`, { params: query });
+  async list(query?: RolePageQuery) {
+    const result = await http.get<RoleResp[]>(`/system/role/list`, { params: query });
+    return result.map((role) => ({ ...role, id: toId(role.id) }));
   },
   /** 查询角色详情 */
-  detail(id: string) {
-    return http.get<RoleDetailResp>(`/system/role/${id}`);
+  async detail(id: string) {
+    const result = await http.get<RoleDetailResp>(`/system/role/${id}`);
+    return {
+      ...result,
+      id: toId(result.id),
+      menuIds: (result.menuIds ?? []).map(toId),
+      deptIds: (result.deptIds ?? []).map(toId),
+    };
   },
   /** 新增角色 */
-  create(data: any) {
-    return http.post<{ id: string }>('/system/role', data);
+  async create(data: any) {
+    const result = await http.post<{ id: string }>('/system/role', data);
+    return { ...result, id: toId(result.id) };
   },
   /** 修改角色 */
   update(data: any, id: string) {

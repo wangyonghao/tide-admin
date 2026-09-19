@@ -68,7 +68,7 @@ const loadRoles = async () => {
     roleData.value = res;
 
     // 自动选中第一个角色
-    const firstRole = res[0];
+    const firstRole = roleData.value[0];
     if (firstRole && !selectedRoleId.value) {
       selectRole(firstRole);
     }
@@ -274,24 +274,24 @@ const userColumns: DataTableColumns<RoleUserResp> = [
     width: 80,
     fixed: 'right',
     render: (row) =>
-      h('div', { class: 'flex items-center gap-2' }, [
-        h('span', { 'v-access:code': "['system:role:unassign']" }, [
-          h(
-            VbenButton,
-            {
-              variant: 'ghost',
-              size: 'icon',
-              disabled: row.isBuiltin,
-              onClick: () => showUserDeleteDialog(row),
-            },
-            () =>
-              h(IconifyIcon, {
-                icon: 'lucide:user-minus',
-                class: 'text-destructive h-4 w-4',
-              }),
-          ),
-        ]),
-      ]),
+      userStore.hasPermission('system:role:unassign')
+        ? h('div', { class: 'flex items-center gap-2' }, [
+            h(
+              VbenButton,
+              {
+                variant: 'ghost',
+                size: 'icon',
+                disabled: row.isBuiltin,
+                onClick: () => showUserDeleteDialog(row),
+              },
+              () =>
+                h(IconifyIcon, {
+                  icon: 'lucide:user-minus',
+                  class: 'text-destructive h-4 w-4',
+                }),
+            ),
+          ])
+        : null,
   },
 ];
 
@@ -350,11 +350,9 @@ async function loadPermissionData() {
 
   detailLoading.value = true;
   try {
-    const fullRoleDetail = await roleApi.detail(
-      selectedRoleId.value.toString(),
-    );
+    const fullRoleDetail = await roleApi.detail(selectedRoleId.value);
     roleDetail.value = fullRoleDetail;
-    selectKeys.value = (fullRoleDetail.menuIds ?? []).map(String);
+    selectKeys.value = roleDetail.value.menuIds ?? [];
 
     if (!permissionTreeLoaded.value) {
       const menus = await roleApi.treePermission();
@@ -373,9 +371,9 @@ const handleRefreshPermission = async () => {
   if (roleDetail.value?.id) {
     try {
       detailLoading.value = true;
-      const detail = await roleApi.detail(String(roleDetail.value.id));
+      const detail = await roleApi.detail(roleDetail.value.id);
       roleDetail.value = detail;
-      selectKeys.value = (detail.menuIds ?? []).map(String);
+      selectKeys.value = roleDetail.value.menuIds ?? [];
       if (permissionTreeLoaded.value) {
         menuTree.value = await roleApi.treePermission();
       }
@@ -417,7 +415,7 @@ watch(
   async (role) => {
     if (role) {
       roleDetail.value = {
-        id: role.id as string,
+        id: role.id,
         name: role.name,
         description: role.description,
       };
@@ -491,7 +489,7 @@ onMounted(() => loadRoles());
                 class="group flex cursor-pointer items-center gap-2 pl-4 px-2 py-2 transition-colors hover:bg-gray-100 dark:hover:bg-gray-800"
                 :class="{
                   'bg-gray-100 text-primary dark:bg-gray-800':
-                    selectedRoleId === (role.id ?? undefined),
+                    selectedRoleId === role.id,
                 }"
                 @click="selectRole(role)"
               >
