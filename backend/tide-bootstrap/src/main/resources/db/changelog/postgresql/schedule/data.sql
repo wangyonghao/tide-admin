@@ -17,6 +17,9 @@ VALUES (8000, '任务调度', 0, 1, '/schedule', 'Layout', '/schedule/job', 'sch
        (8016, '执行', 8010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:job:trigger', 6, 1, 1, NOW()),
        (8020, '任务日志', 8000, 2, '/schedule/log', 'schedule/log/index', NULL, 'find-replace', FALSE, FALSE, FALSE,
         NULL, 2, 1, 1, NOW()),
-       (8021, '列表', 8020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:log:list', 1, 1, 1, NOW()),
-       (8022, '停止', 8020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:log:stop', 3, 1, 1, NOW()),
-       (8023, '重试', 8020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:log:retry', 4, 1, 1, NOW());
+       (8021, '列表', 8020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:log:list', 1, 1, 1, NOW());
+
+-- changeset wyhao:schedule-menu-quartz-1
+-- comment 移除 SnailJob 日志停止/重试菜单
+DELETE FROM "sys_role_menu" WHERE "menu_id" IN (8022, 8023);
+DELETE FROM "sys_menu" WHERE "id" IN (8022, 8023);

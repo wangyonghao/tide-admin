@@ -21,6 +21,5 @@
         <module>biz-coding</module>
         <module>biz-openapi</module>
         <module>biz-tenant</module>
-        <module>biz-job</module>
     </modules>
 </project>

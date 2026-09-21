@@ -1,12 +1,9 @@
 
 package top.wyhao.cmn.db.util;
 
-import cn.hutool.core.annotation.AnnotationUtil;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
@@ -14,11 +11,7 @@ import net.dreamlu.mica.core.utils.StringUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.data.domain.Sort;
-import top.wyhao.cmn.db.query.LogicalRelation;
-import top.wyhao.cmn.db.query.QueryCondition;
-import top.wyhao.cmn.db.query.QueryType;
 import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.core.exception.BadRequestException;
 import top.wyhao.starter.core.util.ReflectUtils;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
 
@@ -29,7 +22,6 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Consumer;
 
 /**
  * QueryWrapper 工具类
@@ -157,202 +149,6 @@ public class WrapperUtil {
         List<Field> fieldList = ReflectUtils.getNonStaticFields(query.getClass());
         return build(query, fieldList, queryWrapper);
     }
-
-    /**
-     * 构建 QueryWrapper
-     *
-     * @param query        查询条件
-     * @param fields       查询条件字段列表
-     * @param queryWrapper QueryWrapper
-     * @param <Q>          查询条件数据类型
-     * @param <R>          查询数据类型
-     * @return QueryWrapper
-     */
-    public static <Q, R> QueryWrapper<R> build(Q query, List<Field> fields, QueryWrapper<R> queryWrapper) {
-        // 没有查询条件，直接返回
-        if (query == null) {
-            return queryWrapper;
-        }
-        // 解析并拼接查询条件
-        for (Field field : fields) {
-            List<Consumer<QueryWrapper<R>>> consumers = buildWrapperConsumer(query, field);
-            queryWrapper.and(CollUtil.isNotEmpty(consumers), q -> consumers.forEach(q::or));
-        }
-        return queryWrapper;
-    }
-
-    /**
-     * 构建 QueryWrapper Consumer
-     *
-     * @param query 查询条件
-     * @param field 查询条件字段
-     * @param <Q>   查询条件数据类型
-     * @param <R>   查询数据类型
-     * @return QueryWrapper Consumer
-     */
-    private static <Q, R> List<Consumer<QueryWrapper<R>>> buildWrapperConsumer(Q query, Field field) {
-        try {
-            // 如果字段值为空，直接返回
-            Object fieldValue = ReflectUtil.getFieldValue(query, field);
-            if (ObjectUtil.isEmpty(fieldValue)) {
-                return Collections.emptyList();
-            }
-
-            // 获取 @Query 注解（支持 Record 参数注解）
-            QueryCondition queryConditionAnnotation = getQueryAnnotation(query.getClass(), field);
-            if (queryConditionAnnotation == null) {
-                return Collections.emptyList();
-            }
-
-            // 建议：数据库表列建议采用下划线连接法命名，程序变量建议采用驼峰法命名
-            String fieldName = ReflectUtil.getFieldName(field);
-            // 解析单列查询
-            QueryType queryType = queryConditionAnnotation.type();
-            String[] columns = queryConditionAnnotation.columns();
-            final int columnLength = ArrayUtil.length(columns);
-            List<Consumer<QueryWrapper<R>>> consumers = new ArrayList<>(columnLength);
-            if (columnLength <= 1) {
-                String columnName = columnLength == 1 ? columns[0] : CharSequenceUtil.toUnderlineCase(fieldName);
-                buildCondition(queryType, columnName, fieldValue, consumers);
-                return consumers;
-            }
-            // 解析多列查询
-            LogicalRelation logicalRelation = queryConditionAnnotation.logicalRelation();
-            List<Consumer<QueryWrapper<R>>> columnConsumers = new ArrayList<>();
-            for (String column : columns) {
-                buildCondition(queryType, column, fieldValue, columnConsumers);
-            }
-
-            if (logicalRelation == LogicalRelation.AND) {
-                if (!columnConsumers.isEmpty()) {
-                    consumers.add(q -> {
-                        columnConsumers.get(0).accept(q);
-                        columnConsumers.subList(1, columnConsumers.size()).forEach(q::and);
-                    });
-                }
-            } else {
-                consumers.addAll(columnConsumers);
-            }
-            return consumers;
-        } catch (BadRequestException e) {
-            throw e;
-        } catch (Exception e) {
-            log.error("Build query wrapper occurred an error: {}. Query: {}, Field: {}.", e
-                    .getMessage(), query, field, e);
-        }
-        return Collections.emptyList();
-    }
-
-    /**
-     * 获取 @Query 注解（支持 Record 参数注解）
-     * Record 的参数在编译后会生成对应的字段，注解也会被保留在 RecordComponent 中
-     */
-    private static QueryCondition getQueryAnnotation(Class<?> queryClass, Field field) {
-        // 首先尝试从字段获取注解（兼容普通类）
-        QueryCondition annotation = AnnotationUtil.getAnnotation(field, QueryCondition.class);
-        if (annotation != null) {
-            return annotation;
-        }
-
-        // 如果是 Record 类，尝试从 Record 的 component 获取注解
-        if (isRecord(queryClass)) {
-            try {
-                // 获取 Record 的 components（参数）
-                Method getRecordComponentsMethod = Class.class.getMethod("getRecordComponents");
-                Object[] components = (Object[]) getRecordComponentsMethod.invoke(queryClass);
-
-                if (components != null) {
-                    String fieldName = field.getName();
-                    for (Object component : components) {
-                        // component 是 java.lang.reflect.RecordComponent
-                        Method getNameMethod = component.getClass().getMethod("getName");
-                        String componentName = (String) getNameMethod.invoke(component);
-
-                        if (componentName.equals(fieldName)) {
-                            // 获取 component 上的注解
-                            Method getAnnotationMethod = component.getClass().getMethod("getAnnotation", Class.class);
-                            QueryCondition queryConditionAnnotation = (QueryCondition) getAnnotationMethod.invoke(component, QueryCondition.class);
-                            if (queryConditionAnnotation != null) {
-                                return queryConditionAnnotation;
-                            }
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                log.debug("Failed to get @Query annotation from Record component", e);
-            }
-        }
-
-        return null;
-    }
-
-    /**
-     * 判断是否为 Record 类
-     */
-    private static boolean isRecord(Class<?> clazz) {
-        try {
-            // Java 16+ 中 Record 类有 isRecord() 方法
-            Method isRecordMethod = Class.class.getMethod("isRecord");
-            return (boolean) isRecordMethod.invoke(clazz);
-        } catch (Exception e) {
-            // Java 16 以下版本，检查是否继承自 java.lang.Record
-            try {
-                Class<?> recordClass = Class.forName("java.lang.Record");
-                return recordClass.isAssignableFrom(clazz);
-            } catch (ClassNotFoundException ex) {
-                return false;
-            }
-        }
-    }
-
-    /**
-     * 解析查询条件
-     *
-     * @param queryType  查询类型
-     * @param columnName 列名
-     * @param fieldValue 字段值
-     * @param <R>        查询数据类型
-     */
-    private static <R> void buildCondition(QueryType queryType,
-                                           String columnName,
-                                           Object fieldValue,
-                                           List<Consumer<QueryWrapper<R>>> consumers) {
-        switch (queryType) {
-            case EQ -> consumers.add(q -> q.eq(columnName, fieldValue));
-            case NE -> consumers.add(q -> q.ne(columnName, fieldValue));
-            case GT -> consumers.add(q -> q.gt(columnName, fieldValue));
-            case GE -> consumers.add(q -> q.ge(columnName, fieldValue));
-            case LT -> consumers.add(q -> q.lt(columnName, fieldValue));
-            case LE -> consumers.add(q -> q.le(columnName, fieldValue));
-            case BETWEEN -> {
-                // 数组转集合
-                List<Object> between = new ArrayList<>(ArrayUtil.isArray(fieldValue)
-                        ? List.of((Object[]) fieldValue)
-                        : (List<Object>) fieldValue);
-                ValidationUtils.throwIf(between.size() != 2, "[{}] 必须是一个范围", columnName);
-                consumers.add(q -> q.between(columnName, between.get(0), between.get(1)));
-            }
-            case LIKE -> consumers.add(q -> q.like(columnName, fieldValue));
-            case LEFT_LIKE -> consumers.add(q -> q.likeLeft(columnName, fieldValue));
-            case RIGHT_LIKE -> consumers.add(q -> q.likeRight(columnName, fieldValue));
-            case IN -> {
-                ValidationUtils.throwIfEmpty(fieldValue, "[{}] 不能为空", columnName);
-                consumers.add(q -> q.in(columnName, ArrayUtil.isArray(fieldValue)
-                        ? List.of((Object[]) fieldValue)
-                        : (Collection<Object>) fieldValue));
-            }
-            case NOT_IN -> {
-                ValidationUtils.throwIfEmpty(fieldValue, "[{}] 不能为空", columnName);
-                consumers.add(q -> q.notIn(columnName, ArrayUtil.isArray(fieldValue)
-                        ? List.of((Object[]) fieldValue)
-                        : (Collection<Object>) fieldValue));
-            }
-            case IS_NULL -> consumers.add(q -> q.isNull(columnName));
-            case IS_NOT_NULL -> consumers.add(q -> q.isNotNull(columnName));
-            default -> throw new IllegalArgumentException("暂不支持 [%s] 查询类型".formatted(queryType));
-        }
-    }
-
 
     /**
      * 将 Spring Sort 应用到 LambdaQueryWrapper（自动字符串 → SFunction）

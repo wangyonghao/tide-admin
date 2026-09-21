@@ -106,13 +106,14 @@ async function setupI18n(app: App, options: LocaleSetupOptions = {}) {
   app.use(i18n);
   await loadLocaleMessages(defaultLocale);
 
-  // 在控制台打印警告
+  // 未命中词条时回退原文。布局会对菜单名统一 $t()，后端中文标题不是 i18n key，不回退会显示成空白。
   i18n.global.setMissingHandler((locale, key) => {
     if (options.missingWarn && key.includes('.')) {
       console.warn(
         `[intlify] Not found '${key}' key in '${locale}' locale messages.`,
       );
     }
+    return key;
   });
 }
 

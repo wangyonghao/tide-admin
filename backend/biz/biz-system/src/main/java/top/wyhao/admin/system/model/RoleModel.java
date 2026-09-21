@@ -10,8 +10,6 @@ import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.cmn.db.query.QueryCondition;
-import top.wyhao.cmn.db.query.QueryType;
 import top.wyhao.starter.core.constant.RegexConstants;
 import top.wyhao.starter.core.enums.DataScopeEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
@@ -56,11 +54,11 @@ public class RoleModel {
     @Schema(description = "角色查询条件")
     public record Query(
             @Schema(description = "关键词", example = "测试人员")
-            @QueryCondition(columns = {"name", "code", "description"}, type = QueryType.LIKE)
+            @top.wyhao.cmn.db.query.Query(field = {"name", "code", "description"}, type = Query.Type.LIKE)
             String description,
 
             @Schema(description = "排除的编码列表", example = "[super_admin,tenant_admin]")
-            @QueryCondition(columns = "code", type = QueryType.NOT_IN)
+            @top.wyhao.cmn.db.query.Query(field = "code", type = Query.Type.NOT_IN)
             List<String> excludeRoleCodes,
 
             @Schema(description = "排序条件", example = "createTime,desc")

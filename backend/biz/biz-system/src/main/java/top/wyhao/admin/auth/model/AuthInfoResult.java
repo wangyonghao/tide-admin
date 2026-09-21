@@ -2,7 +2,7 @@
 package top.wyhao.admin.auth.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import top.wyhao.admin.system.model.UserModel;
+import top.wyhao.admin.system.dto.UserDetail;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
 
 import java.io.Serial;
@@ -18,7 +18,7 @@ public record AuthInfoResult(
          * 用户信息
          */
         @Schema(description = "用户信息", example = "用户信息")
-        UserModel.Detail user,
+        UserDetail user,
 
         /**
          * 角色编码集合

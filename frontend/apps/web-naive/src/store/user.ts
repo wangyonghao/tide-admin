@@ -21,6 +21,7 @@ import { AuthTypeConstants } from '#/api';
 import { authApi } from '#/api/auth';
 import { $t } from '#/locales';
 import { encryptByRsa } from '#/utils/crypto';
+import { toAccessMenus } from '#/utils/menu';
 
 export const useUserStore = defineStore(
   'user',
@@ -122,7 +123,7 @@ export const useUserStore = defineStore(
       menus.value = info.menus;
 
       userStore.setUserInfo(info.user);
-      accessStore.setAccessMenus(info.menus);
+      accessStore.setAccessMenus(toAccessMenus(info.menus));
       accessStore.setAccessCodes(info.permissions);
     }
 

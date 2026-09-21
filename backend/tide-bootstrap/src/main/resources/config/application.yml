@@ -85,6 +85,22 @@ spring.task:
       # 等待时间
       await-termination-period: 30s
 
+### Quartz 集群调度（JDBC JobStore，多实例互斥）
+spring.quartz:
+  job-store-type: jdbc
+  jdbc:
+    initialize-schema: never
+  overwrite-existing-jobs: true
+  wait-for-jobs-to-complete-on-shutdown: true
+  properties:
+    '[org.quartz.scheduler.instanceName]': WyhScheduler
+    '[org.quartz.scheduler.instanceId]': AUTO
+    '[org.quartz.jobStore.isClustered]': false
+    '[org.quartz.jobStore.clusterCheckinInterval]': 5000
+    '[org.quartz.jobStore.acquireTriggersWithinLock]': true
+    '[org.quartz.jobStore.driverDelegateClass]': org.quartz.impl.jdbcjobstore.PostgreSQLDelegate
+    '[org.quartz.threadPool.threadCount]': 10
+
 ### 文件上传配置
 spring.servlet.multipart:
   enabled: true
@@ -193,7 +209,7 @@ sa-token:
   token-prefix: Bearer
 
 
-### MyBatis Plus 配置
+### MyBatis Plus 配置 https://baomidou.com/reference/#spring-boot-%E9%85%8D%E7%BD%AE
 mybatis-plus:
   # Mapper XML 文件目录配置
   mapper-locations: classpath*:/mapper/**/*Mapper.xml
@@ -206,22 +222,12 @@ mybatis-plus:
     database-id: pgsql
   ## 全局配置
   global-config:
-    #关闭控制台打印 Mybatis-Plus的Banner
+    # 关闭控制台打印 Mybatis-Plus的Banner
     banner: false
     db-config:
       # 主键类型（默认 assign_id，表示自行赋值）
       # auto 代表使用数据库自增策略（需要在表中设置好自增约束）
       id-type: ASSIGN_ID
-  ## 扩展配置
-  extension:
-    enabled: true
-    # Mapper 接口扫描包配置
-    mapper-package: ${application.base-package}.**.mapper
-    # 分页插件配置
-    pagination:
-      enabled: true
-      # db-type: MYSQL
-      db-type: POSTGRE_SQL
 
 ### CosId 配置
 cosid:

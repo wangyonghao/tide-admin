@@ -13,6 +13,7 @@ import { $t, setupI18n } from '#/locales';
 import { initComponentAdapter } from './adapter/component';
 import { initSetupVbenForm } from './adapter/form';
 import App from './app.vue';
+import { registerAccessDirective } from './directives/access';
 import router from './router';
 
 async function bootstrap(namespace: string) {
@@ -45,6 +46,8 @@ async function bootstrap(namespace: string) {
   // 配置 pinia-tore
   await initStores(app, { namespace });
 
+  // 按钮权限指令 v-access:code / v-access:role
+  registerAccessDirective(app);
 
   // 初始化 tippy
   const { initTippy } = await import('@vben/common-ui/es/tippy');

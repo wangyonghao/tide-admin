@@ -12,10 +12,9 @@ import top.wyhao.admin.open.model.query.AppQuery;
 import top.wyhao.admin.open.model.req.AppReq;
 import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.service.AppService;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.SortQuery;
-import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;

@@ -2,8 +2,9 @@ package top.wyhao.admin.system.assembler;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
+import top.wyhao.admin.system.dto.UserDetail;
+import top.wyhao.admin.system.dto.UserRequest;
 import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.starter.core.model.LoginUser;
 import top.wyhao.starter.web.convert.BaseEnumConverters;
 import top.wyhao.starter.web.convert.MapStructConfig;
@@ -15,12 +16,12 @@ import top.wyhao.starter.web.convert.MapStructConfig;
 public interface UserAssembler {
 
     @Mapping(source = "pwdUpdateTime", target = "pwdResetTime")
-    UserModel.Detail toDetail(SysUser user);
+    UserDetail toDetail(SysUser user);
 
-    SysUser toEntity(UserModel.Request request);
+    SysUser toEntity(UserRequest request);
 
     @Mapping(source = "pwdResetTime", target = "pwdUpdateTime")
-    SysUser toEntity(UserModel.Detail detail);
+    SysUser toEntity(UserDetail detail);
 
     @Mapping(source = "id", target = "userId")
     @Mapping(source = "pwdUpdateTime", target = "pwdResetTime")

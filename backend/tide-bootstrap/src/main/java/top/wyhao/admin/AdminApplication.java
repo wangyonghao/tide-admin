@@ -13,7 +13,6 @@ import org.springframework.boot.ApplicationRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.boot.autoconfigure.web.ServerProperties;
-import org.springframework.cloud.openfeign.EnableFeignClients;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -26,7 +25,6 @@ import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
 @Slf4j
 @EnableAsync(proxyTargetClass = true)
 @ComponentScan(basePackages = {"top.wyhao"})
-@EnableFeignClients(basePackages = {"top.wyhao"})
 @RestController
 @SpringBootApplication
 @RequiredArgsConstructor

@@ -7,8 +7,7 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.groups.Default;
 import org.hibernate.validator.constraints.Length;
 import top.wyhao.admin.system.model.enums.MenuType;
-import top.wyhao.cmn.db.query.QueryCondition;
-import top.wyhao.cmn.db.query.QueryType;
+import top.wyhao.cmn.db.query.Query;
 import top.wyhao.starter.core.enums.StatusEnum;
 
 import java.io.Serial;
@@ -132,21 +131,21 @@ public class MenuModel {
              * 标题
              */
             @Schema(description = "标题", example = "用户管理")
-            @QueryCondition(type = QueryType.LIKE)
+            @Query(type = Query.Type.LIKE)
             String title,
 
             /**
              * 状态
              */
             @Schema(description = "状态", example = "1")
-            @QueryCondition(type = QueryType.EQ)
+            @Query(type = Query.Type.EQ)
             String status,
 
             /**
              * 排除的菜单 ID 列表
              */
             @Schema(hidden = true, description = "排除的菜单 ID 列表", example = "[9000]")
-            @QueryCondition(columns = "id", type = QueryType.NOT_IN)
+            @Query(field = "id", type = Query.Type.NOT_IN)
             List<Long> excludeMenuIdList,
 
             /**

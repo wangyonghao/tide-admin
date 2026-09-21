@@ -3,8 +3,7 @@ package top.wyhao.admin.open.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.cmn.db.query.QueryCondition;
-import top.wyhao.cmn.db.query.QueryType;
+import top.wyhao.cmn.db.query.Query;
 
 /**
  * 应用查询条件
@@ -20,7 +19,7 @@ public class AppQuery{
      * 关键词
      */
     @Schema(description = "关键词", example = "应用1")
-    @QueryCondition(columns = {"name", "description"}, type = QueryType.LIKE)
+    @Query(field = {"name", "description"}, type = Query.Type.LIKE)
     private String description;
 
     /**

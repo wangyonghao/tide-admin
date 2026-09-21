@@ -15,7 +15,6 @@
 
   <modules>
     <module>tide-bootstrap</module>
-    <module>svr-job</module>
     <module>biz</module>
     <module>cmn</module>
     <module>platform</module>
@@ -52,7 +51,6 @@
 
     <!-- ID Generator and Job Scheduler Versions -->
     <cosid.version>2.13.3</cosid.version>
-    <snail-job.version>1.8.0</snail-job.version>
 
     <!-- Messaging and Notification Versions -->
     <sms4j.version>3.3.5</sms4j.version>
@@ -199,23 +197,6 @@
         <version>${cosid.version}</version>
         <type>pom</type>
         <scope>import</scope>
-      </dependency>
-
-      <!-- SnailJob（灵活，可靠和快速的分布式任务重试和分布式任务调度平台） -->
-      <dependency>
-        <groupId>com.aizuda</groupId>
-        <artifactId>snail-job-client-starter</artifactId>
-        <version>${snail-job.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.aizuda</groupId>
-        <artifactId>snail-job-client-retry-core</artifactId>
-        <version>${snail-job.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.aizuda</groupId>
-        <artifactId>snail-job-client-job-core</artifactId>
-        <version>${snail-job.version}</version>
       </dependency>
 
       <!-- SMS4J（短信聚合框架，轻松集成多家短信服务，解决接入多个短信 SDK 的繁琐流程） -->
@@ -473,10 +454,15 @@
         <version>${revision}</version>
       </dependency>
 
-      <!-- 任务调度插件（后续会改造为独立插件） -->
+      <!-- 定时任务（Quartz） -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>biz-job</artifactId>
+        <artifactId>cmn-quartz</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>job-api</artifactId>
         <version>${revision}</version>
       </dependency>
 

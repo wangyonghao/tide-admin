@@ -2,60 +2,54 @@
 package top.wyhao.starter.web.core.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
-import lombok.Getter;
-import lombok.Setter;
-import org.hibernate.validator.constraints.Range;
-import org.springdoc.core.annotations.ParameterObject;
+import lombok.Data;
 
 /**
- * 分页查询条件
+ * 所有分页查询 DTO 的父类
  */
-@Setter
-@Getter
-@ParameterObject
+@Data
 @Schema(description = "分页查询条件")
 public class PageQuery {
-    /**
-     * 默认页码：1
-     */
-    private static final int DEFAULT_PAGE = 1;
-
-    /**
-     * 默认每页条数：10
-     */
-    private static final int DEFAULT_SIZE = 10;
-
     /**
      * 页码
      */
     @Schema(description = "页码", example = "1")
-    @Min(value = 1, message = "页码最小值为 {value}")
-    private Integer page = DEFAULT_PAGE;
+    @Min(value = 1, message = "页码不能小于 {value}")
+    private Integer page = 1;
 
     /**
      * 每页条数
      */
     @Schema(description = "每页条数", example = "10")
-    @Range(min = 1, max = 1000, message = "每页条数（取值范围 {min}-{max}）")
-    private Integer size = DEFAULT_SIZE;
-
-    public PageQuery() {
-    }
+    @Min(value = 1, message = "每页条数不能小于 {value}")
+    @Max(value = 1000, message = "每页条数不能超过 {value}")
+    private Integer size = 10;
 
     /**
-     * 构造方法
-     *
-     * <p>
-     * 示例：{@code new PageQuery(1, 10)}
-     * </p>
-     *
-     * @param page 页码
-     * @param size 每页条数
-     * @since 2.12.0
+     * 排序字段，传实体的【属性名】，支持多字段（逗号分隔，按先后顺序生效）：
+     * <pre>
+     *   createTime
+     *   status,createTime
+     *   status asc,createTime desc
+     *   status:asc,createTime:desc
+     *   +status,-createTime
+     * </pre>
+     * 未单独指定方向的项，方向取 {@link #orderDir}。
      */
-    public PageQuery(Integer page, Integer size) {
-        this.page = page;
-        this.size = size;
-    }
+    private String orderBy;
+
+
+    /** 默认排序方向：asc / desc，仅对未单独指定方向的排序项生效 */
+    private String orderDir = "desc";
+
+    /** 是否需要查询总数，导出等场景可置 false 省掉一次 count */
+    private boolean searchCount = true;
+
+    /**
+     * 是否在排序末尾自动追加主键，保证同值行的翻页结果稳定。
+     * 默认开启，除非确认排序字段本身唯一。
+     */
+    private boolean stableSort = true;
 }

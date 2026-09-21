@@ -12,21 +12,16 @@ import com.baomidou.mybatisplus.extension.plugins.MybatisPlusInterceptor;
 import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
 import com.baomidou.mybatisplus.extension.plugins.inner.*;
 import jakarta.annotation.PostConstruct;
-import org.apache.ibatis.type.OffsetDateTimeTypeHandler;
-import org.apache.ibatis.type.OffsetTimeTypeHandler;
+import org.apache.ibatis.logging.nologging.NoLoggingImpl;
+import org.apache.ibatis.session.AutoMappingUnknownColumnBehavior;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.PropertySource;
 import org.springframework.transaction.annotation.EnableTransactionManagement;
-import top.wyhao.starter.core.constant.PropertiesConstants;
-import top.wyhao.starter.core.util.GeneralPropertySourceFactory;
 import top.wyhao.cmn.db.autoconfigure.idgenerator.CosIdGenerator;
 import top.wyhao.cmn.db.datapermission.handler.DefaultDataPermissionHandler;
 import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
@@ -36,18 +31,16 @@ import top.wyhao.cmn.db.handler.MyBatisPlusMetaObjectHandler;
 import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
-/**
- * MyBatis Plus 自动配置
- *
+import static com.baomidou.mybatisplus.annotation.DbType.POSTGRE_SQL;
 
+/**
+ * MyBatis-Plus 自动配置
+ *
  * @since 1.0.0
  */
 @AutoConfiguration
-@MapperScan("${mybatis-plus.extension.mapper-package}")
+@MapperScan("${application.base-package}.**.mapper")
 @EnableTransactionManagement(proxyTargetClass = true)
-@EnableConfigurationProperties(MyBatisPlusExtensionProperties.class)
-@ConditionalOnProperty(prefix = "mybatis-plus.extension", name = PropertiesConstants.ENABLED, havingValue = "true")
-@PropertySource(value = "classpath:default-data-mybatis-plus.yml", factory = GeneralPropertySourceFactory.class)
 public class MybatisPlusAutoConfiguration {
     private static final Logger log = LoggerFactory.getLogger(MybatisPlusAutoConfiguration.class);
 
@@ -55,14 +48,23 @@ public class MybatisPlusAutoConfiguration {
     private String aesKey;
 
     /**
-     * MyBatis Plus 配置
-     *
-     * @since 2.4.0
+     * MyBatis-Plus 配置 (<a href="https://baomidou.com/reference/">使用配置</a>)
      */
     @Bean
     public MybatisPlusPropertiesCustomizer mybatisPlusPropertiesCustomizer() {
-        return properties -> properties.getConfiguration()
-                .setDefaultEnumTypeHandler(CompositeBaseEnumTypeHandler.class);
+        return properties -> {
+            // 启动时检查 MyBatis XML 文件是否存在
+            properties.setCheckConfigLocation(true);
+            properties.getConfiguration()
+                    // 默认枚举类型处理器（扩展 BaseEnum 支持）
+                    .setDefaultEnumTypeHandler(CompositeBaseEnumTypeHandler.class)
+                    // 开启驼峰命名映射
+                    .setMapUnderscoreToCamelCase(true)
+                    // 自动映射未知列处理策略：不做任何处理
+                    .setAutoMappingUnknownColumnBehavior(AutoMappingUnknownColumnBehavior.NONE)
+                    // 日志实现：关闭
+                    .setLogImpl(NoLoggingImpl.class);
+        };
     }
 
     /**
@@ -70,7 +72,7 @@ public class MybatisPlusAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public MybatisPlusInterceptor mybatisPlusInterceptor(MyBatisPlusExtensionProperties properties) {
+    public MybatisPlusInterceptor mybatisPlusInterceptor() {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
         // 其他拦截器
         Map<String, InnerInterceptor> innerInterceptors = SpringUtil.getBeansOfType(InnerInterceptor.class);
@@ -78,18 +80,11 @@ public class MybatisPlusAutoConfiguration {
             innerInterceptors.values().forEach(interceptor::addInnerInterceptor);
         }
         // 分页插件
-        MyBatisPlusExtensionProperties.PaginationProperties paginationProperties = properties.getPagination();
-        if (paginationProperties != null && paginationProperties.isEnabled()) {
-            interceptor.addInnerInterceptor(this.paginationInnerInterceptor(paginationProperties));
-        }
+        interceptor.addInnerInterceptor(this.paginationInnerInterceptor());
         // 乐观锁插件
-        if (properties.isOptimisticLockerEnabled()) {
-            interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
-        }
+        interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
         // 防全表更新与删除插件
-        if (properties.isBlockAttackPluginEnabled()) {
-            interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
-        }
+        interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
         return interceptor;
     }
 
@@ -104,12 +99,13 @@ public class MybatisPlusAutoConfiguration {
     /**
      * 分页插件配置（<a href="https://baomidou.com/pages/97710a/#paginationinnerinterceptor">PaginationInnerInterceptor</a>）
      */
-    private PaginationInnerInterceptor paginationInnerInterceptor(MyBatisPlusExtensionProperties.PaginationProperties paginationProperties) {
+    private PaginationInnerInterceptor paginationInnerInterceptor() {
         // 对于单一数据库类型来说，都建议配置该值，避免每次分页都去抓取数据库类型
-        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(paginationProperties
-                .getDbType());
-        paginationInnerInterceptor.setOverflow(paginationProperties.isOverflow());
-        paginationInnerInterceptor.setMaxLimit(paginationProperties.getMaxLimit());
+        PaginationInnerInterceptor paginationInnerInterceptor = new PaginationInnerInterceptor(POSTGRE_SQL);
+        // 单页上限，防止 pageSize=99999
+        paginationInnerInterceptor.setMaxLimit(1000L);
+        // 页码超出总页数时返回空而不是回到首页
+        paginationInnerInterceptor.setOverflow(false);
         return paginationInnerInterceptor;
     }
 
@@ -146,15 +142,17 @@ public class MybatisPlusAutoConfiguration {
     }
 
     /**
-     * 注册到 MyBatis 类型处理器注册中心
+     * 只初始化 AES 密钥，不要把 EncryptTypeHandler 注册成 String/VARCHAR 的默认处理器。
+     * 该类带 @MappedTypes(String.class)，全局 register 后所有 varchar 都会走 AES 解密；
+     * 中文明文（菜单名、角色名）会被 Hutool 当成 Base64 解成空串，ASCII 路径/编码则解密失败后回退原文。
+     * 需要加解密的字段用 @TableField(typeHandler = EncryptTypeHandler.class)。
      */
     @Bean
     public ConfigurationCustomizer typeHandlerRegistryCustomizer() {
         return configuration -> {
-            if(aesKey != null){
-                EncryptTypeHandler.init(aesKey);  // 为 EncryptTypeHandler 初始化 AES 密钥
+            if (aesKey != null) {
+                EncryptTypeHandler.init(aesKey);
                 log.info("[cmn-db] EncryptTypeHandler - AES密钥初始化完成，密钥长度：{}", aesKey.length());
-                configuration.getTypeHandlerRegistry().register(EncryptTypeHandler.class);
             }
         };
     }

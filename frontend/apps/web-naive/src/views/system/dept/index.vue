@@ -23,6 +23,7 @@ import {
 
 import { deptApi } from '#/api/system/dept';
 import { useDownload } from '#/hooks/app/useDownload';
+import { useUserStore } from '#/store/user';
 
 import EditModal from './dept-drawer.vue';
 
@@ -33,6 +34,7 @@ const searchForm = ref({
 
 const message = useMessage();
 const dialog = useDialog();
+const userStore = useUserStore();
 const loading = ref(false);
 const tableData = ref<DeptResp[]>([]);
 const expandedRowKeys = ref<string[]>([]);
@@ -55,26 +57,24 @@ const createColumns = (): DataTableColumns<DeptResult> => {
     { title: $t('system.dept.description'), key: 'description', align: 'left', ellipsis: { tooltip: true } },
     { title: $t('pages.common.operation'), key: 'action', align: 'center', width: 150, fixed: 'right',
       render: (row) => {
-        return h(NSpace,
-          { justify: 'center' },
-          { default: () => [
-              h('span',
-                { 'v-access:code': ['system:dept:update'] },
-                h(NButton,
-                  { text: true, onClick: () => handleEdit(row) },
-                  { icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }) },
-                ),
-              ),
-              h('span',
-                { 'v-access:code': ['system:dept:delete'] },
-                h(NButton,
-                  { text: true, onClick: () => handleDelete(row) },
-                  { icon: () => h(IconifyIcon, { icon: 'lucide:trash-2'}) },
-                ),
-              ),
-            ],
-          },
-        );
+        const actions = [];
+        if (userStore.hasPermission('system:dept:update')) {
+          actions.push(
+            h(NButton,
+              { text: true, onClick: () => handleEdit(row) },
+              { icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }) },
+            ),
+          );
+        }
+        if (userStore.hasPermission('system:dept:delete')) {
+          actions.push(
+            h(NButton,
+              { text: true, onClick: () => handleDelete(row) },
+              { icon: () => h(IconifyIcon, { icon: 'lucide:trash-2'}) },
+            ),
+          );
+        }
+        return h(NSpace, { justify: 'center' }, { default: () => actions });
       },
     },
   ];

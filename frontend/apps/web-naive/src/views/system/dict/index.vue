@@ -3,6 +3,7 @@ import type { DataTableColumns } from 'naive-ui';
 import type { DictResult } from '#/api/system/dict';
 
 import { h, onMounted, ref } from 'vue';
+import { SearchOutline } from '@vicons/ionicons5';
 
 import { IconifyIcon } from '@vben/icons';
 import { Page } from '@vben/common-ui';
@@ -11,6 +12,7 @@ import {
   NDataTable,
   NForm,
   NFormItem,
+  NIcon,
   NInput,
   NSelect,
   NSpace,

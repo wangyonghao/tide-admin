@@ -11,8 +11,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsConfig;
+import top.wyhao.admin.system.dto.UserDetail;
 import top.wyhao.admin.system.model.ConfigModel;
-import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
@@ -131,25 +131,30 @@ public class ConfigController {
         Long userId = UserContextHolder.getUserId();
 
         // 获取用户详细信息（包含邮箱）
-        UserModel.Detail userDetail = userService.detail(userId);
+        UserDetail userDetail = userService.detail(userId);
         Check.notNull(userDetail, "用户信息不存在");
-        Check.notBlank(userDetail.email(), "用户邮箱为空，请先设置邮箱地址");
+        Check.notBlank(userDetail.getEmail(), "用户邮箱为空，请先设置邮箱地址");
 
         // 发送测试邮件
         String subject = "【系统测试】邮件配置测试";
         String content = String.format(
-                "尊敬的 %s：\n\n" +
-                        "这是一封测试邮件，用于验证系统邮件配置是否正确。\n\n" +
-                        "如果您收到此邮件，说明邮件配置已成功！\n\n" +
-                        "发送时间：%s\n\n" +
-                        "此邮件由系统自动发送，请勿回复。",
-                userDetail.username(),
+                """
+                        尊敬的 %s：
+                        
+                        这是一封测试邮件，用于验证系统邮件配置是否正确。
+                        
+                        如果您收到此邮件，说明邮件配置已成功！
+                        
+                        发送时间：%s
+                        
+                        此邮件由系统自动发送，请勿回复。""",
+                userDetail.getUsername(),
                 java.time.LocalDateTime.now().format(java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"))
         );
 
         try {
-            mailService.sendTestMail(mailConfig, userDetail.email(), subject, content);
-            log.info("测试邮件发送成功，收件人：{}", userDetail.email());
+            mailService.sendTestMail(mailConfig, userDetail.getEmail(), subject, content);
+            log.info("测试邮件发送成功，收件人：{}", userDetail.getEmail());
         } catch (Exception e) {
             log.error("测试邮件发送失败", e);
             throw new BizException("测试邮件发送失败：" + e.getMessage());

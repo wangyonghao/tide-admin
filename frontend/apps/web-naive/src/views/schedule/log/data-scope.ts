@@ -1,100 +1,39 @@
-import type { Ref } from 'vue';
-
 import type { VbenFormSchema } from '#/adapter/form';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
-import { $t } from '@vben/locales';
-
-import { dateRangeShortcuts } from '#/utils/date-tools';
-
-export function useGridSearchFormSchema(
-  groupNameList: Ref<{ label: string; value: string }[]>,
-  job_status_enum?: Ref<App.DictItem[]>,
-): VbenFormSchema[] {
+export function useGridSearchFormSchema(): VbenFormSchema[] {
   return [
     {
-      fieldName: 'groupName',
-      label: $t('schedule.job.groupName'),
-      component: 'Select',
-      componentProps: {
-        options: groupNameList,
-      },
-    },
-    {
-      fieldName: 'jobName',
-      label: $t('schedule.job.jobName'),
+      fieldName: 'jobId',
+      label: '任务 ID',
       component: 'Input',
     },
     {
-      label: $t('schedule.jobLog.taskBatchStatus'),
-      fieldName: 'taskBatchStatus',
+      fieldName: 'status',
+      label: '结果',
       component: 'Select',
       componentProps: {
-        options: job_status_enum,
         clearable: true,
-      },
-      formItemClass: 'col-span-1 w-full',
-    },
-    {
-      fieldName: 'datetimeRange',
-      label: $t('schedule.jobLog.createDt'),
-      component: 'DatePicker',
-      formItemClass: 'col-span-2 w-full',
-      componentProps: {
-        placeholder: 'schedule.jobLog.createDt',
-        showTime: true,
-        format: 'YYYY-MM-DD HH:mm:ss',
-        valueFormat: 'YYYY-MM-DD HH:mm:ss',
-        type: 'daterange',
-        shortcuts: dateRangeShortcuts,
+        options: [
+          { label: '运行中', value: 1 },
+          { label: '成功', value: 2 },
+          { label: '失败', value: 3 },
+        ],
       },
     },
   ];
 }
 
-// Table 字段配置
 export function useGridFieldColumns(): VxeTableGridOptions['columns'] {
   return [
     { type: 'seq', width: 70, fixed: 'left' },
-    {
-      field: 'groupName',
-      title: $t('schedule.jobLog.groupName'),
-      align: 'center',
-    },
-    {
-      field: 'jobName',
-      title: $t('schedule.jobLog.jobName'),
-      align: 'center',
-    },
-    {
-      field: 'createDt',
-      title: $t('schedule.jobLog.createDt'),
-      align: 'center',
-    },
-    {
-      field: 'taskBatchStatus',
-      title: $t('schedule.jobLog.taskBatchStatus'),
-      align: 'center',
-      slots: { default: 'taskBatchStatus' },
-    },
-    {
-      field: 'operationReason',
-      title: $t('schedule.jobLog.operationReason'),
-      align: 'center',
-      slots: { default: 'operationReason' },
-    },
-    {
-      field: 'executionAt',
-      title: $t('schedule.jobLog.executionAt'),
-      align: 'center',
-    },
-    {
-      align: 'center',
-      field: 'action',
-      fixed: 'right',
-      slots: { default: 'action' },
-      title: $t('common.operation'),
-      width: 200,
-    },
+    { field: 'jobName', title: '任务名称', minWidth: 140 },
+    { field: 'handlerCode', title: '任务编码', minWidth: 120 },
+    { field: 'triggerType', title: '触发方式', width: 100, slots: { default: 'triggerType' } },
+    { field: 'startTime', title: '开始时间', minWidth: 170 },
+    { field: 'endTime', title: '结束时间', minWidth: 170 },
+    { field: 'durationMs', title: '耗时(ms)', width: 100 },
+    { field: 'status', title: '结果', width: 90, slots: { default: 'status' } },
+    { field: 'errorMessage', title: '错误', minWidth: 180 },
   ];
 }

@@ -6,8 +6,7 @@ import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import top.wyhao.admin.system.model.enums.LogStatus;
-import top.wyhao.cmn.db.query.QueryCondition;
-import top.wyhao.cmn.db.query.QueryType;
+import top.wyhao.cmn.db.query.Query;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 
@@ -176,7 +175,7 @@ public class OperationLogModel {
              * 日志描述
              */
             @Schema(description = "日志描述", example = "新增数据")
-            @QueryCondition(type = QueryType.LIKE)
+            @Query(type = Query.Type.LIKE)
             String operation,
 
             /**
@@ -184,7 +183,7 @@ public class OperationLogModel {
              */
             @Schema(description = "操作时间", example = "2023-08-08 00:00:00,2023-08-08 23:59:59")
             @Size(max = 2, message = "操作时间必须是一个范围")
-            @QueryCondition(type = QueryType.BETWEEN)
+            @Query(type = Query.Type.BETWEEN)
             List<LocalDateTime> createTime,
 
             /**

@@ -38,10 +38,10 @@
             <artifactId>biz-openapi</artifactId>
         </dependency>
 
-        <!-- 任务调度插件 -->
+        <!-- 定时任务管理 -->
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>biz-job</artifactId>
+            <artifactId>job-api</artifactId>
         </dependency>
 
         <!-- 代码生成器插件 -->

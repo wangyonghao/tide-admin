@@ -4,11 +4,17 @@ package top.wyhao.admin.system.service;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
-import top.wyhao.admin.system.model.bo.user.*;
+import top.wyhao.admin.system.dto.UserDetail;
+import top.wyhao.admin.system.dto.UserQuery;
+import top.wyhao.admin.system.dto.UserRequest;
+import top.wyhao.admin.system.dto.UserResult;
 import top.wyhao.admin.system.entity.SysUser;
+import top.wyhao.admin.system.model.bo.user.UserBasicInfoUpdateReq;
+import top.wyhao.admin.system.model.bo.user.UserImportRequest;
+import top.wyhao.admin.system.model.bo.user.UserPasswordResetRequest;
+import top.wyhao.admin.system.model.bo.user.UserRoleUpdateReq;
 import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
-import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -137,17 +143,17 @@ public interface UserService {
      */
     Long countByDeptIds(List<Long> deptIds);
 
-    UserModel.Detail detail(Long id);
+    UserDetail detail(Long id);
 
-    PageResult<UserModel.Result> page(UserModel.Query query, PageQuery pageQuery);
+    PageResult<UserResult> page(UserQuery query, PageQuery pageQuery);
 
     Long save(SysUser user);
 
-    Long create(@Valid UserModel.Request req);
+    Long create(@Valid UserRequest req);
 
-    void export(@Valid UserModel.Query query, HttpServletResponse response);
+    void export(@Valid UserQuery query, HttpServletResponse response);
 
-    void update(Long id, @Valid UserModel.Request req);
+    void update(Long id, @Valid UserRequest req);
 
     void delete(List<Long> id);
 

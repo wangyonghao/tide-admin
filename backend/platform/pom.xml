@@ -19,5 +19,7 @@
         <module>file-service</module>
         <!-- 文件服务：HTTP API -->
         <module>file-api</module>
+        <!-- 定时任务管理 API -->
+        <module>job-api</module>
     </modules>
 </project>

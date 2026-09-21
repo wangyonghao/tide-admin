@@ -129,7 +129,7 @@ public class GenFieldConfig implements Serializable {
      * 查询方式
      */
     @Schema(description = "查询方式", example = "1")
-    private QueryTypeEnum queryType;
+    private QueryTypeEnum Query.Type;
 
     /**
      * 字典编码

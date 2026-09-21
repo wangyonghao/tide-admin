@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import top.wyhao.admin.system.dto.UserDetail;
 import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.cmn.db.datapermission.annotation.DataPermission;
 import top.wyhao.cmn.db.datapermission.mapper.DataPermissionMapper;
 
@@ -31,7 +31,7 @@ public interface SysUserMapper extends DataPermissionMapper<SysUser> {
      * @return 分页列表信息
      */
     @DataPermission(tableAlias = "t1")
-    IPage<UserModel.Result> selectUserPage(@Param("page") IPage<SysUser> page,
+    IPage<UserDetail> selectUserPage(@Param("page") IPage<SysUser> page,
                                            @Param(Constants.WRAPPER) QueryWrapper<SysUser> queryWrapper);
 
     /**
@@ -41,7 +41,7 @@ public interface SysUserMapper extends DataPermissionMapper<SysUser> {
      * @return 列表信息
      */
     @DataPermission(tableAlias = "t1")
-    List<UserModel.Detail> selectUserList(@Param(Constants.WRAPPER) QueryWrapper<SysUser> queryWrapper);
+    List<UserDetail> selectUserList(@Param(Constants.WRAPPER) QueryWrapper<SysUser> queryWrapper);
 
     /**
      * 根据用户名查询

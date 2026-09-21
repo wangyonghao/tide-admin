@@ -30,7 +30,10 @@ export const menuApi = {
 /** 菜单类型 */
 export interface Menu {
   id: string;
+  /** 菜单名称 */
   name: string;
+  /** 菜单标题（可选，兼容性字段） */
+  title?: string;
   parentId: string;
   type: 1 | 2 | 3;
   path: string;

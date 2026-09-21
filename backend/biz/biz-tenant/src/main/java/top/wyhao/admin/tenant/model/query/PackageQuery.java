@@ -3,9 +3,8 @@ package top.wyhao.admin.tenant.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import top.wyhao.cmn.db.query.Query;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.cmn.db.query.QueryCondition;
-import top.wyhao.cmn.db.query.QueryType;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -28,14 +27,14 @@ public class PackageQuery implements Serializable {
      * 关键词
      */
     @Schema(description = "关键词", example = "初级套餐")
-    @QueryCondition(columns = {"name", "description"}, type = QueryType.LIKE)
+    @Query(field = {"name", "description"}, type = Query.Type.LIKE)
     private String description;
 
     /**
      * 状态
      */
     @Schema(description = "状态", example = "1")
-    @QueryCondition(type = QueryType.EQ)
+    @Query(type = Query.Type.EQ)
     private StatusEnum status;
 
     /**

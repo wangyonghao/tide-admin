@@ -28,28 +28,23 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import top.wyhao.admin.system.entity.SysDept;
-import top.wyhao.admin.system.entity.SysRole;
-import top.wyhao.admin.system.entity.SysUserRole;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.entity.SysUserPasswordHistory;
-import top.wyhao.admin.system.mapper.SysDeptMapper;
-import top.wyhao.admin.system.mapper.SysMenuMapper;
-import top.wyhao.admin.system.mapper.SysUserRoleMapper;
-import top.wyhao.admin.system.mapper.SysUserMapper;
-import top.wyhao.admin.system.mapper.SysUserPasswordHistoryMapper;
+import top.wyhao.admin.system.assembler.UserAssembler;
+import top.wyhao.admin.system.dto.UserDetail;
+import top.wyhao.admin.system.dto.UserQuery;
+import top.wyhao.admin.system.dto.UserRequest;
+import top.wyhao.admin.system.dto.UserResult;
+import top.wyhao.admin.system.entity.*;
+import top.wyhao.admin.system.mapper.*;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.bo.user.*;
 import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
 import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
-import top.wyhao.admin.system.model.UserModel;
-import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.service.*;
-import top.wyhao.file.core.domain.File;
-import top.wyhao.file.core.service.FileService;
 import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.common.security.util.LoginUtil;
+import top.wyhao.file.core.domain.File;
+import top.wyhao.file.core.service.FileService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.constant.RegexConstants;
@@ -105,29 +100,29 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public UserModel.Detail detail(Long id) {
+    public UserDetail detail(Long id) {
         SysUser userDO = userMapper.selectById(id);
         Check.notNull(userDO, "用户不存在");
         return userAssembler.toDetail(userDO);
     }
 
     @Override
-    public PageResult<UserModel.Result> page(UserModel.Query query, PageQuery pageQuery) {
+    public PageResult<UserResult> page(UserQuery query, PageQuery pageQuery) {
         QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysUser.class);
-        IPage<UserModel.Result> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysUser.class);
+        IPage<UserResult> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
         return PageResult.build(page);
     }
 
     @Transactional(rollbackFor = Exception.class)
-    public Long create(UserModel.Request request) {
+    public Long create(UserRequest request) {
         /* 入参格式校验 */
-        String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(request.password()));
+        String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(request.getPassword()));
         Check.notBlank(rawPassword, "密码解密失败");
         Check.when(ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
-        this.checkEmailUnique(request.email(), null);
-        this.checkPhoneUnique(request.phone(), null);
-        this.checkUsernameUnique(request.username());
+        this.checkEmailUnique(request.getEmail(), null);
+        this.checkPhoneUnique(request.getPhone(), null);
+        this.checkUsernameUnique(request.getUsername());
     
         SysUser newUser = userAssembler.toEntity(request);
         /* 业务逻辑校验 */
@@ -141,7 +136,7 @@ public class UserServiceImpl implements UserService {
         userMapper.insert(newUser);
     
         // 保存用户和角色的关联
-        roleService.assignRolesToUser(request.roleIds(), newUser.getId());
+        roleService.assignRolesToUser(request.getRoleIds(), newUser.getId());
         return newUser.getId();
     }
 
@@ -154,7 +149,7 @@ public class UserServiceImpl implements UserService {
 
     @Transactional(rollbackFor = Exception.class)
     @CacheUpdate(key = "#userId", value = "#userBO.nickname", name = CacheConstants.USER_KEY_PREFIX)
-    public void update(Long userId, UserModel.Request userRequest) {
+    public void update(Long userId, UserRequest userRequest) {
         SysUser oldUser = this.getById(userId);
     
         if (StatusEnum.DISABLE.getValue().equals(oldUser.getStatus())) {
@@ -162,24 +157,24 @@ public class UserServiceImpl implements UserService {
                 throw new BizException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许禁用");
             }
         }
-        if (CollUtil.isNotEmpty(userRequest.roleIds())) {
+        if (CollUtil.isNotEmpty(userRequest.getRoleIds())) {
             throw new BizException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许变更角色");
         }
-        if (StrUtil.isNotBlank(userRequest.email())) {
-            this.checkEmailUnique(userRequest.email(), userId);
+        if (StrUtil.isNotBlank(userRequest.getEmail())) {
+            this.checkEmailUnique(userRequest.getEmail(), userId);
         }
-        if (StrUtil.isNotBlank(userRequest.phone())) {
-            this.checkPhoneUnique(userRequest.phone(), userId);
+        if (StrUtil.isNotBlank(userRequest.getPhone())) {
+            this.checkPhoneUnique(userRequest.getPhone(), userId);
         }
     
         SysUser updateUser = userAssembler.toEntity(userRequest);
         updateUser.setId(userId);
         userMapper.updateById(updateUser);
         // 保存用户和角色的关联
-        roleService.assignRolesToUser(userRequest.roleIds(), userId);
+        roleService.assignRolesToUser(userRequest.getRoleIds(), userId);
     
         // 用户被禁用，则踢出在线用户
-        if (StatusEnum.DISABLE.equals(userRequest.status())) {
+        if (StatusEnum.DISABLE.equals(userRequest.getStatus())) {
             LoginUtil.kickout(userId);
         }
     }
@@ -340,17 +335,17 @@ public class UserServiceImpl implements UserService {
 
 
     @Override
-    public void export(UserModel.Query query, HttpServletResponse response) {
+    public void export(UserQuery query, HttpServletResponse response) {
         // 构建查询条件
         QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
         // 应用排序条件
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysUser.class);
+        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysUser.class);
 
         // 查询用户列表
-        List<UserModel.Detail> userList = userMapper.selectUserList(queryWrapper);
+        List<UserDetail> userList = userMapper.selectUserList(queryWrapper);
 
         // 导出Excel
-        ExcelUtils.export(userList, "用户数据", UserModel.Detail.class, response);
+        ExcelUtils.export(userList, "用户数据", UserDetail.class, response);
     }
 
     @Override
@@ -436,8 +431,8 @@ public class UserServiceImpl implements UserService {
     public Long updateAvatar(MultipartFile avatarFile, Long userId) {
         checkAvatar(avatarFile);
 
-        UserModel.Detail user = this.detail(userId);
-        Long oldAvatarFileId = user.avatar();
+        UserDetail user = this.detail(userId);
+        Long oldAvatarFileId = user.getAvatar();
 
         File uploaded = fileService.upload(avatarFile, userId);
         userMapper.lambdaUpdate()
@@ -469,7 +464,7 @@ public class UserServiceImpl implements UserService {
         long avatarMaxSize = 1024 * 1024 * 2; // 2MB
         long avatarSize = avatarFile.getSize();
         if (avatarSize > avatarMaxSize) {
-            throw new BizException("FILE_SIZE_EXCEEDED", StrUtil.format("头像大小不能超过 {} MB", avatarMaxSize / 1024 / 1024));
+            throw new BizException("AVATAR_SIZE_EXCEEDED", StrUtil.format("头像大小不能超过 {} MB", avatarMaxSize / 1024 / 1024));
         }
     }
 
@@ -504,10 +499,6 @@ public class UserServiceImpl implements UserService {
         addPasswordHistory(id, oldUser.getPassword(), passwordRepetitionTimes);
         // 修改后登出
         StpUtil.logout();
-    }
-
-    public void matchPassword(){
-
     }
 
     private void addPasswordHistory(Long userId, String password, int passwordRepetitionTimes) {
@@ -583,16 +574,16 @@ public class UserServiceImpl implements UserService {
         return userMapper.selectRoleCodesByUserId(userId);
     }
 
-    private QueryWrapper<SysUser> buildQueryWrapper(UserModel.Query query) {
-        String description = query.keyword();
-        StatusEnum status = query.status();
-        List<LocalDateTime> createTimeList = query.createTime();
-        Long deptId = query.deptId();
-        List<Long> userIdList = query.userIds();
+    private QueryWrapper<SysUser> buildQueryWrapper(UserQuery query) {
+        String description = query.getKeyword();
+        StatusEnum status = query.getStatus();
+        List<LocalDateTime> createTimeList = query.getCreateTime();
+        Long deptId = query.getDeptId();
+        List<Long> userIdList = query.getUserIds();
         // 获取排除用户 ID 列表
         List<Long> excludeUserIdList = null;
-        if (query.roleId() != null) {
-            excludeUserIdList = roleService.listMemberIds(query.roleId());
+        if (query.getRoleId() != null) {
+            excludeUserIdList = roleService.listMemberIds(query.getRoleId());
         }
         return new QueryWrapper<SysUser>().and(CharSequenceUtil.isNotBlank(description),
                         q -> q.like("t1.username", description)

@@ -5,8 +5,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.cmn.db.query.QueryCondition;
-import top.wyhao.cmn.db.query.QueryType;
 import top.wyhao.starter.core.constant.RegexConstants;
 
 import java.util.Map;
@@ -24,7 +22,7 @@ public class DictModel {
     @Schema(description = "字典查询条件")
     public record Query(
             @Schema(description = "关键词")
-            @QueryCondition(columns = {"dict_type", "label", "value", "description"}, type = QueryType.LIKE)
+            @top.wyhao.cmn.db.query.Query(field = "dict_type,label,value,description", type = top.wyhao.cmn.db.query.Query.Type.LIKE)
             String keyword
     ) {}
 

@@ -15,8 +15,4 @@ echo "Building Docker images..."
 echo "Building tide-admin image..."
 container build -f ../tide-admin-server/Dockerfile -t wangyonghao/tide-admin ../tide-admin-server
 
-# 构建 tide-schedule 镜像
-echo "Building tide-schedule image..."
-container build -f ../tide-schedule/Dockerfile -t wangyonghao/tide-schedule ../tide-schedule
-
 echo "Docker images built successfully."

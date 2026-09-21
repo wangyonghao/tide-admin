@@ -14,12 +14,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import top.wyhao.admin.system.dto.UserDetail;
+import top.wyhao.admin.system.dto.UserQuery;
+import top.wyhao.admin.system.dto.UserRequest;
+import top.wyhao.admin.system.dto.UserResult;
 import top.wyhao.admin.system.model.bo.user.UserImportRequest;
-import top.wyhao.admin.system.model.UserModel;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.core.exception.SystemException;
 import top.wyhao.starter.core.model.Result;
-import top.wyhao.starter.web.core.model.*;
+import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.util.HttpUtil;
 
 import java.io.IOException;
@@ -46,7 +52,7 @@ public class UserController {
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @SaCheckPermission("system:user:list")
     @GetMapping
-    public PageResult<UserModel.Result> page(@Valid UserModel.Query query, @Valid PageQuery pageQuery) {
+    public PageResult<UserResult> page(@Valid UserQuery query, @Valid PageQuery pageQuery) {
         return userService.page(query, pageQuery);
     }
 
@@ -58,7 +64,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:list")
     @GetMapping("/{id}")
-    public UserModel.Detail get(@PathVariable Long id) {
+    public UserDetail get(@PathVariable Long id) {
         return userService.detail(id);
     }
 
@@ -70,7 +76,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:create")
     @PostMapping
-    public IdResult<Long> create(@RequestBody @Validated(UserModel.Request.Create.class) UserModel.Request request) {
+    public IdResult<Long> create(@RequestBody @Validated(UserRequest.Create.class) UserRequest request) {
         return new IdResult<>(userService.create(request));
     }
 
@@ -82,7 +88,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:edit")
     @PatchMapping("/{id}")
-    public void update(@PathVariable Long id, @RequestBody @Validated(UserModel.Request.Update.class) UserModel.Request request) {
+    public void update(@PathVariable Long id, @RequestBody @Validated(UserRequest.Update.class) UserRequest request) {
         userService.update(id, request);
     }
 
@@ -124,7 +130,7 @@ public class UserController {
      */
     @SaCheckPermission("system:user:export")
     @GetMapping("/export")
-    public void export(@Valid UserModel.Query query, HttpServletResponse response) {
+    public void export(@Valid UserQuery query, HttpServletResponse response) {
         userService.export(query, response);
     }
 

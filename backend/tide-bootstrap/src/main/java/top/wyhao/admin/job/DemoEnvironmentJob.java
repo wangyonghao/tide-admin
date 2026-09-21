@@ -2,27 +2,24 @@
 package top.wyhao.admin.job;
 
 import cn.hutool.core.text.CharSequenceUtil;
-import com.aizuda.snailjob.client.job.core.annotation.JobExecutor;
-import com.aizuda.snailjob.common.log.SnailJobLog;
 import com.baomidou.mybatisplus.core.plugins.IgnoreStrategy;
 import com.baomidou.mybatisplus.core.plugins.InterceptorIgnoreHelper;
 import lombok.RequiredArgsConstructor;
-import org.springframework.stereotype.Component;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.open.mapper.SysAppMapper;
 import top.wyhao.admin.open.model.entity.SysApp;
 import top.wyhao.admin.system.entity.*;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.entity.SysUserSocial;
 import top.wyhao.admin.system.mapper.*;
-import top.wyhao.admin.system.mapper.SysUserMapper;
-import top.wyhao.admin.system.mapper.SysUserSocialMapper;
 import top.wyhao.admin.tenant.mapper.SysTenantMapper;
 import top.wyhao.admin.tenant.mapper.TenantPackageMapper;
 import top.wyhao.admin.tenant.mapper.TenantPackageMenuMapper;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.starter.quartz.annotation.JobHandler;
+import top.wyhao.starter.quartz.spi.JobContext;
+import top.wyhao.starter.quartz.spi.JobTask;
 
 import java.util.List;
 import java.util.function.BooleanSupplier;
@@ -33,9 +30,10 @@ import java.util.function.BooleanSupplier;
 
  * @since 2024/8/4 15:30
  */
-@Component
+@Slf4j
+@JobHandler(code = "demoEnvReset", name = "演示环境重置", description = "清理演示数据，仅演示环境使用")
 @RequiredArgsConstructor
-public class DemoEnvironmentJob {
+public class DemoEnvironmentJob implements JobTask {
 
     private final SysDictMapper dictMapper;
     private final SysNoticeMapper noticeMapper;
@@ -65,13 +63,13 @@ public class DemoEnvironmentJob {
     /**
      * 重置演示环境数据
      */
-    @JobExecutor(name = "ResetEnvironmentData")
+    @Override
     @Transactional(rollbackFor = Exception.class)
-    public void resetEnvironmentData() {
+    public void execute(JobContext context) {
         try {
-            SnailJobLog.REMOTE.info("定时任务 [重置演示环境数据] 开始执行。");
+            log.info("定时任务 [重置演示环境数据] 开始执行。");
             // 检测待清理数据
-            SnailJobLog.REMOTE.info("开始检测演示环境待清理数据项，请稍候...");
+            log.info("开始检测演示环境待清理数据项，请稍候...");
             Long dictCount = dictMapper.lambdaQuery().gt(SysDict::getId, DELETE_FLAG).count();
             this.log(dictCount, "字典");
             Long noticeCount = noticeMapper.lambdaQuery().gt(SysNotice::getId, DELETE_FLAG).count();
@@ -93,7 +91,7 @@ public class DemoEnvironmentJob {
             Long packageCount = packageMapper.lambdaQuery().count();
             this.log(packageCount, "套餐");
             InterceptorIgnoreHelper.handle(IgnoreStrategy.builder().blockAttack(true).build());
-            SnailJobLog.REMOTE.info("演示环境待清理数据项检测完成，开始执行清理。");
+            log.info("演示环境待清理数据项检测完成，开始执行清理。");
             // 清理关联数据
             noticeLogMapper.lambdaUpdate().gt(SysNoticeLog::getNoticeId, DELETE_FLAG).remove();
             messageLogMapper.lambdaUpdate().gt(SysMessageLog::getMessageId, MESSAGE_FLAG).remove();
@@ -122,8 +120,8 @@ public class DemoEnvironmentJob {
             this.clean(appCount, "应用", null, () -> appMapper.lambdaUpdate().gt(SysApp::getId, DEPT_FLAG).remove());
             this.clean(tenantCount, "租户", null, () -> tenantMapper.lambdaUpdate().remove());
             this.clean(packageCount, "套餐", null, () -> packageMapper.lambdaUpdate().remove());
-            SnailJobLog.REMOTE.info("演示环境数据已清理完成。");
-            SnailJobLog.REMOTE.info("定时任务 [重置演示环境数据] 执行结束。");
+            log.info("演示环境数据已清理完成。");
+            log.info("定时任务 [重置演示环境数据] 执行结束。");
         } finally {
             InterceptorIgnoreHelper.clearIgnoreStrategy();
         }
@@ -137,7 +135,7 @@ public class DemoEnvironmentJob {
      */
     private void log(Long count, String resource) {
         if (count > 0) {
-            SnailJobLog.REMOTE.info("检测到 [{}] 待清理数据项：{}条", resource, count);
+            log.info("检测到 [{}] 待清理数据项：{}条", resource, count);
         }
     }
 
@@ -151,10 +149,10 @@ public class DemoEnvironmentJob {
      */
     private void clean(Long count, String resource, String cacheKey, BooleanSupplier supplier) {
         if (count > 0 && supplier.getAsBoolean()) {
-            SnailJobLog.REMOTE.info("[{}] 数据项清理完成。", resource);
+            log.info("[{}] 数据项清理完成。", resource);
             if (CharSequenceUtil.isNotBlank(cacheKey)) {
                 RedisUtils.deleteByPattern(cacheKey + StringConstants.ASTERISK);
-                SnailJobLog.REMOTE.info("[{}] 数据项缓存清理完成。", resource);
+                log.info("[{}] 数据项缓存清理完成。", resource);
             }
         }
     }

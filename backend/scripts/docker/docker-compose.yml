@@ -66,7 +66,6 @@ services:
     container_name: tide-admin
     ports:
       - '18000:18000'
-      - '1789:1789'
     networks:
       - 1panel-network
     environment:
@@ -80,30 +79,9 @@ services:
       REDIS_PORT: 6379
       REDIS_PWD: redis_nAaBHh
       REDIS_DB: 15
-      SCHEDULE_HOST: tide-schedule
-      SCHEDULE_PORT: 1788
-      SCHEDULE_TOKEN: SJ_Wyz3dmsdbDOkDujOTSSoBjGQP1BMsVnj
     volumes:
       - ./api/data/file/:/app/data/file/
       - ./api/logs/:/app/logs/
-  schedule:
-    build: tide-schedule
-    restart: always
-    container_name: tide-schedule
-    ports:
-      - '18001:18001'
-      - '1788:1788'
-    networks:
-      - 1panel-network
-    environment:
-      TZ: Asia/Shanghai
-      DB_HOST: postgresql
-      DB_PORT: 5432
-      DB_USER: tide_job
-      DB_PWD: AeMW6BafcXQT4pe2
-      DB_NAME: tide_job
-    volumes:
-      - ./schedule/logs/:/app/logs/
 networks:
   1panel-network:
     external: true

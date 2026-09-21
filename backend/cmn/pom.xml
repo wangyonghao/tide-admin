@@ -40,5 +40,7 @@
     <module>crypto-util</module>
     <!-- 对象存储基础设施 -->
     <module>cmn-storage</module>
+    <!-- 定时任务内核 -->
+    <module>cmn-quartz</module>
   </modules>
 </project>

@@ -6,8 +6,7 @@ import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
-import top.wyhao.cmn.db.query.QueryCondition;
-import top.wyhao.cmn.db.query.QueryType;
+import top.wyhao.cmn.db.query.Query;
 import top.wyhao.starter.core.enums.ResultStatusEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 
@@ -106,21 +105,21 @@ public record Result(
              * 配置 ID
              */
             @Schema(description = "配置 ID", example = "1")
-            @QueryCondition(type = QueryType.EQ)
+            @Query(type = Query.Type.EQ)
             Long configId,
 
             /**
              * 手机号
              */
             @Schema(description = "手机号", example = "18888888888")
-            @QueryCondition(type = QueryType.EQ)
+            @Query(type = Query.Type.EQ)
             String phone,
 
             /**
              * 发送状态
              */
             @Schema(description = "发送状态", example = "1")
-            @QueryCondition(type = QueryType.EQ)
+            @Query(type = Query.Type.EQ)
             ResultStatusEnum status,
 
             /**
