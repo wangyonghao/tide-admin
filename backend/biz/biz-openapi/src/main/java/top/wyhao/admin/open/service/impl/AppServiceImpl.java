@@ -3,10 +3,8 @@ package top.wyhao.admin.open.service.impl;
 
 import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.IdUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -20,18 +18,18 @@ import top.wyhao.admin.open.model.resp.AppDetailResp;
 import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.model.resp.AppSecretResp;
 import top.wyhao.admin.open.service.AppService;
-import top.wyhao.cmn.db.util.WrapperUtil;
+import top.wyhao.cmn.db.query.PageFactory;
+import top.wyhao.cmn.db.query.PageParam;
+import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
 
 /**
  * 应用业务实现
-
-
+ *
  * @since 2024/10/17 16:03
  */
 @Service
@@ -84,17 +82,16 @@ public class AppServiceImpl implements AppService {
      */
     private String generateSecret() {
         return Base64.encode(IdUtil.fastSimpleUUID())
-            .replace(StringConstants.SLASH, StringConstants.EMPTY)
-            .replace(StringConstants.PLUS, StringConstants.EMPTY);
+                .replace(StringConstants.SLASH, StringConstants.EMPTY)
+                .replace(StringConstants.PLUS, StringConstants.EMPTY);
     }
 
     // 实现 CrudService 的其他方法
     @Override
-    public PageResult<AppResult> page(AppQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysApp> queryWrapper = WrapperUtil.build(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()),SysApp.class);
-        IPage<SysApp> page = baseMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, appAssembler::toResultList);
+    public PageResult<AppResult> page(AppQuery query, PageParam pageParam) {
+        IPage<SysApp> page = baseMapper.selectPage(PageFactory.build(pageParam, query, SysApp.class),
+                QueryWrapperBuilder.build(query, SysApp.class));
+        return PageResult.of(page).map(appAssembler::toResult);
     }
 
 
@@ -114,10 +111,7 @@ public class AppServiceImpl implements AppService {
 
     @Override
     public void export(AppQuery query, HttpServletResponse response) {
-        QueryWrapper<SysApp> queryWrapper = WrapperUtil.build(query);
-        // 设置排序
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysApp.class);
-        List<SysApp> entityList = baseMapper.selectList(queryWrapper);
+        List<SysApp> entityList = baseMapper.selectList(QueryWrapperBuilder.build(query,SysApp.class));
         List<AppDetailResp> list = appAssembler.toDetailList(entityList);
         ExcelUtils.export(list, "导出数据", AppDetailResp.class, response);
     }

@@ -152,6 +152,6 @@ public class MenuModel {
              * 排序条件
              */
             @Schema(description = "排序条件", example = "createTime,desc")
-            String[] sort
+            String sort
     ) {}
 }

@@ -2,10 +2,8 @@
 package top.wyhao.admin.system.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import top.wyhao.admin.system.model.DeptModel;
 import top.wyhao.admin.system.entity.SysDept;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.admin.system.model.DeptModel;
 
 import java.util.List;
 
@@ -13,15 +11,6 @@ import java.util.List;
  * 部门业务接口
  */
 public interface DeptService{
-
-    /**
-     * 分页查询列表
-     *
-     * @param query     查询条件
-     * @param pageQuery 分页查询条件
-     * @return 分页信息
-     */
-    PageResult<DeptModel.Result> page(DeptModel.Query query, PageQuery pageQuery);
 
     /**
      * 查询列表

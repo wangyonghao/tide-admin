@@ -12,14 +12,13 @@ import top.wyhao.admin.system.assembler.MenuAssembler;
 import top.wyhao.admin.system.entity.SysMenu;
 import top.wyhao.admin.system.exception.MenuException;
 import top.wyhao.admin.system.mapper.SysMenuMapper;
-import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.MenuModel;
+import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.enums.MenuType;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
 import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.UserService;
-import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.constant.StringConstants;
@@ -27,6 +26,7 @@ import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
 import top.wyhao.starter.core.util.validation.Check;
+
 import java.util.ArrayList;
 import java.util.List;
 
@@ -47,10 +47,6 @@ public class MenuServiceImpl implements MenuService {
         wrapper.eq(SysMenu::getStatus, StatusEnum.ENABLE.getValue())
                 .orderByAsc(SysMenu::getParentId)
                 .orderByAsc(SysMenu::getSort);
-
-        if (query != null) {
-            WrapperUtil.applySort(wrapper, WrapperUtil.parseSort(query.sort()), SysMenu.class);
-        }
         List<SysMenu> menus = menuMapper.selectList(wrapper);
         return buildPermissionTree(menus);
     }

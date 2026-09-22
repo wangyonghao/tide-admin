@@ -1,20 +1,19 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.wyhao.admin.system.dto.DictQuery;
 import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.admin.system.mapper.SysDictMapper;
-import top.wyhao.admin.system.model.DictModel;
 import top.wyhao.admin.system.service.DictService;
-import top.wyhao.cmn.db.util.WrapperUtil;
+import top.wyhao.cmn.db.query.PageFactory;
+import top.wyhao.cmn.db.query.PageParam;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.web.core.model.LabelValueResult;
-import top.wyhao.starter.web.core.model.PageQuery;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -29,12 +28,9 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 public class DictServiceImpl extends ServiceImpl<SysDictMapper, SysDict> implements DictService {
     @Override
-    public IPage<SysDict> page(DictModel.Query query, PageQuery pageQuery) {
-        // 构建查询条件（WrapperUtil 现在支持 Record 参数上的 @Query 注解）
-        QueryWrapper<SysDict> queryWrapper = WrapperUtil.build(query);
-        // 分页查询
-        Page<SysDict> page = new Page<>(pageQuery.getPage(), pageQuery.getSize());
-        return baseMapper.selectPage(page, queryWrapper);
+    public IPage<SysDict> page(DictQuery query, PageParam pageParam) {
+        return baseMapper.selectPage(PageFactory.build(pageParam, query, SysDict.class),
+                QueryWrapperBuilder.build(query, SysDict.class));
     }
 
     @Override

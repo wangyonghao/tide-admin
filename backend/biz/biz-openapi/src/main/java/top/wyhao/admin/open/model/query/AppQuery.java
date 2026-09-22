@@ -4,6 +4,7 @@ package top.wyhao.admin.open.model.query;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.cmn.db.query.Query;
+import top.wyhao.cmn.db.query.SortableQuery;
 
 /**
  * 应用查询条件
@@ -13,13 +14,13 @@ import top.wyhao.cmn.db.query.Query;
  */
 @Data
 @Schema(description = "应用查询条件")
-public class AppQuery{
+public class AppQuery extends SortableQuery {
 
     /**
      * 关键词
      */
     @Schema(description = "关键词", example = "应用1")
-    @Query(field = {"name", "description"}, type = Query.Type.LIKE)
+    @Query(field = "name,description", type = Query.Type.LIKE)
     private String description;
 
     /**

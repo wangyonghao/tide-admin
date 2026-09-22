@@ -2,11 +2,11 @@
 package top.wyhao.admin.system.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import top.wyhao.admin.system.dto.DictQuery;
 import top.wyhao.admin.system.entity.SysDict;
-import top.wyhao.admin.system.model.DictModel;
 import top.wyhao.cmn.db.model.BaseService;
+import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.starter.web.core.model.LabelValueResult;
-import top.wyhao.starter.web.core.model.PageQuery;
 
 import java.util.List;
 
@@ -18,7 +18,7 @@ import java.util.List;
  */
 public interface DictService extends BaseService<SysDict> {
 
-    IPage<SysDict> page(DictModel.Query query, PageQuery pageQuery);
+    IPage<SysDict> page(DictQuery query, PageParam pageParam);
 
     /**
      * 根据字典类型查询字典列表

@@ -3,7 +3,9 @@ package top.wyhao.admin.system.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;
 import lombok.Data;
+import lombok.EqualsAndHashCode;
 import top.wyhao.cmn.db.query.Query;
+import top.wyhao.cmn.db.query.SortableQuery;
 import top.wyhao.starter.core.enums.StatusEnum;
 
 import java.time.LocalDateTime;
@@ -15,8 +17,9 @@ import java.util.List;
  * @since 2023/2/20 21:08
  */
 @Data
+@EqualsAndHashCode(callSuper = true)
 @Schema(description = "用户查询条件")
-public class UserQuery {
+public class UserQuery extends SortableQuery {
 
     @Schema(description = "关键词", example = "zhangsan")
     /** 关键字：一个字段同时 LIKE 三列，自动组装成 (username like ? or nickname like ? or phone like ?) */

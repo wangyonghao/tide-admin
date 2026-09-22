@@ -3,9 +3,6 @@ package top.wyhao.admin.system.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import com.baomidou.mybatisplus.core.metadata.IPage;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -19,14 +16,12 @@ import top.wyhao.admin.system.service.DeptService;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.cmn.db.dialect.DatabaseType;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.cmn.db.util.DBMetaUtils;
-import top.wyhao.cmn.db.util.WrapperUtil;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
 import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
@@ -51,18 +46,8 @@ public class DeptServiceImpl implements DeptService {
     private final DeptAssembler deptAssembler;
 
     @Override
-    public PageResult<DeptModel.Result> page(DeptModel.Query query, PageQuery pageQuery) {
-        QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysDept.class);
-        IPage<SysDept> page = baseMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page, deptAssembler::toResultList);
-    }
-
-    @Override
     public List<DeptModel.Result> list(DeptModel.Query query) {
-        QueryWrapper<SysDept> queryWrapper = WrapperUtil.build(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysDept.class);
-        List<SysDept> entityList = baseMapper.selectList(queryWrapper);
+        List<SysDept> entityList = baseMapper.selectList(QueryWrapperBuilder.build(query,SysDept.class));
         return deptAssembler.toResultList(entityList);
     }
 

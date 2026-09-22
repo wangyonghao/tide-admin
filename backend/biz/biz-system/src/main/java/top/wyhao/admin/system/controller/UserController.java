@@ -20,12 +20,12 @@ import top.wyhao.admin.system.dto.UserRequest;
 import top.wyhao.admin.system.dto.UserResult;
 import top.wyhao.admin.system.model.bo.user.UserImportRequest;
 import top.wyhao.admin.system.service.UserService;
+import top.wyhao.cmn.db.query.PageParam;
+import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.starter.core.exception.SystemException;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.IdsRequest;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.util.HttpUtil;
 
 import java.io.IOException;
@@ -52,8 +52,8 @@ public class UserController {
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @SaCheckPermission("system:user:list")
     @GetMapping
-    public PageResult<UserResult> page(@Valid UserQuery query, @Valid PageQuery pageQuery) {
-        return userService.page(query, pageQuery);
+    public PageResult<UserResult> page(@Valid UserQuery query, @Valid PageParam pageParam) {
+        return userService.page(query, pageParam);
     }
 
     /**

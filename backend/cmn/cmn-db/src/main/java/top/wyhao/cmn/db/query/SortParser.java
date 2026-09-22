@@ -1,4 +1,4 @@
-package top.wyhao.cmn.db.page;
+package top.wyhao.cmn.db.query;
 
 import java.util.ArrayList;
 import java.util.LinkedHashSet;
@@ -17,7 +17,7 @@ import java.util.Set;
  *   orderBy=+status,-createTime              每项单独指定方向（+/- 前缀）
  * </pre>
  *
- * <p>这里只做语法解析，字段合法性由 {@link com.example.admin.common.query.ColumnResolver} 把关。</p>
+ * <p>这里只做语法解析，字段合法性由 {@link top.wyhao.cmn.db.query.ColumnResolver} 把关。</p>
  */
 public final class SortParser {
 

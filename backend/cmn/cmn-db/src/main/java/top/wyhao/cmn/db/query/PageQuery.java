@@ -1,4 +1,4 @@
-package top.wyhao.cmn.db.page;
+package top.wyhao.cmn.db.query;
 
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;

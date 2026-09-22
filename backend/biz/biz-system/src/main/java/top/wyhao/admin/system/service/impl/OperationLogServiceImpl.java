@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.HttpServletResponse;
@@ -15,7 +14,7 @@ import top.wyhao.admin.system.entity.SysOperationLog;
 import top.wyhao.admin.system.mapper.SysOperationLogMapper;
 import top.wyhao.admin.system.model.OperationLogModel;
 import top.wyhao.admin.system.service.OperationLogService;
-import top.wyhao.cmn.db.util.WrapperUtil;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -52,9 +51,8 @@ public class OperationLogServiceImpl implements OperationLogService {
 
     @Override
     public PageResult<OperationLogModel.Result> page(OperationLogModel.LogQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysOperationLog> queryWrapper = WrapperUtil.build(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysOperationLog.class);
-        IPage<SysOperationLog> page = operationLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
+        IPage<SysOperationLog> page = operationLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()),
+                QueryWrapperBuilder.build(query,SysOperationLog.class));
         return PageResult.build(page, operationLogAssembler::toResultList);
     }
 
@@ -78,9 +76,7 @@ public class OperationLogServiceImpl implements OperationLogService {
      * @return 列表信息
      */
     private List<OperationLogModel> list(OperationLogModel.LogQuery query) {
-        QueryWrapper<SysOperationLog> queryWrapper = WrapperUtil.build(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysOperationLog.class);
-        return operationLogMapper.selectLogList(queryWrapper);
+        return operationLogMapper.selectLogList(QueryWrapperBuilder.build(query, SysOperationLog.class));
     }
 
     private SysOperationLog require(Long id) {

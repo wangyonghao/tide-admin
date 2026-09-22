@@ -1,4 +1,4 @@
-package top.wyhao.cmn.db.page;
+package top.wyhao.cmn.db.query;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.Data;
@@ -30,7 +30,7 @@ public class PageResult<T> {
         return r;
     }
 
-    public static <T> PageResult<T> empty(PageQuery query) {
+    public static <T> PageResult<T> empty(PageParam query) {
         PageResult<T> r = new PageResult<>();
         r.setPageNum(query.getPageNum());
         r.setPageSize(query.getPageSize());

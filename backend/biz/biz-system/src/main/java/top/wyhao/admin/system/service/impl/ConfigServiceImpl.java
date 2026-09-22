@@ -20,7 +20,7 @@ import top.wyhao.admin.system.model.ConfigModel;
 import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
-import top.wyhao.cmn.db.util.WrapperUtil;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -32,7 +32,6 @@ import java.util.List;
 /**
  * 系统配置业务实现
  *
-
  * @since 2024/04/26
  */
 @Slf4j
@@ -45,11 +44,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     public PageResult<ConfigResult> page(ConfigModel.Query query, PageQuery pageQuery) {
-        QueryWrapper<SysConfig> queryWrapper = this.buildQueryWrapper(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysConfig.class);
         IPage<ConfigResult> page = configMapper.selectConfigPage(
                 new Page<>(pageQuery.getPage(), pageQuery.getSize()),
-                queryWrapper
+                QueryWrapperBuilder.build(query, SysConfig.class)
         );
         return PageResult.build(page);
     }
@@ -137,8 +134,7 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     public String getSmsTemplate(String scene) {
-        String templateId = configMapper.getConfig("sms-template-" + scene, String.class);
-        return templateId;
+        return configMapper.getConfig("sms-template-" + scene, String.class);
     }
 
     @Override
@@ -220,9 +216,7 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     public void export(ConfigModel.Query query, HttpServletResponse response) {
-        QueryWrapper<SysConfig> queryWrapper = this.buildQueryWrapper(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.sort()), SysConfig.class);
-        List<SysConfig> list = configMapper.selectList(queryWrapper);
+        List<SysConfig> list = configMapper.selectList(QueryWrapperBuilder.build(query, SysConfig.class));
 
         List<ConfigResult> resultList = configAssembler.toResultList(list);
 

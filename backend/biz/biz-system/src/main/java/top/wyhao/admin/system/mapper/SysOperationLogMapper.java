@@ -2,16 +2,17 @@
 package top.wyhao.admin.system.mapper;
 
 import com.alicp.jetcache.anno.Cached;
+import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysOperationLog;
+import top.wyhao.admin.system.model.OperationLogModel;
 import top.wyhao.admin.system.model.result.dashboard.DashboardAccessTrendResp;
 import top.wyhao.admin.system.model.result.dashboard.DashboardChartCommonResp;
 import top.wyhao.admin.system.model.result.dashboard.DashboardOverviewCommonResp;
-import top.wyhao.admin.system.model.OperationLogModel;
 import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.starter.core.constant.CacheConstants;
 
@@ -43,7 +44,7 @@ public interface SysOperationLogMapper extends BaseMapper<SysOperationLog> {
      * @param queryWrapper 查询条件
      * @return 列表信息
      */
-    List<OperationLogModel> selectLogList(@Param(Constants.WRAPPER) QueryWrapper<SysOperationLog> queryWrapper);
+    List<OperationLogModel> selectLogList(@Param(Constants.WRAPPER) Wrapper<SysOperationLog> queryWrapper);
 
     /**
      * 查询仪表盘 PV 总览

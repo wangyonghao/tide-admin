@@ -15,8 +15,8 @@ import top.wyhao.admin.system.model.bo.user.UserPasswordResetRequest;
 import top.wyhao.admin.system.model.bo.user.UserRoleUpdateReq;
 import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageParam;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.io.IOException;
 import java.util.List;
@@ -145,7 +145,7 @@ public interface UserService {
 
     UserDetail detail(Long id);
 
-    PageResult<UserResult> page(UserQuery query, PageQuery pageQuery);
+    PageResult<UserResult> page(UserQuery query, PageParam pageParam);
 
     Long save(SysUser user);
 

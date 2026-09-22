@@ -14,10 +14,10 @@ import cn.hutool.json.JSONUtil;
 import cn.idev.excel.FastExcelFactory;
 import com.alicp.jetcache.anno.CacheInvalidate;
 import com.alicp.jetcache.anno.CacheUpdate;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -41,7 +41,10 @@ import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
 import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
 import top.wyhao.admin.system.service.*;
-import top.wyhao.cmn.db.util.WrapperUtil;
+import top.wyhao.cmn.db.query.PageFactory;
+import top.wyhao.cmn.db.query.PageParam;
+import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.file.core.domain.File;
 import top.wyhao.file.core.service.FileService;
@@ -58,8 +61,6 @@ import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.RsaUtils;
 import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
 
 import java.time.Duration;
 import java.time.LocalDate;
@@ -74,7 +75,6 @@ import static top.wyhao.admin.system.model.enums.PasswordPolicies.*;
 /**
  * 用户业务实现
  *
-
  * @since 2022/12/21 21:49
  */
 @Slf4j
@@ -107,11 +107,10 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public PageResult<UserResult> page(UserQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysUser.class);
-        IPage<UserResult> page = userMapper.selectUserPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
-        return PageResult.build(page);
+    public PageResult<UserResult> page(UserQuery query, PageParam pageParam) {
+        LambdaQueryWrapper<SysUser> wrapper = QueryWrapperBuilder.build(query, SysUser.class);
+        IPage<UserResult> page = userMapper.selectUserPage(PageFactory.build(pageParam, query, SysUser.class), wrapper);
+        return PageResult.of(page);
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -123,18 +122,18 @@ public class UserServiceImpl implements UserService {
         this.checkEmailUnique(request.getEmail(), null);
         this.checkPhoneUnique(request.getPhone(), null);
         this.checkUsernameUnique(request.getUsername());
-    
+
         SysUser newUser = userAssembler.toEntity(request);
         /* 业务逻辑校验 */
-    
-    
-    
+
+
+
         /* 执行业务 */
         newUser.setPassword(passwordEncoder.encode(rawPassword));
         SecurityConfigVO loginConfig = configService.getSecurityConfig();
         newUser.setPwdExpireDate(LocalDate.now().plusDays(loginConfig.getPasswordExpireDays()));
         userMapper.insert(newUser);
-    
+
         // 保存用户和角色的关联
         roleService.assignRolesToUser(request.getRoleIds(), newUser.getId());
         return newUser.getId();
@@ -151,7 +150,7 @@ public class UserServiceImpl implements UserService {
     @CacheUpdate(key = "#userId", value = "#userBO.nickname", name = CacheConstants.USER_KEY_PREFIX)
     public void update(Long userId, UserRequest userRequest) {
         SysUser oldUser = this.getById(userId);
-    
+
         if (StatusEnum.DISABLE.getValue().equals(oldUser.getStatus())) {
             if (oldUser.getIsBuiltin()) {
                 throw new BizException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许禁用");
@@ -166,13 +165,13 @@ public class UserServiceImpl implements UserService {
         if (StrUtil.isNotBlank(userRequest.getPhone())) {
             this.checkPhoneUnique(userRequest.getPhone(), userId);
         }
-    
+
         SysUser updateUser = userAssembler.toEntity(userRequest);
         updateUser.setId(userId);
         userMapper.updateById(updateUser);
         // 保存用户和角色的关联
         roleService.assignRolesToUser(userRequest.getRoleIds(), userId);
-    
+
         // 用户被禁用，则踢出在线用户
         if (StatusEnum.DISABLE.equals(userRequest.getStatus())) {
             LoginUtil.kickout(userId);
@@ -337,12 +336,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public void export(UserQuery query, HttpServletResponse response) {
         // 构建查询条件
-        QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
-        // 应用排序条件
-        WrapperUtil.applySort(queryWrapper, WrapperUtil.parseSort(query.getSort()), SysUser.class);
+        //      QueryWrapper<SysUser> queryWrapper = this.buildQueryWrapper(query);
 
         // 查询用户列表
-        List<UserDetail> userList = userMapper.selectUserList(queryWrapper);
+        List<UserDetail> userList = userMapper.selectUserList(QueryWrapperBuilder.build(query,SysUser.class));
 
         // 导出Excel
         ExcelUtils.export(userList, "用户数据", UserDetail.class, response);
@@ -606,8 +603,8 @@ public class UserServiceImpl implements UserService {
     /**
      * 导入用户
      *
-     * @param insertList     新增用户
-     * @param updateList     修改用户
+     * @param insertList   新增用户
+     * @param updateList   修改用户
      * @param userRoleList 用户角色关联
      */
     private void doImportUser(List<SysUser> insertList, List<SysUser> updateList, List<SysUserRole> userRoleList) {

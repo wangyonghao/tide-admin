@@ -1,7 +1,6 @@
 
 package top.wyhao.admin.system.service.impl;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.HttpServletResponse;
@@ -16,7 +15,7 @@ import top.wyhao.admin.system.model.SmsLogModel;
 import top.wyhao.admin.system.otp.enums.OtpScene;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.SmsService;
-import top.wyhao.cmn.db.util.WrapperUtil;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -40,8 +39,7 @@ public class SmsServiceImpl implements SmsService {
 
     @Override
     public void export(SmsLogModel.SmsLogQuery query, HttpServletResponse response) {
-        QueryWrapper<SysSmsLog> queryWrapper = WrapperUtil.build(query);
-        List<SmsLogModel.Result> list = sysSmsLogMapper.selectObjs(queryWrapper);
+        List<SmsLogModel.Result> list = sysSmsLogMapper.selectObjs(QueryWrapperBuilder.build(query, SysSmsLog.class));
 
         ExcelUtils.export(list, "短信日志.xlsx", SmsLogModel.Result.class, response);
     }
@@ -57,8 +55,8 @@ public class SmsServiceImpl implements SmsService {
 
     @Override
     public PageResult<SmsLogModel.Result> page(SmsLogModel.SmsLogQuery query, PageQuery pageQuery) {
-        QueryWrapper<SysSmsLog> queryWrapper = WrapperUtil.build(query);
-        IPage<SysSmsLog> resultPage = sysSmsLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), queryWrapper);
+        IPage<SysSmsLog> resultPage = sysSmsLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()),
+                QueryWrapperBuilder.build(query, SysSmsLog.class));
         return PageResult.build(resultPage, smsLogAssembler::toResultList);
     }
 

@@ -18,20 +18,20 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.assembler.MenuAssembler;
 import top.wyhao.admin.system.entity.SysMenu;
 import top.wyhao.admin.system.entity.SysRole;
-import top.wyhao.admin.system.entity.SysUserRole;
 import top.wyhao.admin.system.entity.SysUser;
+import top.wyhao.admin.system.entity.SysUserRole;
 import top.wyhao.admin.system.mapper.SysMenuMapper;
 import top.wyhao.admin.system.mapper.SysRoleMapper;
-import top.wyhao.admin.system.mapper.SysUserRoleMapper;
 import top.wyhao.admin.system.mapper.SysUserMapper;
-import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
+import top.wyhao.admin.system.mapper.SysUserRoleMapper;
 import top.wyhao.admin.system.model.RoleModel;
-import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.model.RoleUserModel;
+import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
+import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.RoleMenuService;
 import top.wyhao.admin.system.service.RoleService;
-import top.wyhao.cmn.db.util.WrapperUtil;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.enums.DataScopeEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
@@ -69,16 +69,14 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
 
     @Override
     public PageResult<RoleModel.Result> page(RoleModel.Query query, PageQuery pageQuery) {
-        QueryWrapper<SysRole> wrapper = WrapperUtil.build(query, WrapperUtil.parseSort(query.sort()));
-        IPage<SysRole> page = roleMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), wrapper);
+        IPage<SysRole> page = roleMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), QueryWrapperBuilder.build(query,SysRole.class));
 
         return PageResult.build(page, this::convertToRoleRespList);
     }
 
     @Override
     public List<RoleModel.Result> list(RoleModel.Query query) {
-        QueryWrapper<SysRole> wrapper = WrapperUtil.build(query, WrapperUtil.parseSort(query.sort()));
-        List<SysRole> entities = roleMapper.selectList(wrapper);
+        List<SysRole> entities = roleMapper.selectList(QueryWrapperBuilder.build(query, SysRole.class));
         return entities.stream()
                 .map(this::convertToRoleResp)
                 .collect(Collectors.toList());
@@ -301,7 +299,6 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     }
 
 
-
     @Override
     @Cached(key = "#roleId", name = CacheConstants.ROLE_MENU_KEY_PREFIX)
     public List<MenuVO> listMenuByRoleId(Long roleId) {
@@ -315,6 +312,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
         list.forEach(this::fill);
         return list;
     }
+
     @Override
     public List<Long> listMemberIds(Long roleId) {
         return userRoleMapper.lambdaQuery()

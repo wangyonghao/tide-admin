@@ -1,7 +1,6 @@
-package top.wyhao.cmn.db.page;
+package top.wyhao.cmn.db.query;
 
 import com.baomidou.mybatisplus.core.toolkit.support.SFunction;
-import com.example.admin.common.query.ColumnResolver;
 
 import java.util.ArrayList;
 import java.util.List;

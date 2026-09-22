@@ -10,16 +10,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import top.wyhao.admin.system.dto.DictQuery;
+import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.admin.system.exception.DictException;
 import top.wyhao.admin.system.model.DictModel;
-import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.admin.system.service.DictService;
+import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.LabelValueResult;
-import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
@@ -39,8 +40,8 @@ public class DictController {
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @SaCheckPermission("system:dict:page")
     @GetMapping("/system/dict/page")
-    public PageResult<DictModel.Result> page(DictModel.Query query, PageQuery pageQuery) {
-        IPage<SysDict> dictPage = dictService.page(query, pageQuery);
+    public PageResult<DictModel.Result> page(DictQuery query, PageParam pageParam) {
+        IPage<SysDict> dictPage = dictService.page(query, pageParam);
 
         // 转换为响应对象
         IPage<DictModel.Result> respPage = dictPage.convert(dict ->

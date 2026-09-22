@@ -12,16 +12,16 @@ import top.wyhao.admin.open.model.query.AppQuery;
 import top.wyhao.admin.open.model.req.AppReq;
 import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.service.AppService;
+import top.wyhao.cmn.db.query.PageParam;
+import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.IdsRequest;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
 
 /**
  * 应用管理 API
-
+ *
  * @since 2023/12/24 22:56
  */
 @Tag(name = "应用管理 API")
@@ -41,8 +41,8 @@ public class AppController {
      */
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @GetMapping
-    public PageResult<AppResult> page(@Valid AppQuery query, @Valid PageQuery pageQuery) {
-        return appService.page(query, pageQuery);
+    public PageResult<AppResult> page(@Valid AppQuery query, @Valid PageParam pageParam) {
+        return appService.page(query, pageParam);
     }
 
     /**
@@ -96,8 +96,8 @@ public class AppController {
     /**
      * 导出
      *
-     * @param query     查询条件
-     * @param response  响应对象
+     * @param query    查询条件
+     * @param response 响应对象
      */
     @Operation(summary = "导出数据", description = "导出数据")
     @GetMapping("/export")

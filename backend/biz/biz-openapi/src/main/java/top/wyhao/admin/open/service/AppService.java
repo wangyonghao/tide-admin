@@ -8,8 +8,8 @@ import top.wyhao.admin.open.model.query.AppQuery;
 import top.wyhao.admin.open.model.req.AppReq;
 import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.model.resp.AppSecretResp;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageParam;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;
 
@@ -24,10 +24,10 @@ public interface AppService {
      * 分页查询列表
      *
      * @param query     查询条件
-     * @param pageQuery 分页查询条件
+     * @param pageParam 分页参数
      * @return 分页列表信息
      */
-    PageResult<AppResult> page(@Valid AppQuery query, @Valid PageQuery pageQuery);
+    PageResult<AppResult> page(AppQuery query, PageParam pageParam);
 
     /**
      * 创建

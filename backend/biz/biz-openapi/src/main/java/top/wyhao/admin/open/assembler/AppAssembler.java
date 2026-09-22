@@ -26,8 +26,6 @@ public interface AppAssembler {
 
     AppResult toResult(SysApp app);
 
-    List<AppResult> toResultList(List<SysApp> apps);
-
     AppDetailResp toDetail(SysApp app);
 
     List<AppDetailResp> toDetailList(List<SysApp> apps);

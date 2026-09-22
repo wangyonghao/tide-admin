@@ -1,4 +1,4 @@
-package top.wyhao.cmn.db.page;
+package top.wyhao.cmn.db.query;
 
 /**
  * 单个排序项。
