@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.starter.core.validation.Mobile;
+import top.wyhao.starter.web.validation.Mobile;
 
 /**
  * 手机号修改请求参数

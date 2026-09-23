@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.core.validation;
+package top.wyhao.starter.web.validation;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.PhoneUtil;

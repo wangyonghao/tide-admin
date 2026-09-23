@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.starter.core.validation.EnumValue;
+import top.wyhao.starter.web.validation.EnumValue;
 
 /**
  * 部门创建或修改请求参数

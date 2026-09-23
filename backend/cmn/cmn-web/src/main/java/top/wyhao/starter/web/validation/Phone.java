@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.core.validation;
+package top.wyhao.starter.web.validation;
 
 import jakarta.validation.Constraint;
 import jakarta.validation.Payload;

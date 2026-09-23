@@ -1,5 +1,5 @@
 
-package top.wyhao.starter.core.validation;
+package top.wyhao.starter.web.validation;
 
 import cn.hutool.core.convert.Convert;
 import cn.hutool.core.text.CharSequenceUtil;

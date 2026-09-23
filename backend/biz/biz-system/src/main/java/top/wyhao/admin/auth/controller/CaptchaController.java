@@ -27,7 +27,7 @@ import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
 import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.core.util.TemplateUtils;
-import top.wyhao.starter.core.validation.Mobile;
+import top.wyhao.starter.web.validation.Mobile;
 import top.wyhao.starter.web.ratelimit.LimitType;
 import top.wyhao.starter.web.ratelimit.RateLimiter;
 import top.wyhao.starter.web.ratelimit.RateLimiters;
