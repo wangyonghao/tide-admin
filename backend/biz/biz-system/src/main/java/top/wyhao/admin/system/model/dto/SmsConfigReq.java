@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.bo;
+package top.wyhao.admin.system.model.dto;
 
 import jakarta.validation.constraints.*;
 
@@ -22,10 +22,9 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "短信配置创建或修改请求参数")
-public class SmsConfigReq implements Serializable {
+public class SmsConfigReq {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 名称

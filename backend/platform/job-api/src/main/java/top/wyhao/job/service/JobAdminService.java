@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.jspecify.annotations.NonNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionSynchronization;
@@ -51,14 +52,13 @@ public class JobAdminService {
 
     public PageResult<JobResponse> page(JobQuery query) {
         Page<SysJob> page = sysJobMapper.selectPage(
-                new Page<>(query.getPage(), query.getSize()),
+                new Page<>(query.getPage(), query.getPageSize()),
                 new LambdaQueryWrapper<SysJob>()
                         .like(StringUtils.hasText(query.getName()), SysJob::getName, query.getName())
                         .eq(StringUtils.hasText(query.getHandlerCode()), SysJob::getHandlerCode, query.getHandlerCode())
                         .eq(query.getStatus() != null, SysJob::getStatus, query.getStatus())
                         .orderByDesc(SysJob::getCreateTime));
-        List<JobResponse> list = page.getRecords().stream().map(this::toResponse).toList();
-        return new PageResult<>(list, page.getTotal());
+        return PageResult.build(page, records -> records.stream().map(this::toResponse).toList());
     }
 
     public JobResponse detail(Long id) {
@@ -69,6 +69,15 @@ public class JobAdminService {
     public Long create(JobSaveRequest request) {
         JobHandlerDescriptor handler = jobHandlerRegistry.requireDescriptor(request.getHandlerCode());
         CronComposer.Compiled compiled = CronComposer.compile(request.getSchedule());
+        SysJob job = createJob(request, handler, compiled);
+        sysJobMapper.insert(job);
+        Long jobId = job.getId();
+        boolean enabled = job.getStatus() == STATUS_ENABLED;
+        afterCommit(() -> quartzJobScheduler.schedule(jobId, handler.getCode(), compiled.cron(), request.getParams(), enabled));
+        return jobId;
+    }
+
+    private static @NonNull SysJob createJob(JobSaveRequest request, JobHandlerDescriptor handler, CronComposer.Compiled compiled) {
         SysJob job = new SysJob();
         job.setName(request.getName().trim());
         job.setHandlerCode(handler.getCode());
@@ -79,11 +88,7 @@ public class JobAdminService {
         job.setParams(request.getParams());
         job.setRemark(request.getRemark());
         job.setStatus(Boolean.TRUE.equals(request.getEnabled()) ? STATUS_ENABLED : STATUS_DISABLED);
-        sysJobMapper.insert(job);
-        Long jobId = job.getId();
-        boolean enabled = job.getStatus() == STATUS_ENABLED;
-        afterCommit(() -> quartzJobScheduler.schedule(jobId, handler.getCode(), compiled.cron(), request.getParams(), enabled));
-        return jobId;
+        return job;
     }
 
     @Transactional(rollbackFor = Exception.class)
@@ -146,14 +151,13 @@ public class JobAdminService {
             jobId = Long.valueOf(query.getJobId());
         }
         Page<SysJobLog> page = sysJobLogMapper.selectPage(
-                new Page<>(query.getPage(), query.getSize()),
+                new Page<>(query.getPage(), query.getPageSize()),
                 new LambdaQueryWrapper<SysJobLog>()
                         .eq(jobId != null, SysJobLog::getJobId, jobId)
                         .eq(StringUtils.hasText(query.getHandlerCode()), SysJobLog::getHandlerCode, query.getHandlerCode())
                         .eq(query.getStatus() != null, SysJobLog::getStatus, query.getStatus())
                         .orderByDesc(SysJobLog::getStartTime));
-        List<JobLogResponse> list = page.getRecords().stream().map(this::toLogResponse).toList();
-        return new PageResult<>(list, page.getTotal());
+        return PageResult.build(page, records -> records.stream().map(this::toLogResponse).toList());
     }
 
     public void reconcile() {

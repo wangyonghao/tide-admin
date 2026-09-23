@@ -102,14 +102,14 @@ async function loadTableData() {
 
     const res = await logApi.list({
       page: tablePagination.value.page,
-      size: tablePagination.value.pageSize,
+      pageSize: tablePagination.value.pageSize,
       operatorName: searchForm.value.operatorName || undefined,
       operation: searchForm.value.operation || undefined,
       operatorIp: searchForm.value.operatorIp || undefined,
       createTime,
       sort: ['operateTime,desc'],
     });
-    tableData.value = res.list;
+    tableData.value = res.records;
     tablePagination.value.itemCount = res.total;
   } finally {
     tableLoading.value = false;

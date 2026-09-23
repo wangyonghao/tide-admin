@@ -61,7 +61,7 @@ const loadRoles = async () => {
   try {
     const res = await roleApi.list({
       page: 1,
-      size: 1000,
+      pageSize: 1000,
       sort: 'createTime,desc',
       description: undefined,
     });
@@ -307,7 +307,7 @@ async function loadUserData() {
   try {
     const res = await roleApi.pageMember(selectedRoleId.value as string, {
       page: userPagination.value.page,
-      size: userPagination.value.pageSize,
+      pageSize: userPagination.value.pageSize,
       keyword: userSearchKeyword.value || '',
       sort: [],
     });
@@ -317,7 +317,7 @@ async function loadUserData() {
       userData.value = res;
       userPagination.value.itemCount = res.length;
     } else {
-      userData.value = res.list || [];
+      userData.value = res.records || [];
       userPagination.value.itemCount = res.total || 0;
     }
   } catch (error) {

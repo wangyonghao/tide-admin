@@ -11,16 +11,16 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.admin.system.dto.UserDetail;
-import top.wyhao.admin.system.model.ConfigModel;
-import top.wyhao.admin.system.model.result.ConfigResult;
+import top.wyhao.admin.system.model.vo.UserDetail;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.core.UserContextHolder;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.admin.system.exception.ConfigException;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.core.util.validation.Check;
+import top.wyhao.admin.system.model.dto.ConfigQuery;
+import top.wyhao.admin.system.model.vo.ConfigResult;
 
 /**
  * 系统配置 API
@@ -157,7 +157,7 @@ public class ConfigController {
             log.info("测试邮件发送成功，收件人：{}", userDetail.getEmail());
         } catch (Exception e) {
             log.error("测试邮件发送失败", e);
-            throw new BizException("测试邮件发送失败：" + e.getMessage());
+            throw ConfigException.mailTestFailed(e.getMessage());
         }
 
     }
@@ -239,7 +239,7 @@ public class ConfigController {
     @Operation(summary = "导出")
     @SaCheckPermission("system:config:export")
     @GetMapping("/export")
-    public void export(@Valid ConfigModel.Query query, HttpServletResponse response) {
+    public void export(@Valid ConfigQuery query, HttpServletResponse response) {
         configService.export(query, response);
     }
 }

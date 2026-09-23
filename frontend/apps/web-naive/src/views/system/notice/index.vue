@@ -292,14 +292,14 @@ async function loadTableData() {
 
     const res = await noticeApi.list({
       page: tablePagination.value.page,
-      size: tablePagination.value.pageSize,
+      pageSize: tablePagination.value.pageSize,
       title: searchForm.value.title || undefined,
       type: searchForm.value.type || undefined,
       publishTime,
       status: searchForm.value.status || undefined,
     });
 
-    tableData.value = res.list;
+    tableData.value = res.records;
     tablePagination.value.itemCount = res.total;
   } catch (error) {
     console.error('加载公告列表失败:', error);

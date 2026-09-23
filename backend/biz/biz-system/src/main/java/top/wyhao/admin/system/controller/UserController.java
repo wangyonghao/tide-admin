@@ -14,15 +14,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.dto.UserDetail;
-import top.wyhao.admin.system.dto.UserQuery;
-import top.wyhao.admin.system.dto.UserRequest;
-import top.wyhao.admin.system.dto.UserResult;
-import top.wyhao.admin.system.model.bo.user.UserImportRequest;
+import top.wyhao.admin.system.model.vo.UserDetail;
+import top.wyhao.admin.system.model.dto.UserQuery;
+import top.wyhao.admin.system.model.dto.UserRequest;
+import top.wyhao.admin.system.model.vo.UserResult;
+import top.wyhao.admin.system.model.dto.UserImportRequest;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.starter.core.exception.SystemException;
+import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.IdsRequest;
@@ -146,7 +146,7 @@ public class UserController {
             try {
                 response.getWriter().write(JSONUtil.toJsonStr(Result.fail("DOWNLOAD_FAILED","下载用户导入模板失败")));
             } catch (IOException ex) {
-                throw new SystemException("下载用户导入模板失败：" + e.getMessage(), ex);
+                throw UserException.downloadTemplateFailed(e.getMessage());
             }
         }
     }

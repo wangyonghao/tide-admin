@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.admin.auth.model.CaptchaImageResult;
+import top.wyhao.admin.auth.model.vo.CaptchaImageResult;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsClient;
 import top.wyhao.admin.auth.config.CaptchaProperties;
@@ -24,7 +24,7 @@ import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.captcha.graphic.core.ImageCaptchaService;
 import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.core.util.TemplateUtils;
 import top.wyhao.starter.core.validation.Mobile;
@@ -76,7 +76,7 @@ public class CaptchaController {
                 true
         );
 
-        RedisUtils.set(CAPTCHA_KEY + vo.uuid(), captcha.text(), Duration.ofSeconds(captchaProperties.getExpirationInSeconds()));
+        RedisUtils.set(CAPTCHA_KEY + vo.getUuid(), captcha.text(), Duration.ofSeconds(captchaProperties.getExpirationInSeconds()));
         return vo;
     }
 
@@ -149,7 +149,7 @@ public class CaptchaController {
         String templateId = "";
         boolean isSuccess = smsClient.send(phone, templateId, (LinkedHashMap<String, String>)valueMap);
         if(!isSuccess){
-            throw new BizException("验证码发送失败");
+            throw AuthException.captchaSendFailed();
         }
         // 保存验证码
         String captchaKey = CAPTCHA_KEY + phone;

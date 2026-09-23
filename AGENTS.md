@@ -33,7 +33,7 @@ backend/
 
 ##### 1. 服务模块 (svr-*)
 ```
-backend/svr-admin/    # 主服务模块（打包部署）
+backend/tide-bootstrap/ # 主服务模块（打包部署 / spring-boot:run）
 ├── src/main/
 │   ├── java/top/wyhao/admin/
 │   │   ├── config/           # 配置类
@@ -375,9 +375,10 @@ docs/
 
 #### 后端关键目录
 
-1. **svr-admin/src/main/resources/config/**
+1. **tide-bootstrap/src/main/resources/config/**
    - 存放所有环境的配置文件
    - 开发时主要修改 `application-dev.yml`
+   - 本地可用 `mvn -pl tide-bootstrap -am spring-boot:run` 启动
 
 2. **biz-system/src/main/java/top/wyhao/system/**
    - 系统管理核心业务代码
@@ -419,12 +420,12 @@ docs/
 
 #### 后端模块依赖层次
 ```
-svr-admin (主服务)
-    ↓ 依赖
+tide-bootstrap (主服务)
+ ↓ 依赖
 biz-* (业务模块)
-    ↓ 依赖
+ ↓ 依赖
 biz-base (业务基础)
-    ↓ 依赖
+ ↓ 依赖
 cmn-* (公共模块)
 ```
 
@@ -445,8 +446,8 @@ packages/utils, packages/types (工具和类型)
 
 ##### 后端开发
 - **新增业务功能**: `backend/biz/biz-system/src/main/java/top/wyhao/system/`
-- **修改配置**: `backend/svr-admin/src/main/resources/config/`
-- **数据库脚本**: `backend/svr-admin/src/main/resources/db/changelog/postgresql/`
+- **修改配置**: `backend/tide-bootstrap/src/main/resources/config/`
+- **数据库脚本**: `backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 - **代码生成模板**: `backend/biz/biz-coding/src/main/resources/templates/`
 
 ##### 前端开发
@@ -476,8 +477,9 @@ packages/utils, packages/types (工具和类型)
 ### 快速定位文件
 
 #### 后端
-- **启动类**: `backend/svr-admin/src/main/java/top/wyhao/admin/AdminApplication.java`
-- **配置文件**: `backend/svr-admin/src/main/resources/config/application-dev.yml`
+- **启动类**: `backend/tide-bootstrap/src/main/java/top/wyhao/admin/AdminApplication.java`
+- **配置文件**: `backend/tide-bootstrap/src/main/resources/config/application-dev.yml`
+- **本地启动**: `cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
 - **用户管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/user/`
 - **角色管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/role/`
 - **菜单管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/menu/`
@@ -522,6 +524,12 @@ top.wyhao.system.user/
 ├── constant/         # 常量类
 └── config/           # 配置类
 ```
+
+dto 目录的结构和命名规范：
+
+查询条件：XxxQuery 放在 dto 包
+请求参数：XxxRequest 放在 dto 包
+响应参数：XxxVO 放在 model/result 包
 
 注解使用规范
 
@@ -568,12 +576,22 @@ service层能用方法命名示例:
 }
 ```
 
+##### 分页请求参数
+```json
+{
+  "page": 1,
+  "pageSize": 10
+}
+```
+
 ##### 分页响应格式
 ```json
 {
-    "list": [],
-    "total": 100,
-  }
+  "records": [],
+  "total": 100,
+  "page": 1,
+  "pageSize": 10,
+  "pages": 10
 }
 ```
 
@@ -600,14 +618,117 @@ service层能用方法命名示例:
 
 #### 异常处理规范
 
-##### 自定义异常
-- 业务异常：`BusinessException`
-- 参数异常：`ParamException`
-- 认证异常：`AuthException`
+##### 分层约定
+
+| 类型 | 基类 / 类 | 用途 |
+|------|-----------|------|
+| 业务异常基类 | `top.wyhao.starter.core.exception.BizException` | 所有业务域异常的父类 |
+| 参数校验 | `ValidationUtils` / `Check` | 入参、状态前置校验（可继续使用） |
+| 系统异常 | `SystemException` | 非业务、不可预期的基础设施故障 |
+
+业务代码中**禁止**直接 `throw new BizException(...)` / `BadRequestException(...)` 表达领域错误；应按业务功能使用对应的 `XxxException` 静态工厂方法。
+
+##### 业务异常类规范（一功能一异常）
+
+每个业务功能（User、Role、Dept、Menu、Auth…）维护**一个**异常类，同时作为该域错误码与消息的工厂。
+
+**包位置**
+
+```
+biz-system/
+├── auth/exception/AuthException.java          # 认证域
+└── system/
+    ├── exception/                             # 系统管理各域
+    │   ├── UserException.java
+    │   ├── RoleException.java
+    │   ├── DeptException.java
+    │   ├── MenuException.java
+    │   └── ...
+    └── otp/exception/OtpException.java        # 子域可放在功能包下
+```
+
+其他 `biz-*` 模块同理：`top.wyhao.admin.<module>.exception` 或功能子包下的 `exception`。
+
+**类结构模板**
+
+```java
+package top.wyhao.admin.system.exception;
+
+import cn.hutool.core.util.StrUtil;
+import top.wyhao.starter.core.exception.BizException;
+
+/**
+ * 用户业务异常
+ */
+public class UserException extends BizException {
+
+    public UserException(String message) {
+        super(message);
+    }
+
+    public UserException(String code, String message) {
+        super(code, message);
+    }
+
+    public static UserException of(String message) {
+        return new UserException(message);
+    }
+
+    public static UserException of(String code, String message) {
+        return new UserException(code, message);
+    }
+
+    /** 语义化工厂：错误码 + 默认文案固定在此 */
+    public static UserException notFound() {
+        return of("USER_NOT_FOUND", "用户不存在");
+    }
+
+    public static UserException usernameExists() {
+        return of("USERNAME_EXISTS", "用户名已被占用");
+    }
+
+    public static UserException avatarSizeExceeded(long maxSizeMb) {
+        return of("AVATAR_SIZE_EXCEEDED", StrUtil.format("头像大小不能超过 {} MB", maxSizeMb));
+    }
+}
+```
+
+**命名约定**
+
+- 类名：`{业务}Exception`，如 `UserException`、`AuthException`
+- 工厂方法：动词/状态短语，小驼峰，如 `notFound()`、`nameExist(String)`、`platformNotSupport(String)`
+- 错误码：`大写下划线`，建议带业务前缀，如 `USER_NOT_FOUND`、`ROLE_NOT_ALLOWED_DELETE`
+- 动态文案：用 `StrUtil.format` / `formatted`，参数由工厂方法入参传入
+
+**抛出方式**
+
+```java
+// ✅ 推荐
+throw UserException.notFound();
+throw RoleException.builtinNotAllowedDelete(role.getName());
+throw AuthException.platformNotSupport(source);
+
+// ❌ 禁止（领域错误）
+throw new BizException("USER_NOT_FOUND", "用户不存在");
+throw new BadRequestException("ROLE_NOT_FOUND", "角色不存在");
+```
+
+**职责边界**
+
+- 业务规则失败（不存在、重复、无权限删除、状态不允许）→ `XxxException` 静态方法
+- 简单参数/空值校验 → 可继续用 `Check` / `ValidationUtils`（不必强行包装成领域异常）
+- 不可归类到具体业务域的通用失败 → 优先补齐对应域异常；不要新增零散的 `new BizException`
+
+**现有参考实现**
+
+- `AuthException`：`top.wyhao.admin.auth.exception`
+- `UserException` / `RoleException` / `DeptException` / `MenuException` 等：`top.wyhao.admin.system.exception`
+- `OtpException`：`top.wyhao.admin.system.otp.exception`
 
 ##### 全局异常处理
+
 - 使用 `@RestControllerAdvice` 统一处理异常
-- 返回统一的错误响应格式
+- 业务异常走统一错误响应（`code` / `msg`），由 `BizException` 及其子类承载错误码
 
 #### 日志规范
 

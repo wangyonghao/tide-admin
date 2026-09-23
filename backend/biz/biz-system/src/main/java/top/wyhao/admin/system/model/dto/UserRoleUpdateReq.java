@@ -1,11 +1,10 @@
 
-package top.wyhao.admin.system.model.bo.user;
+package top.wyhao.admin.system.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 
-import java.io.Serial;
 import java.io.Serializable;
 import java.util.List;
 
@@ -17,7 +16,7 @@ import java.util.List;
  */
 @Data
 @Schema(description = "用户角色修改请求参数")
-public class UserRoleUpdateReq implements Serializable {
+public class UserRoleUpdateReq {
     /**
      * 角色 ID 列表
      */

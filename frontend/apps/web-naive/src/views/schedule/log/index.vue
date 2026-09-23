@@ -31,12 +31,12 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
     columnConfig: { resizable: true },
     proxyConfig: {
       autoLoad: false,
-      response: { list: 'list' },
+      response: { list: 'records' },
       ajax: {
         query: async ({ page }, formValues) => {
           return await listJobLog({
             page: page.currentPage,
-            size: page.pageSize,
+            pageSize: page.pageSize,
             ...formValues,
           });
         },

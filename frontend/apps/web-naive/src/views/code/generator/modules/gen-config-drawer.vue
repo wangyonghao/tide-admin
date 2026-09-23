@@ -300,7 +300,7 @@ const [Grid, gridApi] = useVbenVxeGrid({
     },
     proxyConfig: {
       response: {
-        list: 'list',
+        list: 'records',
       },
       autoLoad: true,
       ajax: {

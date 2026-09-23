@@ -2,10 +2,10 @@ package top.wyhao.admin.system.assembler;
 
 import org.mapstruct.Mapper;
 import top.wyhao.admin.system.entity.SysDept;
-import top.wyhao.admin.system.model.DeptModel;
 import top.wyhao.starter.web.convert.MapStructConfig;
 
 import java.util.List;
+import top.wyhao.admin.system.model.vo.DeptResult;
 
 /**
  * 部门对象转换
@@ -13,7 +13,7 @@ import java.util.List;
 @Mapper(config = MapStructConfig.class)
 public interface DeptAssembler {
 
-    DeptModel.Result toResult(SysDept dept);
+    DeptResult toResult(SysDept dept);
 
-    List<DeptModel.Result> toResultList(List<SysDept> depts);
+    List<DeptResult> toResultList(List<SysDept> depts);
 }

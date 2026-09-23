@@ -193,11 +193,11 @@ async function loadUserData() {
   try {
     const res = await userApi.list({
       page: userPagination.value.page,
-      size: userPagination.value.pageSize,
+      pageSize: userPagination.value.pageSize,
       deptId: selectedDeptId.value,
       description: userSearchForm.value.description || undefined,
     });
-    userData.value = res.list;
+    userData.value = res.records;
     userPagination.value.itemCount = res.total;
   } catch (error) {
     console.error('加载用户数据失败:', error);

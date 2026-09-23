@@ -8,9 +8,9 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysConfig;
-import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.starter.web.json.util.JSONUtils;
+import top.wyhao.admin.system.model.vo.ConfigResult;
 
 /**
  * 系统配置 Mapper

@@ -180,13 +180,13 @@ async function loadTableData() {
 
     const res = await dictApi.page({
       page: pagination.value.page,
-      size: pagination.value.pageSize,
+      pageSize: pagination.value.pageSize,
       keyword: keyword || undefined,
       dictType: searchForm.value.dictType,
       status: searchForm.value.enabled,
     });
 
-    tableData.value = res.list;
+    tableData.value = res.records;
     pagination.value.itemCount = res.total;
   } catch (error) {
     console.error('加载字典数据失败:', error);

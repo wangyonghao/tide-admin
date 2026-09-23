@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.dto;
+package top.wyhao.admin.system.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;

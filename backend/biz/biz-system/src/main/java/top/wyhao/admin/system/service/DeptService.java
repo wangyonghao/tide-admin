@@ -3,9 +3,11 @@ package top.wyhao.admin.system.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.admin.system.entity.SysDept;
-import top.wyhao.admin.system.model.DeptModel;
 
 import java.util.List;
+import top.wyhao.admin.system.model.dto.DeptQuery;
+import top.wyhao.admin.system.model.dto.DeptRequest;
+import top.wyhao.admin.system.model.vo.DeptResult;
 
 /**
  * 部门业务接口
@@ -18,7 +20,7 @@ public interface DeptService{
      * @param query     查询条件
      * @return 列表信息
      */
-    List<DeptModel.Result> list(DeptModel.Query query);
+    List<DeptResult> list(DeptQuery query);
 
     /**
      * 查询部门树
@@ -26,7 +28,7 @@ public interface DeptService{
      * @param query     查询条件
      * @return 树列表信息
      */
-    List<DeptModel.Result> tree(DeptModel.Query query);
+    List<DeptResult> tree(DeptQuery query);
 
     /**
      * 查询详情
@@ -34,7 +36,7 @@ public interface DeptService{
      * @param id ID
      * @return 详情信息
      */
-    DeptModel.Result get(Long id);
+    DeptResult get(Long id);
 
     /**
      * 创建
@@ -42,7 +44,7 @@ public interface DeptService{
      * @param req 创建请求参数
      * @return 自增 ID
      */
-    Long create(DeptModel.Request req);
+    Long create(DeptRequest req);
 
     /**
      * 修改
@@ -50,7 +52,7 @@ public interface DeptService{
      * @param req 修改请求参数
      * @param id  ID
      */
-    void update(DeptModel.Request req, Long id);
+    void update(DeptRequest req, Long id);
 
     /**
      * 删除
@@ -65,7 +67,7 @@ public interface DeptService{
      * @param query     查询条件
      * @param response  响应对象
      */
-    void export(DeptModel.Query query, HttpServletResponse response);
+    void export(DeptQuery query, HttpServletResponse response);
 
     /**
      * 查询子部门列表

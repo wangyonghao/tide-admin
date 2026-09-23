@@ -5,7 +5,6 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.dto.DictQuery;
 import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.admin.system.mapper.SysDictMapper;
 import top.wyhao.admin.system.service.DictService;
@@ -17,6 +16,7 @@ import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
+import top.wyhao.admin.system.model.dto.DictQuery;
 
 /**
  * 字典业务实现

@@ -9,12 +9,13 @@ import java.util.List;
 /**
  * 所有分页查询 DTO 的父类。
  * 业务 DTO 继承它，只需要写自己的查询字段。
+ * <p>统一请求字段：{@code page} / {@code pageSize}</p>
  */
 @Data
 public class PageQuery {
 
     @Min(value = 1, message = "页码不能小于 1")
-    private long pageNum = 1;
+    private long page = 1;
 
     @Min(value = 1, message = "每页条数不能小于 1")
     @Max(value = 500, message = "每页条数不能超过 500")

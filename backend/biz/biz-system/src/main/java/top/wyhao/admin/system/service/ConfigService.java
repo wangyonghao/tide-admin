@@ -3,14 +3,15 @@ package top.wyhao.admin.system.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.admin.system.model.ConfigModel;
-import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
+import top.wyhao.admin.system.model.dto.ConfigQuery;
+import top.wyhao.admin.system.model.dto.ConfigRequest;
+import top.wyhao.admin.system.model.vo.ConfigResult;
 
 /**
  * 系统配置业务
@@ -27,7 +28,7 @@ public interface ConfigService {
      * @param pageQuery 分页查询条件
      * @return 分页列表信息
      */
-    PageResult<ConfigResult> page(ConfigModel.Query query, PageQuery pageQuery);
+    PageResult<ConfigResult> page(ConfigQuery query, PageQuery pageQuery);
 
     /**
      * 查询详情
@@ -149,7 +150,7 @@ public interface ConfigService {
      * @param request 创建信息
      * @return ID
      */
-    Long create(ConfigModel.Request request);
+    Long create(ConfigRequest request);
 
     /**
      * 修改
@@ -157,7 +158,7 @@ public interface ConfigService {
      * @param id      ID
      * @param request 修改信息
      */
-    void update(Long id, ConfigModel.Request request);
+    void update(Long id, ConfigRequest request);
 
     /**
      * 根据键更新配置
@@ -165,7 +166,7 @@ public interface ConfigService {
      * @param configKey 配置键
      * @param request   修改信息
      */
-    void updateByKey(String configKey, ConfigModel.Request request);
+    void updateByKey(String configKey, ConfigRequest request);
 
     /**
      * 删除
@@ -180,7 +181,7 @@ public interface ConfigService {
      * @param query     查询条件
      * @param response  响应对象
      */
-    void export(ConfigModel.Query query, HttpServletResponse response);
+    void export(ConfigQuery query, HttpServletResponse response);
 
     String getSmsTemplate(String name);
 }

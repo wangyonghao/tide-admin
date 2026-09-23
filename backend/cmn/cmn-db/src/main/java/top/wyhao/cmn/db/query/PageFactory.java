@@ -62,7 +62,7 @@ public final class PageFactory {
 
     private static <R> Page<R> create(PageParam pageParam, SortableQuery query,
                                       Class<?> metaEntity, String alias, List<Sort> defaultOrders) {
-        Page<R> page = new Page<>(pageParam.getPageNum(), pageParam.getPageSize(), pageParam.isSearchCount());
+        Page<R> page = new Page<>(pageParam.getPage(), pageParam.getPageSize(), pageParam.isSearchCount());
 
         List<Sort> sorts = query.sorts();
         if (sorts.isEmpty()) {

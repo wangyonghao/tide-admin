@@ -8,11 +8,11 @@ import org.dromara.sms4j.api.entity.SmsResponse;
 import org.dromara.sms4j.api.proxy.CoreMethodProcessor;
 import org.springframework.stereotype.Component;
 import top.wyhao.starter.core.enums.ResultStatusEnum;
-import top.wyhao.admin.system.model.SmsLogModel;
 import top.wyhao.admin.system.service.SmsService;
 
 import java.util.LinkedHashMap;
 import java.util.List;
+import top.wyhao.admin.system.model.dto.SmsLogRequest;
 
 /**
  * 短信日志处理器
@@ -30,7 +30,7 @@ public class SmsLogProcessor implements CoreMethodProcessor {
     @Override
     public Object postProcessor(SmsResponse result, Object[] param) {
         if (NumberUtil.isNumber(result.getConfigId())) {
-            SmsLogModel.Request req = new SmsLogModel.Request(
+            SmsLogRequest req = new SmsLogRequest(
                     Long.parseLong(result.getConfigId()),
                     param[0].toString(),
                     JSONUtil.toJsonStr(param[1]),

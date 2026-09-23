@@ -67,9 +67,9 @@ const fetchLoginDevices = async () => {
       username: userStore.user?.username,
       loginStatus: 'SUCCESS',
       page: 1,
-      size: 10,
+      pageSize: 10,
     });
-    loginDevices.value = res.list || [];
+    loginDevices.value = res.records || [];
   } catch (error) {
     console.error('获取登录设备失败:', error);
   } finally {

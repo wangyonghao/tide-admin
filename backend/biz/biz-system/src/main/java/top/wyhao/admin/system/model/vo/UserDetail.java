@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.dto;
+package top.wyhao.admin.system.model.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;

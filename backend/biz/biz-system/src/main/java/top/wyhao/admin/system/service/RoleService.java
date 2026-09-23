@@ -3,15 +3,19 @@ package top.wyhao.admin.system.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
-import top.wyhao.admin.system.model.RoleModel;
+import top.wyhao.admin.system.model.dto.RolePermissionUpdateRequest;
 import top.wyhao.admin.system.entity.SysRole;
 import top.wyhao.admin.system.model.result.MenuVO;
-import top.wyhao.admin.system.model.RoleUserModel;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
+import top.wyhao.admin.system.model.vo.RoleDetailResult;
+import top.wyhao.admin.system.model.dto.RoleMemberQuery;
+import top.wyhao.admin.system.model.vo.RoleMemberResult;
+import top.wyhao.admin.system.model.dto.RoleQuery;
+import top.wyhao.admin.system.model.dto.RoleRequest;
+import top.wyhao.admin.system.model.vo.RoleResult;
 
 /**
  * 角色业务接口
@@ -28,7 +32,7 @@ public interface RoleService {
      * @param pageQuery 分页查询条件
      * @return 分页列表信息
      */
-    PageResult<RoleModel.Result> page(@Valid RoleModel.Query query, @Valid PageQuery pageQuery);
+    PageResult<RoleResult> page(@Valid RoleQuery query, @Valid PageQuery pageQuery);
 
     /**
      * 查询列表
@@ -36,7 +40,7 @@ public interface RoleService {
      * @param query     查询条件
      * @return 列表信息
      */
-    List<RoleModel.Result> list(@Valid RoleModel.Query query);
+    List<RoleResult> list(@Valid RoleQuery query);
 
     /**
      * 查询详情
@@ -44,7 +48,7 @@ public interface RoleService {
      * @param id ID
      * @return 详情信息
      */
-    RoleModel.Detail detail(Long id);
+    RoleDetailResult detail(Long id);
 
     /**
      * 创建
@@ -52,7 +56,7 @@ public interface RoleService {
      * @param req 创建请求参数
      * @return 自增 ID
      */
-    Long create(@Valid RoleModel.Request req);
+    Long create(@Valid RoleRequest req);
 
     /**
      * 修改
@@ -60,7 +64,7 @@ public interface RoleService {
      * @param req 修改请求参数
      * @param id  ID
      */
-    void update(@Valid RoleModel.Request req, Long id);
+    void update(@Valid RoleRequest req, Long id);
 
     /**
      * 删除
@@ -75,7 +79,7 @@ public interface RoleService {
      * @param query     查询条件
      * @param response  响应对象
      */
-    void export(@Valid RoleModel.Query query, HttpServletResponse response);
+    void export(@Valid RoleQuery query, HttpServletResponse response);
 
     /**
      * 修改角色权限
@@ -152,7 +156,7 @@ public interface RoleService {
      * @param roleId 角色 ID
      * @return 用户列表
      */
-    List<RoleUserModel> pageMember(Long roleId, RoleUserModel.Query query, PageQuery pageQuery);
+    List<RoleMemberResult> pageMember(Long roleId, RoleMemberQuery query, PageQuery pageQuery);
 
 
     void deleteMember(Long roleId, List<Long> ids);

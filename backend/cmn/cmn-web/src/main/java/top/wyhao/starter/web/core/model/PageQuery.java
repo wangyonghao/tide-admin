@@ -1,4 +1,3 @@
-
 package top.wyhao.starter.web.core.model;
 
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,11 +6,13 @@ import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 /**
- * 所有分页查询 DTO 的父类
+ * 分页查询参数（请求）
+ * <p>统一字段：{@code page} / {@code pageSize}</p>
  */
 @Data
 @Schema(description = "分页查询条件")
 public class PageQuery {
+
     /**
      * 页码
      */
@@ -25,7 +26,7 @@ public class PageQuery {
     @Schema(description = "每页条数", example = "10")
     @Min(value = 1, message = "每页条数不能小于 {value}")
     @Max(value = 1000, message = "每页条数不能超过 {value}")
-    private Integer size = 10;
+    private Integer pageSize = 10;
 
     /**
      * 排序字段，传实体的【属性名】，支持多字段（逗号分隔，按先后顺序生效）：
@@ -39,7 +40,6 @@ public class PageQuery {
      * 未单独指定方向的项，方向取 {@link #orderDir}。
      */
     private String orderBy;
-
 
     /** 默认排序方向：asc / desc，仅对未单独指定方向的排序项生效 */
     private String orderDir = "desc";

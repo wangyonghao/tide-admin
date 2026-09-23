@@ -4,10 +4,10 @@ package top.wyhao.admin.auth.handler;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.EmailLoginRequest;
-import top.wyhao.admin.auth.model.LoginRequest;
-import top.wyhao.admin.auth.model.LoginResult;
+import top.wyhao.admin.auth.model.dto.EmailLoginRequest;
+import top.wyhao.admin.auth.model.dto.LoginRequest;
 import top.wyhao.admin.auth.model.enums.GrantType;
+import top.wyhao.admin.auth.model.vo.LoginResult;
 import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.entity.SysUser;
 import top.wyhao.admin.system.service.UserService;
@@ -34,14 +34,14 @@ public class EmailLoginHandler implements LoginHandler {
 
     public LoginResult login(LoginRequest request) {
         EmailLoginRequest req = (EmailLoginRequest)request;
-        String email = req.email();
+        String email = req.getEmail();
         String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + email;
         String captcha = RedisUtils.get(captchaKey);
         ValidationUtils.throwIfBlank(captcha, "验证码已失效");
-        ValidationUtils.throwIfNotEqualIgnoreCase(req.captcha(), captcha, "验证码不正确");
+        ValidationUtils.throwIfNotEqualIgnoreCase(req.getCaptcha(), captcha, "验证码不正确");
         RedisUtils.delete(captchaKey);
         // 验证邮箱
-        SysUser user = userService.getByEmail(req.email());
+        SysUser user = userService.getByEmail(req.getEmail());
         ValidationUtils.throwIfNull(user, "此邮箱未绑定本系统账号");
         // 检查用户状态
         LoginHandlerHelper.checkUserStatus(user);

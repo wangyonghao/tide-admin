@@ -8,12 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.SmsLogModel;
 import top.wyhao.admin.system.service.SmsService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
+import top.wyhao.admin.system.model.dto.SmsLogQuery;
+import top.wyhao.admin.system.model.vo.SmsLogResult;
 
 /**
  * 短信日志管理 API
@@ -36,7 +37,7 @@ public class SmsLogController {
      */
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @GetMapping("/system/sms/log")
-    public PageResult<SmsLogModel.Result> page(@Valid SmsLogModel.SmsLogQuery query, @Valid PageQuery pageQuery) {
+    public PageResult<SmsLogResult> page(@Valid SmsLogQuery query, @Valid PageQuery pageQuery) {
         return smsService.page(query, pageQuery);
     }
 
@@ -48,7 +49,7 @@ public class SmsLogController {
      */
     @Operation(summary = "查询列表", description = "查询列表")
     @GetMapping("/system/sms/log/list")
-    public List<SmsLogModel.Result> list(@Valid SmsLogModel.SmsLogQuery query) {
+    public List<SmsLogResult> list(@Valid SmsLogQuery query) {
         return smsService.list(query);
     }
 
@@ -61,7 +62,7 @@ public class SmsLogController {
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/system/sms/log/{id}")
-    public SmsLogModel.Result get(@PathVariable Long id) {
+    public SmsLogResult get(@PathVariable Long id) {
         return smsService.get(id);
     }
 
@@ -73,7 +74,7 @@ public class SmsLogController {
      */
     @Operation(summary = "导出数据", description = "导出数据")
     @GetMapping("/system/sms/log/export")
-    public void export(@Valid SmsLogModel.SmsLogQuery query, HttpServletResponse response) {
+    public void export(@Valid SmsLogQuery query, HttpServletResponse response) {
         smsService.export(query, response);
     }
 }

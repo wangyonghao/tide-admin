@@ -12,10 +12,9 @@ import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.assembler.OperationLogAssembler;
 import top.wyhao.admin.system.entity.SysOperationLog;
 import top.wyhao.admin.system.mapper.SysOperationLogMapper;
-import top.wyhao.admin.system.model.OperationLogModel;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.admin.system.exception.OperationLogException;
 import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -23,6 +22,10 @@ import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.log.OperationLog;
 
 import java.util.List;
+import top.wyhao.admin.system.model.vo.OperationLogDetailResult;
+import top.wyhao.admin.system.model.vo.OperationLogExcelResult;
+import top.wyhao.admin.system.model.dto.OperationLogQuery;
+import top.wyhao.admin.system.model.vo.OperationLogResult;
 
 /**
  * 操作日志服务
@@ -50,23 +53,23 @@ public class OperationLogServiceImpl implements OperationLogService {
 
 
     @Override
-    public PageResult<OperationLogModel.Result> page(OperationLogModel.LogQuery query, PageQuery pageQuery) {
-        IPage<SysOperationLog> page = operationLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()),
+    public PageResult<OperationLogResult> page(OperationLogQuery query, PageQuery pageQuery) {
+        IPage<SysOperationLog> page = operationLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getPageSize()),
                 QueryWrapperBuilder.build(query,SysOperationLog.class));
         return PageResult.build(page, operationLogAssembler::toResultList);
     }
 
     @Override
-    public OperationLogModel.Detail detail(Long id) {
+    public OperationLogDetailResult detail(Long id) {
         SysOperationLog sysOperationLog = this.require(id);
         Check.throwIfNotExists(sysOperationLog, "LogDO", "ID", id);
         return operationLogAssembler.toDetail(sysOperationLog);
     }
 
     @Override
-    public void export(OperationLogModel.LogQuery query, HttpServletResponse response) {
-        List<OperationLogModel.Excel> list = operationLogAssembler.toExcelList(this.list(query));
-        ExcelUtils.export(list, "导出操作日志数据", OperationLogModel.Excel.class, response);
+    public void export(OperationLogQuery query, HttpServletResponse response) {
+        List<OperationLogExcelResult> list = operationLogAssembler.toExcelList(this.list(query));
+        ExcelUtils.export(list, "导出操作日志数据", OperationLogExcelResult.class, response);
     }
 
     /**
@@ -75,14 +78,14 @@ public class OperationLogServiceImpl implements OperationLogService {
      * @param query 查询条件
      * @return 列表信息
      */
-    private List<OperationLogModel> list(OperationLogModel.LogQuery query) {
+    private List<OperationLogExcelResult> list(OperationLogQuery query) {
         return operationLogMapper.selectLogList(QueryWrapperBuilder.build(query, SysOperationLog.class));
     }
 
     private SysOperationLog require(Long id) {
         SysOperationLog operationLog = operationLogMapper.selectById(id);
         if (operationLog == null) {
-            throw new BizException("OPERATIONLOG_NOT_FOUND", "操作日志不存在");
+            throw OperationLogException.notFound();
         }
         return operationLog;
     }

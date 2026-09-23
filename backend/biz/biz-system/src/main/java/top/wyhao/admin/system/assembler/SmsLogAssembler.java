@@ -2,10 +2,11 @@ package top.wyhao.admin.system.assembler;
 
 import org.mapstruct.Mapper;
 import top.wyhao.admin.system.entity.SysSmsLog;
-import top.wyhao.admin.system.model.SmsLogModel;
 import top.wyhao.starter.web.convert.MapStructConfig;
 
 import java.util.List;
+import top.wyhao.admin.system.model.dto.SmsLogRequest;
+import top.wyhao.admin.system.model.vo.SmsLogResult;
 
 /**
  * 短信日志对象转换
@@ -13,9 +14,9 @@ import java.util.List;
 @Mapper(config = MapStructConfig.class)
 public interface SmsLogAssembler {
 
-    SmsLogModel.Result toResult(SysSmsLog log);
+    SmsLogResult toResult(SysSmsLog log);
 
-    List<SmsLogModel.Result> toResultList(List<SysSmsLog> logs);
+    List<SmsLogResult> toResultList(List<SysSmsLog> logs);
 
-    SysSmsLog toEntity(SmsLogModel.Request request);
+    SysSmsLog toEntity(SmsLogRequest request);
 }

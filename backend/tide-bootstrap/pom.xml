@@ -23,6 +23,8 @@
         <config-path>config/</config-path>
         <!-- 依赖 jar 输出目录 -->
         <lib-path>lib/</lib-path>
+        <!-- 允许本模块执行 spring-boot:run -->
+        <spring-boot.run.skip>false</spring-boot.run.skip>
     </properties>
 
     <dependencies>
@@ -87,6 +89,18 @@
         <!-- 设置构建的 jar 包名 -->
         <finalName>${project.parent.name}</finalName>
         <plugins>
+            <!-- 本地开发：mvn -pl tide-bootstrap -am spring-boot:run -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>top.wyhao.admin.AdminApplication</mainClass>
+                    <!-- 默认激活 dev；可用 -Dspring-boot.run.profiles=prod 覆盖 -->
+                    <profiles>
+                        <profile>dev</profile>
+                    </profiles>
+                </configuration>
+            </plugin>
             <!-- Maven 打包插件 -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>

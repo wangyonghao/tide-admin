@@ -101,7 +101,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .thenComparing(GenConfig::getCreateTime, Comparator.nullsLast(Comparator.naturalOrder())))
             .toList();
         // 分页
-        return PageResult.build(pageQuery.getPage(), pageQuery.getSize(), list);
+        return PageResult.build(pageQuery.getPage(), pageQuery.getPageSize(), list);
     }
 
     @Override

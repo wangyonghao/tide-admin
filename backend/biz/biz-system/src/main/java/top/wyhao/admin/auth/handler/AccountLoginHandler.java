@@ -11,10 +11,10 @@ import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
 import top.wyhao.admin.auth.exception.AuthException;
-import top.wyhao.admin.auth.model.AccountLoginRequest;
-import top.wyhao.admin.auth.model.LoginRequest;
-import top.wyhao.admin.auth.model.LoginResult;
+import top.wyhao.admin.auth.model.dto.AccountLoginRequest;
+import top.wyhao.admin.auth.model.dto.LoginRequest;
 import top.wyhao.admin.auth.model.enums.GrantType;
+import top.wyhao.admin.auth.model.vo.LoginResult;
 import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.entity.SysUser;
 import top.wyhao.admin.system.model.result.config.LoginConfigVO;
@@ -23,6 +23,7 @@ import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.constant.RegexConstants;
+import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.RsaUtils;
@@ -59,24 +60,24 @@ public class AccountLoginHandler implements LoginHandler {
     public LoginResult login(LoginRequest request) {
         AccountLoginRequest req = (AccountLoginRequest) request;
         // 解密密码
-        String password = decryptPassword(req.password());
+        String password = decryptPassword(req.getPassword());
         String ip = ServletUtils.getRequestIp();
         HttpServletRequest httpServletRequest = ServletUtils.getRequest();
         String userAgent = httpServletRequest != null ? httpServletRequest.getHeader("User-Agent") : null;
 
-        String retryKey = buildRetryKey(req.username(), ip);
+        String retryKey = buildRetryKey(req.getUsername(), ip);
 
         try {
             // 1. 校验图片验证码
             if (needCaptcha(retryKey)) {
-                validateCaptcha(req.uuid(), req.captcha());
+                validateCaptcha(req.getUuid(), req.getCaptcha());
             }
 
             // 2. 重试次数检查
             checkRetryLimit(retryKey);
 
             // 3. 查询用户
-            SysUser user = loadUser(req.username(), retryKey, ip, userAgent);
+            SysUser user = loadUser(req.getUsername(), retryKey, ip, userAgent);
 
             // 4. 校验密码
             validatePassword(user, password, retryKey, ip, userAgent);
@@ -102,12 +103,12 @@ public class AccountLoginHandler implements LoginHandler {
         } catch (BizException e) {
             // 如果是业务异常且还没记录日志，记录失败日志
             if (!"USERNAME_PASSWORD_ERROR".equals(e.getCode())) {
-                LoginHandlerHelper.loginFail(req.username(), ip, userAgent, e.getMessage());
+                LoginHandlerHelper.loginFail(req.getUsername(), ip, userAgent, e.getMessage());
             }
             throw e;
         } catch (Exception e) {
             // 其他异常也记录失败日志
-            LoginHandlerHelper.loginFail(req.username(), ip, userAgent, "系统异常: " + e.getMessage());
+            LoginHandlerHelper.loginFail(req.getUsername(), ip, userAgent, "系统异常: " + e.getMessage());
             throw e;
         }
     }
@@ -192,14 +193,14 @@ public class AccountLoginHandler implements LoginHandler {
             return;
         }
         if (StrUtil.isBlank(captchaValue)) {
-            throw new BizException("CAPTCHA_IS_REQUIRED", "验证码不能为空");
+            throw AuthException.captchaRequired();
         }
         if (StrUtil.isBlank(captchaUUID)) {
-            throw new BizException("CAPTCHA_INVALID", "验证码无效");
+            throw AuthException.captchaInvalid();
         }
         String cachedCaptcha = RedisUtils.getAndDelete(CAPTCHA_KEY + captchaUUID);
         if (StrUtil.isBlank(cachedCaptcha)) {
-            throw new BizException("CAPTCHA_EXPIRED", "验证码无效");
+            throw AuthException.captchaExpired();
         }
     }
 
@@ -234,7 +235,7 @@ public class AccountLoginHandler implements LoginHandler {
         int maxRetry = loginConfig.getMaxRetry();
         if (retryCount >= maxRetry) {
             long ttl = RedisUtils.getTimeToLive(retryKey);
-            throw new BizException("ACCOUNT_LOCKED", "账号已锁定, %s 分钟后可重试".formatted(ttl / 60));
+            throw AuthException.accountLocked(ttl / 60);
         }
     }
 

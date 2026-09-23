@@ -2,13 +2,13 @@
 package top.wyhao.admin.system.service;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import top.wyhao.admin.system.dto.DictQuery;
 import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.cmn.db.model.BaseService;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
+import top.wyhao.admin.system.model.dto.DictQuery;
 
 /**
  * 字典业务接口

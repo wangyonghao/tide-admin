@@ -9,7 +9,7 @@ import java.util.List;
  *
  * <p>之所以要把排序从 {@link PageQuery} 里独立出来，是因为条件+排序是可以脱离分页复用的：
  * 分页查询、导出、下拉选项加载、批量处理都需要同一套「筛选 + 排序」逻辑，
- * 但只有分页查询需要 pageNum/pageSize。如果条件 DTO 直接继承 PageQuery，
+ * 但只有分页查询需要 page/pageSize。如果条件 DTO 直接继承 PageQuery，
  * 导出方法的入参就会被迫背上两个业务上无意义的分页字段。</p>
  *
  * <p>用法：业务查询 DTO（如 UserQuery）继承这个类并加 {@code @Query} 注解字段；

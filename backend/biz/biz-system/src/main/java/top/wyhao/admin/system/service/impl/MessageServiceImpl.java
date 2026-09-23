@@ -14,7 +14,6 @@ import top.wyhao.admin.system.mapper.SysMessageLogMapper;
 import top.wyhao.admin.system.mapper.SysMessageMapper;
 import top.wyhao.admin.system.model.enums.MessageType;
 import top.wyhao.admin.system.model.enums.NoticeScopes;
-import top.wyhao.admin.system.model.MessageModel;
 import top.wyhao.admin.system.service.MessageService;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.messaging.websocket.util.WebSocketUtils;
@@ -24,6 +23,12 @@ import top.wyhao.starter.web.core.model.PageResult;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import top.wyhao.admin.system.model.vo.MessageDetailResult;
+import top.wyhao.admin.system.model.dto.MessageQuery;
+import top.wyhao.admin.system.model.dto.MessageRequest;
+import top.wyhao.admin.system.model.vo.MessageResult;
+import top.wyhao.admin.system.model.vo.MessageUnreadCountResult;
+import top.wyhao.admin.system.model.vo.MessageUnreadResult;
 
 /**
  * 消息业务实现
@@ -40,14 +45,14 @@ public class MessageServiceImpl implements MessageService {
     private final SysMessageLogMapper messageLogMapper;
 
     @Override
-    public PageResult<MessageModel> page(MessageModel.MessageQuery query, PageQuery pageQuery) {
-        IPage<MessageModel> page = baseMapper.selectMessagePage(new Page<>(pageQuery.getPage(), pageQuery
-            .getSize()), query);
+    public PageResult<MessageDetailResult> page(MessageQuery query, PageQuery pageQuery) {
+        IPage<MessageDetailResult> page = baseMapper.selectMessagePage(new Page<>(pageQuery.getPage(), pageQuery
+            .getPageSize()), query);
         return PageResult.build(page);
     }
 
     @Override
-    public MessageModel.Result get(Long id) {
+    public MessageResult get(Long id) {
         return baseMapper.selectMessageById(id);
     }
 
@@ -74,30 +79,30 @@ public class MessageServiceImpl implements MessageService {
     }
 
     @Override
-    public MessageModel.UnreadResult countUnreadByUserId(Long userId, Boolean isDetail) {
+    public MessageUnreadResult countUnreadByUserId(Long userId, Boolean isDetail) {
         Long total = 0L;
-        List<MessageModel.UnreadCount> detailList = null;
+        List<MessageUnreadCountResult> detailList = null;
         if (Boolean.TRUE.equals(isDetail)) {
             detailList = new ArrayList<>();
             for (MessageType messageType : MessageType.values()) {
                 Long count = baseMapper.selectUnreadCountByUserIdAndType(userId, messageType.getValue());
-                detailList.add(new MessageModel.UnreadCount(messageType, count));
+                detailList.add(new MessageUnreadCountResult(messageType, count));
                 total += count;
             }
         } else {
             total = baseMapper.selectUnreadCountByUserIdAndType(userId, null);
         }
-        return new MessageModel.UnreadResult(total, detailList);
+        return new MessageUnreadResult(total, detailList);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void add(MessageModel.Request req, List<String> userIdList) {
+    public void add(MessageRequest req, List<String> userIdList) {
         SysMessage message = new SysMessage();
-        message.setTitle(req.title());
-        message.setContent(req.content());
-        message.setType(req.type());
-        message.setPath(req.path());
+        message.setTitle(req.getTitle());
+        message.setContent(req.getContent());
+        message.setType(req.getType());
+        message.setPath(req.getPath());
         message.setScope(CollUtil.isEmpty(userIdList) ? NoticeScopes.ALL : NoticeScopes.USER);
         message.setUsers(userIdList);
         baseMapper.insert(message);

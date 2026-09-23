@@ -30,12 +30,22 @@ interface ApiResult<T> {
 
 /** 分页响应数据格式 */
 interface PageResult<T> {
-  list: T;
+  /** 列表数据 */
+  records: T;
+  /** 总记录数 */
   total: number;
+  /** 页码 */
+  page: number;
+  /** 每页条数 */
+  pageSize: number;
+  /** 总页数 */
+  pages: number;
 }
 
 /** 分页请求数据格式 */
 interface PageQuery {
+  /** 页码 */
   page: number;
-  size: number;
+  /** 每页条数 */
+  pageSize: number;
 }

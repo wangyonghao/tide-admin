@@ -2,8 +2,8 @@ package top.wyhao.admin.system.assembler;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import top.wyhao.admin.system.dto.UserDetail;
-import top.wyhao.admin.system.dto.UserRequest;
+import top.wyhao.admin.system.model.vo.UserDetail;
+import top.wyhao.admin.system.model.dto.UserRequest;
 import top.wyhao.admin.system.entity.SysUser;
 import top.wyhao.starter.core.model.LoginUser;
 import top.wyhao.starter.web.convert.BaseEnumConverters;

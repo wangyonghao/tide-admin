@@ -26,12 +26,12 @@
         LEFT JOIN sys_dept AS t2 ON t2.id = t1.dept_id
     </sql>
 
-    <select id="selectUserPage" resultType="top.wyhao.admin.system.dto.UserResult">
+    <select id="selectUserPage" resultType="top.wyhao.admin.system.model.vo.UserResult">
         <include refid="selectUser" />
         ${ew.customSqlSegment}
     </select>
 
-    <select id="selectUserList" resultType="top.wyhao.admin.system.dto.UserDetail">
+    <select id="selectUserList" resultType="top.wyhao.admin.system.model.vo.UserDetail">
         <include refid="selectUser" />
         ${ew.customSqlSegment}
     </select>

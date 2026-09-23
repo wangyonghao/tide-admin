@@ -99,13 +99,13 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
     },
     proxyConfig: {
       response: {
-        list: 'list',
+        list: 'records',
       },
       ajax: {
         query: async ({ page }, formValues) => {
           const res = await userMessageApi.list({
             page: page.currentPage,
-            size: page.pageSize,
+            pageSize: page.pageSize,
             ...formValues,
           });
           return res;

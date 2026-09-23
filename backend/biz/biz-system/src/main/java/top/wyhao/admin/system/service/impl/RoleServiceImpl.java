@@ -24,9 +24,7 @@ import top.wyhao.admin.system.mapper.SysMenuMapper;
 import top.wyhao.admin.system.mapper.SysRoleMapper;
 import top.wyhao.admin.system.mapper.SysUserMapper;
 import top.wyhao.admin.system.mapper.SysUserRoleMapper;
-import top.wyhao.admin.system.model.RoleModel;
-import top.wyhao.admin.system.model.RoleUserModel;
-import top.wyhao.admin.system.model.bo.RolePermissionUpdateRequest;
+import top.wyhao.admin.system.model.dto.RolePermissionUpdateRequest;
 import top.wyhao.admin.system.model.result.MenuVO;
 import top.wyhao.admin.system.service.RoleDeptService;
 import top.wyhao.admin.system.service.RoleMenuService;
@@ -35,8 +33,7 @@ import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.enums.DataScopeEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
-import top.wyhao.starter.core.exception.BadRequestException;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.admin.system.exception.RoleException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -47,6 +44,12 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
+import top.wyhao.admin.system.model.vo.RoleDetailResult;
+import top.wyhao.admin.system.model.dto.RoleMemberQuery;
+import top.wyhao.admin.system.model.vo.RoleMemberResult;
+import top.wyhao.admin.system.model.dto.RoleQuery;
+import top.wyhao.admin.system.model.dto.RoleRequest;
+import top.wyhao.admin.system.model.vo.RoleResult;
 
 /**
  * 角色 Service
@@ -68,14 +71,14 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     private final MenuAssembler menuAssembler;
 
     @Override
-    public PageResult<RoleModel.Result> page(RoleModel.Query query, PageQuery pageQuery) {
-        IPage<SysRole> page = roleMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getSize()), QueryWrapperBuilder.build(query,SysRole.class));
+    public PageResult<RoleResult> page(RoleQuery query, PageQuery pageQuery) {
+        IPage<SysRole> page = roleMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getPageSize()), QueryWrapperBuilder.build(query,SysRole.class));
 
         return PageResult.build(page, this::convertToRoleRespList);
     }
 
     @Override
-    public List<RoleModel.Result> list(RoleModel.Query query) {
+    public List<RoleResult> list(RoleQuery query) {
         List<SysRole> entities = roleMapper.selectList(QueryWrapperBuilder.build(query, SysRole.class));
         return entities.stream()
                 .map(this::convertToRoleResp)
@@ -83,85 +86,65 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     }
 
     @Override
-    public RoleModel.Detail detail(Long id) {
+    public RoleDetailResult detail(Long id) {
         SysRole entity = roleMapper.selectById(id);
         if (entity == null) {
-            throw new BizException("ROLE_NOT_FOUND", "角色不存在");
+            throw RoleException.notFound();
         }
-        RoleModel.Detail detail = convertToRoleDetailResp(entity);
-        List<Long> menuIds = roleMenuService.listMenuIdByRoleIds(List.of(detail.id()));
-        List<Long> deptIds = roleDeptService.listDeptIdByRoleId(detail.id());
-        // 由于 Result 是 record，需要创建新实例来设置 menuIds 和 deptIds
-        return new RoleModel.Detail(
-                detail.id(),
-                detail.createUser(),
-                detail.createUserString(),
-                detail.createTime(),
-                detail.disabled(),
-                detail.updateUser(),
-                detail.updateUserString(),
-                detail.updateTime(),
-                detail.name(),
-                detail.code(),
-                detail.dataScope(),
-                detail.sort(),
-                detail.isBuiltin(),
-                detail.menuCheckStrictly(),
-                detail.deptCheckStrictly(),
-                detail.description(),
-                menuIds,
-                deptIds
-        );
+        RoleDetailResult detail = convertToRoleDetailResp(entity);
+        detail.setMenuIds(roleMenuService.listMenuIdByRoleIds(List.of(detail.getId())));
+        detail.setDeptIds(roleDeptService.listDeptIdByRoleId(detail.getId()));
+        return detail;
     }
 
     @Override
-    public Long create(RoleModel.Request req) {
-        this.checkNameExists(req.name(), null);
-        String code = req.code();
+    public Long create(RoleRequest req) {
+        this.checkNameExists(req.getName(), null);
+        String code = req.getCode();
         // 防止租户添加超级管理员
-        Check.throwIfEqual(RoleCodeEnum.SUPER_ADMIN.getCode(), req.code(), "编码 [{}] 禁止使用", code);
+        Check.throwIfEqual(RoleCodeEnum.SUPER_ADMIN.getCode(), req.getCode(), "编码 [{}] 禁止使用", code);
         // 新增信息
         SysRole entity = new SysRole();
         updateEntityFromReq(entity, req);
         int result = roleMapper.insert(entity);
         if (result <= 0) {
-            throw new BadRequestException("CREATE_FAILED", "创建失败");
+            throw RoleException.createFailed();
         }
         // 保存角色和部门关联
-        roleDeptService.add(req.deptIds(), entity.getId());
+        roleDeptService.add(req.getDeptIds(), entity.getId());
         return entity.getId();
     }
 
     @Override
-    public void update(RoleModel.Request req, Long id) {
-        this.checkNameExists(req.name(), id);
+    public void update(RoleRequest req, Long id) {
+        this.checkNameExists(req.getName(), id);
         SysRole oldRole = roleMapper.selectById(id);
-        Check.throwIfNotEqual(req.code(), oldRole.getCode(), "角色编码不允许修改", oldRole.getName());
+        Check.throwIfNotEqual(req.getCode(), oldRole.getCode(), "角色编码不允许修改", oldRole.getName());
         DataScopeEnum oldDataScope = oldRole.getDataScope();
         if (Boolean.TRUE.equals(oldRole.getIsBuiltin())) {
-            Check.throwIfNotEqual(req.dataScope(), oldDataScope, "[{}] 是系统内置角色，不允许修改角色数据权限", oldRole.getName());
+            Check.throwIfNotEqual(req.getDataScope(), oldDataScope, "[{}] 是系统内置角色，不允许修改角色数据权限", oldRole.getName());
         }
         // 更新信息
         SysRole entity = roleMapper.selectById(id);
         updateEntityFromReq(entity, req);
         int result = roleMapper.updateById(entity);
         if (result <= 0) {
-            throw new BadRequestException("UPDATE_FAILED", "更新失败");
+            throw RoleException.updateFailed();
         }
-        if (RoleCodeEnum.isSuperRoleCode(req.code())) {
+        if (RoleCodeEnum.isSuperRoleCode(req.getCode())) {
             return;
         }
         // 保存角色和部门关联
-        boolean isSaveDeptSuccess = roleDeptService.add(req.deptIds(), id);
+        boolean isSaveDeptSuccess = roleDeptService.add(req.getDeptIds(), id);
         // 如果数据权限有变更，则更新在线用户权限信息
-        if (isSaveDeptSuccess || ObjectUtil.notEqual(req.dataScope(), oldDataScope)) {
+        if (isSaveDeptSuccess || ObjectUtil.notEqual(req.getDataScope(), oldDataScope)) {
             this.updateUserContext(id);
         }
     }
 
     private void checkNameExists(String name, Long id) {
         if (menuMapper.isNameExists(name, id)) {
-            throw new BadRequestException("ROLENAME_ALREADY_EXISTS", "角色名称 [" + name + "] 已存在");
+            throw RoleException.nameAlreadyExists(name);
         }
     }
 
@@ -169,13 +152,13 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     public void delete(Long id) {
         SysRole role = roleMapper.selectById(id);
         if (role == null) {
-            throw new BizException("ROLE_NOT_FOUND", "角色不存在");
+            throw RoleException.notFound();
         }
         if (role.getIsBuiltin()) {
-            throw new BizException("ROLE_NOT_ALLOWED_DELETE", StrUtil.format("所选角色 [{}] 是系统内置角色，不允许删除", role.getName()));
+            throw RoleException.builtinNotAllowedDelete(role.getName());
         }
         if (this.hasMember(id)) {
-            throw new BizException("ROLE_NOT_ALLOWED_DELETE", "所选角色存在用户关联，请解除关联后重试");
+            throw RoleException.hasUserRelation();
         }
 
         // 删除角色和菜单关联
@@ -188,11 +171,11 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
 
 
     @Override
-    public void export(RoleModel.Query query, HttpServletResponse response) {
+    public void export(RoleQuery query, HttpServletResponse response) {
         // 实现导出逻辑
-        List<RoleModel.Result> list = list(query);
+        List<RoleResult> list = list(query);
         // 使用Excel工具导出数据到response
-        ExcelUtils.export(list, "角色数据", RoleModel.Result.class, response);
+        ExcelUtils.export(list, "角色数据", RoleResult.class, response);
     }
 
     @Override
@@ -256,12 +239,10 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     }
 
     private void fill(Object obj) {
-        if (obj instanceof RoleModel.Detail detail) {
-            Long roleId = detail.id();
+        if (obj instanceof RoleDetailResult detail) {
+            Long roleId = detail.getId();
             List<MenuVO> list = this.listMenuByRoleId(roleId);
-            List<Long> menuIds = CollUtils.mapToList(list, MenuVO::getId);
-            // 由于 Result 是 record，无法直接修改，需要创建新实例
-            // 这里暂时跳过，因为 fill 方法似乎没有被使用
+            detail.setMenuIds(CollUtils.mapToList(list, MenuVO::getId));
         }
     }
 
@@ -325,13 +306,13 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     }
 
     @Override
-    public List<RoleUserModel> pageMember(Long roleId, RoleUserModel.Query query, PageQuery pageQuery) {
+    public List<RoleMemberResult> pageMember(Long roleId, RoleMemberQuery query, PageQuery pageQuery) {
         QueryWrapper<SysUserRole> wrapper = Wrappers.query();
         wrapper.eq("role_id", roleId)
-                .and(StrUtil.isNotBlank(query.keyword()),
-                        w -> w.like("su.username", query.keyword())
-                                .or().like("su.nickname", query.keyword()));
-        IPage<SysUserRole> page = new Page<>(pageQuery.getPage(), pageQuery.getSize());
+                .and(StrUtil.isNotBlank(query.getKeyword()),
+                        w -> w.like("su.username", query.getKeyword())
+                                .or().like("su.nickname", query.getKeyword()));
+        IPage<SysUserRole> page = new Page<>(pageQuery.getPage(), pageQuery.getPageSize());
         return userRoleMapper.selectUserPage(page, wrapper).getRecords();
     }
 
@@ -339,20 +320,20 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     public void deleteMember(Long roleId, List<Long> userIds) {
         SysRole role = roleMapper.selectById(roleId);
         if (role == null) {
-            throw new BizException("ROLE_NOT_FOUND", "角色不存在");
+            throw RoleException.notFound();
         }
         userRoleMapper.lambdaUpdate().eq(SysUserRole::getRoleId, roleId).in(SysUserRole::getUserId, userIds).remove();
     }
 
-    private List<RoleModel.Result> convertToRoleRespList(List<SysRole> entities) {
+    private List<RoleResult> convertToRoleRespList(List<SysRole> entities) {
         if (entities == null || entities.isEmpty()) {
             return List.of();
         }
         return entities.stream().map(this::convertToRoleResp).collect(Collectors.toList());
     }
 
-    private RoleModel.Result convertToRoleResp(SysRole entity) {
-        return new RoleModel.Result(
+    private RoleResult convertToRoleResp(SysRole entity) {
+        return new RoleResult(
                 entity.getId(),
                 entity.getCreateUser(),
                 null, // createUserString
@@ -370,8 +351,8 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
         );
     }
 
-    private RoleModel.Detail convertToRoleDetailResp(SysRole entity) {
-        return new RoleModel.Detail(
+    private RoleDetailResult convertToRoleDetailResp(SysRole entity) {
+        return new RoleDetailResult(
                 entity.getId(),
                 entity.getCreateUser(),
                 null, // createUserString
@@ -393,11 +374,11 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
         );
     }
 
-    private void updateEntityFromReq(SysRole entity, RoleModel.Request req) {
-        entity.setName(req.name());
-        entity.setCode(req.code());
-        entity.setDescription(req.description());
-        entity.setDataScope(req.dataScope());
+    private void updateEntityFromReq(SysRole entity, RoleRequest req) {
+        entity.setName(req.getName());
+        entity.setCode(req.getCode());
+        entity.setDescription(req.getDescription());
+        entity.setDataScope(req.getDataScope());
         if (entity.getId() == null) { // 创建时设置
             entity.setIsBuiltin(false);
             entity.setCreateTime(LocalDateTime.now());

@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.bo;
+package top.wyhao.admin.system.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

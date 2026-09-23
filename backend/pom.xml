@@ -108,6 +108,8 @@
     <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
     <spring-boot-maven-plugin.version>3.5.5</spring-boot-maven-plugin.version>
+    <!-- 多模块下 spring-boot:run 默认跳过，仅启动模块覆盖为 false -->
+    <spring-boot.run.skip>true</spring-boot.run.skip>
   </properties>
 
   <!-- 全局依赖版本管理 -->

@@ -4,10 +4,10 @@ package top.wyhao.admin.auth.handler;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.LoginRequest;
-import top.wyhao.admin.auth.model.LoginResult;
-import top.wyhao.admin.auth.model.PhoneLoginRequest;
+import top.wyhao.admin.auth.model.dto.LoginRequest;
+import top.wyhao.admin.auth.model.dto.PhoneLoginRequest;
 import top.wyhao.admin.auth.model.enums.GrantType;
+import top.wyhao.admin.auth.model.vo.LoginResult;
 import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.entity.SysUser;
 import top.wyhao.admin.system.service.UserService;
@@ -37,7 +37,7 @@ public class PhoneLoginHandler implements LoginHandler {
         PhoneLoginRequest req = (PhoneLoginRequest) request;
         this.preLogin(req);
         // 验证手机号
-        SysUser user = userService.getByPhone(req.phone());
+        SysUser user = userService.getByPhone(req.getPhone());
         ValidationUtils.throwIfNull(user, "此手机号未绑定本系统账号");
         // 检查用户状态
         LoginHandlerHelper.checkUserStatus(user);
@@ -62,11 +62,11 @@ public class PhoneLoginHandler implements LoginHandler {
     }
 
     public void preLogin(PhoneLoginRequest req) {
-        String phone = req.phone();
+        String phone = req.getPhone();
         String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + phone;
         String captcha = RedisUtils.get(captchaKey);
         ValidationUtils.throwIfBlank(captcha, "验证码已失效");
-        ValidationUtils.throwIfNotEqualIgnoreCase(req.captcha(), captcha, "验证码已失效");
+        ValidationUtils.throwIfNotEqualIgnoreCase(req.getCaptcha(), captcha, "验证码已失效");
         RedisUtils.delete(captchaKey);
     }
 }

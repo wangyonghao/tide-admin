@@ -5,13 +5,14 @@ import jakarta.validation.constraints.Min;
 import lombok.Data;
 
 /**
- * 纯分页参数
+ * 纯分页参数。
+ * <p>统一请求字段：{@code page} / {@code pageSize}</p>
  */
 @Data
 public class PageParam {
 
     @Min(value = 1, message = "页码不能小于 1")
-    private long pageNum = 1;
+    private long page = 1;
 
     @Min(value = 1, message = "每页条数不能小于 1")
     @Max(value = 1000, message = "每页条数不能超过 1000")

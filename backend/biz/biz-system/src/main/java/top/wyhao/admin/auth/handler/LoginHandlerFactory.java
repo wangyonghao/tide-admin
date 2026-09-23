@@ -1,7 +1,6 @@
 package top.wyhao.admin.auth.handler;
 
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.LoginRequest;
 import top.wyhao.admin.auth.model.enums.GrantType;
 
 import java.util.List;

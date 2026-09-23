@@ -10,10 +10,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.dto.DictQuery;
 import top.wyhao.admin.system.entity.SysDict;
 import top.wyhao.admin.system.exception.DictException;
-import top.wyhao.admin.system.model.DictModel;
 import top.wyhao.admin.system.service.DictService;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
@@ -24,6 +22,9 @@ import top.wyhao.starter.web.core.model.LabelValueResult;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
+import top.wyhao.admin.system.model.dto.DictQuery;
+import top.wyhao.admin.system.model.dto.DictRequest;
+import top.wyhao.admin.system.model.vo.DictResult;
 
 /**
  * 字典管理 API
@@ -40,12 +41,12 @@ public class DictController {
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @SaCheckPermission("system:dict:page")
     @GetMapping("/system/dict/page")
-    public PageResult<DictModel.Result> page(DictQuery query, PageParam pageParam) {
+    public PageResult<DictResult> page(DictQuery query, PageParam pageParam) {
         IPage<SysDict> dictPage = dictService.page(query, pageParam);
 
         // 转换为响应对象
-        IPage<DictModel.Result> respPage = dictPage.convert(dict ->
-                new DictModel.Result(
+        IPage<DictResult> respPage = dictPage.convert(dict ->
+                new DictResult(
                         dict.getId(),
                         dict.getDictType(),
                         dict.getValue(),
@@ -62,22 +63,22 @@ public class DictController {
     @Operation(summary = "新增", description = "新增")
     @SaCheckPermission("system:dict:create")
     @PostMapping("/system/dict")
-    public Result<Void> create(@Valid @RequestBody DictModel.Request req) {
+    public Result<Void> create(@Valid @RequestBody DictRequest req) {
         // 检查字典类型+值是否重复
         boolean isExists = dictService.lambdaQuery()
-                .eq(SysDict::getDictType, req.dictType())
-                .eq(SysDict::getValue, req.value())
+                .eq(SysDict::getDictType, req.getDictType())
+                .eq(SysDict::getValue, req.getValue())
                 .exists();
-        Check.when(isExists, "字典类型 [{}] 中值为 [{}] 的字典已存在", req.dictType(), req.value());
+        Check.when(isExists, "字典类型 [{}] 中值为 [{}] 的字典已存在", req.getDictType(), req.getValue());
 
         SysDict dict = new SysDict();
-        dict.setDictType(req.dictType());
-        dict.setValue(req.value());
-        dict.setLabel(req.label());
-        dict.setExt(req.extra());
-        dict.setSort(req.sort() != null ? req.sort() : 0);
-        dict.setEnabled(req.enabled() != null ? req.enabled() : true);
-        dict.setDescription(req.description());
+        dict.setDictType(req.getDictType());
+        dict.setValue(req.getValue());
+        dict.setLabel(req.getLabel());
+        dict.setExt(req.getExtra());
+        dict.setSort(req.getSort() != null ? req.getSort() : 0);
+        dict.setEnabled(req.getEnabled() != null ? req.getEnabled() : true);
+        dict.setDescription(req.getDescription());
         dictService.save(dict);
         return Result.ok();
     }
@@ -85,29 +86,29 @@ public class DictController {
     @Operation(summary = "修改", description = "修改")
     @SaCheckPermission("system:dict:update")
     @PutMapping("/system/dict/{id}")
-    public void update(@Valid @RequestBody DictModel.Request req, @Parameter(description = "ID", example = "1") @PathVariable Long id) {
+    public void update(@Valid @RequestBody DictRequest req, @Parameter(description = "ID", example = "1") @PathVariable Long id) {
         // 检查字典类型+值是否重复
         boolean valueExist = dictService.lambdaQuery()
-                .eq(SysDict::getDictType, req.dictType())
-                .eq(SysDict::getValue, req.value())
+                .eq(SysDict::getDictType, req.getDictType())
+                .eq(SysDict::getValue, req.getValue())
                 .ne(SysDict::getId, id)
                 .exists();
 
-        Check.when(valueExist, DictException.valueExist(req.dictType(), req.value()));
+        Check.when(valueExist, DictException.valueExist(req.getDictType(), req.getValue()));
 
         SysDict dict = new SysDict();
         dict.setId(id);
-        dict.setDictType(req.dictType());
-        dict.setValue(req.value());
-        dict.setLabel(req.label());
-        dict.setExt(req.extra());
-        dict.setSort(req.sort());
-        dict.setEnabled(req.enabled());
-        dict.setDescription(req.description());
+        dict.setDictType(req.getDictType());
+        dict.setValue(req.getValue());
+        dict.setLabel(req.getLabel());
+        dict.setExt(req.getExtra());
+        dict.setSort(req.getSort());
+        dict.setEnabled(req.getEnabled());
+        dict.setDescription(req.getDescription());
         dictService.updateById(dict);
 
         // 清除缓存
-        RedisUtils.deleteByPattern(CacheConstants.DICT_KEY_PREFIX + req.dictType());
+        RedisUtils.deleteByPattern(CacheConstants.DICT_KEY_PREFIX + req.getDictType());
     }
 
     @Operation(summary = "批量删除", description = "批量删除")

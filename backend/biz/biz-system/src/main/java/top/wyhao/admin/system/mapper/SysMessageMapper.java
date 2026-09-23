@@ -6,10 +6,12 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.admin.system.entity.SysMessage;
-import top.wyhao.admin.system.model.MessageModel;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;
+import top.wyhao.admin.system.model.vo.MessageDetailResult;
+import top.wyhao.admin.system.model.dto.MessageQuery;
+import top.wyhao.admin.system.model.vo.MessageResult;
 
 /**
  * 消息 Mapper
@@ -27,7 +29,7 @@ public interface SysMessageMapper extends BaseMapper<SysMessage> {
      * @param query 查询条件
      * @return 消息列表
      */
-    IPage<MessageModel> selectMessagePage(@Param("page") Page<SysMessage> page, @Param("query") MessageModel.MessageQuery query);
+    IPage<MessageDetailResult> selectMessagePage(@Param("page") Page<SysMessage> page, @Param("query") MessageQuery query);
 
     /**
      * 查询消息详情
@@ -35,7 +37,7 @@ public interface SysMessageMapper extends BaseMapper<SysMessage> {
      * @param id ID
      * @return 消息详情
      */
-    MessageModel.Result selectMessageById(@Param("id") Long id);
+    MessageResult selectMessageById(@Param("id") Long id);
 
     /**
      * 查询未读消息列表

@@ -20,15 +20,18 @@ import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.auth.model.*;
+import top.wyhao.admin.auth.model.dto.LoginRequest;
+import top.wyhao.admin.auth.model.vo.AuthInfoResult;
+import top.wyhao.admin.auth.model.vo.LoginResult;
+import top.wyhao.admin.auth.model.vo.OnlineUserResult;
+import top.wyhao.admin.auth.model.vo.SocialAuthorizeUrlResult;
 import top.wyhao.admin.auth.service.AuthService;
-import top.wyhao.admin.system.model.LoginLogModel;
-import top.wyhao.admin.system.model.bo.user.UserPasswordResetRequest;
+import top.wyhao.admin.system.model.dto.UserPasswordResetRequest;
 import top.wyhao.admin.system.service.LoginLogService;
 import top.wyhao.admin.system.service.MenuService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.util.RsaUtils;
 import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -38,6 +41,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import top.wyhao.admin.system.model.dto.LoginLogQuery;
+import top.wyhao.admin.system.model.vo.LoginLogResult;
 
 /**
  * 用户认证 API
@@ -75,7 +80,7 @@ public class AuthController {
         String newPasswordEnc = body.get("newPassword");
         Object userIdObj = SaTempUtil.parseToken(tempToken);
         if (userIdObj == null) {
-            throw new BizException("TEMPTOKEN_EXPIRED", "临时令牌无效或已过期");
+            throw AuthException.tempTokenExpired();
         }
         String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(newPasswordEnc, "新密码解密失败");
         UserPasswordResetRequest resetReq = new UserPasswordResetRequest();
@@ -110,20 +115,20 @@ public class AuthController {
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw new BizException("PLATFORM_NOT_SUPPORT", "暂不支持 [%s] 平台账号登录".formatted(source));
+            throw AuthException.platformNotSupport(source);
         }
     }
 
     @Operation(summary = "查询登录日志", description = "分页查询登录日志列表")
     @GetMapping("/auth/login-log")
-    public PageResult<LoginLogModel.Result> page(LoginLogModel.LoginLogQuery query, PageQuery pageQuery) {
+    public PageResult<LoginLogResult> page(LoginLogQuery query, PageQuery pageQuery) {
         return loginLogService.page(query, pageQuery);
     }
 
     @Operation(summary = "导出", description = "导出登录日志数据")
     @SaCheckPermission("monitor:log:export")
     @GetMapping("/auth/login-log/export")
-    public void export(LoginLogModel.LoginLogQuery query, HttpServletResponse response) {
+    public void export(LoginLogQuery query, HttpServletResponse response) {
         loginLogService.export(query, response);
     }
 
@@ -131,9 +136,9 @@ public class AuthController {
     @SaCheckPermission("monitor:online:list")
     @GetMapping("/monitor/online")
     public PageResult<OnlineUserResult> page(@Valid String keyword, @Valid PageQuery pageQuery) {
-        int start = (pageQuery.getPage() - 1) * pageQuery.getSize();
+        int start = (pageQuery.getPage() - 1) * pageQuery.getPageSize();
 
-        List<String> sessionIds = StpUtil.searchTokenSessionId("", start, pageQuery.getSize(), false);
+        List<String> sessionIds = StpUtil.searchTokenSessionId("", start, pageQuery.getPageSize(), false);
 
         List<OnlineUserResult> onlineUsers = new ArrayList<>();
         for (String sessionId : sessionIds) {
@@ -159,7 +164,7 @@ public class AuthController {
                 // 忽略无效的session
             }
         }
-        return PageResult.build(pageQuery.getPage(), pageQuery.getSize(), onlineUsers);
+        return PageResult.build(pageQuery.getPage(), pageQuery.getPageSize(), onlineUsers);
     }
 
 

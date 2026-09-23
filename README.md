@@ -145,11 +145,16 @@ git clone https://github.com/wangyonghao/wyh-admin.git
 
 # 2.在 IDE（IntelliJ IDEA/Eclipse）中打开本项目
 
-# 3.修改svr-admin/src/main/resources/config 配置文件中的数据源配置信息、Redis 配置信息、邮件配置信息等
+# 3.修改 tide-bootstrap/src/main/resources/config 配置文件中的数据源配置信息、Redis 配置信息、邮件配置信息等
 # [3.也可以在 IntelliJ IDEA 中直接配置程序启动环境变量（DB_HOST、DB_PORT、DB_USER、DB_PWD、DB_NAME；REDIS_HOST、REDIS_PORT、REDIS_PWD、REDIS_DB）]
 
-# 4.启动程序
-# 启动成功，在控制台末尾会输出 Tide Admin service started successfully.
+# 4.启动程序（任选其一）
+# IDE：运行 top.wyhao.admin.AdminApplication
+# Maven：
+cd backend
+mvn -pl tide-bootstrap -am spring-boot:run
+# （根 POM 默认跳过 spring-boot:run，仅 tide-bootstrap 实际启动）
+# 启动成功，在控制台末尾会输出服务启动成功及相关地址
 # 并输出 API 地址及 API 接口文档地址
 ```
 

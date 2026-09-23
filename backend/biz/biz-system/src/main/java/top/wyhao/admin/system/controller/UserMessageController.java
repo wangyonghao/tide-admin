@@ -11,8 +11,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.system.model.enums.NoticeMethods;
 import top.wyhao.admin.system.model.enums.NoticeScopes;
-import top.wyhao.admin.system.model.MessageModel;
-import top.wyhao.admin.system.model.NotificationModel;
 import top.wyhao.admin.system.service.MessageService;
 import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
@@ -23,6 +21,14 @@ import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.Collections;
 import java.util.List;
+import top.wyhao.admin.system.model.vo.MessageDetailResult;
+import top.wyhao.admin.system.model.dto.MessageQuery;
+import top.wyhao.admin.system.model.vo.MessageResult;
+import top.wyhao.admin.system.model.vo.MessageUnreadResult;
+import top.wyhao.admin.system.model.vo.NotificationDetailResult;
+import top.wyhao.admin.system.model.dto.NotificationQuery;
+import top.wyhao.admin.system.model.vo.NotificationResult;
+import top.wyhao.admin.system.model.vo.NotificationUnreadCountResult;
 
 /**
  * 个人消息 API
@@ -42,24 +48,24 @@ public class UserMessageController {
     @Operation(summary = "查询未读消息数量", description = "查询当前用户的未读消息数量")
     @Parameter(name = "isDetail", description = "是否查询详情", example = "true", in = ParameterIn.QUERY)
     @GetMapping("/unread")
-    public MessageModel.UnreadResult countUnreadMessage(@RequestParam(required = false) Boolean detail) {
+    public MessageUnreadResult countUnreadMessage(@RequestParam(required = false) Boolean detail) {
         return messageService.countUnreadByUserId(LoginUtil.getUserId(), detail);
     }
 
     @Operation(summary = "分页查询消息列表", description = "分页查询消息列表")
     @GetMapping
-    public PageResult<MessageModel> page(MessageModel.MessageQuery query, @Valid PageQuery pageQuery) {
-        query = new MessageModel.MessageQuery(query.id(), query.title(), query.type(), query.isRead(), LoginUtil.getUserId());
+    public PageResult<MessageDetailResult> page(MessageQuery query, @Valid PageQuery pageQuery) {
+        query.setUserId(LoginUtil.getUserId());
         return messageService.page(query, pageQuery);
     }
 
     @Operation(summary = "查询消息", description = "查询消息详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/{id}")
-    public MessageModel.Result getMessage(@PathVariable Long id) {
-        MessageModel.Result detail = messageService.get(id);
-        Check.when(detail == null || (NoticeScopes.USER.equals(detail.scope()) && !CollUtil
-            .contains(detail.users(), LoginUtil.getUserId().toString())), "消息不存在或无权限访问");
+    public MessageResult getMessage(@PathVariable Long id) {
+        MessageResult detail = messageService.get(id);
+        Check.when(detail == null || (NoticeScopes.USER.equals(detail.getScope()) && !CollUtil
+            .contains(detail.getUsers(), LoginUtil.getUserId().toString())), "消息不存在或无权限访问");
         messageService.readMessage(Collections.singletonList(id), LoginUtil.getUserId());
         return detail;
     }
@@ -84,9 +90,9 @@ public class UserMessageController {
 
     @Operation(summary = "查询未读公告数量", description = "查询当前用户的未读公告数量")
     @GetMapping("/notice/unread")
-    public NotificationModel.UnreadCount countUnread() {
+    public NotificationUnreadCountResult countUnread() {
         List<Long> list = noticeService.listUnreadIdsByUserId(null, LoginUtil.getUserId());
-        return new NotificationModel.UnreadCount(list.size());
+        return new NotificationUnreadCountResult(list.size());
     }
 
     @Operation(summary = "查询未读公告", description = "查询当前用户的未读公告")
@@ -98,18 +104,18 @@ public class UserMessageController {
 
     @Operation(summary = "分页查询公告列表", description = "分页查询公告列表")
     @GetMapping("/notice")
-    public PageResult<NotificationModel> pageNotice(NotificationModel.NoticeQuery query, @Valid PageQuery pageQuery) {
-        query = new NotificationModel.NoticeQuery(query.title(), query.type(), LoginUtil.getUserId(), query.sort());
+    public PageResult<NotificationResult> pageNotice(NotificationQuery query, @Valid PageQuery pageQuery) {
+        query.setUserId(LoginUtil.getUserId());
         return noticeService.page(query, pageQuery);
     }
 
     @Operation(summary = "查询公告", description = "查询公告详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @GetMapping("/notice/{id}")
-    public NotificationModel.Detail getNotice(@PathVariable Long id) {
-        NotificationModel.Detail detail = noticeService.detail(id);
-        Check.when(detail == null || (NoticeScopes.USER.equals(detail.noticeScope()) && !detail
-            .noticeUsers()
+    public NotificationDetailResult getNotice(@PathVariable Long id) {
+        NotificationDetailResult detail = noticeService.detail(id);
+        Check.when(detail == null || (NoticeScopes.USER.equals(detail.getNoticeScope()) && !detail
+            .getNoticeUsers()
             .contains(LoginUtil.getUserId().toString())), "公告不存在或无权限访问");
         noticeService.readNotice(id, LoginUtil.getUserId());
         return detail;

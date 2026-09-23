@@ -16,8 +16,6 @@ import top.wyhao.admin.cmn.sms.SmsConfig;
 import top.wyhao.admin.system.assembler.ConfigAssembler;
 import top.wyhao.admin.system.entity.SysConfig;
 import top.wyhao.admin.system.mapper.SysConfigMapper;
-import top.wyhao.admin.system.model.ConfigModel;
-import top.wyhao.admin.system.model.result.ConfigResult;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
@@ -28,6 +26,9 @@ import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
+import top.wyhao.admin.system.model.dto.ConfigQuery;
+import top.wyhao.admin.system.model.dto.ConfigRequest;
+import top.wyhao.admin.system.model.vo.ConfigResult;
 
 /**
  * 系统配置业务实现
@@ -43,9 +44,9 @@ public class ConfigServiceImpl implements ConfigService {
     private final ConfigAssembler configAssembler;
 
     @Override
-    public PageResult<ConfigResult> page(ConfigModel.Query query, PageQuery pageQuery) {
+    public PageResult<ConfigResult> page(ConfigQuery query, PageQuery pageQuery) {
         IPage<ConfigResult> page = configMapper.selectConfigPage(
-                new Page<>(pageQuery.getPage(), pageQuery.getSize()),
+                new Page<>(pageQuery.getPage(), pageQuery.getPageSize()),
                 QueryWrapperBuilder.build(query, SysConfig.class)
         );
         return PageResult.build(page);
@@ -161,9 +162,9 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public Long create(ConfigModel.Request request) {
+    public Long create(ConfigRequest request) {
         // 检查唯一性
-        this.checkUnique(request.configKey(), null);
+        this.checkUnique(request.getConfigKey(), null);
 
         SysConfig configDO = configAssembler.toEntity(request);
         configMapper.insert(configDO);
@@ -172,13 +173,13 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void update(Long id, ConfigModel.Request request) {
+    public void update(Long id, ConfigRequest request) {
         SysConfig oldConfig = configMapper.selectById(id);
         Check.notNull(oldConfig, "配置不存在");
 
         // 检查唯一性（排除自己）
-        if (CharSequenceUtil.isNotBlank(request.configKey())) {
-            this.checkUnique(request.configKey(), id);
+        if (CharSequenceUtil.isNotBlank(request.getConfigKey())) {
+            this.checkUnique(request.getConfigKey(), id);
         }
 
         SysConfig configDO = configAssembler.toEntity(request);
@@ -190,7 +191,7 @@ public class ConfigServiceImpl implements ConfigService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateByKey(String configKey, ConfigModel.Request request) {
+    public void updateByKey(String configKey, ConfigRequest request) {
         QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("config_key", configKey);
         SysConfig existConfig = configMapper.selectOne(queryWrapper);
@@ -198,8 +199,8 @@ public class ConfigServiceImpl implements ConfigService {
 
         SysConfig configDO = new SysConfig();
         configDO.setId(existConfig.getId());
-        configDO.setConfigValue(request.configValue());
-        configDO.setDescription(request.description());
+        configDO.setConfigValue(request.getConfigValue());
+        configDO.setDescription(request.getDescription());
 
         int updated = configMapper.updateById(configDO);
         Check.when(updated > 0, "更新失败，配置可能已被修改，请刷新后重试");
@@ -215,7 +216,7 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public void export(ConfigModel.Query query, HttpServletResponse response) {
+    public void export(ConfigQuery query, HttpServletResponse response) {
         List<SysConfig> list = configMapper.selectList(QueryWrapperBuilder.build(query, SysConfig.class));
 
         List<ConfigResult> resultList = configAssembler.toResultList(list);
@@ -258,9 +259,9 @@ public class ConfigServiceImpl implements ConfigService {
      * @param query 查询条件
      * @return 查询包装器
      */
-    private QueryWrapper<SysConfig> buildQueryWrapper(ConfigModel.Query query) {
-        String configKey = query.configKey();
-        String searchWords = query.searchWords();
+    private QueryWrapper<SysConfig> buildQueryWrapper(ConfigQuery query) {
+        String configKey = query.getConfigKey();
+        String searchWords = query.getSearchWords();
 
         return new QueryWrapper<SysConfig>()
                 .like(CharSequenceUtil.isNotBlank(configKey), "config_key", configKey)

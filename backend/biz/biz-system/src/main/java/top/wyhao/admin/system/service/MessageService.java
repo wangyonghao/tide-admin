@@ -1,11 +1,15 @@
 
 package top.wyhao.admin.system.service;
 
-import top.wyhao.admin.system.model.MessageModel;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
+import top.wyhao.admin.system.model.vo.MessageDetailResult;
+import top.wyhao.admin.system.model.dto.MessageQuery;
+import top.wyhao.admin.system.model.dto.MessageRequest;
+import top.wyhao.admin.system.model.vo.MessageResult;
+import top.wyhao.admin.system.model.vo.MessageUnreadResult;
 
 /**
  * 消息业务接口
@@ -23,7 +27,7 @@ public interface MessageService {
      * @param pageQuery 分页查询条件
      * @return 分页列表信息
      */
-    PageResult<MessageModel> page(MessageModel.MessageQuery query, PageQuery pageQuery);
+    PageResult<MessageDetailResult> page(MessageQuery query, PageQuery pageQuery);
 
     /**
      * 查询详情
@@ -31,7 +35,7 @@ public interface MessageService {
      * @param id ID
      * @return 详情信息
      */
-    MessageModel.Result get(Long id);
+    MessageResult get(Long id);
 
     /**
      * 将消息标记已读
@@ -48,7 +52,7 @@ public interface MessageService {
      * @param isDetail 是否查询详情
      * @return 未读消息数量
      */
-    MessageModel.UnreadResult countUnreadByUserId(Long userId, Boolean isDetail);
+    MessageUnreadResult countUnreadByUserId(Long userId, Boolean isDetail);
 
     /**
      * 新增
@@ -56,7 +60,7 @@ public interface MessageService {
      * @param req        请求参数
      * @param userIdList 接收人列表
      */
-    void add(MessageModel.Request req, List<String> userIdList);
+    void add(MessageRequest req, List<String> userIdList);
 
     /**
      * 删除

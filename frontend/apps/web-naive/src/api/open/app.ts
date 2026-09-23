@@ -7,9 +7,10 @@ export const openAppApi = {
    */
   list: (params: OpenAppApi.AppQuery) => {
     return http.get<{
-      current: number;
+      page: number;
+      pageSize: number;
+      pages: number;
       records: OpenAppApi.AppResp[];
-      size: number;
       total: number;
     }>('/open/app', { params });
   },

@@ -88,7 +88,7 @@ const fetchLogs = async () => {
     const params: any = {
       username: userStore.user?.username,
       page: pagination.value.page,
-      size: pagination.value.pageSize,
+      pageSize: pagination.value.pageSize,
     };
 
     if (filters.value.loginStatus) {
@@ -101,7 +101,7 @@ const fetchLogs = async () => {
     }
 
     const res = await authApi.listLoginLog(params);
-    tableData.value = res.list || [];
+    tableData.value = res.records || [];
     pagination.value.itemCount = res.total || 0;
   } catch (error) {
     console.error('获取日志失败:', error);

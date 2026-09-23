@@ -2,10 +2,11 @@ package top.wyhao.admin.system.assembler;
 
 import org.mapstruct.Mapper;
 import top.wyhao.admin.system.entity.SysLoginLog;
-import top.wyhao.admin.system.model.LoginLogModel;
 import top.wyhao.starter.web.convert.MapStructConfig;
 
 import java.util.List;
+import top.wyhao.admin.system.model.vo.LoginLogExcelResult;
+import top.wyhao.admin.system.model.vo.LoginLogResult;
 
 /**
  * 登录日志对象转换
@@ -13,11 +14,11 @@ import java.util.List;
 @Mapper(config = MapStructConfig.class)
 public interface LoginLogAssembler {
 
-    LoginLogModel.Result toResult(SysLoginLog log);
+    LoginLogResult toResult(SysLoginLog log);
 
-    List<LoginLogModel.Result> toResultList(List<SysLoginLog> logs);
+    List<LoginLogResult> toResultList(List<SysLoginLog> logs);
 
-    LoginLogModel.Excel toExcel(SysLoginLog log);
+    LoginLogExcelResult toExcel(SysLoginLog log);
 
-    List<LoginLogModel.Excel> toExcelList(List<SysLoginLog> logs);
+    List<LoginLogExcelResult> toExcelList(List<SysLoginLog> logs);
 }

@@ -19,8 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.entity.SysUserSocial;
-import top.wyhao.admin.system.model.bo.user.UserBasicInfoUpdateReq;
-import top.wyhao.admin.system.model.ProfileModel;
+import top.wyhao.admin.system.model.dto.UserBasicInfoUpdateReq;
 import top.wyhao.admin.system.model.enums.SocialSource;
 import top.wyhao.admin.system.model.result.user.UserSocialBindResp;
 import top.wyhao.admin.system.service.UserService;
@@ -28,13 +27,17 @@ import top.wyhao.admin.system.service.UserSocialService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.constant.CacheConstants;
-import top.wyhao.starter.core.exception.BadRequestException;
+import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.RsaUtils;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
 
 import java.io.IOException;
 import java.util.List;
+import top.wyhao.admin.system.model.vo.ProfileAvatarResult;
+import top.wyhao.admin.system.model.dto.ProfileEmailUpdateRequest;
+import top.wyhao.admin.system.model.dto.ProfilePasswordUpdateRequest;
+import top.wyhao.admin.system.model.dto.ProfilePhoneUpdateRequest;
 
 /**
  * 个人信息 API
@@ -56,10 +59,10 @@ public class UserProfileController {
 
     @Operation(summary = "修改头像", description = "用户修改个人头像")
     @PatchMapping("/user/profile/avatar")
-    public ProfileModel.AvatarResult updateAvatar(@NotNull(message = "头像不能为空") MultipartFile avatarFile) throws IOException {
+    public ProfileAvatarResult updateAvatar(@NotNull(message = "头像不能为空") MultipartFile avatarFile) throws IOException {
         ValidationUtils.throwIf(avatarFile::isEmpty, "头像不能为空");
         Long newAvatar = userService.updateAvatar(avatarFile, UserContextHolder.getUserId());
-        return new ProfileModel.AvatarResult(newAvatar);
+        return new ProfileAvatarResult(newAvatar);
     }
 
     @Operation(summary = "修改基础信息", description = "修改用户基础信息")
@@ -70,33 +73,33 @@ public class UserProfileController {
 
     @Operation(summary = "修改密码", description = "修改用户登录密码")
     @PatchMapping("/user/profile/password")
-    public void updatePassword(@RequestBody @Valid ProfileModel.PasswordUpdate updateReq) {
-        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.oldPassword(), DECRYPT_FAILED);
-        String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.newPassword(), "新密码解密失败");
+    public void updatePassword(@RequestBody @Valid ProfilePasswordUpdateRequest updateReq) {
+        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
+        String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getNewPassword(), "新密码解密失败");
         userService.updatePassword(oldPassword, newPassword, UserContextHolder.getUserId());
     }
 
     @Operation(summary = "修改手机号", description = "修改手机号")
     @PatchMapping("/user/profile/phone")
-    public void updatePhone(@RequestBody @Valid ProfileModel.PhoneUpdate updateReq) {
-        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.oldPassword(), DECRYPT_FAILED);
-        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + updateReq.phone();
+    public void updatePhone(@RequestBody @Valid ProfilePhoneUpdateRequest updateReq) {
+        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
+        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + updateReq.getPhone();
         String captcha = RedisUtils.get(captchaKey);
         ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
-        ValidationUtils.throwIfNotEqualIgnoreCase(updateReq.captcha(), captcha, "验证码不正确");
+        ValidationUtils.throwIfNotEqualIgnoreCase(updateReq.getCaptcha(), captcha, "验证码不正确");
         RedisUtils.delete(captchaKey);
-        userService.updatePhone(updateReq.phone(), oldPassword, UserContextHolder.getUserId());
+        userService.updatePhone(updateReq.getPhone(), oldPassword, UserContextHolder.getUserId());
     }
 
     @Operation(summary = "修改邮箱", description = "修改用户邮箱")
     @PatchMapping("/user/profile/email")
-    public void updateEmail(@RequestBody @Valid ProfileModel.EmailUpdate request) {
-        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(request.oldPassword(), DECRYPT_FAILED);
-        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + request.email();
+    public void updateEmail(@RequestBody @Valid ProfileEmailUpdateRequest request) {
+        String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(request.getOldPassword(), DECRYPT_FAILED);
+        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + request.getEmail();
         String captcha = RedisUtils.getAndDelete(captchaKey);
         ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
-        ValidationUtils.throwIfNotEqualIgnoreCase(request.captcha(), captcha, "验证码不正确");
-        userService.updateEmail(request.email(), oldPassword, UserContextHolder.getUserId());
+        ValidationUtils.throwIfNotEqualIgnoreCase(request.getCaptcha(), captcha, "验证码不正确");
+        userService.updateEmail(request.getEmail(), oldPassword, UserContextHolder.getUserId());
     }
 
     @Operation(summary = "查询绑定的三方账号", description = "查询绑定的三方账号")
@@ -135,7 +138,7 @@ public class UserProfileController {
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw new BadRequestException("PLATFORM_NOT_SUPPORT", "暂不支持 [%s] 平台账号登录".formatted(source));
+            throw AuthException.platformNotSupport(source);
         }
     }
 }

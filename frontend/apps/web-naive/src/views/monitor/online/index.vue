@@ -104,10 +104,10 @@ async function loadTableData() {
   try {
     const res = await onlineApi.list({
       page: tablePagination.value.page,
-      size: tablePagination.value.pageSize,
+      pageSize: tablePagination.value.pageSize,
       keyword: searchForm.value.keyword,
     });
-    tableData.value = res.list;
+    tableData.value = res.records;
     tablePagination.value.itemCount = res.total;
   } finally {
     tableLoading.value = false;

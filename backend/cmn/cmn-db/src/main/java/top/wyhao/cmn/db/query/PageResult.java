@@ -9,30 +9,32 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 统一分页响应体，避免把 MyBatis-Plus 的 Page 直接暴露给前端
+ * 统一分页响应体，避免把 MyBatis-Plus 的 Page 直接暴露给前端。
+ * <p>统一字段：{@code records} / {@code total} / {@code page} / {@code pageSize} / {@code pages}</p>
  */
 @Data
 public class PageResult<T> {
 
+    /** 列表数据 */
     private List<T> records = Collections.emptyList();
     private long total;
-    private long pageNum;
+    private long page;
     private long pageSize;
     private long pages;
 
-    public static <T> PageResult<T> of(IPage<T> page) {
+    public static <T> PageResult<T> of(IPage<T> pageData) {
         PageResult<T> r = new PageResult<>();
-        r.setRecords(page.getRecords());
-        r.setTotal(page.getTotal());
-        r.setPageNum(page.getCurrent());
-        r.setPageSize(page.getSize());
-        r.setPages(page.getPages());
+        r.setRecords(pageData.getRecords());
+        r.setTotal(pageData.getTotal());
+        r.setPage(pageData.getCurrent());
+        r.setPageSize(pageData.getSize());
+        r.setPages(pageData.getPages());
         return r;
     }
 
     public static <T> PageResult<T> empty(PageParam query) {
         PageResult<T> r = new PageResult<>();
-        r.setPageNum(query.getPageNum());
+        r.setPage(query.getPage());
         r.setPageSize(query.getPageSize());
         return r;
     }
@@ -44,7 +46,7 @@ public class PageResult<T> {
         PageResult<R> r = new PageResult<>();
         r.setRecords(records.stream().map(converter).collect(Collectors.toList()));
         r.setTotal(total);
-        r.setPageNum(pageNum);
+        r.setPage(page);
         r.setPageSize(pageSize);
         r.setPages(pages);
         return r;

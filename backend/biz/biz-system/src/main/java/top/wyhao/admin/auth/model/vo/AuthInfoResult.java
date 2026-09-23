@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
 import top.wyhao.admin.system.model.vo.UserDetail;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.List;
 
 /**

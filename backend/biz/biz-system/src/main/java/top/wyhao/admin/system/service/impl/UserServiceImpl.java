@@ -29,14 +29,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.assembler.UserAssembler;
-import top.wyhao.admin.system.dto.UserDetail;
-import top.wyhao.admin.system.dto.UserQuery;
-import top.wyhao.admin.system.dto.UserRequest;
-import top.wyhao.admin.system.dto.UserResult;
+import top.wyhao.admin.system.model.vo.UserDetail;
+import top.wyhao.admin.system.model.dto.UserQuery;
+import top.wyhao.admin.system.model.dto.UserRequest;
+import top.wyhao.admin.system.model.vo.UserResult;
 import top.wyhao.admin.system.entity.*;
 import top.wyhao.admin.system.mapper.*;
 import top.wyhao.admin.system.model.SystemConstants;
-import top.wyhao.admin.system.model.bo.user.*;
+import top.wyhao.admin.system.model.dto.*;
 import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
 import top.wyhao.admin.system.model.result.user.UserImportParseResp;
 import top.wyhao.admin.system.model.result.user.UserImportResp;
@@ -55,7 +55,7 @@ import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.RsaUtils;
@@ -153,11 +153,11 @@ public class UserServiceImpl implements UserService {
 
         if (StatusEnum.DISABLE.getValue().equals(oldUser.getStatus())) {
             if (oldUser.getIsBuiltin()) {
-                throw new BizException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许禁用");
+                throw UserException.disableNotAllowed();
             }
         }
         if (CollUtil.isNotEmpty(userRequest.getRoleIds())) {
-            throw new BizException("USER_UPDATE_NOT_ALLOWED", "系统内置用户不允许变更角色");
+            throw UserException.roleChangeNotAllowed();
         }
         if (StrUtil.isNotBlank(userRequest.getEmail())) {
             this.checkEmailUnique(userRequest.getEmail(), userId);
@@ -217,7 +217,7 @@ public class UserServiceImpl implements UserService {
                     .doReadSync();
         } catch (Exception e) {
             log.error("用户导入数据文件解析异常：{}", e.getMessage(), e);
-            throw new BizException("IMPORT_FORMAT_ERROR", "数据文件解析异常");
+            throw UserException.importFormatError();
         }
         // 总计行数
         userImportResp.setTotalRows(importRowList.size());
@@ -275,7 +275,7 @@ public class UserServiceImpl implements UserService {
             Check.when(CollUtil.isEmpty(importUserList), "导入已过期，请重新上传");
         } catch (Exception e) {
             log.error("导入异常:", e);
-            throw new BizException("IMPORTATION_EXPIRED", "导入已过期，请重新上传");
+            throw UserException.importExpired();
         }
         // 已存在数据查询
         List<String> existEmails = listExistByField(importUserList, row -> row.getEmail(), SysUser::getEmail);
@@ -361,7 +361,7 @@ public class UserServiceImpl implements UserService {
     public String resetPassword(Long id) {
         SysUser userDO = userMapper.selectById(id);
         if (userDO == null) {
-            throw new BizException("USER_NOT_FOUND", "用户不存在");
+            throw UserException.notFound();
         }
         // 生成12位安全随机密码
         String newPassword = generateSecurePassword(12);
@@ -461,7 +461,7 @@ public class UserServiceImpl implements UserService {
         long avatarMaxSize = 1024 * 1024 * 2; // 2MB
         long avatarSize = avatarFile.getSize();
         if (avatarSize > avatarMaxSize) {
-            throw new BizException("AVATAR_SIZE_EXCEEDED", StrUtil.format("头像大小不能超过 {} MB", avatarMaxSize / 1024 / 1024));
+            throw UserException.avatarSizeExceeded(avatarMaxSize / 1024 / 1024);
         }
     }
 
@@ -747,7 +747,7 @@ public class UserServiceImpl implements UserService {
                 .eq(SysUser::getUsername, username)
                 .exists();
         if (isExists) {
-            throw new BizException("USERNAME_EXISTS", "用户名已被占用");
+            throw UserException.usernameExists();
         }
     }
 
@@ -760,7 +760,7 @@ public class UserServiceImpl implements UserService {
                 .ne(ObjectUtil.isNotNull(selfUserId), SysUser::getId, selfUserId)
                 .exists();
         if (isEmailExists) {
-            throw new BizException("EMAIL_EXISTS", "邮箱已被占用");
+            throw UserException.emailExists();
         }
     }
 
@@ -776,7 +776,7 @@ public class UserServiceImpl implements UserService {
                 .ne(ObjectUtil.isNotNull(selfUserId), SysUser::getId, selfUserId)
                 .exists();
         if (isExists) {
-            throw new BizException("PHONE_EXISTS", "手机号已被占用");
+            throw UserException.phoneExists();
         }
     }
 

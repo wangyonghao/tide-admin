@@ -12,7 +12,6 @@ import top.wyhao.admin.system.assembler.MenuAssembler;
 import top.wyhao.admin.system.entity.SysMenu;
 import top.wyhao.admin.system.exception.MenuException;
 import top.wyhao.admin.system.mapper.SysMenuMapper;
-import top.wyhao.admin.system.model.MenuModel;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.enums.MenuType;
 import top.wyhao.admin.system.model.result.MenuTreeVO;
@@ -29,6 +28,8 @@ import top.wyhao.starter.core.util.validation.Check;
 
 import java.util.ArrayList;
 import java.util.List;
+import top.wyhao.admin.system.model.dto.MenuQuery;
+import top.wyhao.admin.system.model.dto.MenuRequest;
 
 /**
  * 菜单 Service
@@ -42,7 +43,7 @@ public class MenuServiceImpl implements MenuService {
     private final MenuAssembler menuAssembler;
 
     @Override
-    public List<MenuTreeVO> tree(MenuModel.MenuQuery query) {
+    public List<MenuTreeVO> tree(MenuQuery query) {
         LambdaQueryWrapper<SysMenu> wrapper = new LambdaQueryWrapper<>();
         wrapper.eq(SysMenu::getStatus, StatusEnum.ENABLE.getValue())
                 .orderByAsc(SysMenu::getParentId)
@@ -97,12 +98,12 @@ public class MenuServiceImpl implements MenuService {
 
 
     @Override
-    public List<MenuVO> list(MenuModel.MenuQuery query) {
+    public List<MenuVO> list(MenuQuery query) {
         return List.of();
     }
 
     @Override
-    public void export(MenuModel.MenuQuery query, HttpServletResponse response) {
+    public void export(MenuQuery query, HttpServletResponse response) {
 
     }
 
@@ -115,15 +116,12 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public Long create(MenuModel.Request req) {
-        this.checkNameUnique(req.name(), req.parentId(), null);
+    public Long create(MenuRequest req) {
+        this.checkNameUnique(req.getName(), req.getParentId(), null);
 
         // 目录类型菜单，默认为 Layout
-        if (MenuType.DIR.equals(req.type())) {
-            // 对于 record 类型，需要创建新的实例
-            req = new MenuModel.Request(req.id(), req.type(), req.icon(), req.sort(), req.permission(),
-                    req.path(), req.name(), CharSequenceUtil.blankToDefault(req.component(), "Layout"), 
-                    req.redirect(), req.isExternal(), req.isCache(), req.isHidden(), req.parentId(), req.status());
+        if (MenuType.DIR.equals(req.getType())) {
+            req.setComponent(CharSequenceUtil.blankToDefault(req.getComponent(), "Layout"));
         }
         RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
         SysMenu menuDO = menuAssembler.toEntity(req);
@@ -132,10 +130,10 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
-    public void update(Long id, MenuModel.Request req) {
+    public void update(Long id, MenuRequest req) {
 
-        if(StrUtil.isNotBlank(req.name())){
-            this.checkNameUnique(req.name(), req.parentId(), id);
+        if(StrUtil.isNotBlank(req.getName())){
+            this.checkNameUnique(req.getName(), req.getParentId(), id);
         }
 
 

@@ -50,7 +50,7 @@ public class FileController {
             @RequestParam(required = false, defaultValue = "desc") String sortOrder,
             @Validated PageQuery pageQuery) {
         return PageResult.build(
-                fileService.page(fileName, category, sortOrder, pageQuery.getPage(), pageQuery.getSize()),
+                fileService.page(fileName, category, sortOrder, pageQuery.getPage(), pageQuery.getPageSize()),
                 fileAssembler::toResponseList);
     }
 

@@ -106,7 +106,7 @@ async function loadTableData() {
 
     const res = await authApi.listLoginLog({
       page: tablePagination.value.page,
-      size: tablePagination.value.pageSize,
+      pageSize: tablePagination.value.pageSize,
       username: searchForm.value.username || undefined,
       ipAddress: searchForm.value.ipAddress || undefined,
       loginStatus: searchForm.value.loginStatus || undefined,
@@ -114,7 +114,7 @@ async function loadTableData() {
       loginTimeEnd,
     });
 
-    tableData.value = res.list;
+    tableData.value = res.records;
     tablePagination.value.itemCount = res.total;
   } finally {
     tableLoading.value = false;

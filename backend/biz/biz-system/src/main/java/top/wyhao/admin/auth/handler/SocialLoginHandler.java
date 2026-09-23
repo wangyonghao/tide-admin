@@ -17,14 +17,13 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.LoginRequest;
-import top.wyhao.admin.auth.model.LoginResult;
-import top.wyhao.admin.auth.model.SocialLoginRequest;
+import top.wyhao.admin.auth.model.dto.LoginRequest;
+import top.wyhao.admin.auth.model.dto.SocialLoginRequest;
 import top.wyhao.admin.auth.model.enums.GrantType;
+import top.wyhao.admin.auth.model.vo.LoginResult;
 import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.entity.SysUser;
 import top.wyhao.admin.system.entity.SysUserSocial;
-import top.wyhao.admin.system.model.MessageModel;
 import top.wyhao.admin.system.model.SystemConstants;
 import top.wyhao.admin.system.model.enums.MessageTemplates;
 import top.wyhao.admin.system.model.enums.MessageType;
@@ -35,13 +34,14 @@ import top.wyhao.starter.core.constant.RegexConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.model.LoginUser;
 import top.wyhao.starter.core.util.validation.ValidationUtils;
 import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
+import top.wyhao.admin.system.model.dto.MessageRequest;
 
 /**
  * 第三方账号登录处理器
@@ -71,10 +71,10 @@ public class SocialLoginHandler implements LoginHandler {
             StpUtil.logout();
         }
         // 获取第三方登录信息
-        AuthRequest authRequest = this.getAuthRequest(req.source());
+        AuthRequest authRequest = this.getAuthRequest(req.getSource());
         AuthCallback callback = new AuthCallback();
-        callback.setCode(req.code());
-        callback.setState(req.state());
+        callback.setCode(req.getCode());
+        callback.setState(req.getState());
         AuthResponse<AuthUser> response = authRequest.login(callback);
         ValidationUtils.throwIf(!response.ok(), response.getMsg());
         AuthUser authUser = response.getData();
@@ -150,7 +150,7 @@ public class SocialLoginHandler implements LoginHandler {
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw new BizException("platform_not_support", "暂不支持 [%s] 平台账号登录".formatted(source));
+            throw AuthException.platformNotSupport(source);
         }
     }
 
@@ -161,7 +161,7 @@ public class SocialLoginHandler implements LoginHandler {
      */
     private void sendSecurityMsg(SysUser user) {
         MessageTemplates template = MessageTemplates.SOCIAL_REGISTER;
-        MessageModel.Request req = new MessageModel.Request(
+        MessageRequest req = new MessageRequest(
                 template.getTitle().formatted(applicationProperties.getName()),
                 template.getContent().formatted(user.getNickname()),
                 MessageType.SECURITY,

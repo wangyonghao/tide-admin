@@ -153,14 +153,14 @@ async function loadTableData() {
   try {
     const res = await smsLogApi.list({
       page: tablePagination.value.page,
-      size: tablePagination.value.pageSize,
+      pageSize: tablePagination.value.pageSize,
       configId: searchForm.value.configId || undefined,
       phone: searchForm.value.phone || undefined,
       status: searchForm.value.status ?? undefined,
       sort: ['createTime,desc'],
     });
 
-    tableData.value = res.list;
+    tableData.value = res.records;
     tablePagination.value.itemCount = res.total;
   } catch (error) {
     console.error('加载短信日志失败:', error);

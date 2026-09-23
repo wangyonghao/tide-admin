@@ -27,10 +27,16 @@ export function resolveFileDownloadUrl(fileId: FileId): string {
 
 export const fileApi = {
   page: async (params: FileQuery) => {
-    const result = await http.get<{ list: FileResult[]; total: number }>('/api/files', { params });
+    const result = await http.get<{
+      records: FileResult[];
+      total: number;
+      page: number;
+      pageSize: number;
+      pages: number;
+    }>('/api/files', { params });
     return {
       ...result,
-      list: (result.list ?? []).map((item) => ({ ...item, id: String(item.id) })),
+      records: (result.records ?? []).map((item) => ({ ...item, id: String(item.id) })),
     };
   },
 
@@ -83,7 +89,7 @@ export interface FileQuery {
   /** createTime 排序：asc / desc */
   sortOrder?: 'asc' | 'desc';
   page?: number;
-  size?: number;
+  pageSize?: number;
 }
 
 export interface FileResult {

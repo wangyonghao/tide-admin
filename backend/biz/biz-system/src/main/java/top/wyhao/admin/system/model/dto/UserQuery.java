@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.dto;
+package top.wyhao.admin.system.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Size;

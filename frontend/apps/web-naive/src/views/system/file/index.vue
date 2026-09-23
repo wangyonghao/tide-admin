@@ -274,9 +274,9 @@ async function loadTableData() {
       category: category.value === 'ALL' ? undefined : category.value,
       sortOrder: sortOrder.value,
       page: pagination.page,
-      size: pagination.pageSize,
+      pageSize: pagination.pageSize,
     });
-    tableData.value = response.list;
+    tableData.value = response.records;
     pagination.itemCount = response.total;
   } catch (error) {
     message.error('加载文件列表失败');

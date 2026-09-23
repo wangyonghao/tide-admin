@@ -13,10 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.admin.system.model.OperationLogModel;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.admin.system.model.vo.OperationLogDetailResult;
+import top.wyhao.admin.system.model.dto.OperationLogQuery;
+import top.wyhao.admin.system.model.vo.OperationLogResult;
 
 /**
  * 操作日志 API
@@ -33,7 +35,7 @@ public class OperationLogController {
     @Operation(summary = "分页查询列表", description = "分页查询列表")
     @SaCheckPermission("monitor:log:list")
     @GetMapping
-    public PageResult<OperationLogModel.Result> page(@Valid OperationLogModel.LogQuery query, @Valid PageQuery pageQuery) {
+    public PageResult<OperationLogResult> page(@Valid OperationLogQuery query, @Valid PageQuery pageQuery) {
         return operationLogService.page(query, pageQuery);
     }
 
@@ -41,7 +43,7 @@ public class OperationLogController {
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @SaCheckPermission("monitor:log:get")
     @GetMapping("/{id}")
-    public OperationLogModel.Detail get(@PathVariable Long id) {
+    public OperationLogDetailResult get(@PathVariable Long id) {
         return operationLogService.detail(id);
     }
 
@@ -49,7 +51,7 @@ public class OperationLogController {
     @Operation(summary = "导出操作日志", description = "导出操作日志")
     @SaCheckPermission("monitor:log:export")
     @GetMapping("/export/operation")
-    public void export(@Valid OperationLogModel.LogQuery query, HttpServletResponse response) {
+    public void export(@Valid OperationLogQuery query, HttpServletResponse response) {
         operationLogService.export(query, response);
     }
 }
