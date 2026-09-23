@@ -122,6 +122,9 @@ logging:
   file:
     path: ./logs
 
+--- ### Sa-Token JWT 秘钥（仅限本地开发）
+sa-token.jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+
 --- ### 加密配置：字段加/解密配置
 wyhao-starter.encrypt.field:
   enabled: true

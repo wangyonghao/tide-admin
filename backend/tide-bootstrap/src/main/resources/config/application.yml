@@ -201,8 +201,7 @@ sa-token:
   is-share: false
   # 是否输出操作日志
   is-log: false
-  # JWT 秘钥
-  jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+  # JWT 秘钥在各环境配置文件中设置（sa-token.jwt-secret-key）
   is-read-body: true
   is-read-header: true
   is-read-cookie: false
