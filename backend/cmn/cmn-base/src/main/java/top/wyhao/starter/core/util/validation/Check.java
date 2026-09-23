@@ -171,7 +171,7 @@ public class Check extends Validator {
      * @param params          参数值
      */
     public static void when(boolean condition, String messageTemplate, Object... params) {
-        throwIf(!condition, CharSequenceUtil.format(messageTemplate, params), EXCEPTION_TYPE);
+        throwIf(condition, CharSequenceUtil.format(messageTemplate, params), EXCEPTION_TYPE);
     }
 
     public static void when(boolean condition, RuntimeException e) {
@@ -188,7 +188,7 @@ public class Check extends Validator {
      * @param params            参数值
      */
     public static void when(BooleanSupplier conditionSupplier, String template, Object... params) {
-        throwIf(() -> !conditionSupplier.getAsBoolean(), CharSequenceUtil.format(template, params), EXCEPTION_TYPE);
+        throwIf(conditionSupplier, CharSequenceUtil.format(template, params), EXCEPTION_TYPE);
     }
 
     public static void notNull(Object obj, String template, Object... params) {

@@ -118,7 +118,7 @@ public class UserServiceImpl implements UserService {
         /* 入参格式校验 */
         String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(request.getPassword()));
         Check.notBlank(rawPassword, "密码解密失败");
-        Check.when(ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
+        Check.when(!ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
         this.checkEmailUnique(request.getEmail(), null);
         this.checkPhoneUnique(request.getPhone(), null);
         this.checkUsernameUnique(request.getUsername());

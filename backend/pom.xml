@@ -104,6 +104,7 @@
     <flatten-maven-plugin.version>1.7.0</flatten-maven-plugin.version>
     <sonar-maven-plugin.version>5.2.0.4988</sonar-maven-plugin.version>
     <maven-surefire-plugin.version>3.5.3</maven-surefire-plugin.version>
+    <skipUnitTests>true</skipUnitTests>
     <maven-compiler-plugin.version>3.14.0</maven-compiler-plugin.version>
     <maven-jar-plugin.version>3.4.2</maven-jar-plugin.version>
     <maven-resources-plugin.version>3.3.1</maven-resources-plugin.version>
@@ -752,8 +753,8 @@
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${maven-surefire-plugin.version}</version>
         <configuration>
-          <!-- 跳过单元测试 -->
-          <skip>true</skip>
+          <!-- 默认跳过单元测试，-DskipUnitTests=false 开启 -->
+          <skip>${skipUnitTests}</skip>
         </configuration>
       </plugin>
       <plugin>

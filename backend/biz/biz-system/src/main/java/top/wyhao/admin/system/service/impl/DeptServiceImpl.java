@@ -166,10 +166,10 @@ public class DeptServiceImpl implements DeptService {
                 .in(SysDept::getId, ids)
                 .list();
         Optional<SysDept> builtinData = list.stream().filter(SysDept::getIsBuiltin).findFirst();
-        Check.when(builtinData::isEmpty, "所选部门 [{}] 是系统内置部门，不允许删除", builtinData.orElseGet(SysDept::new)
+        Check.when(builtinData::isPresent, "所选部门 [{}] 是系统内置部门，不允许删除", builtinData.orElseGet(SysDept::new)
                 .getName());
-        Check.when(this.countChildren(ids) <= 0, "所选部门存在下级部门，不允许删除");
-        Check.when(userService.countByDeptIds(ids) <=0, "所选部门存在用户关联，请解除关联后重试");
+        Check.when(this.countChildren(ids) > 0, "所选部门存在下级部门，不允许删除");
+        Check.when(userService.countByDeptIds(ids) > 0, "所选部门存在用户关联，请解除关联后重试");
         // 删除角色和部门关联
         roleDeptService.deleteByDeptIds(ids);
         baseMapper.deleteByIds(ids);

@@ -20,4 +20,11 @@ public interface SysRoleMapper extends BaseMapper<SysRole> {
                 .eq(SysRole::getId, roleId)
                 .exists();
     }
+
+    default boolean isNameExists(String name, Long selfId) {
+        return this.lambdaQuery()
+                .eq(SysRole::getName, name)
+                .ne(selfId != null, SysRole::getId, selfId)
+                .exists();
+    }
 }

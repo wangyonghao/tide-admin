@@ -143,7 +143,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     }
 
     private void checkNameExists(String name, Long id) {
-        if (menuMapper.isNameExists(name, id)) {
+        if (roleMapper.isNameExists(name, id)) {
             throw RoleException.nameAlreadyExists(name);
         }
     }
@@ -183,7 +183,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     @CacheInvalidate(key = "#roleId", name = CacheConstants.ROLE_MENU_KEY_PREFIX)
     public void updatePermission(Long roleId, RolePermissionUpdateRequest req) {
         SysRole role = roleMapper.selectById(roleId);
-        Check.when(role.getIsBuiltin(), "[{}] 是系统内置角色，不允许修改角色功能权限", role.getName());
+        Check.when(Boolean.TRUE.equals(role.getIsBuiltin()), "[{}] 是系统内置角色，不允许修改角色功能权限", role.getName());
         // 保存角色和菜单关联
         roleMenuService.save(req.getMenuIds(), roleId);
         roleMapper.lambdaUpdate()

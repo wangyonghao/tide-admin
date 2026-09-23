@@ -186,7 +186,7 @@ public class ConfigServiceImpl implements ConfigService {
         configDO.setId(id);
 
         int updated = configMapper.updateById(configDO);
-        Check.when(updated > 0, "更新失败，配置可能已被修改，请刷新后重试");
+        Check.when(updated <= 0, "更新失败，配置可能已被修改，请刷新后重试");
     }
 
     @Override
@@ -203,7 +203,7 @@ public class ConfigServiceImpl implements ConfigService {
         configDO.setDescription(request.getDescription());
 
         int updated = configMapper.updateById(configDO);
-        Check.when(updated > 0, "更新失败，配置可能已被修改，请刷新后重试");
+        Check.when(updated <= 0, "更新失败，配置可能已被修改，请刷新后重试");
     }
 
     @Override
@@ -241,7 +241,7 @@ public class ConfigServiceImpl implements ConfigService {
             updateConfig.setConfigValue(configValue);
 
             int updated = configMapper.updateById(updateConfig);
-            Check.when(updated > 0, "更新配置失败");
+            Check.when(updated <= 0, "更新配置失败");
         } else {
             // 创建新配置
             SysConfig newConfig = new SysConfig();
@@ -286,6 +286,6 @@ public class ConfigServiceImpl implements ConfigService {
         }
 
         Long count = configMapper.selectCount(queryWrapper);
-        Check.when(count == 0, "配置键已存在");
+        Check.when(count > 0, "配置键已存在");
     }
 }
