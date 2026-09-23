@@ -19,10 +19,9 @@ import java.io.Serializable;
 @Schema(description = "用户导入结果响应参数")
 @AllArgsConstructor
 @NoArgsConstructor
-public class UserImportResp implements Serializable {
+public class UserImportResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 总计行数

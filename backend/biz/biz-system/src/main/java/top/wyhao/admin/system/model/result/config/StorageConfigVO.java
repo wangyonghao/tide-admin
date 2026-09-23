@@ -16,10 +16,9 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "存储配置")
-public class StorageConfigVO implements Serializable {
+public class StorageConfigVO {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 存储类型

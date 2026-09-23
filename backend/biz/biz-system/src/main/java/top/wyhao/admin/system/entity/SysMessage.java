@@ -23,10 +23,9 @@ import java.util.List;
  */
 @Data
 @TableName("sys_message")
-public class SysMessage implements Serializable {
+public class SysMessage {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

@@ -23,10 +23,9 @@ import java.time.LocalDateTime;
 @Data
 @ExcelIgnoreUnannotated
 @Schema(description = "应用详情响应参数")
-public class AppDetailResp implements Serializable {
+public class AppDetailResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

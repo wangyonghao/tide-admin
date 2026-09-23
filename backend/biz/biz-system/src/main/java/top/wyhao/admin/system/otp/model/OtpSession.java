@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class OtpSession implements Serializable {
+public class OtpSession {
 
     /**
      * 会话唯一标识（UUID）

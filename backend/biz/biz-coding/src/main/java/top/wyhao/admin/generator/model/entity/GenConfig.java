@@ -26,10 +26,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @TableName("gen_config")
 @Schema(description = "生成配置信息")
-public class GenConfig implements Serializable {
+public class GenConfig {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 表名称

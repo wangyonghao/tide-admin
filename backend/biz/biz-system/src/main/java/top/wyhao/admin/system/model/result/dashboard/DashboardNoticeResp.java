@@ -15,10 +15,9 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "仪表盘-公告响应参数")
-public class DashboardNoticeResp implements Serializable {
+public class DashboardNoticeResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

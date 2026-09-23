@@ -19,10 +19,9 @@ import java.io.Serializable;
 @AllArgsConstructor
 @NoArgsConstructor
 @Schema(description = "用户导入解析响应参数")
-public class UserImportParseResp implements Serializable {
+public class UserImportParseResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 导入会话 Key

@@ -29,8 +29,7 @@ import java.io.Serial;
  */
 public class LicenseException extends SystemException {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     public LicenseException(String message) {
         super(message);

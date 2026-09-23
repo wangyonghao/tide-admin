@@ -22,7 +22,7 @@ public class OtpVerifyResult {
              */
             @Schema(description = "提示信息", example = "验证成功")
             String message
-    ) implements Serializable {
+    ) {
         @Serial
         private static final long serialVersionUID = 1L;
     }

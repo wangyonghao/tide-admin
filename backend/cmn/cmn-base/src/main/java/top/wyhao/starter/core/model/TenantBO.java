@@ -13,10 +13,9 @@ import java.io.Serializable;
  * @since 2025/7/23 21:05
  */
 @Data
-public class TenantBO implements Serializable {
+public class TenantBO {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

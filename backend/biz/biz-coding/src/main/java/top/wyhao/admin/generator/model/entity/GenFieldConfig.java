@@ -30,10 +30,9 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @TableName("gen_field_config")
 @Schema(description = "字段配置信息")
-public class GenFieldConfig implements Serializable {
+public class GenFieldConfig {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

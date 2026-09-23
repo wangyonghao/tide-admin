@@ -15,10 +15,9 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "生成预览响应参数")
-public class GeneratePreviewResp implements Serializable {
+public class GeneratePreviewResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     @Schema(description = "生成的文件路径", example = "tide-admin\\tide-admin\\tide-admin-generator\\src\\main\\java\\top\\continew\\admin\\generator\\service")
     private String path;

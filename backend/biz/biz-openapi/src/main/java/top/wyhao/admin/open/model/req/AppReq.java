@@ -20,10 +20,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @Schema(description = "应用创建或修改请求参数")
-public class AppReq implements Serializable {
+public class AppReq {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 名称

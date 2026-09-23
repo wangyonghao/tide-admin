@@ -27,7 +27,7 @@ public class OtpVerifyRequest {
             @NotBlank(message = "验证码不能为空")
             @Pattern(regexp = "^\\d{6}$", message = "验证码格式错误")
             String code
-    ) implements Serializable {
+    ) {
         @Serial
         private static final long serialVersionUID = 1L;
     }

@@ -18,10 +18,9 @@ import java.time.LocalDateTime;
 @Data
 @NoArgsConstructor
 @TableName("sys_user_password_history")
-public class SysUserPasswordHistory implements Serializable {
+public class SysUserPasswordHistory {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

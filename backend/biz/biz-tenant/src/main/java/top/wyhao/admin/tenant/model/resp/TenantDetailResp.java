@@ -18,8 +18,7 @@ import java.io.Serial;
 @Schema(description = "租户详情响应参数")
 public class TenantDetailResp extends TenantResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 租户管理员

@@ -26,10 +26,9 @@ import java.util.Date;
 
  * @since 2.12.0
  */
-public class LicenseCreatorParam implements Serializable {
+public class LicenseCreatorParam {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 证书主题

@@ -19,10 +19,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @Schema(description = "应用响应参数")
-public class AppResult implements Serializable {
+public class AppResult {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

@@ -19,10 +19,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "仪表盘-访问趋势响应参数")
-public class DashboardAccessTrendResp implements Serializable {
+public class DashboardAccessTrendResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 日期

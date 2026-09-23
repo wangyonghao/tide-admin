@@ -17,16 +17,12 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "租户查询条件")
-public class TenantQuery implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class TenantQuery{
     /**
      * 关键词
      */
     @Schema(description = "关键词", example = "Xxx租户")
-    @Query(field = {"name", "description"}, type = Query.Type.LIKE)
+    @Query(field = "name,description", type = Query.Type.LIKE)
     private String description;
 
     /**

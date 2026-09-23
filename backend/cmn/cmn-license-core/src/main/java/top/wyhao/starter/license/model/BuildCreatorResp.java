@@ -27,10 +27,9 @@ import java.io.Serializable;
 
  * @since 2.12.0
  */
-public class BuildCreatorResp implements Serializable {
+public class BuildCreatorResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 许可证创建者参数

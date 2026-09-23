@@ -18,8 +18,7 @@ import java.util.Set;
 @Data
 public class InnerGenConfig extends GenConfig {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 字段配置信息

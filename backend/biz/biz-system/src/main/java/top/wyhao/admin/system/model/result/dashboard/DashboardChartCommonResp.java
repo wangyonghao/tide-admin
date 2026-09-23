@@ -19,10 +19,9 @@ import java.io.Serializable;
 @NoArgsConstructor
 @AllArgsConstructor
 @Schema(description = "仪表盘-通用图表响应参数")
-public class DashboardChartCommonResp implements Serializable {
+public class DashboardChartCommonResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 名称

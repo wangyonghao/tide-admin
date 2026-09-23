@@ -11,8 +11,7 @@ import java.io.Serial;
  */
 public class TenantException extends BizException {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     public TenantException(String code, Object... args) {
         super("tenant-" +code, args);

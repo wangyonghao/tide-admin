@@ -19,10 +19,9 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("sys_user_social")
-public class SysUserSocial implements Serializable {
+public class SysUserSocial {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

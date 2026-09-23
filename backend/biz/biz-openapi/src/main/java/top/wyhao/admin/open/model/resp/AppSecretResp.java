@@ -15,10 +15,9 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "应用密钥响应参数")
-public class AppSecretResp implements Serializable {
+public class AppSecretResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * Access Key（访问密钥）

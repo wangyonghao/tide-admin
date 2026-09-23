@@ -24,10 +24,9 @@ import java.time.LocalDateTime;
 @Data
 @ExcelIgnoreUnannotated
 @Schema(description = "租户响应参数")
-public class TenantResp implements Serializable {
+public class TenantResp {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

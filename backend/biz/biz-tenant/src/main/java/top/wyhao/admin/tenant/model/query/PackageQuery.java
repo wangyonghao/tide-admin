@@ -6,28 +6,21 @@ import lombok.Data;
 import top.wyhao.cmn.db.query.Query;
 import top.wyhao.starter.core.enums.StatusEnum;
 
-import java.io.Serial;
 import java.io.Serializable;
 
 /**
  * 套餐查询条件
  *
-
-
  * @since 2024/11/26 11:25
  */
 @Data
 @Schema(description = "套餐查询条件")
-public class PackageQuery implements Serializable {
-
-    @Serial
-    private static final long serialVersionUID = 1L;
-
+public class PackageQuery {
     /**
      * 关键词
      */
     @Schema(description = "关键词", example = "初级套餐")
-    @Query(field = {"name", "description"}, type = Query.Type.LIKE)
+    @Query(field = "name,description", type = Query.Type.LIKE)
     private String description;
 
     /**

@@ -14,10 +14,9 @@ import java.io.Serializable;
  */
 @Data
 @Schema(description = "生成配置查询条件")
-public class GenConfigQuery implements Serializable {
+public class GenConfigQuery {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 表名称

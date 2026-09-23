@@ -33,7 +33,7 @@ public class OtpSendRequest {
              */
             @Schema(description = "语言代码", example = "zh_CN")
             String locale
-    ) implements Serializable {
+    ) {
         @Serial
         private static final long serialVersionUID = 1L;
     }

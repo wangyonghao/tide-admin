@@ -18,7 +18,7 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @TableName("tenant_package_menu")
-public class TenantPackageMenu implements Serializable {
+public class TenantPackageMenu {
 
     @TableId
     private Long id;

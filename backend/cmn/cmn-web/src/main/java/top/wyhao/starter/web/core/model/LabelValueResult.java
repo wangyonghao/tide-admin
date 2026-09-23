@@ -15,10 +15,9 @@ import java.io.Serializable;
  * @since 2.1.0
  */
 @Schema(description = "键值对响应参数")
-public class LabelValueResult<T> implements Serializable {
+public class LabelValueResult<T> {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 标签

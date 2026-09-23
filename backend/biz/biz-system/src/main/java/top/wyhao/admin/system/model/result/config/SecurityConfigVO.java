@@ -17,8 +17,7 @@ import java.io.Serializable;
 @Schema(description = "安全配置")
 public class SecurityConfigVO {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 密码最小长度

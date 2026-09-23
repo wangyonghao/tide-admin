@@ -18,10 +18,9 @@ import java.io.Serializable;
 @Data
 @NoArgsConstructor
 @TableName("sys_user_role")
-public class SysUserRole implements Serializable {
+public class SysUserRole {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * ID

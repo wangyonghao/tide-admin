@@ -17,8 +17,7 @@ import java.io.Serializable;
 @Schema(description = "站点配置")
 public class SiteConfigVO{
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 站点名称

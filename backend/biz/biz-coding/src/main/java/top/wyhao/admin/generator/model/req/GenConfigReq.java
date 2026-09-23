@@ -21,10 +21,9 @@ import java.util.List;
  */
 @Data
 @Schema(description = "代码生成配置请求参数")
-public class GenConfigReq implements Serializable {
+public class GenConfigReq {
 
-    @Serial
-    private static final long serialVersionUID = 1L;
+
 
     /**
      * 字段配置信息
