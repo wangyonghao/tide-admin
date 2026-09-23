@@ -195,9 +195,9 @@ async function loadUserData() {
       page: userPagination.value.page,
       pageSize: userPagination.value.pageSize,
       deptId: selectedDeptId.value,
-      description: userSearchForm.value.description || undefined,
+      keyword: userSearchForm.value.description || undefined,
     });
-    userData.value = res.records;
+    userData.value = res.records ?? [];
     userPagination.value.itemCount = res.total;
   } catch (error) {
     console.error('加载用户数据失败:', error);
