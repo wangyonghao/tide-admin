@@ -4,9 +4,10 @@ import cn.hutool.core.util.StrUtil;
 import top.wyhao.starter.core.exception.BizException;
 
 /**
- * 菜单 业务异常
+ * 菜单业务异常
  */
 public class MenuException extends BizException {
+
     public MenuException(String message) {
         super(message);
     }
@@ -24,10 +25,10 @@ public class MenuException extends BizException {
     }
 
     public static MenuException titleExist(String name) {
-        return MenuException.of("TITLE_EXIST",StrUtil.format("标题为 [{}] 的菜单已存在", name));
+        return of("TITLE_EXIST", StrUtil.format("标题为 [{}] 的菜单已存在", name));
     }
 
     public static MenuException notFound() {
-        return MenuException.of("MENU_NOT_FOUND");
+        return of("MENU_NOT_FOUND", "菜单不存在");
     }
 }
