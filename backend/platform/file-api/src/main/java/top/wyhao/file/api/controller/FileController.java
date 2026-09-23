@@ -84,7 +84,7 @@ public class FileController {
     public void preview(@PathVariable Long fileId, HttpServletResponse response) {
         File file = fileService.get(fileId);
         InputStream inputStream = fileService.download(fileId);
-        HttpUtil.preview(inputStream, file.getFileName(), file.getContentType(), response);
+        HttpUtil.preview(inputStream, file.getFileName(), response);
     }
 
     @Operation(summary = "删除文件")

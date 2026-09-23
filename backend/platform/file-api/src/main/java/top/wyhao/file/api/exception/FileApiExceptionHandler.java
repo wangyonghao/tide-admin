@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.wyhao.file.core.exception.FileException;
 import top.wyhao.file.core.exception.FileNotFoundException;
+import top.wyhao.file.core.exception.FileTypeNotAllowedException;
 import top.wyhao.storage.api.StorageException;
 
 import java.util.HashMap;
@@ -34,6 +35,22 @@ public class FileApiExceptionHandler {
     @ResponseStatus(HttpStatus.NOT_FOUND)
     public Map<String, Object> handleFileNotFoundException(FileNotFoundException e) {
         log.warn("文件未找到: {}", e.getMessage());
+        Map<String, Object> result = new HashMap<>();
+        result.put("code", e.getCode());
+        result.put("msg", e.getMessage());
+        return result;
+    }
+
+    /**
+     * 处理文件类型不允许异常
+     *
+     * @param e 文件类型不允许异常
+     * @return 错误响应
+     */
+    @ExceptionHandler(FileTypeNotAllowedException.class)
+    @ResponseStatus(HttpStatus.BAD_REQUEST)
+    public Map<String, Object> handleFileTypeNotAllowedException(FileTypeNotAllowedException e) {
+        log.warn("文件类型不允许: {}", e.getMessage());
         Map<String, Object> result = new HashMap<>();
         result.put("code", e.getCode());
         result.put("msg", e.getMessage());

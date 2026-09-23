@@ -1,5 +1,6 @@
 package top.wyhao.file.core.service.impl;
 
+import cn.hutool.core.io.FileTypeUtil;
 import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import cn.hutool.core.util.IdUtil;
@@ -19,6 +20,7 @@ import top.wyhao.file.core.enums.FileCategory;
 import top.wyhao.file.core.enums.FileStatus;
 import top.wyhao.file.core.exception.FileException;
 import top.wyhao.file.core.exception.FileNotFoundException;
+import top.wyhao.file.core.exception.FileTypeNotAllowedException;
 import top.wyhao.file.core.repository.FileRepository;
 import top.wyhao.file.core.service.FileService;
 import top.wyhao.file.storage.StorageManager;
@@ -33,6 +35,8 @@ import java.io.InputStream;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
+import java.util.Map;
 
 /**
  * 文件服务实现
@@ -44,6 +48,20 @@ import java.util.List;
 @Service
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
+
+    private static final String DEFAULT_CONTENT_TYPE = "application/octet-stream";
+
+    /**
+     * 扩展名 -> Hutool FileTypeUtil 识别出的类型
+     */
+    private static final Map<String, String> MAGIC_CHECKED_TYPES = Map.of(
+            "jpg", "jpg",
+            "jpeg", "jpg",
+            "png", "png",
+            "gif", "gif",
+            "bmp", "bmp",
+            "webp", "webp",
+            "pdf", "pdf");
 
     private final FileRepository fileRepository;
     private final StorageManager storageManager;
@@ -68,8 +86,10 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public File upload(String fileName, String contentType, long contentLength,
+    public File upload(String fileName, String clientContentType, long contentLength,
                        InputStream inputStream, Long operatorId) {
+        String extension = checkExtensionAllowed(fileName);
+
         // 生成存储键
         String storageKey = generateStorageKey(fileName);
 
@@ -82,6 +102,8 @@ public class FileServiceImpl implements FileService {
             throw new StorageException("复制文件流失败", e);
         }
         byte[] data = baos.toByteArray();
+        checkContentMatchesExtension(data, extension);
+        String contentType = resolveContentType(fileName);
         ByteArrayInputStream hashStream = new ByteArrayInputStream(data);
         String sha256 = calculateSha256(hashStream);
 
@@ -221,6 +243,48 @@ public class FileServiceImpl implements FileService {
         } finally {
             IoUtil.close(inputStream);
         }
+    }
+
+    /**
+     * 校验扩展名是否在上传白名单内
+     *
+     * @param fileName 原始文件名
+     * @return 小写扩展名
+     */
+    private String checkExtensionAllowed(String fileName) {
+        String extension = StrUtil.nullToEmpty(FileUtil.extName(fileName)).toLowerCase(Locale.ROOT);
+        if (extension.isEmpty() || !properties.getUpload().getAllowedExtensions().contains(extension)) {
+            throw FileTypeNotAllowedException.extensionNotAllowed(extension);
+        }
+        return extension;
+    }
+
+    /**
+     * 对有固定文件头的类型，校验文件内容与扩展名一致，防止伪装扩展名
+     *
+     * @param data      文件内容
+     * @param extension 小写扩展名
+     */
+    private void checkContentMatchesExtension(byte[] data, String extension) {
+        String expectedType = MAGIC_CHECKED_TYPES.get(extension);
+        if (expectedType == null) {
+            return;
+        }
+        String actualType = FileTypeUtil.getType(new ByteArrayInputStream(data));
+        if (!expectedType.equals(actualType)) {
+            throw FileTypeNotAllowedException.contentMismatch(extension);
+        }
+    }
+
+    /**
+     * 根据文件名推断 MIME 类型，不信任客户端提交的 Content-Type
+     *
+     * @param fileName 原始文件名
+     * @return MIME 类型
+     */
+    private String resolveContentType(String fileName) {
+        String mimeType = FileUtil.getMimeType(fileName);
+        return StrUtil.isBlank(mimeType) ? DEFAULT_CONTENT_TYPE : mimeType;
     }
 
     /**
