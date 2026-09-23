@@ -1,5 +1,6 @@
 package top.wyhao.admin.system.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -62,6 +63,7 @@ public class MenuController {
      * @return ID
      */
     @Operation(summary = "创建菜单", description = "创建菜单")
+    @SaCheckPermission("system:menu:create")
     @PostMapping("/system/menu")
     public IdResult<Long> create(@RequestBody @Valid MenuRequest req) {
         return new IdResult<>(menuService.create(req));
@@ -75,6 +77,7 @@ public class MenuController {
      */
     @Operation(summary = "修改菜单", description = "修改菜单")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:menu:update")
     @PutMapping("/system/menu/{id}")
     public void update(@RequestBody @Validated(MenuRequest.Update.class) MenuRequest req, @PathVariable Long id) {
         menuService.update(id, req);
@@ -87,6 +90,7 @@ public class MenuController {
      */
     @Operation(summary = "删除数据", description = "删除数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:menu:delete")
     @DeleteMapping("/system/menu/{id}")
     public void delete(@PathVariable Long id) {
         menuService.delete(id);
@@ -99,6 +103,7 @@ public class MenuController {
      * @param response 响应对象
      */
     @Operation(summary = "导出数据", description = "导出数据")
+    @SaCheckPermission("system:menu:list")
     @GetMapping("/system/menu/export")
     public void export(@Valid MenuQuery query, HttpServletResponse response) {
         menuService.export(query, response);

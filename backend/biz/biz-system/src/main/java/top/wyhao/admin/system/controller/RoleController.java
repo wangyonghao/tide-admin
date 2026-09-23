@@ -1,5 +1,6 @@
 package top.wyhao.admin.system.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -85,6 +86,7 @@ public class RoleController {
      * @return ID
      */
     @Operation(summary = "创建数据", description = "创建数据")
+    @SaCheckPermission("system:role:create")
     @PostMapping("/system/role")
     public Result<IdResult<Long>> create(@RequestBody @Valid RoleRequest req) {
         return Result.ok(new IdResult<>(roleService.create(req)));
@@ -98,6 +100,7 @@ public class RoleController {
      */
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:role:update")
     @PutMapping("/system/role/{id}")
     public void update(@RequestBody @Valid RoleRequest req, @PathVariable Long id) {
         roleService.update(req, id);
@@ -110,6 +113,7 @@ public class RoleController {
      */
     @Operation(summary = "删除数据", description = "删除数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:role:delete")
     @DeleteMapping("/system/role/{id}")
     public void delete(@PathVariable Long id) {
         roleService.delete(id);
@@ -122,6 +126,7 @@ public class RoleController {
      * @param response 响应对象
      */
     @Operation(summary = "导出数据", description = "导出数据")
+    @SaCheckPermission("system:role:list")
     @GetMapping("/system/role/export")
     public void export(@Valid RoleQuery query, HttpServletResponse response) {
         roleService.export(query, response);
@@ -142,6 +147,7 @@ public class RoleController {
 
     @Operation(summary = "删除角色成员", description = "删除角色成员")
     @Parameter(name = "id", description = "角色 ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:role:unassign")
     @DeleteMapping("/system/role/{id}/user")
     public void deleteMember(@PathVariable Long id, @Validated @RequestBody RoleMemberRemoveRequest request) {
         roleService.deleteMember(id, request.getUserIds());
@@ -167,6 +173,7 @@ public class RoleController {
      */
     @Operation(summary = "查询权限树", description = "查询权限树")
     @Parameter(name = "id", description = "角色 ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:role:updatePermission")
     @PutMapping("/system/role/{id}/permission")
     public void updatePermission(@PathVariable Long id, @RequestBody @Valid RolePermissionUpdateRequest req) {
         roleService.updatePermission(id, req);

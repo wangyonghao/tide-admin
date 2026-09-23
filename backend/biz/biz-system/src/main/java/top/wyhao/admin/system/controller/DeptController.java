@@ -1,5 +1,6 @@
 package top.wyhao.admin.system.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -60,6 +61,7 @@ public class DeptController {
      * @return ID
      */
     @Operation(summary = "创建数据", description = "创建数据")
+    @SaCheckPermission("system:dept:create")
     @PostMapping("/system/dept")
     public IdResult<Long> create(@RequestBody @Valid DeptRequest req) {
         return new IdResult<>(deptService.create(req));
@@ -73,6 +75,7 @@ public class DeptController {
      */
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:dept:update")
     @PatchMapping("/system/dept/{id}")
     public void update(@RequestBody @Valid DeptRequest req, @PathVariable Long id) {
         deptService.update(req, id);
@@ -85,6 +88,7 @@ public class DeptController {
      */
     @Operation(summary = "删除数据", description = "删除数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:dept:delete")
     @DeleteMapping("/system/dept/{id}")
     public void delete(@PathVariable Long id) {
         deptService.delete(List.of(id));
@@ -96,6 +100,7 @@ public class DeptController {
      * @param req 删除请求参数
      */
     @Operation(summary = "批量删除数据", description = "批量删除数据")
+    @SaCheckPermission("system:dept:delete")
     @DeleteMapping("/system/dept")
     public void batchDelete(@RequestBody @Valid IdsRequest req) {
         deptService.delete(req.getIds());
@@ -108,6 +113,7 @@ public class DeptController {
      * @param response 响应对象
      */
     @Operation(summary = "导出数据", description = "导出数据")
+    @SaCheckPermission("system:dept:export")
     @GetMapping("/system/dept/export")
     public void export(@Valid DeptQuery query, HttpServletResponse response) {
         deptService.export(query, response);

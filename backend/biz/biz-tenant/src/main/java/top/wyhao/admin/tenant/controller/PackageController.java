@@ -1,5 +1,6 @@
 package top.wyhao.admin.tenant.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.lang.tree.Tree;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -42,6 +43,7 @@ public class PackageController {
      * @return 分页信息
      */
     @Operation(summary = "分页查询列表", description = "分页查询列表")
+    @SaCheckPermission("tenant:package:list")
     @GetMapping
     public PageResult<PackageResp> page(@Valid PackageQuery query, @Valid PageQuery pageQuery) {
         return baseService.findPage(query, pageQuery);
@@ -79,6 +81,7 @@ public class PackageController {
      */
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("tenant:package:get")
     @GetMapping("/{id}")
     public PackageDetailResp get(@PathVariable("id") Long id) {
         return baseService.get(id);
@@ -91,6 +94,7 @@ public class PackageController {
      * @return ID
      */
     @Operation(summary = "创建数据", description = "创建数据")
+    @SaCheckPermission("tenant:package:create")
     @PostMapping
     public IdResult<Long> create(@RequestBody @Valid PackageRequest req) {
         return new IdResult<>(baseService.create(req));
@@ -104,6 +108,7 @@ public class PackageController {
      */
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("tenant:package:update")
     @PutMapping("/{id}")
     public void update(@RequestBody @Valid PackageRequest req, @PathVariable("id") Long id) {
         baseService.update(req, id);
@@ -116,6 +121,7 @@ public class PackageController {
      */
     @Operation(summary = "删除数据", description = "删除数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("tenant:package:delete")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
         baseService.delete(List.of(id));
@@ -127,6 +133,7 @@ public class PackageController {
      * @param req 删除请求参数
      */
     @Operation(summary = "批量删除数据", description = "批量删除数据")
+    @SaCheckPermission("tenant:package:delete")
     @DeleteMapping
     public void batchDelete(@RequestBody @Valid IdsRequest req) {
         baseService.delete(req.getIds());

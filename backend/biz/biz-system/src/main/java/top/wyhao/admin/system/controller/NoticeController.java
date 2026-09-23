@@ -1,5 +1,6 @@
 package top.wyhao.admin.system.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -40,6 +41,7 @@ public class NoticeController {
      * @return 分页信息
      */
     @Operation(summary = "分页查询列表", description = "分页查询列表")
+    @SaCheckPermission("system:notice:list")
     @GetMapping("/system/notice")
     public PageResult<NotificationResult> page(@Valid NotificationQuery query, @Valid PageQuery pageQuery) {
         return noticeService.page(query, pageQuery);
@@ -53,6 +55,7 @@ public class NoticeController {
      */
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:notice:get")
     @GetMapping("/system/notice/{id}")
     public NotificationDetailResult detail(@PathVariable Long id) {
         return noticeService.detail(id);
@@ -65,6 +68,7 @@ public class NoticeController {
      * @return ID
      */
     @Operation(summary = "创建数据", description = "创建数据")
+    @SaCheckPermission("system:notice:create")
     @PostMapping("/system/notice")
     public IdResult<Long> create(@RequestBody @Valid NotificationRequest req) {
         return new IdResult<>(noticeService.create(req));
@@ -78,6 +82,7 @@ public class NoticeController {
      */
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:notice:update")
     @PutMapping("/system/notice/{id}")
     public void update(@RequestBody @Valid NotificationRequest req, @PathVariable Long id) {
         noticeService.update(req, id);
@@ -90,6 +95,7 @@ public class NoticeController {
      */
     @Operation(summary = "删除数据", description = "删除数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("system:notice:delete")
     @DeleteMapping("/system/notice/{id}")
     public void delete(@PathVariable Long id) {
         noticeService.delete(List.of(id));
@@ -101,6 +107,7 @@ public class NoticeController {
      * @param req 删除请求参数
      */
     @Operation(summary = "批量删除数据", description = "批量删除数据")
+    @SaCheckPermission("system:notice:delete")
     @DeleteMapping("/system/notice")
     public void batchDelete(@RequestBody @Valid IdsRequest req) {
         noticeService.delete(req.getIds());

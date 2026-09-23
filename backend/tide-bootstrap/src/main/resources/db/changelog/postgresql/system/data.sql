@@ -132,3 +132,9 @@ VALUES
     ('dept_type', '1', '分公司', '{"color": "primary"}', 1, true, NULL),
     ('dept_type', '2', '部门', '{"color": "success"}', 2, true, NULL),
     ('dept_type', '3', '用户组', '{"color": "warning"}', 3, true, NULL);
+
+-- changeset wyhao:system-menu-notice-create-1
+-- comment 补充通知公告新增权限
+INSERT INTO "sys_menu"
+("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
+VALUES (1095, '新增', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:create', 3, 1, 1, NOW());

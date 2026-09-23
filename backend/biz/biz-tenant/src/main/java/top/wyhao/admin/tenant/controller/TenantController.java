@@ -1,5 +1,6 @@
 package top.wyhao.admin.tenant.controller;
 
+import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -39,6 +40,7 @@ public class TenantController {
      * @return 分页信息
      */
     @Operation(summary = "分页查询列表", description = "分页查询列表")
+    @SaCheckPermission("tenant:management:list")
     @GetMapping
     public PageResult<TenantResp> page(@Valid TenantQuery query, @Valid PageQuery pageQuery) {
         return tenantService.findPage(query, pageQuery);
@@ -64,6 +66,7 @@ public class TenantController {
      */
     @Operation(summary = "查询详情", description = "查询详情")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("tenant:management:get")
     @GetMapping("/{id}")
     public TenantDetailResp get(@PathVariable("id") Long id) {
         return tenantService.get(id);
@@ -76,6 +79,7 @@ public class TenantController {
      * @return ID
      */
     @Operation(summary = "创建数据", description = "创建数据")
+    @SaCheckPermission("tenant:management:create")
     @PostMapping
     public IdResult<Long> create(@RequestBody @Valid TenantRequest req) {
         return new IdResult<>(tenantService.create(req));
@@ -89,6 +93,7 @@ public class TenantController {
      */
     @Operation(summary = "修改数据", description = "修改数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("tenant:management:update")
     @PutMapping("/{id}")
     public void update(@RequestBody @Valid TenantRequest req, @PathVariable("id") Long id) {
         tenantService.update(req, id);
@@ -101,6 +106,7 @@ public class TenantController {
      */
     @Operation(summary = "删除数据", description = "删除数据")
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
+    @SaCheckPermission("tenant:management:delete")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable("id") Long id) {
         tenantService.delete(List.of(id));
