@@ -623,7 +623,7 @@ service层能用方法命名示例:
 | 类型 | 基类 / 类 | 用途 |
 |------|-----------|------|
 | 业务异常基类 | `top.wyhao.starter.core.exception.BizException` | 所有业务域异常的父类 |
-| 参数校验 | `ValidationUtils` / `Check` | 入参、状态前置校验（可继续使用） |
+| 参数校验 | Jakarta Bean Validation（`@NotNull` 等） | 入参格式校验；`Check` / `ValidationUtils` 已废弃，禁止新增调用 |
 | 系统异常 | `SystemException` | 非业务、不可预期的基础设施故障 |
 
 业务代码中**禁止**直接 `throw new BizException(...)` / `BadRequestException(...)` 表达领域错误；应按业务功能使用对应的 `XxxException` 静态工厂方法。
@@ -716,7 +716,8 @@ throw new BadRequestException("ROLE_NOT_FOUND", "角色不存在");
 **职责边界**
 
 - 业务规则失败（不存在、重复、无权限删除、状态不允许）→ `XxxException` 静态方法
-- 简单参数/空值校验 → 可继续用 `Check` / `ValidationUtils`（不必强行包装成领域异常）
+- 简单参数/空值校验 → 优先在请求模型上用 Bean Validation 注解；需要在代码里判断时同样写成 `if (...) throw XxxException.xxx()`
+- `Check` / `ValidationUtils` 已标记 `@Deprecated(forRemoval = true)`，禁止新增调用
 - 不可归类到具体业务域的通用失败 → 优先补齐对应域异常；不要新增零散的 `new BizException`
 
 **现有参考实现**

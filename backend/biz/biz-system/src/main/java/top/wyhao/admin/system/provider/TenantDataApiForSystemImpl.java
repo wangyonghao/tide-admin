@@ -3,6 +3,7 @@ package top.wyhao.admin.system.provider;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.text.CharSequenceUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
@@ -11,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.system.entity.SysDept;
 import top.wyhao.admin.system.entity.SysRole;
 import top.wyhao.admin.system.entity.SysUser;
+import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.admin.system.mapper.*;
 import top.wyhao.admin.system.mapper.SysUserMapper;
 import top.wyhao.admin.system.mapper.SysUserPasswordHistoryMapper;
@@ -28,7 +30,6 @@ import top.wyhao.starter.core.spi.TenantApi;
 import top.wyhao.starter.core.spi.TenantDataApi;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.RsaUtils;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
 import top.wyhao.starter.tenant.util.TenantUtils;
 
 import java.time.LocalDateTime;
@@ -167,7 +168,9 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private Long initUserData(TenantBO tenant, Long deptId) {
         // 解密密码
         String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(tenant.getAdminPassword()));
-        ValidationUtils.throwIfBlank(rawPassword, "密码解密失败");
+        if (CharSequenceUtil.isBlank(rawPassword)) {
+            throw UserException.passwordDecryptFailed();
+        }
         // 初始化用户
         SysUser user = new SysUser();
         user.setUsername(tenant.getAdminUsername());

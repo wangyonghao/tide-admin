@@ -15,13 +15,12 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.starter.core.constant.CacheConstants;
+import top.wyhao.admin.system.exception.DashboardException;
 import top.wyhao.admin.system.model.result.dashboard.DashboardAccessTrendResp;
 import top.wyhao.admin.system.model.result.dashboard.DashboardChartCommonResp;
 import top.wyhao.admin.system.model.result.dashboard.DashboardNoticeResp;
 import top.wyhao.admin.system.model.result.dashboard.DashboardOverviewCommonResp;
 import top.wyhao.admin.system.service.DashboardService;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
-
 import java.io.IOException;
 import java.util.List;
 
@@ -73,7 +72,9 @@ public class DashboardController {
     @CacheRefresh(refresh = 7200)
     @Cached(key = "#days", name = CacheConstants.DASHBOARD_KEY_PREFIX, cacheType = CacheType.BOTH, syncLocal = true)
     public List<DashboardAccessTrendResp> listAccessTrend(@PathVariable Integer days) {
-        ValidationUtils.throwIf(7 != days && 30 != days, "仅支持查询近 7/30 天访问趋势信息");
+        if (7 != days && 30 != days) {
+            throw DashboardException.accessTrendDaysNotSupported();
+        }
         return dashboardService.listAccessTrend(days);
     }
 

@@ -1,6 +1,7 @@
 
 package top.wyhao.admin.system.controller;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import com.xkcoding.justauth.autoconfigure.JustAuthProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,6 +20,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.entity.SysUserSocial;
+import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.admin.system.model.dto.UserBasicInfoUpdateReq;
 import top.wyhao.admin.system.model.enums.SocialSource;
 import top.wyhao.admin.system.model.result.user.UserSocialBindResp;
@@ -30,7 +32,6 @@ import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.RsaUtils;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
 
 import java.io.IOException;
 import java.util.List;
@@ -52,7 +53,6 @@ import top.wyhao.admin.system.model.dto.ProfilePhoneUpdateRequest;
 public class UserProfileController {
 
     private static final String DECRYPT_FAILED = "当前密码解密失败";
-    private static final String CAPTCHA_EXPIRED = "验证码已失效";
     private final UserService userService;
     private final UserSocialService userSocialService;
     private final JustAuthProperties authProperties;
@@ -60,7 +60,9 @@ public class UserProfileController {
     @Operation(summary = "修改头像", description = "用户修改个人头像")
     @PatchMapping("/user/profile/avatar")
     public ProfileAvatarResult updateAvatar(@NotNull(message = "头像不能为空") MultipartFile avatarFile) throws IOException {
-        ValidationUtils.throwIf(avatarFile::isEmpty, "头像不能为空");
+        if (avatarFile.isEmpty()) {
+            throw UserException.avatarEmpty();
+        }
         Long newAvatar = userService.updateAvatar(avatarFile, UserContextHolder.getUserId());
         return new ProfileAvatarResult(newAvatar);
     }
@@ -85,8 +87,12 @@ public class UserProfileController {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
         String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + updateReq.getPhone();
         String captcha = RedisUtils.get(captchaKey);
-        ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
-        ValidationUtils.throwIfNotEqualIgnoreCase(updateReq.getCaptcha(), captcha, "验证码不正确");
+        if (CharSequenceUtil.isBlank(captcha)) {
+            throw AuthException.captchaOutdated();
+        }
+        if (!CharSequenceUtil.equalsIgnoreCase(updateReq.getCaptcha(), captcha)) {
+            throw AuthException.captchaIncorrect();
+        }
         RedisUtils.delete(captchaKey);
         userService.updatePhone(updateReq.getPhone(), oldPassword, UserContextHolder.getUserId());
     }
@@ -97,8 +103,12 @@ public class UserProfileController {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(request.getOldPassword(), DECRYPT_FAILED);
         String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + request.getEmail();
         String captcha = RedisUtils.getAndDelete(captchaKey);
-        ValidationUtils.throwIfBlank(captcha, CAPTCHA_EXPIRED);
-        ValidationUtils.throwIfNotEqualIgnoreCase(request.getCaptcha(), captcha, "验证码不正确");
+        if (CharSequenceUtil.isBlank(captcha)) {
+            throw AuthException.captchaOutdated();
+        }
+        if (!CharSequenceUtil.equalsIgnoreCase(request.getCaptcha(), captcha)) {
+            throw AuthException.captchaIncorrect();
+        }
         userService.updateEmail(request.getEmail(), oldPassword, UserContextHolder.getUserId());
     }
 
@@ -121,7 +131,9 @@ public class UserProfileController {
     public void bindSocial(@PathVariable String source, @RequestBody AuthCallback callback) {
         AuthRequest authRequest = this.getAuthRequest(source);
         AuthResponse<AuthUser> response = authRequest.login(callback);
-        ValidationUtils.throwIf(!response.ok(), response.getMsg());
+        if (!response.ok()) {
+            throw AuthException.socialAuthFailed(response.getMsg());
+        }
         AuthUser authUser = response.getData();
         userSocialService.bind(authUser, UserContextHolder.getUserId());
     }

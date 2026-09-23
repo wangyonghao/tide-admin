@@ -15,12 +15,12 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.cmn.sms.SmsConfig;
 import top.wyhao.admin.system.assembler.ConfigAssembler;
 import top.wyhao.admin.system.entity.SysConfig;
+import top.wyhao.admin.system.exception.ConfigException;
 import top.wyhao.admin.system.mapper.SysConfigMapper;
 import top.wyhao.admin.system.model.result.config.*;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.model.MailConfig;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -55,7 +55,9 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public ConfigResult detail(Long id) {
         SysConfig configDO = configMapper.selectById(id);
-        Check.notNull(configDO, "配置不存在");
+        if (configDO == null) {
+            throw ConfigException.notFound();
+        }
 
         return configAssembler.toResult(configDO);
     }
@@ -65,7 +67,9 @@ public class ConfigServiceImpl implements ConfigService {
         QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("config_key", configKey);
         SysConfig configDO = configMapper.selectOne(queryWrapper);
-        Check.notNull(configDO, "配置不存在");
+        if (configDO == null) {
+            throw ConfigException.notFound();
+        }
 
         return configAssembler.toResult(configDO);
     }
@@ -116,10 +120,18 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     public void checkMailConfig(MailConfig mailConfig) {
-        Check.notNull(mailConfig, "邮件配置不存在");
-        Check.notBlank(mailConfig.getHost(), "邮件服务器地址未配置");
-        Check.notBlank(mailConfig.getUsername(), "发件人邮箱未配置");
-        Check.notBlank(mailConfig.getPassword(), "邮箱密码未配置");
+        if (mailConfig == null) {
+            throw ConfigException.mailConfigNotFound();
+        }
+        if (CharSequenceUtil.isBlank(mailConfig.getHost())) {
+            throw ConfigException.mailHostNotConfigured();
+        }
+        if (CharSequenceUtil.isBlank(mailConfig.getUsername())) {
+            throw ConfigException.mailUsernameNotConfigured();
+        }
+        if (CharSequenceUtil.isBlank(mailConfig.getPassword())) {
+            throw ConfigException.mailPasswordNotConfigured();
+        }
     }
 
     @Override
@@ -175,7 +187,9 @@ public class ConfigServiceImpl implements ConfigService {
     @Transactional(rollbackFor = Exception.class)
     public void update(Long id, ConfigRequest request) {
         SysConfig oldConfig = configMapper.selectById(id);
-        Check.notNull(oldConfig, "配置不存在");
+        if (oldConfig == null) {
+            throw ConfigException.notFound();
+        }
 
         // 检查唯一性（排除自己）
         if (CharSequenceUtil.isNotBlank(request.getConfigKey())) {
@@ -186,7 +200,9 @@ public class ConfigServiceImpl implements ConfigService {
         configDO.setId(id);
 
         int updated = configMapper.updateById(configDO);
-        Check.when(updated <= 0, "更新失败，配置可能已被修改，请刷新后重试");
+        if (updated <= 0) {
+            throw ConfigException.updateConflict();
+        }
     }
 
     @Override
@@ -195,7 +211,9 @@ public class ConfigServiceImpl implements ConfigService {
         QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("config_key", configKey);
         SysConfig existConfig = configMapper.selectOne(queryWrapper);
-        Check.notNull(existConfig, "配置不存在");
+        if (existConfig == null) {
+            throw ConfigException.notFound();
+        }
 
         SysConfig configDO = new SysConfig();
         configDO.setId(existConfig.getId());
@@ -203,7 +221,9 @@ public class ConfigServiceImpl implements ConfigService {
         configDO.setDescription(request.getDescription());
 
         int updated = configMapper.updateById(configDO);
-        Check.when(updated <= 0, "更新失败，配置可能已被修改，请刷新后重试");
+        if (updated <= 0) {
+            throw ConfigException.updateConflict();
+        }
     }
 
     @Override
@@ -241,7 +261,9 @@ public class ConfigServiceImpl implements ConfigService {
             updateConfig.setConfigValue(configValue);
 
             int updated = configMapper.updateById(updateConfig);
-            Check.when(updated <= 0, "更新配置失败");
+            if (updated <= 0) {
+                throw ConfigException.updateFailed();
+            }
         } else {
             // 创建新配置
             SysConfig newConfig = new SysConfig();
@@ -286,6 +308,8 @@ public class ConfigServiceImpl implements ConfigService {
         }
 
         Long count = configMapper.selectCount(queryWrapper);
-        Check.when(count > 0, "配置键已存在");
+        if (count > 0) {
+            throw ConfigException.keyExists();
+        }
     }
 }

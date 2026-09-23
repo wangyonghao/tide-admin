@@ -36,7 +36,6 @@ import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.model.LoginUser;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
 import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.LocalDateTime;
@@ -76,7 +75,9 @@ public class SocialLoginHandler implements LoginHandler {
         callback.setCode(req.getCode());
         callback.setState(req.getState());
         AuthResponse<AuthUser> response = authRequest.login(callback);
-        ValidationUtils.throwIf(!response.ok(), response.getMsg());
+        if (!response.ok()) {
+            throw AuthException.socialAuthFailed(response.getMsg());
+        }
         AuthUser authUser = response.getData();
         // 如未绑定则自动注册新用户，保存或更新关联信息
         String source = authUser.getSource();

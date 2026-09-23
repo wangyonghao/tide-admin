@@ -2,6 +2,7 @@ package top.wyhao.admin.auth.handler;
 
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.servlet.JakartaServletUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import cn.hutool.http.useragent.UserAgent;
@@ -9,6 +10,7 @@ import cn.hutool.http.useragent.UserAgentUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
+import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.admin.system.entity.SysDept;
 import top.wyhao.admin.system.entity.SysUser;
 import top.wyhao.admin.system.service.DeptService;
@@ -18,7 +20,6 @@ import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.model.LoginUser;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.IpUtils;
-import top.wyhao.starter.core.util.validation.Check;
 
 /**
  * 登录帮助类
@@ -66,10 +67,14 @@ public class LoginHandlerHelper {
      * @param user 用户信息
      */
     public static void checkUserStatus(SysUser user) {
-        Check.throwIfEqual(StatusEnum.DISABLE, user.getStatus(), "此账号已被禁用，如有疑问，请联系管理员");
+        if (ObjectUtil.equal(StatusEnum.DISABLE, user.getStatus())) {
+            throw AuthException.accountDisabled();
+        }
         DeptService deptService = SpringUtil.getBean(DeptService.class);
         SysDept dept = deptService.getById(user.getDeptId());
-        Check.throwIfEqual(StatusEnum.DISABLE, dept.getStatus(), "此账号所属部门已被禁用，如有疑问，请联系管理员");
+        if (ObjectUtil.equal(StatusEnum.DISABLE, dept.getStatus())) {
+            throw AuthException.accountDeptDisabled();
+        }
     }
 
     /**

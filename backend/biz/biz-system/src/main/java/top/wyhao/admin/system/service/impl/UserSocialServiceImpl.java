@@ -7,11 +7,11 @@ import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.model.AuthUser;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.system.entity.SysUserSocial;
+import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.admin.system.mapper.SysUserSocialMapper;
 import top.wyhao.admin.system.model.enums.SocialSource;
 import top.wyhao.admin.system.service.UserSocialService;
 import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.starter.core.util.validation.Check;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -60,9 +60,13 @@ public class UserSocialServiceImpl implements UserSocialService {
         List<SysUserSocial> userSocialList = this.listByUserId(userId);
         Set<String> boundSocialSet = CollUtils.mapToSet(userSocialList, SysUserSocial::getSource);
         String description = SocialSource.valueOf(source).getDescription();
-        Check.when(boundSocialSet.contains(source), "您已经绑定过了 [{}] 平台，请先解绑", description);
+        if (boundSocialSet.contains(source)) {
+            throw UserException.socialAlreadyBound(description);
+        }
         SysUserSocial userSocial = this.getBySourceAndOpenId(source, openId);
-        Check.throwIfNotNull(userSocial, "[{}] 平台账号 [{}] 已被其他用户绑定", description, authUser.getUsername());
+        if (userSocial != null) {
+            throw UserException.socialBoundByOther(description, authUser.getUsername());
+        }
         userSocial = new SysUserSocial();
         userSocial.setUserId(userId);
         userSocial.setSource(source);

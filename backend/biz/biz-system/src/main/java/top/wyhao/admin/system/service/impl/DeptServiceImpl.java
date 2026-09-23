@@ -19,7 +19,6 @@ import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.cmn.db.util.DBMetaUtils;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 
 import javax.sql.DataSource;
@@ -144,16 +143,24 @@ public class DeptServiceImpl implements DeptService {
         SysDept oldDept = this.require(id);
 
         if (Boolean.TRUE.equals(oldDept.getIsBuiltin())) {
-            Check.throwIfEqual(StatusEnum.DISABLE.name(), req.getStatus(), "[{}] 是系统内置部门，不允许禁用", oldDept.getName());
-            Check.throwIfNotEqual(req.getParentId(), oldDept.getParentId(), "[{}] 是系统内置部门，不允许变更上级部门", oldDept.getName());
+            if (ObjectUtil.equal(StatusEnum.DISABLE.getValue(), req.getStatus())) {
+                throw DeptException.builtinDisableNotAllowed(oldDept.getName());
+            }
+            if (ObjectUtil.notEqual(req.getParentId(), oldDept.getParentId())) {
+                throw DeptException.builtinParentUpdateNotAllowed(oldDept.getName());
+            }
         }
         if (ObjectUtil.notEqual(req.getStatus(), oldDept.getStatus())) {
             List<SysDept> children = this.listChildren(id);
             long enabledChildrenCount = children.stream().filter(d -> StatusEnum.ENABLE.getValue().equals(d.getStatus())).count();
-            Check.when(StatusEnum.DISABLE.getValue().equals(req.getStatus()) && enabledChildrenCount > 0, "禁用 [{}] 前，请先禁用其所有下级部门", oldDept.getName());
+            if (StatusEnum.DISABLE.getValue().equals(req.getStatus()) && enabledChildrenCount > 0) {
+                throw DeptException.hasEnabledChildren(oldDept.getName());
+            }
             SysDept oldParentDept = this.getByParentId(oldDept.getParentId());
-            Check.when(StatusEnum.ENABLE.getValue().equals(req.getStatus()) && StatusEnum.DISABLE.getValue()
-                    .equals(oldParentDept.getStatus()), "启用 [{}] 前，请先启用其所有上级部门", oldDept.getName());
+            if (StatusEnum.ENABLE.getValue().equals(req.getStatus()) && StatusEnum.DISABLE.getValue()
+                    .equals(oldParentDept.getStatus())) {
+                throw DeptException.parentDisabled(oldDept.getName());
+            }
         }
     }
 
@@ -166,10 +173,15 @@ public class DeptServiceImpl implements DeptService {
                 .in(SysDept::getId, ids)
                 .list();
         Optional<SysDept> builtinData = list.stream().filter(SysDept::getIsBuiltin).findFirst();
-        Check.when(builtinData::isPresent, "所选部门 [{}] 是系统内置部门，不允许删除", builtinData.orElseGet(SysDept::new)
-                .getName());
-        Check.when(this.countChildren(ids) > 0, "所选部门存在下级部门，不允许删除");
-        Check.when(userService.countByDeptIds(ids) > 0, "所选部门存在用户关联，请解除关联后重试");
+        if (builtinData.isPresent()) {
+            throw DeptException.builtinDeleteNotAllowed(builtinData.get().getName());
+        }
+        if (this.countChildren(ids) > 0) {
+            throw DeptException.hasChildren();
+        }
+        if (userService.countByDeptIds(ids) > 0) {
+            throw DeptException.hasUsers();
+        }
         // 删除角色和部门关联
         roleDeptService.deleteByDeptIds(ids);
         baseMapper.deleteByIds(ids);
@@ -230,7 +242,9 @@ public class DeptServiceImpl implements DeptService {
      */
     private SysDept getByParentId(Long parentId) {
         SysDept parentDept = baseMapper.selectById(parentId);
-        Check.isNull(parentDept, "上级部门不存在");
+        if (parentDept == null) {
+            throw DeptException.parentNotFound();
+        }
         return parentDept;
     }
 

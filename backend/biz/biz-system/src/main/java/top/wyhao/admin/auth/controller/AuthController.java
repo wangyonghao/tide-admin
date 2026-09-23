@@ -7,6 +7,7 @@ import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.convert.Convert;
+import cn.hutool.core.util.ObjectUtil;
 import com.xkcoding.justauth.autoconfigure.JustAuthProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -33,7 +34,6 @@ import top.wyhao.admin.system.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.util.RsaUtils;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -174,7 +174,9 @@ public class AuthController {
     @DeleteMapping("/monitor/online/{token}")
     public void kickout(@PathVariable String token) {
         String currentToken = LoginUtil.getTokenValue();
-        Check.throwIfEqual(token, currentToken, "不能强退自己");
+        if (ObjectUtil.equal(token, currentToken)) {
+            throw AuthException.kickoutSelfNotAllowed();
+        }
         LoginUtil.kickout(token);
     }
 

@@ -17,7 +17,6 @@ import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.model.Result;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.LabelValueResult;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -69,7 +68,9 @@ public class DictController {
                 .eq(SysDict::getDictType, req.getDictType())
                 .eq(SysDict::getValue, req.getValue())
                 .exists();
-        Check.when(isExists, "字典类型 [{}] 中值为 [{}] 的字典已存在", req.getDictType(), req.getValue());
+        if (isExists) {
+            throw DictException.valueExist(req.getDictType(), req.getValue());
+        }
 
         SysDict dict = new SysDict();
         dict.setDictType(req.getDictType());
@@ -94,7 +95,9 @@ public class DictController {
                 .ne(SysDict::getId, id)
                 .exists();
 
-        Check.when(valueExist, DictException.valueExist(req.getDictType(), req.getValue()));
+        if (valueExist) {
+            throw DictException.valueExist(req.getDictType(), req.getValue());
+        }
 
         SysDict dict = new SysDict();
         dict.setId(id);
@@ -115,7 +118,9 @@ public class DictController {
     @SaCheckPermission("system:dict:delete")
     @DeleteMapping("/system/dict")
     public void delete(@RequestBody List<Long> ids) {
-        Check.when(ids.isEmpty(), "请选择要删除的数据");
+        if (ids.isEmpty()) {
+            throw DictException.deleteIdsEmpty();
+        }
 
         // 获取需要清除缓存的字典类型
         List<String> dictTypes = dictService.lambdaQuery()

@@ -1,9 +1,11 @@
 
 package top.wyhao.admin.auth.handler;
 
+import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
+import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.admin.auth.model.dto.EmailLoginRequest;
 import top.wyhao.admin.auth.model.dto.LoginRequest;
 import top.wyhao.admin.auth.model.enums.GrantType;
@@ -14,7 +16,6 @@ import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.constant.CacheConstants;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
 import top.wyhao.starter.web.http.ServletUtils;
 
 /**
@@ -37,12 +38,18 @@ public class EmailLoginHandler implements LoginHandler {
         String email = req.getEmail();
         String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + email;
         String captcha = RedisUtils.get(captchaKey);
-        ValidationUtils.throwIfBlank(captcha, "验证码已失效");
-        ValidationUtils.throwIfNotEqualIgnoreCase(req.getCaptcha(), captcha, "验证码不正确");
+        if (CharSequenceUtil.isBlank(captcha)) {
+            throw AuthException.captchaOutdated();
+        }
+        if (!CharSequenceUtil.equalsIgnoreCase(req.getCaptcha(), captcha)) {
+            throw AuthException.captchaIncorrect();
+        }
         RedisUtils.delete(captchaKey);
         // 验证邮箱
         SysUser user = userService.getByEmail(req.getEmail());
-        ValidationUtils.throwIfNull(user, "此邮箱未绑定本系统账号");
+        if (user == null) {
+            throw AuthException.emailNotBound();
+        }
         // 检查用户状态
         LoginHandlerHelper.checkUserStatus(user);
 

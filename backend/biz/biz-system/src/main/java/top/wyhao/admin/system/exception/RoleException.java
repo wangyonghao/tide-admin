@@ -47,4 +47,24 @@ public class RoleException extends BizException {
     public static RoleException hasUserRelation() {
         return of("ROLE_NOT_ALLOWED_DELETE", "所选角色存在用户关联，请解除关联后重试");
     }
+
+    public static RoleException codeForbidden(String code) {
+        return of("ROLE_CODE_FORBIDDEN", StrUtil.format("编码 [{}] 禁止使用", code));
+    }
+
+    public static RoleException codeUpdateNotAllowed() {
+        return of("ROLE_CODE_UPDATE_NOT_ALLOWED", "角色编码不允许修改");
+    }
+
+    public static RoleException builtinDataScopeUpdateNotAllowed(String name) {
+        return of("ROLE_BUILTIN_DATA_SCOPE_UPDATE_NOT_ALLOWED", StrUtil.format("[{}] 是系统内置角色，不允许修改角色数据权限", name));
+    }
+
+    public static RoleException builtinPermissionUpdateNotAllowed(String name) {
+        return of("ROLE_BUILTIN_PERMISSION_UPDATE_NOT_ALLOWED", StrUtil.format("[{}] 是系统内置角色，不允许修改角色功能权限", name));
+    }
+
+    public static RoleException builtinAssignNotAllowed(String name) {
+        return of("ROLE_BUILTIN_ASSIGN_NOT_ALLOWED", StrUtil.format("[{}] 是系统内置角色，不允许分配角色给其他用户", name));
+    }
 }

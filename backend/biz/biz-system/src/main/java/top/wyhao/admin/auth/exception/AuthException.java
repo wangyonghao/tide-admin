@@ -48,6 +48,26 @@ public class AuthException extends BizException {
         return of("CAPTCHA_EXPIRED", "验证码无效");
     }
 
+    public static AuthException captchaOutdated() {
+        return of("AUTH_CAPTCHA_OUTDATED", "验证码已失效");
+    }
+
+    public static AuthException captchaIncorrect() {
+        return of("AUTH_CAPTCHA_INCORRECT", "验证码不正确");
+    }
+
+    public static AuthException phoneNotBound() {
+        return of("AUTH_PHONE_NOT_BOUND", "此手机号未绑定本系统账号");
+    }
+
+    public static AuthException emailNotBound() {
+        return of("AUTH_EMAIL_NOT_BOUND", "此邮箱未绑定本系统账号");
+    }
+
+    public static AuthException socialAuthFailed(String detail) {
+        return of("AUTH_SOCIAL_AUTH_FAILED", detail);
+    }
+
     public static AuthException captchaSendFailed() {
         return of("CAPTCHA_SEND_FAILED", "验证码发送失败");
     }
@@ -62,5 +82,17 @@ public class AuthException extends BizException {
 
     public static AuthException platformNotSupport(String source) {
         return of("PLATFORM_NOT_SUPPORT", StrUtil.format("暂不支持 [{}] 平台账号登录", source));
+    }
+
+    public static AuthException kickoutSelfNotAllowed() {
+        return of("AUTH_KICKOUT_SELF_NOT_ALLOWED", "不能强退自己");
+    }
+
+    public static AuthException accountDisabled() {
+        return of("AUTH_ACCOUNT_DISABLED", "此账号已被禁用，如有疑问，请联系管理员");
+    }
+
+    public static AuthException accountDeptDisabled() {
+        return of("AUTH_ACCOUNT_DEPT_DISABLED", "此账号所属部门已被禁用，如有疑问，请联系管理员");
     }
 }

@@ -2,11 +2,13 @@
 package top.wyhao.starter.core.util;
 
 import cn.hutool.core.codec.Base64;
+import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import top.wyhao.starter.core.constant.RegexConstants;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
+import top.wyhao.starter.core.exception.BadRequestException;
+import top.wyhao.starter.core.exception.SystemException;
 
 /**
  * Rsa 加密/解密工具类
@@ -24,7 +26,9 @@ public class RsaUtils {
      */
     public static String encryptByRsaPublicKey(String data) {
         String publicKey = RsaProperties.PUBLIC_KEY;
-        ValidationUtils.throwIfBlank(publicKey, "请配置 RSA 公钥");
+        if (CharSequenceUtil.isBlank(publicKey)) {
+            throw new SystemException("请配置 RSA 公钥");
+        }
         return encryptByRsaPublicKey(data, publicKey);
     }
 
@@ -36,7 +40,9 @@ public class RsaUtils {
      */
     public static String decryptByRsaPrivateKey(String data) {
         String privateKey = RsaProperties.PRIVATE_KEY;
-        ValidationUtils.throwIfBlank(privateKey, "请配置 RSA 私钥");
+        if (CharSequenceUtil.isBlank(privateKey)) {
+            throw new SystemException("请配置 RSA 私钥");
+        }
         return decryptByRsaPrivateKey(data, privateKey);
     }
 
@@ -86,10 +92,11 @@ public class RsaUtils {
                                                         String errorMsg,
                                                         boolean isVerifyPattern) {
         String rawPassword = ExceptionUtils.exToNull(() -> decryptByRsaPrivateKey(encryptedPasswordByRsaPublicKey));
-        ValidationUtils.throwIfBlank(rawPassword, errorMsg);
-        if (isVerifyPattern) {
-            ValidationUtils.throwIf(!ReUtil
-                .isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
+        if (CharSequenceUtil.isBlank(rawPassword)) {
+            throw new BadRequestException("PASSWORD_DECRYPT_FAILED", errorMsg);
+        }
+        if (isVerifyPattern && !ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword)) {
+            throw new BadRequestException("PASSWORD_FORMAT_INVALID", "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
         }
         return rawPassword;
     }

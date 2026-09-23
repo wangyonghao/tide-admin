@@ -29,6 +29,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.generator.assembler.GenConfigAssembler;
 import top.wyhao.admin.generator.config.properties.GeneratorProperties;
 import top.wyhao.admin.generator.enums.FormTypeEnum;
+import top.wyhao.admin.generator.exception.GeneratorException;
 import top.wyhao.admin.generator.enums.QueryTypeEnum;
 import top.wyhao.admin.generator.mapper.GenGenConfigMapper;
 import top.wyhao.admin.generator.mapper.GenGenFieldConfigMapper;
@@ -46,7 +47,6 @@ import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.BaseEnum;
 import top.wyhao.starter.core.exception.SystemException;
 import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.util.HttpUtil;
@@ -141,7 +141,9 @@ public class GeneratorServiceImpl implements GeneratorService {
         // 获取数据库对应的类型映射配置
         DatabaseType databaseType = DBMetaUtils.getDatabaseType(dataSource);
         Map<String, List<String>> typeMappingMap = generatorProperties.getTypeMappings().get(databaseType);
-        Check.throwIfEmpty(typeMappingMap, "请先配置对应数据库的类型映射");
+        if (ObjectUtil.isEmpty(typeMappingMap)) {
+            throw GeneratorException.typeMappingNotConfigured();
+        }
         Set<Map.Entry<String, List<String>>> typeMappingEntrySet = typeMappingMap.entrySet();
         // 新增或更新字段配置
         Map<String, GenFieldConfig> fieldConfigMap = fieldConfigList.stream()
@@ -278,9 +280,13 @@ public class GeneratorServiceImpl implements GeneratorService {
         List<GeneratePreviewResp> generatePreviewList = new ArrayList<>();
         // 初始化配置
         GenConfig genConfig = genConfigMapper.selectById(tableName);
-        Check.isNull(genConfig, "请先进行数据表 [{}] 生成配置", tableName);
+        if (genConfig == null) {
+            throw GeneratorException.genConfigNotConfigured(tableName);
+        }
         List<GenFieldConfig> fieldConfigList = fieldConfigMapper.selectListByTableName(tableName);
-        Check.throwIfEmpty(fieldConfigList, "请先进行数据表 [{}] 字段配置", tableName);
+        if (ObjectUtil.isEmpty(fieldConfigList)) {
+            throw GeneratorException.fieldConfigNotConfigured(tableName);
+        }
 
         InnerGenConfig innerGenConfig = new InnerGenConfig();
         genConfigAssembler.copy(genConfig, innerGenConfig);

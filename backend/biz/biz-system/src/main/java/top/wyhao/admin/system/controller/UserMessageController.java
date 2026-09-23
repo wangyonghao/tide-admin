@@ -9,12 +9,12 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import top.wyhao.admin.system.exception.NoticeException;
 import top.wyhao.admin.system.model.enums.NoticeMethods;
 import top.wyhao.admin.system.model.enums.NoticeScopes;
 import top.wyhao.admin.system.service.MessageService;
 import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -64,8 +64,10 @@ public class UserMessageController {
     @GetMapping("/{id}")
     public MessageResult getMessage(@PathVariable Long id) {
         MessageResult detail = messageService.get(id);
-        Check.when(detail == null || (NoticeScopes.USER.equals(detail.getScope()) && !CollUtil
-            .contains(detail.getUsers(), LoginUtil.getUserId().toString())), "消息不存在或无权限访问");
+        if (detail == null || (NoticeScopes.USER.equals(detail.getScope()) && !CollUtil
+            .contains(detail.getUsers(), LoginUtil.getUserId().toString()))) {
+            throw NoticeException.messageNotFoundOrNoAccess();
+        }
         messageService.readMessage(Collections.singletonList(id), LoginUtil.getUserId());
         return detail;
     }
@@ -114,9 +116,11 @@ public class UserMessageController {
     @GetMapping("/notice/{id}")
     public NotificationDetailResult getNotice(@PathVariable Long id) {
         NotificationDetailResult detail = noticeService.detail(id);
-        Check.when(detail == null || (NoticeScopes.USER.equals(detail.getNoticeScope()) && !detail
+        if (detail == null || (NoticeScopes.USER.equals(detail.getNoticeScope()) && !detail
             .getNoticeUsers()
-            .contains(LoginUtil.getUserId().toString())), "公告不存在或无权限访问");
+            .contains(LoginUtil.getUserId().toString()))) {
+            throw NoticeException.notFoundOrNoAccess();
+        }
         noticeService.readNotice(id, LoginUtil.getUserId());
         return detail;
     }

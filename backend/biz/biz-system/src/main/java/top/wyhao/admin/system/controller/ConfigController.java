@@ -2,6 +2,7 @@
 package top.wyhao.admin.system.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
+import cn.hutool.core.text.CharSequenceUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -18,7 +19,6 @@ import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.admin.system.exception.ConfigException;
 import top.wyhao.starter.core.model.MailConfig;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.admin.system.model.dto.ConfigQuery;
 import top.wyhao.admin.system.model.vo.ConfigResult;
 
@@ -126,14 +126,20 @@ public class ConfigController {
     public void sendTestMail(MailConfig mailConfig) {
         // 获取当前登录用户
         top.wyhao.starter.core.model.LoginUser loginUser = top.wyhao.starter.core.UserContextHolder.getCurrentUser();
-        Check.notNull(loginUser, "用户未登录");
+        if (loginUser == null) {
+            throw ConfigException.mailTestUserNotLoggedIn();
+        }
 
         Long userId = UserContextHolder.getUserId();
 
         // 获取用户详细信息（包含邮箱）
         UserDetail userDetail = userService.detail(userId);
-        Check.notNull(userDetail, "用户信息不存在");
-        Check.notBlank(userDetail.getEmail(), "用户邮箱为空，请先设置邮箱地址");
+        if (userDetail == null) {
+            throw ConfigException.mailTestUserNotFound();
+        }
+        if (CharSequenceUtil.isBlank(userDetail.getEmail())) {
+            throw ConfigException.mailTestUserEmailBlank();
+        }
 
         // 发送测试邮件
         String subject = "【系统测试】邮件配置测试";

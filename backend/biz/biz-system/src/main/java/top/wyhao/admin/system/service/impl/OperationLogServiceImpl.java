@@ -15,7 +15,6 @@ import top.wyhao.admin.system.mapper.SysOperationLogMapper;
 import top.wyhao.admin.system.service.OperationLogService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.admin.system.exception.OperationLogException;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -62,7 +61,9 @@ public class OperationLogServiceImpl implements OperationLogService {
     @Override
     public OperationLogDetailResult detail(Long id) {
         SysOperationLog sysOperationLog = this.require(id);
-        Check.throwIfNotExists(sysOperationLog, "LogDO", "ID", id);
+        if (sysOperationLog == null) {
+            throw OperationLogException.notFound();
+        }
         return operationLogAssembler.toDetail(sysOperationLog);
     }
 

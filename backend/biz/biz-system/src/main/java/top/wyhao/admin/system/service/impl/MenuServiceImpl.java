@@ -24,8 +24,6 @@ import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
-import top.wyhao.starter.core.util.validation.Check;
-
 import java.util.ArrayList;
 import java.util.List;
 import top.wyhao.admin.system.model.dto.MenuQuery;
@@ -111,7 +109,9 @@ public class MenuServiceImpl implements MenuService {
     @Override
     public MenuVO get(Long id) {
         SysMenu sysMenu = menuMapper.selectById(id);
-        Check.isNull(sysMenu, "菜单不存在");
+        if (sysMenu == null) {
+            throw MenuException.notFound();
+        }
         return menuAssembler.toVO(sysMenu);
     }
 

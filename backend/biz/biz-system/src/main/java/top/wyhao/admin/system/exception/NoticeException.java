@@ -42,4 +42,32 @@ public class NoticeException extends BizException {
     public static NoticeException idRequired() {
         return of("REQUIRE_NONE_NULL", "ID 不能为空");
     }
+
+    public static NoticeException notFoundOrNoAccess() {
+        return of("NOTICE_NOT_FOUND_OR_NO_ACCESS", "公告不存在或无权限访问");
+    }
+
+    public static NoticeException messageNotFoundOrNoAccess() {
+        return of("NOTICE_MESSAGE_NOT_FOUND_OR_NO_ACCESS", "消息不存在或无权限访问");
+    }
+
+    public static NoticeException publishedStatusUpdateNotAllowed() {
+        return of("NOTICE_PUBLISHED_STATUS_UPDATE_NOT_ALLOWED", "公告已发布，不允许修改状态");
+    }
+
+    public static NoticeException publishedTimingUpdateNotAllowed() {
+        return of("NOTICE_PUBLISHED_TIMING_UPDATE_NOT_ALLOWED", "公告已发布，不允许修改定时发布信息");
+    }
+
+    public static NoticeException publishedScopeUpdateNotAllowed() {
+        return of("NOTICE_PUBLISHED_SCOPE_UPDATE_NOT_ALLOWED", "公告已发布，不允许修改通知范围");
+    }
+
+    public static NoticeException publishedUsersUpdateNotAllowed() {
+        return of("NOTICE_PUBLISHED_USERS_UPDATE_NOT_ALLOWED", "公告已发布，不允许修改通知用户");
+    }
+
+    public static NoticeException publishedMethodsUpdateNotAllowed() {
+        return of("NOTICE_PUBLISHED_METHODS_UPDATE_NOT_ALLOWED", "公告已发布，不允许修改通知方式");
+    }
 }

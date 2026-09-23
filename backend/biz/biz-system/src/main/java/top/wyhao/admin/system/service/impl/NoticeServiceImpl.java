@@ -2,6 +2,7 @@
 package top.wyhao.admin.system.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.ObjectUtil;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
@@ -15,7 +16,6 @@ import top.wyhao.admin.system.service.NoticeLogService;
 import top.wyhao.admin.system.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.admin.system.exception.NoticeException;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -90,18 +90,26 @@ public class NoticeServiceImpl implements NoticeService {
         SysNotice oldNotice = noticeMapper.selectById(id);
         switch (oldNotice.getStatus()) {
             case PUBLISHED -> {
-                Check.throwIfNotEqual(req.getStatus(), oldNotice.getStatus(), "公告已发布，不允许修改状态");
-                Check.throwIfNotEqual(req.getIsTiming(), oldNotice.getIsTiming(), "公告已发布，不允许修改定时发布信息");
-                Check.throwIfNotEqual(req.getNoticeScope(), oldNotice.getNoticeScope(), "公告已发布，不允许修改通知范围");
-                if (NoticeScopes.USER.equals(oldNotice.getNoticeScope())) {
-                    Check.throwIfNotEmpty(CollUtil.disjunction(req.getNoticeUsers(), oldNotice
-                            .getNoticeUsers()), "公告已发布，不允许修改通知用户");
+                if (ObjectUtil.notEqual(req.getStatus(), oldNotice.getStatus())) {
+                    throw NoticeException.publishedStatusUpdateNotAllowed();
                 }
-                Check.when(!CollUtil.isEqualList(req.getNoticeMethods(), oldNotice
-                        .getNoticeMethods()), "公告已发布，不允许修改通知方式");
+                if (ObjectUtil.notEqual(req.getIsTiming(), oldNotice.getIsTiming())) {
+                    throw NoticeException.publishedTimingUpdateNotAllowed();
+                }
+                if (ObjectUtil.notEqual(req.getNoticeScope(), oldNotice.getNoticeScope())) {
+                    throw NoticeException.publishedScopeUpdateNotAllowed();
+                }
+                if (NoticeScopes.USER.equals(oldNotice.getNoticeScope())
+                        && ObjectUtil.isNotEmpty(CollUtil.disjunction(req.getNoticeUsers(), oldNotice.getNoticeUsers()))) {
+                    throw NoticeException.publishedUsersUpdateNotAllowed();
+                }
+                if (!CollUtil.isEqualList(req.getNoticeMethods(), oldNotice.getNoticeMethods())) {
+                    throw NoticeException.publishedMethodsUpdateNotAllowed();
+                }
                 // 修正定时发布信息
-                if (Boolean.TRUE.equals(oldNotice.getIsTiming())) {
-                    Check.throwIfNotEqual(req.getPublishTime(), oldNotice.getPublishTime(), "公告已发布，不允许修改定时发布信息");
+                if (Boolean.TRUE.equals(oldNotice.getIsTiming())
+                        && ObjectUtil.notEqual(req.getPublishTime(), oldNotice.getPublishTime())) {
+                    throw NoticeException.publishedTimingUpdateNotAllowed();
                 }
                 req.setPublishTime(oldNotice.getPublishTime());
             }

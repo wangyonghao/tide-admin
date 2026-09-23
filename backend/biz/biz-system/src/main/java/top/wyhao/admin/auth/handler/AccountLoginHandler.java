@@ -17,17 +17,16 @@ import top.wyhao.admin.auth.model.enums.GrantType;
 import top.wyhao.admin.auth.model.vo.LoginResult;
 import top.wyhao.admin.system.assembler.UserAssembler;
 import top.wyhao.admin.system.entity.SysUser;
+import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.admin.system.model.result.config.LoginConfigVO;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.UserService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.constant.RegexConstants;
-import top.wyhao.admin.auth.exception.AuthException;
 import top.wyhao.starter.core.exception.BizException;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.RsaUtils;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
 import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.Duration;
@@ -241,8 +240,12 @@ public class AccountLoginHandler implements LoginHandler {
 
     private String decryptPassword(String encryptedPassword) {
         String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(encryptedPassword));
-        ValidationUtils.throwIfBlank(rawPassword, "密码解密失败");
-        ValidationUtils.throwIf(!ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
+        if (StrUtil.isBlank(rawPassword)) {
+            throw UserException.passwordDecryptFailed();
+        }
+        if (!ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword)) {
+            throw UserException.passwordFormatInvalid();
+        }
         return rawPassword;
     }
 

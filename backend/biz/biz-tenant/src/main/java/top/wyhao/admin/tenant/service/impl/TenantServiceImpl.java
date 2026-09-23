@@ -3,6 +3,7 @@ package top.wyhao.admin.tenant.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
+import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alicp.jetcache.anno.Cached;
 import lombok.RequiredArgsConstructor;
@@ -10,6 +11,7 @@ import me.ahoo.cosid.provider.IdGeneratorProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.tenant.assembler.TenantAssembler;
+import top.wyhao.admin.tenant.exception.TenantException;
 import top.wyhao.admin.tenant.mapper.SysTenantMapper;
 import top.wyhao.admin.tenant.model.entity.Tenant;
 import top.wyhao.admin.tenant.model.query.TenantQuery;
@@ -26,7 +28,6 @@ import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.spi.RoleApi;
 import top.wyhao.starter.core.spi.RoleMenuApi;
 import top.wyhao.starter.core.spi.TenantDataApi;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.tenant.config.TenantProperties;
 import top.wyhao.starter.tenant.util.TenantUtils;
 import top.wyhao.starter.web.core.model.LabelValueResult;
@@ -123,9 +124,12 @@ public class TenantServiceImpl implements TenantService {
             return;
         }
         Tenant tenant = baseMapper.selectById(id);
-        Check.throwIfEqual(StatusEnum.DISABLE, tenant.getStatus(), "租户已被禁用");
-        Check.when(tenant.getExpireTime() != null && tenant.getExpireTime()
-            .isBefore(LocalDateTime.now()), "租户已过期");
+        if (ObjectUtil.equal(StatusEnum.DISABLE, tenant.getStatus())) {
+            throw TenantException.disabled();
+        }
+        if (tenant.getExpireTime() != null && tenant.getExpireTime().isBefore(LocalDateTime.now())) {
+            throw TenantException.expired();
+        }
     }
 
     @Override
@@ -161,10 +165,12 @@ public class TenantServiceImpl implements TenantService {
      * @param id   ID
      */
     private void checkNameRepeat(String name, Long id) {
-        Check.when(baseMapper.lambdaQuery()
+        if (baseMapper.lambdaQuery()
             .eq(Tenant::getName, name)
             .ne(id != null, Tenant::getId, id)
-            .exists(), "名称为 [{}] 的租户已存在", name);
+            .exists()) {
+            throw TenantException.nameExists(name);
+        }
     }
 
     /**
@@ -174,10 +180,12 @@ public class TenantServiceImpl implements TenantService {
      * @param id     ID
      */
     private void checkDomainRepeat(String domain, Long id) {
-        Check.when(baseMapper.lambdaQuery()
+        if (baseMapper.lambdaQuery()
             .eq(Tenant::getDomain, domain)
             .ne(id != null, Tenant::getId, id)
-            .exists(), "域名为 [{}] 的租户已存在", domain);
+            .exists()) {
+            throw TenantException.domainExists(domain);
+        }
     }
 
 

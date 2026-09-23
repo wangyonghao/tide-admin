@@ -35,7 +35,6 @@ import top.wyhao.starter.core.enums.DataScopeEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.admin.system.exception.RoleException;
 import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -102,7 +101,9 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
         this.checkNameExists(req.getName(), null);
         String code = req.getCode();
         // 防止租户添加超级管理员
-        Check.throwIfEqual(RoleCodeEnum.SUPER_ADMIN.getCode(), req.getCode(), "编码 [{}] 禁止使用", code);
+        if (ObjectUtil.equal(RoleCodeEnum.SUPER_ADMIN.getCode(), req.getCode())) {
+            throw RoleException.codeForbidden(code);
+        }
         // 新增信息
         SysRole entity = new SysRole();
         updateEntityFromReq(entity, req);
@@ -119,10 +120,12 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     public void update(RoleRequest req, Long id) {
         this.checkNameExists(req.getName(), id);
         SysRole oldRole = roleMapper.selectById(id);
-        Check.throwIfNotEqual(req.getCode(), oldRole.getCode(), "角色编码不允许修改", oldRole.getName());
+        if (ObjectUtil.notEqual(req.getCode(), oldRole.getCode())) {
+            throw RoleException.codeUpdateNotAllowed();
+        }
         DataScopeEnum oldDataScope = oldRole.getDataScope();
-        if (Boolean.TRUE.equals(oldRole.getIsBuiltin())) {
-            Check.throwIfNotEqual(req.getDataScope(), oldDataScope, "[{}] 是系统内置角色，不允许修改角色数据权限", oldRole.getName());
+        if (Boolean.TRUE.equals(oldRole.getIsBuiltin()) && ObjectUtil.notEqual(req.getDataScope(), oldDataScope)) {
+            throw RoleException.builtinDataScopeUpdateNotAllowed(oldRole.getName());
         }
         // 更新信息
         SysRole entity = roleMapper.selectById(id);
@@ -183,7 +186,9 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     @CacheInvalidate(key = "#roleId", name = CacheConstants.ROLE_MENU_KEY_PREFIX)
     public void updatePermission(Long roleId, RolePermissionUpdateRequest req) {
         SysRole role = roleMapper.selectById(roleId);
-        Check.when(Boolean.TRUE.equals(role.getIsBuiltin()), "[{}] 是系统内置角色，不允许修改角色功能权限", role.getName());
+        if (Boolean.TRUE.equals(role.getIsBuiltin())) {
+            throw RoleException.builtinPermissionUpdateNotAllowed(role.getName());
+        }
         // 保存角色和菜单关联
         roleMenuService.save(req.getMenuIds(), roleId);
         roleMapper.lambdaUpdate()
@@ -195,7 +200,9 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     @Override
     public void assignToUsers(Long roleId, List<Long> userIds) {
         SysRole role = roleMapper.selectById(roleId);
-        Check.when(Boolean.TRUE.equals(role.getIsBuiltin()), "[{}] 是系统内置角色，不允许分配角色给其他用户", role.getName());
+        if (Boolean.TRUE.equals(role.getIsBuiltin())) {
+            throw RoleException.builtinAssignNotAllowed(role.getName());
+        }
         // 保存用户和角色关联
         this.assignRoleToUsers(roleId, userIds);
         // 更新用户上下文

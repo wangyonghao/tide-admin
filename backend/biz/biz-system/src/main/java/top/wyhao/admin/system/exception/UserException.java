@@ -67,4 +67,128 @@ public class UserException extends BizException {
     public static UserException downloadTemplateFailed(String detail) {
         return of("USER_IMPORT_TEMPLATE_DOWNLOAD_FAILED", "下载用户导入模板失败：" + detail);
     }
+
+    public static UserException notFound(String ids) {
+        return of("USER_NOT_FOUND", StrUtil.format("所选用户 [{}] 不存在", ids));
+    }
+
+    public static UserException passwordDecryptFailed() {
+        return of("USER_PASSWORD_DECRYPT_FAILED", "密码解密失败");
+    }
+
+    public static UserException passwordFormatInvalid() {
+        return of("USER_PASSWORD_FORMAT_INVALID", "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
+    }
+
+    public static UserException passwordFormatInvalid(int minLength, int maxLength) {
+        return of("USER_PASSWORD_FORMAT_INVALID", StrUtil.format("密码长度为 {}-{} 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字", minLength, maxLength));
+    }
+
+    public static UserException passwordPolicyViolated(String message) {
+        return of("USER_PASSWORD_POLICY_VIOLATED", message);
+    }
+
+    public static UserException avatarEmpty() {
+        return of("USER_AVATAR_EMPTY", "头像不能为空");
+    }
+
+    public static UserException passwordIncorrect() {
+        return of("USER_PASSWORD_INCORRECT", "当前密码不正确");
+    }
+
+    public static UserException passwordSameAsOld() {
+        return of("USER_PASSWORD_SAME_AS_OLD", "新密码不能与当前密码相同");
+    }
+
+    public static UserException phoneSameAsOld() {
+        return of("USER_PHONE_SAME_AS_OLD", "新手机号不能与当前手机号相同");
+    }
+
+    public static UserException emailSameAsOld() {
+        return of("USER_EMAIL_SAME_AS_OLD", "新邮箱不能与当前邮箱相同");
+    }
+
+    public static UserException deleteSelfNotAllowed() {
+        return of("USER_DELETE_SELF_NOT_ALLOWED", "不允许删除当前用户");
+    }
+
+    public static UserException builtinDeleteNotAllowed(String nickname) {
+        return of("USER_BUILTIN_DELETE_NOT_ALLOWED", StrUtil.format("所选用户 [{}] 是系统内置用户，不允许删除", nickname));
+    }
+
+    public static UserException avatarFormatNotSupported(String supportSuffix) {
+        return of("USER_AVATAR_FORMAT_NOT_SUPPORTED", StrUtil.format("头像仅支持 {} 格式的图片", supportSuffix));
+    }
+
+    public static UserException importDataInvalid() {
+        return of("USER_IMPORT_DATA_INVALID", "数据文件格式不正确");
+    }
+
+    public static UserException importEmailDuplicate() {
+        return of("USER_IMPORT_EMAIL_DUPLICATE", "存在重复邮箱，请检测数据");
+    }
+
+    public static UserException importPhoneDuplicate() {
+        return of("USER_IMPORT_PHONE_DUPLICATE", "存在重复手机，请检测数据");
+    }
+
+    public static UserException importPolicyViolated() {
+        return of("USER_IMPORT_POLICY_VIOLATED", "数据不符合导入策略，已退出导入");
+    }
+
+    public static UserException importRoleInvalid() {
+        return of("USER_IMPORT_ROLE_INVALID", "存在无效角色，请检查数据");
+    }
+
+    public static UserException importDeptInvalid() {
+        return of("USER_IMPORT_DEPT_INVALID", "存在无效部门，请检查部门名称或部门层级是否正确");
+    }
+
+    public static UserException deptNamesEmpty() {
+        return of("USER_DEPT_NAMES_EMPTY", "部门名称集合不能为空");
+    }
+
+    public static UserException deptNameListEmpty() {
+        return of("USER_DEPT_NAMES_EMPTY", "部门名称列表不能为空");
+    }
+
+    public static UserException deptsInvalidOrAmbiguous(String deptNames) {
+        return of("USER_DEPT_INVALID_OR_AMBIGUOUS", StrUtil.format("以下部门无效或存在歧义：{}", deptNames));
+    }
+
+    public static UserException deptNotFoundOrAmbiguous(String deptName) {
+        return of("USER_DEPT_INVALID_OR_AMBIGUOUS", StrUtil.format("部门 [{}] 不存在或存在歧义", deptName));
+    }
+
+    public static UserException deptPathBlank() {
+        return of("USER_DEPT_PATH_BLANK", "部门路径不能为空");
+    }
+
+    public static UserException deptPathFormatInvalid(String deptPath) {
+        return of("USER_DEPT_PATH_FORMAT_INVALID", StrUtil.format("部门路径格式错误：{}", deptPath));
+    }
+
+    public static UserException deptPathContainsBlank(String deptPath) {
+        return of("USER_DEPT_PATH_FORMAT_INVALID", StrUtil.format("部门路径包含空名称：{}", deptPath));
+    }
+
+    public static UserException deptNotFoundInPath(String deptName, String deptPath) {
+        return of("USER_DEPT_NOT_FOUND", StrUtil.format("找不到部门 [{}] 在路径 [{}] 中", deptName, deptPath));
+    }
+
+    public static UserException deptNotFound(String deptName) {
+        return of("USER_DEPT_NOT_FOUND", StrUtil.format("部门 [{}] 不存在", deptName));
+    }
+
+    public static UserException deptNameDuplicate(String deptName) {
+        return of("USER_DEPT_NAME_DUPLICATE", StrUtil.format("存在多个同名部门 [{}]，请使用完整层级路径，如：公司名:{}", deptName, deptName));
+    }
+
+    public static UserException socialAlreadyBound(String source) {
+        return of("USER_SOCIAL_ALREADY_BOUND", StrUtil.format("您已经绑定过了 [{}] 平台，请先解绑", source));
+    }
+
+    public static UserException socialBoundByOther(String source, String username) {
+        return of("USER_SOCIAL_BOUND_BY_OTHER", StrUtil.format("[{}] 平台账号 [{}] 已被其他用户绑定", source, username));
+    }
 }

@@ -9,12 +9,13 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import top.wyhao.admin.system.entity.SysUser;
+import top.wyhao.admin.system.exception.ConfigException;
+import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
 import top.wyhao.admin.system.service.ConfigService;
 import top.wyhao.admin.system.service.UserPasswordHistoryService;
 import top.wyhao.starter.core.constant.GlobalConstants;
 import top.wyhao.starter.core.constant.RegexConstants;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
 
 import java.util.Map;
 
@@ -56,7 +57,9 @@ public enum PasswordPolicies {
             Integer passwordExpirationDays = ObjectUtil.defaultIfNull(Convert.toInt(policyMap
                 .get(PASSWORD_EXPIRATION_DAYS.name())), securityConfigVO.getPasswordExpireDays());
             if (passwordExpirationDays > GlobalConstants.Boolean.NO) {
-                ValidationUtils.throwIf(value >= passwordExpirationDays, "密码到期提醒时间应小于密码有效期");
+                if (value >= passwordExpirationDays) {
+                    throw ConfigException.passwordWarningDaysExceedExpiration();
+                }
                 return;
             }
             super.validateRange(value, policyMap);
@@ -70,11 +73,14 @@ public enum PasswordPolicies {
         @Override
         public void validate(String password, int value, SysUser user) {
             // 最小长度校验
-            ValidationUtils.throwIf(StrUtil.length(password) < value, this.getMsg().formatted(value));
+            if (StrUtil.length(password) < value) {
+                throw UserException.passwordPolicyViolated(this.getMsg().formatted(value));
+            }
             // 完整校验
             int passwordMaxLength = this.getMax();
-            ValidationUtils.throwIf(!ReUtil.isMatch(RegexConstants.PASSWORD_TEMPLATE
-                .formatted(value, passwordMaxLength), password), "密码长度为 {}-{} 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字", value, passwordMaxLength);
+            if (!ReUtil.isMatch(RegexConstants.PASSWORD_TEMPLATE.formatted(value, passwordMaxLength), password)) {
+                throw UserException.passwordFormatInvalid(value, passwordMaxLength);
+            }
         }
     },
 
@@ -84,15 +90,17 @@ public enum PasswordPolicies {
     PASSWORD_REQUIRE_SYMBOLS("密码是否必须包含特殊字符取值只能为是（%d）或否（%d）", GlobalConstants.Boolean.NO, GlobalConstants.Boolean.YES, "密码必须包含特殊字符") {
         @Override
         public void validateRange(int value, Map<String, String> policyMap) {
-            ValidationUtils.throwIf(value != GlobalConstants.Boolean.YES && value != GlobalConstants.Boolean.NO, this
-                .getDescription()
-                .formatted(GlobalConstants.Boolean.YES, GlobalConstants.Boolean.NO));
+            if (value != GlobalConstants.Boolean.YES && value != GlobalConstants.Boolean.NO) {
+                throw ConfigException.passwordPolicyInvalid(this.getDescription()
+                    .formatted(GlobalConstants.Boolean.YES, GlobalConstants.Boolean.NO));
+            }
         }
 
         @Override
         public void validate(String password, int value, SysUser user) {
-            ValidationUtils.throwIf(value == GlobalConstants.Boolean.YES && !ReUtil
-                .isMatch(RegexConstants.SPECIAL_CHARACTER, password), this.getMsg());
+            if (value == GlobalConstants.Boolean.YES && !ReUtil.isMatch(RegexConstants.SPECIAL_CHARACTER, password)) {
+                throw UserException.passwordPolicyViolated(this.getMsg());
+            }
         }
     },
 
@@ -102,17 +110,19 @@ public enum PasswordPolicies {
     PASSWORD_ALLOW_CONTAIN_USERNAME("密码是否允许包含用户名取值只能为是（%d）或否（%d）", GlobalConstants.Boolean.NO, GlobalConstants.Boolean.YES, "密码不允许包含正反序用户名") {
         @Override
         public void validateRange(int value, Map<String, String> policyMap) {
-            ValidationUtils.throwIf(value != GlobalConstants.Boolean.YES && value != GlobalConstants.Boolean.NO, this
-                .getDescription()
-                .formatted(GlobalConstants.Boolean.YES, GlobalConstants.Boolean.NO));
+            if (value != GlobalConstants.Boolean.YES && value != GlobalConstants.Boolean.NO) {
+                throw ConfigException.passwordPolicyInvalid(this.getDescription()
+                    .formatted(GlobalConstants.Boolean.YES, GlobalConstants.Boolean.NO));
+            }
         }
 
         @Override
         public void validate(String password, int value, SysUser user) {
             if (value <= GlobalConstants.Boolean.NO) {
                 String username = user.getUsername();
-                ValidationUtils.throwIf(CharSequenceUtil.containsAnyIgnoreCase(password, username, StrUtil
-                    .reverse(username)), this.getMsg());
+                if (CharSequenceUtil.containsAnyIgnoreCase(password, username, StrUtil.reverse(username))) {
+                    throw UserException.passwordPolicyViolated(this.getMsg());
+                }
             }
         }
     },
@@ -125,9 +135,9 @@ public enum PasswordPolicies {
         public void validate(String password, int value, SysUser user) {
             UserPasswordHistoryService userPasswordHistoryService = SpringUtil
                 .getBean(UserPasswordHistoryService.class);
-            ValidationUtils.throwIf(userPasswordHistoryService.isPasswordReused(user.getId(), password, value), this
-                .getMsg()
-                .formatted(value));
+            if (userPasswordHistoryService.isPasswordReused(user.getId(), password, value)) {
+                throw UserException.passwordPolicyViolated(this.getMsg().formatted(value));
+            }
         }
     },;
 
@@ -188,8 +198,9 @@ public enum PasswordPolicies {
     public void validateRange(int value, Map<String, String> policyMap) {
         Integer minValue = this.getMin();
         Integer maxValue = this.getMax();
-        ValidationUtils.throwIf(value < minValue || value > maxValue, this.getDescription()
-            .formatted(minValue, maxValue));
+        if (value < minValue || value > maxValue) {
+            throw ConfigException.passwordPolicyInvalid(this.getDescription().formatted(minValue, maxValue));
+        }
     }
 
     /**

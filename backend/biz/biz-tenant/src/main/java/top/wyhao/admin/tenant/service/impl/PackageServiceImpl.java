@@ -5,6 +5,7 @@ import cn.hutool.core.lang.tree.Tree;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import top.wyhao.admin.tenant.exception.PackageException;
 import top.wyhao.admin.tenant.mapper.SysTenantMapper;
 import top.wyhao.admin.tenant.mapper.TenantPackageMapper;
 import top.wyhao.admin.tenant.model.entity.TenantPackage;
@@ -13,7 +14,6 @@ import top.wyhao.admin.tenant.model.req.PackageRequest;
 import top.wyhao.admin.tenant.model.resp.PackageDetailResp;
 import top.wyhao.admin.tenant.model.resp.PackageResp;
 import top.wyhao.admin.tenant.service.PackageService;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
@@ -84,10 +84,12 @@ public class PackageServiceImpl implements PackageService {
      * @param id   ID
      */
     private void checkNameRepeat(String name, Long id) {
-        Check.when(baseMapper.lambdaQuery()
+        if (baseMapper.lambdaQuery()
             .eq(TenantPackage::getName, name)
             .ne(id != null, TenantPackage::getId, id)
-            .exists(), "名称为 [{}] 的套餐已存在", name);
+            .exists()) {
+            throw PackageException.nameExists(name);
+        }
     }
 
 }

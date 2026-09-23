@@ -3,12 +3,14 @@ package top.wyhao.admin.config.satoken;
 
 import cn.dev33.satoken.secure.SaSecureUtil;
 import cn.dev33.satoken.sign.template.SaSignTemplate;
+import cn.hutool.core.text.CharSequenceUtil;
+import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.admin.open.exception.OpenApiException;
 import top.wyhao.admin.open.model.entity.SysApp;
 import top.wyhao.admin.open.service.AppService;
-import top.wyhao.starter.core.util.validation.ValidationUtils;
 
 import java.util.Map;
 
@@ -35,14 +37,28 @@ public class ApiSignTemplate extends SaSignTemplate {
         String accessKeyValue = paramMap.get(ACCESS_KEY);
 
         // 校验
-        ValidationUtils.throwIfBlank(timestampValue, "timestamp不能为空");
-        ValidationUtils.throwIfBlank(nonceValue, "nonce不能为空");
-        ValidationUtils.throwIfBlank(signValue, "sign不能为空");
-        ValidationUtils.throwIfBlank(accessKeyValue, "accessKey不能为空");
+        if (CharSequenceUtil.isBlank(timestampValue)) {
+            throw OpenApiException.signParamMissing(timestamp);
+        }
+        if (CharSequenceUtil.isBlank(nonceValue)) {
+            throw OpenApiException.signParamMissing(nonce);
+        }
+        if (CharSequenceUtil.isBlank(signValue)) {
+            throw OpenApiException.signParamMissing(sign);
+        }
+        if (CharSequenceUtil.isBlank(accessKeyValue)) {
+            throw OpenApiException.signParamMissing(ACCESS_KEY);
+        }
         SysApp app = appService.getByAccessKey(accessKeyValue);
-        ValidationUtils.throwIfNull(app, "accessKey无效");
-        ValidationUtils.throwIfEqual(StatusEnum.DISABLE, app.getStatus(), "应用已被禁用, 请联系管理员");
-        ValidationUtils.throwIf(app.isExpired(), "应用已过期, 请联系管理员");
+        if (app == null) {
+            throw OpenApiException.accessKeyInvalid();
+        }
+        if (ObjectUtil.equal(StatusEnum.DISABLE, app.getStatus())) {
+            throw OpenApiException.appDisabled();
+        }
+        if (app.isExpired()) {
+            throw OpenApiException.appExpired();
+        }
 
         // 依次校验三个参数
         super.checkTimestamp(Long.parseLong(timestampValue));
@@ -53,7 +69,9 @@ public class ApiSignTemplate extends SaSignTemplate {
 
     @Override
     public String createSign(Map<String, ?> paramMap) {
-        ValidationUtils.throwIfEmpty(paramMap.get(key), "秘钥缺失, 请检查应用配置");
+        if (ObjectUtil.isEmpty(paramMap.get(key))) {
+            throw OpenApiException.secretKeyMissing();
+        }
         // 移除 sign 参数
         paramMap.remove(sign);
         // 计算签名

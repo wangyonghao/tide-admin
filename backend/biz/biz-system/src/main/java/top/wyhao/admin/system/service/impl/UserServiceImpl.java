@@ -59,7 +59,6 @@ import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.RsaUtils;
-import top.wyhao.starter.core.util.validation.Check;
 import top.wyhao.starter.excel.util.ExcelUtils;
 
 import java.time.Duration;
@@ -102,7 +101,9 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDetail detail(Long id) {
         SysUser userDO = userMapper.selectById(id);
-        Check.notNull(userDO, "用户不存在");
+        if (userDO == null) {
+            throw UserException.notFound();
+        }
         return userAssembler.toDetail(userDO);
     }
 
@@ -117,8 +118,12 @@ public class UserServiceImpl implements UserService {
     public Long create(UserRequest request) {
         /* 入参格式校验 */
         String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(request.getPassword()));
-        Check.notBlank(rawPassword, "密码解密失败");
-        Check.when(!ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword), "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
+        if (CharSequenceUtil.isBlank(rawPassword)) {
+            throw UserException.passwordDecryptFailed();
+        }
+        if (!ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword)) {
+            throw UserException.passwordFormatInvalid();
+        }
         this.checkEmailUnique(request.getEmail(), null);
         this.checkPhoneUnique(request.getPhone(), null);
         this.checkUsernameUnique(request.getUsername());
@@ -181,17 +186,22 @@ public class UserServiceImpl implements UserService {
     @Transactional(rollbackFor = Exception.class)
     @CacheInvalidate(key = "#ids", name = CacheConstants.USER_KEY_PREFIX, multi = true)
     public void delete(List<Long> ids) {
-        Check.when(CollUtil.contains(ids, LoginUtil.getUserId()), "不允许删除当前用户");
+        if (CollUtil.contains(ids, LoginUtil.getUserId())) {
+            throw UserException.deleteSelfNotAllowed();
+        }
         List<SysUser> list = userMapper.lambdaQuery()
                 .select(SysUser::getId, SysUser::getNickname, SysUser::getIsBuiltin)
                 .in(SysUser::getId, ids)
                 .list();
         List<Long> idList = CollUtils.mapToList(list, SysUser::getId);
         Collection<Long> subtractIds = CollUtil.subtract(ids, idList);
-        Check.throwIfNotEmpty(subtractIds, "所选用户 [{}] 不存在", CollUtil.join(subtractIds, StringConstants.COMMA));
+        if (ObjectUtil.isNotEmpty(subtractIds)) {
+            throw UserException.notFound(CollUtil.join(subtractIds, StringConstants.COMMA));
+        }
         Optional<SysUser> builtinUser = list.stream().filter(SysUser::getIsBuiltin).findFirst();
-        Check.when(builtinUser::isPresent, "所选用户 [{}] 是系统内置用户，不允许删除", builtinUser.orElseGet(SysUser::new)
-                .getNickname());
+        if (builtinUser.isPresent()) {
+            throw UserException.builtinDeleteNotAllowed(builtinUser.get().getNickname());
+        }
         // 删除用户和角色关联
         userRoleMapper.lambdaUpdate().in(SysUserRole::getUserId, ids).remove();
         // 删除历史密码
@@ -221,32 +231,44 @@ public class UserServiceImpl implements UserService {
         }
         // 总计行数
         userImportResp.setTotalRows(importRowList.size());
-        Check.throwIfEmpty(importRowList, "数据文件格式不正确");
+        if (ObjectUtil.isEmpty(importRowList)) {
+            throw UserException.importDataInvalid();
+        }
         // 有效行数：过滤无效数据
         List<UserImportRowReq> validRowList = this.filterImportData(importRowList);
         userImportResp.setValidRows(validRowList.size());
-        Check.throwIfEmpty(validRowList, "数据文件格式不正确");
+        if (ObjectUtil.isEmpty(validRowList)) {
+            throw UserException.importDataInvalid();
+        }
 
         // 检测表格内数据是否合法
         Set<String> seenEmails = new HashSet<>();
         boolean hasDuplicateEmail = validRowList.stream()
                 .map(UserImportRowReq::getEmail)
                 .anyMatch(email -> email != null && !seenEmails.add(email));
-        Check.when(hasDuplicateEmail, "存在重复邮箱，请检测数据");
+        if (hasDuplicateEmail) {
+            throw UserException.importEmailDuplicate();
+        }
         Set<String> seenPhones = new HashSet<>();
         boolean hasDuplicatePhone = validRowList.stream()
                 .map(UserImportRowReq::getPhone)
                 .anyMatch(phone -> phone != null && !seenPhones.add(phone));
-        Check.when(hasDuplicatePhone, "存在重复手机，请检测数据");
+        if (hasDuplicatePhone) {
+            throw UserException.importPhoneDuplicate();
+        }
 
         // 校验是否存在无效角色
         List<String> roleNames = validRowList.stream().map(UserImportRowReq::getRoleName).distinct().toList();
         int existRoleCount = roleService.countByNames(roleNames);
-        Check.when(existRoleCount < roleNames.size(), "存在无效角色，请检查数据");
+        if (existRoleCount < roleNames.size()) {
+            throw UserException.importRoleInvalid();
+        }
         // 校验是否存在无效部门（支持多级部门解析）
         Set<String> deptNames = CollUtils.mapToSet(validRowList, UserImportRowReq::getDeptName);
         int existDeptCount = countValidMultiLevelDepts(deptNames);
-        Check.when(existDeptCount < deptNames.size(), "存在无效部门，请检查部门名称或部门层级是否正确");
+        if (existDeptCount < deptNames.size()) {
+            throw UserException.importDeptInvalid();
+        }
 
         // 查询重复用户
         userImportResp
@@ -272,7 +294,9 @@ public class UserServiceImpl implements UserService {
         try {
             String data = RedisUtils.get(CacheConstants.DATA_IMPORT_KEY + req.getImportKey());
             importUserList = JSONUtil.toList(data, UserImportRowReq.class);
-            Check.when(CollUtil.isEmpty(importUserList), "导入已过期，请重新上传");
+            if (CollUtil.isEmpty(importUserList)) {
+                throw UserException.importExpired();
+            }
         } catch (Exception e) {
             log.error("导入异常:", e);
             throw UserException.importExpired();
@@ -283,8 +307,9 @@ public class UserServiceImpl implements UserService {
         List<SysUser> existUserList = listByUsernames(CollUtils
                 .mapToList(importUserList, UserImportRowReq::getUsername));
         List<String> existUsernames = CollUtils.mapToList(existUserList, SysUser::getUsername);
-        Check
-                .when(isExitImportUser(req, importUserList, existUsernames, existEmails, existPhones), "数据不符合导入策略，已退出导入");
+        if (isExitImportUser(req, importUserList, existUsernames, existEmails, existPhones)) {
+            throw UserException.importPolicyViolated();
+        }
 
         // 基础数据准备
         Map<String, Long> userMap = existUserList.stream()
@@ -455,8 +480,9 @@ public class UserServiceImpl implements UserService {
      */
     private void checkAvatar(MultipartFile avatarFile) {
         String avatarImageType = FileNameUtil.extName(avatarFile.getOriginalFilename());
-        Check.when(!CharSequenceUtil.equalsAnyIgnoreCase(avatarImageType, avatarSupportSuffix), "头像仅支持 {} 格式的图片", String
-                .join(StringConstants.COMMA, avatarSupportSuffix));
+        if (!CharSequenceUtil.equalsAnyIgnoreCase(avatarImageType, avatarSupportSuffix)) {
+            throw UserException.avatarFormatNotSupported(String.join(StringConstants.COMMA, avatarSupportSuffix));
+        }
 
         long avatarMaxSize = 1024 * 1024 * 2; // 2MB
         long avatarSize = avatarFile.getSize();
@@ -479,10 +505,13 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updatePassword(String oldPassword, String newPassword, Long id) {
-        Check.throwIfEqual(newPassword, oldPassword, "新密码不能与当前密码相同");
+        if (ObjectUtil.equal(newPassword, oldPassword)) {
+            throw UserException.passwordSameAsOld();
+        }
         SysUser oldUser = this.getById(id);
-        if (CharSequenceUtil.isNotBlank(oldUser.getPassword())) {
-            Check.when(!passwordEncoder.matches(oldPassword, oldUser.getPassword()), "当前密码不正确");
+        if (CharSequenceUtil.isNotBlank(oldUser.getPassword())
+                && !passwordEncoder.matches(oldPassword, oldUser.getPassword())) {
+            throw UserException.passwordIncorrect();
         }
         // 校验密码合法性
         int passwordRepetitionTimes = this.checkPassword(newPassword, oldUser);
@@ -508,8 +537,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updatePhone(String newPhone, String oldPassword, Long id) {
         SysUser user = userMapper.selectById(id);
-        Check.when(!passwordEncoder.matches(oldPassword, user.getPassword()), "当前密码不正确");
-        Check.throwIfEqual(newPhone, user.getPhone(), "新手机号不能与当前手机号相同");
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw UserException.passwordIncorrect();
+        }
+        if (ObjectUtil.equal(newPhone, user.getPhone())) {
+            throw UserException.phoneSameAsOld();
+        }
         this.checkPhoneUnique(newPhone, id);
         SysUser updateUser = new SysUser();
         updateUser.setId(id);
@@ -521,8 +554,12 @@ public class UserServiceImpl implements UserService {
     @Override
     public void updateEmail(String newEmail, String oldPassword, Long id) {
         SysUser user = this.getById(id);
-        Check.when(!passwordEncoder.matches(oldPassword, user.getPassword()), "当前密码不正确");
-        Check.throwIfEqual(newEmail, user.getEmail(), "新邮箱不能与当前邮箱相同");
+        if (!passwordEncoder.matches(oldPassword, user.getPassword())) {
+            throw UserException.passwordIncorrect();
+        }
+        if (ObjectUtil.equal(newEmail, user.getEmail())) {
+            throw UserException.emailSameAsOld();
+        }
         this.checkEmailUnique(newEmail, id);
 
         SysUser updateUser = new SysUser();
@@ -801,7 +838,9 @@ public class UserServiceImpl implements UserService {
      */
     private SysUser getById(Long id) {
         SysUser user = userMapper.selectById(id);
-        Check.isNull(user, "用户不存在");
+        if (user == null) {
+            throw UserException.notFound();
+        }
         return user;
     }
 
@@ -816,7 +855,9 @@ public class UserServiceImpl implements UserService {
      * @return 有效部门数量
      */
     private int countValidMultiLevelDepts(Set<String> deptNames) {
-        Check.throwIfEmpty(deptNames, "部门名称集合不能为空");
+        if (ObjectUtil.isEmpty(deptNames)) {
+            throw UserException.deptNamesEmpty();
+        }
 
         int validCount = 0;
         List<String> invalidDepts = new ArrayList<>();
@@ -830,7 +871,9 @@ public class UserServiceImpl implements UserService {
             }
         }
 
-        Check.when(CollUtil.isNotEmpty(invalidDepts), "以下部门无效或存在歧义：{}", String.join(", ", invalidDepts));
+        if (CollUtil.isNotEmpty(invalidDepts)) {
+            throw UserException.deptsInvalidOrAmbiguous(String.join(", ", invalidDepts));
+        }
 
         return validCount;
     }
@@ -845,12 +888,16 @@ public class UserServiceImpl implements UserService {
      * @return 部门名称到ID的映射
      */
     private Map<String, Long> buildMultiLevelDeptMapping(List<String> deptNames) {
-        Check.throwIfEmpty(deptNames, "部门名称列表不能为空");
+        if (ObjectUtil.isEmpty(deptNames)) {
+            throw UserException.deptNameListEmpty();
+        }
 
         Map<String, Long> deptMap = new HashMap<>();
         for (String deptName : deptNames) {
             SysDept dept = findDeptByHierarchicalPath(deptName);
-            Check.isNull(dept, "部门 [{}] 不存在或存在歧义", deptName);
+            if (dept == null) {
+                throw UserException.deptNotFoundOrAmbiguous(deptName);
+            }
             deptMap.put(deptName, dept.getId());
         }
         return deptMap;
@@ -871,7 +918,9 @@ public class UserServiceImpl implements UserService {
      * @return 部门信息，未找到时返回null
      */
     private SysDept findDeptByHierarchicalPath(String deptPath) {
-        Check.notBlank(deptPath, "部门路径不能为空");
+        if (CharSequenceUtil.isBlank(deptPath)) {
+            throw UserException.deptPathBlank();
+        }
         return deptPath.contains(StringConstants.SLASH)
                 ? findMultiLevelDept(deptPath)
                 : findSingleLevelDept(deptPath.trim());
@@ -888,7 +937,9 @@ public class UserServiceImpl implements UserService {
      */
     private SysDept findMultiLevelDept(String deptPath) {
         String[] pathParts = deptPath.split(StringConstants.SLASH);
-        Check.when(pathParts.length == 0, "部门路径格式错误：{}", deptPath);
+        if (pathParts.length == 0) {
+            throw UserException.deptPathFormatInvalid(deptPath);
+        }
 
         // 从根部门开始逐级查找
         SysDept currentDept = null;
@@ -896,7 +947,9 @@ public class UserServiceImpl implements UserService {
 
         for (String part : pathParts) {
             String trimmedPart = part.trim();
-            Check.notBlank(trimmedPart, "部门路径包含空名称：{}", deptPath);
+            if (CharSequenceUtil.isBlank(trimmedPart)) {
+                throw UserException.deptPathContainsBlank(deptPath);
+            }
 
             // 查找当前层级下指定名称的部门
             currentDept = deptMapper.lambdaQuery()
@@ -904,7 +957,9 @@ public class UserServiceImpl implements UserService {
                     .eq(SysDept::getParentId, parentId)
                     .one();
 
-            Check.isNull(currentDept, "找不到部门 [{}] 在路径 [{}] 中", trimmedPart, deptPath);
+            if (currentDept == null) {
+                throw UserException.deptNotFoundInPath(trimmedPart, deptPath);
+            }
             parentId = currentDept.getId(); // 更新父级ID为当前部门ID
         }
 
@@ -925,8 +980,12 @@ public class UserServiceImpl implements UserService {
         // 查找所有同名部门
         List<SysDept> deptList = deptMapper.lambdaQuery().eq(SysDept::getName, deptName).list();
 
-        Check.throwIfEmpty(deptList, "部门 [{}] 不存在", deptName);
-        Check.when(deptList.size() > 1, "存在多个同名部门 [{}]，请使用完整层级路径，如：公司名:{}", deptName, deptName);
+        if (ObjectUtil.isEmpty(deptList)) {
+            throw UserException.deptNotFound(deptName);
+        }
+        if (deptList.size() > 1) {
+            throw UserException.deptNameDuplicate(deptName);
+        }
 
         return deptList.get(0);
     }
