@@ -1,0 +1,59 @@
+
+package top.wyhao.cmn.core.constant;
+
+/**
+ * 缓存相关常量
+ *
+
+ * @since 2022/12/22 19:30
+ */
+public class CacheConstants {
+
+    /**
+     * 分隔符
+     */
+    public static final String DELIMITER = StringConstants.COLON;
+
+    /**
+     * 验证码键前缀
+     */
+    public static final String CAPTCHA_KEY_PREFIX = "CAPTCHA" + DELIMITER;
+
+    /**
+     * 用户缓存键前缀
+     */
+    public static final String USER_KEY_PREFIX = "USER" + DELIMITER;
+
+    /**
+     * 角色菜单缓存键前缀
+     */
+    public static final String ROLE_MENU_KEY_PREFIX = "ROLE_MENU" + DELIMITER;
+
+    /**
+     * 选项缓存键前缀
+     */
+    public static final String OPTION_KEY_PREFIX = "OPTION" + DELIMITER;
+
+    /**
+     * 参数缓存键前缀
+     */
+    public static final String CONFIG_KEY_PREFIX = "CONFIG" + DELIMITER;
+
+    /**
+     * 仪表盘缓存键前缀
+     */
+    public static final String DASHBOARD_KEY_PREFIX = "DASHBOARD" + DELIMITER;
+
+    /**
+     * 用户密码错误次数缓存键前缀
+     */
+    public static final String USER_PASSWORD_ERROR_KEY_PREFIX = USER_KEY_PREFIX + "PASSWORD_ERROR" + DELIMITER;
+
+    /**
+     * 数据导入临时会话key
+     */
+    public static final String DATA_IMPORT_KEY = "SYSTEM" + DELIMITER + "DATA_IMPORT" + DELIMITER;
+
+    private CacheConstants() {
+    }
+}
