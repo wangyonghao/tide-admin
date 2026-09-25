@@ -9,20 +9,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.open.mapper.SysAppMapper;
 import top.wyhao.admin.open.model.entity.SysApp;
-import top.wyhao.settings.entity.SysDict;
+import top.wyhao.settings.entity.SysOption;
 import top.wyhao.notification.entity.SysMessage;
 import top.wyhao.notification.entity.SysMessageLog;
 import top.wyhao.notification.entity.SysNotice;
 import top.wyhao.notification.entity.SysNoticeLog;
-import top.wyhao.settings.mapper.SysDictMapper;
+import top.wyhao.settings.mapper.SysOptionMapper;
 import top.wyhao.notification.mapper.SysMessageLogMapper;
 import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.mapper.SysNoticeLogMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
-import top.wyhao.identity.entity.SysUser;
-import top.wyhao.identity.entity.SysUserSocial;
-import top.wyhao.identity.mapper.SysUserMapper;
-import top.wyhao.identity.mapper.SysUserSocialMapper;
+import top.wyhao.identity.domain.gateway.UserRepository;
+import top.wyhao.identity.domain.gateway.UserSocialRepository;
 import top.wyhao.organization.entity.SysDept;
 import top.wyhao.organization.mapper.SysDeptMapper;
 import top.wyhao.security.entity.SysMenu;
@@ -35,12 +33,12 @@ import top.wyhao.security.mapper.SysRoleDeptMapper;
 import top.wyhao.security.mapper.SysRoleMapper;
 import top.wyhao.security.mapper.SysRoleMenuMapper;
 import top.wyhao.security.mapper.SysUserRoleMapper;
-import top.wyhao.admin.tenant.mapper.SysTenantMapper;
-import top.wyhao.admin.tenant.mapper.TenantPackageMapper;
-import top.wyhao.admin.tenant.mapper.TenantPackageMenuMapper;
+import top.wyhao.tenant.mapper.SysTenantMapper;
+import top.wyhao.tenant.mapper.TenantPackageMapper;
+import top.wyhao.tenant.mapper.TenantPackageMenuMapper;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
-import top.wyhao.starter.core.constant.CacheConstants;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.CacheConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.starter.quartz.annotation.JobHandler;
 import top.wyhao.starter.quartz.spi.JobContext;
 import top.wyhao.starter.quartz.spi.JobTask;
@@ -59,14 +57,14 @@ import java.util.function.BooleanSupplier;
 @RequiredArgsConstructor
 public class DemoEnvironmentJob implements JobTask {
 
-    private final SysDictMapper dictMapper;
+    private final SysOptionMapper dictMapper;
     private final SysNoticeMapper noticeMapper;
     private final SysNoticeLogMapper noticeLogMapper;
     private final SysMessageMapper messageMapper;
     private final SysMessageLogMapper messageLogMapper;
-    private final SysUserMapper userMapper;
+    private final UserRepository userRepository;
     private final SysUserRoleMapper userRoleMapper;
-    private final SysUserSocialMapper userSocialMapper;
+    private final UserSocialRepository userSocialRepository;
     private final SysRoleMapper roleMapper;
     private final SysRoleDeptMapper roleDeptMapper;
     private final SysRoleMenuMapper roleMenuMapper;
@@ -94,13 +92,13 @@ public class DemoEnvironmentJob implements JobTask {
             log.info("定时任务 [重置演示环境数据] 开始执行。");
             // 检测待清理数据
             log.info("开始检测演示环境待清理数据项，请稍候...");
-            Long dictCount = dictMapper.lambdaQuery().gt(SysDict::getId, DELETE_FLAG).count();
+            Long dictCount = dictMapper.lambdaQuery().gt(SysOption::getId, DELETE_FLAG).count();
             this.log(dictCount, "字典");
             Long noticeCount = noticeMapper.lambdaQuery().gt(SysNotice::getId, DELETE_FLAG).count();
             this.log(noticeCount, "公告");
             Long messageCount = messageMapper.lambdaQuery().count();
             this.log(messageCount, "通知");
-            Long userCount = userMapper.lambdaQuery().notIn(SysUser::getId, USER_FLAG).count();
+            Long userCount = userRepository.countExcluding(USER_FLAG);
             this.log(userCount, "用户");
             Long roleCount = roleMapper.lambdaQuery().notIn(SysRole::getId, ROLE_FLAG).count();
             this.log(roleCount, "角色");
@@ -123,11 +121,11 @@ public class DemoEnvironmentJob implements JobTask {
             userRoleMapper.lambdaUpdate().notIn(SysUserRole::getUserId, USER_FLAG).remove();
             roleDeptMapper.lambdaUpdate().notIn(SysRoleDept::getRoleId, ROLE_FLAG).remove();
             roleMenuMapper.lambdaUpdate().notIn(SysRoleMenu::getRoleId, ROLE_FLAG).remove();
-            userSocialMapper.lambdaUpdate().notIn(SysUserSocial::getUserId, USER_FLAG).remove();
+            userSocialRepository.deleteExcludingUserIds(USER_FLAG);
             packageMenuMapper.lambdaUpdate().remove();
             // 清理具体数据
-            this.clean(dictCount, "字典", CacheConstants.DICT_KEY_PREFIX, () -> dictMapper.lambdaUpdate()
-                .gt(SysDict::getId, DELETE_FLAG)
+            this.clean(dictCount, "选项", CacheConstants.OPTION_KEY_PREFIX, () -> dictMapper.lambdaUpdate()
+                .gt(SysOption::getId, DELETE_FLAG)
                 .remove());
             this.clean(noticeCount, "公告", null, () -> noticeMapper.lambdaUpdate()
                 .gt(SysNotice::getId, DELETE_FLAG)
@@ -135,7 +133,7 @@ public class DemoEnvironmentJob implements JobTask {
             this.clean(messageCount, "通知", null, () -> messageMapper.lambdaUpdate()
                 .gt(SysMessage::getId, MESSAGE_FLAG)
                 .remove());
-            this.clean(userCount, "用户", null, () -> userMapper.lambdaUpdate().notIn(SysUser::getId, USER_FLAG).remove());
+            this.clean(userCount, "用户", null, () -> userRepository.deleteExcluding(USER_FLAG));
             this.clean(roleCount, "角色", null, () -> roleMapper.lambdaUpdate().notIn(SysRole::getId, ROLE_FLAG).remove());
             this.clean(menuCount, "菜单", CacheConstants.ROLE_MENU_KEY_PREFIX, () -> menuMapper.lambdaUpdate()
                 .gt(SysMenu::getId, DELETE_FLAG)

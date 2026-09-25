@@ -3,9 +3,9 @@ package top.wyhao.notification.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import top.wyhao.identity.otp.enums.OtpScene;
+import top.wyhao.identity.domain.otp.OtpScene;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;
 import top.wyhao.notification.model.dto.SmsLogQuery;

@@ -17,7 +17,7 @@ import top.wyhao.notification.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.notification.exception.NoticeException;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -46,7 +46,7 @@ public class NoticeServiceImpl implements NoticeService {
     public PageResult<NotificationResult> page(NotificationQuery query, PageQuery pageQuery) {
         IPage<NotificationResult> page = noticeMapper.selectNoticePage(new Page<>(pageQuery.getPage(), pageQuery
                 .getPageSize()), query);
-        return PageResult.build(page);
+        return PageResult.of(page);
     }
 
     @Override

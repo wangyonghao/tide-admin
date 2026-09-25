@@ -15,10 +15,10 @@ import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.model.enums.MessageType;
 import top.wyhao.notification.model.enums.NoticeScopes;
 import top.wyhao.notification.service.MessageService;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.starter.messaging.websocket.util.WebSocketUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -48,7 +48,7 @@ public class MessageServiceImpl implements MessageService {
     public PageResult<MessageDetailResult> page(MessageQuery query, PageQuery pageQuery) {
         IPage<MessageDetailResult> page = baseMapper.selectMessagePage(new Page<>(pageQuery.getPage(), pageQuery
             .getPageSize()), query);
-        return PageResult.build(page);
+        return PageResult.of(page);
     }
 
     @Override

@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.notification.service.NoticeService;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.IdResult;
 

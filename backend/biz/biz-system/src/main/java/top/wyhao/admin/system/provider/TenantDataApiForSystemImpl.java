@@ -11,14 +11,14 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.organization.entity.SysDept;
 import top.wyhao.security.entity.SysRole;
-import top.wyhao.identity.entity.SysUser;
-import top.wyhao.identity.exception.UserException;
+import top.wyhao.identity.domain.exception.UserException;
+import top.wyhao.identity.domain.gateway.PasswordHistoryRepository;
+import top.wyhao.identity.domain.gateway.UserRepository;
+import top.wyhao.identity.domain.gateway.UserSocialRepository;
+import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
 import top.wyhao.audit.mapper.SysOperationLogMapper;
-import top.wyhao.identity.mapper.SysUserMapper;
-import top.wyhao.identity.mapper.SysUserPasswordHistoryMapper;
-import top.wyhao.identity.mapper.SysUserSocialMapper;
 import top.wyhao.organization.mapper.SysDeptMapper;
 import top.wyhao.security.mapper.SysRoleDeptMapper;
 import top.wyhao.security.mapper.SysRoleMapper;
@@ -26,18 +26,18 @@ import top.wyhao.security.mapper.SysRoleMenuMapper;
 import top.wyhao.security.mapper.SysUserRoleMapper;
 import top.wyhao.security.service.RoleMenuService;
 import top.wyhao.security.service.RoleService;
-import top.wyhao.starter.core.constant.GlobalConstants;
-import top.wyhao.starter.core.enums.DataScopeEnum;
-import top.wyhao.starter.core.enums.GenderEnum;
-import top.wyhao.starter.core.enums.RoleCodeEnum;
-import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.model.TenantBO;
-import top.wyhao.starter.core.spi.PackageMenuApi;
-import top.wyhao.starter.core.spi.TenantApi;
-import top.wyhao.starter.core.spi.TenantDataApi;
-import top.wyhao.starter.core.util.ExceptionUtils;
-import top.wyhao.starter.core.util.RsaUtils;
-import top.wyhao.starter.tenant.util.TenantUtils;
+import top.wyhao.cmn.core.constant.GlobalConstants;
+import top.wyhao.cmn.core.enums.DataScopeEnum;
+import top.wyhao.cmn.core.enums.GenderEnum;
+import top.wyhao.cmn.core.enums.RoleCodeEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
+import top.wyhao.cmn.core.model.TenantBO;
+import top.wyhao.tenant.client.PackageMenuApi;
+import top.wyhao.tenant.client.TenantApi;
+import top.wyhao.tenant.client.TenantDataApi;
+import top.wyhao.cmn.core.util.ExceptionUtils;
+import top.wyhao.cmn.core.util.RsaUtils;
+import top.wyhao.tenant.util.TenantUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -62,10 +62,10 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private final SysMessageMapper messageUserMapper;
     private final SysNoticeMapper noticeMapper;
     private final SysRoleDeptMapper roleDeptMapper;
-    private final SysUserMapper userMapper;
-    private final SysUserPasswordHistoryMapper userPasswordHistoryMapper;
+    private final UserRepository userRepository;
+    private final PasswordHistoryRepository passwordHistoryRepository;
     private final SysUserRoleMapper userRoleMapper;
-    private final SysUserSocialMapper userSocialMapper;
+    private final UserSocialRepository userSocialRepository;
     private final RoleService roleService;
 
     @Override
@@ -93,7 +93,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     @Transactional(rollbackFor = Exception.class)
     public void clear() {
         // 退出所有用户
-        List<SysUser> userList = userMapper.selectList(null);
+        List<SysUser> userList = userRepository.listAll();
         for (SysUser user : userList) {
             StpUtil.logout(user.getId());
         }
@@ -117,10 +117,10 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         roleDeptMapper.delete(queryWrapper);
         roleMenuMapper.delete(queryWrapper);
         // 用户数据清除
-        userMapper.delete(queryWrapper);
-        userPasswordHistoryMapper.delete(queryWrapper);
+        userRepository.deleteAll();
+        passwordHistoryRepository.deleteAll();
         userRoleMapper.delete(queryWrapper);
-        userSocialMapper.delete(queryWrapper);
+        userSocialRepository.deleteAll();
     }
 
     /**
@@ -189,7 +189,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         user.setIsBuiltin(true);
         user.setPwdUpdateTime(LocalDateTime.now());
         user.setDeptId(deptId);
-        userMapper.insert(user);
+        userRepository.insert(user);
         return user.getId();
     }
 }

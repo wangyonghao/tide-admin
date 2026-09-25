@@ -8,7 +8,7 @@ import top.wyhao.admin.generator.model.query.GenConfigQuery;
 import top.wyhao.admin.generator.model.req.GenConfigReq;
 import top.wyhao.admin.generator.model.resp.GeneratePreviewResp;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.sql.SQLException;
 import java.util.List;

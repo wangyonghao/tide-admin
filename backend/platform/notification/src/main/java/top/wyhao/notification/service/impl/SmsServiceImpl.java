@@ -11,14 +11,14 @@ import top.wyhao.admin.cmn.sms.SmsClient;
 import top.wyhao.notification.assembler.SmsLogAssembler;
 import top.wyhao.notification.entity.SysSmsLog;
 import top.wyhao.notification.mapper.SysSmsLogMapper;
-import top.wyhao.identity.otp.enums.OtpScene;
+import top.wyhao.identity.domain.otp.OtpScene;
 import top.wyhao.settings.config.SmsConfigApi;
 import top.wyhao.notification.service.SmsService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.notification.exception.SmsException;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -59,7 +59,7 @@ public class SmsServiceImpl implements SmsService {
     public PageResult<SmsLogResult> page(SmsLogQuery query, PageQuery pageQuery) {
         IPage<SysSmsLog> resultPage = sysSmsLogMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getPageSize()),
                 QueryWrapperBuilder.build(query, SysSmsLog.class));
-        return PageResult.build(resultPage, smsLogAssembler::toResultList);
+        return PageResult.of(resultPage).map(smsLogAssembler::toResult);
     }
 
     @Override

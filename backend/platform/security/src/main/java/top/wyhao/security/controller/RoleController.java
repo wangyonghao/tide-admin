@@ -14,9 +14,9 @@ import top.wyhao.security.model.dto.RolePermissionUpdateRequest;
 import top.wyhao.security.model.result.MenuTreeVO;
 import top.wyhao.security.service.MenuService;
 import top.wyhao.security.service.RoleService;
-import top.wyhao.starter.core.model.Result;
+import top.wyhao.cmn.core.model.Result;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;

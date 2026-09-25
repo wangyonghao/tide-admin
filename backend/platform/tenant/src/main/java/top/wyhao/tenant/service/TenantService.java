@@ -1,14 +1,14 @@
 
-package top.wyhao.admin.tenant.service;
+package top.wyhao.tenant.service;
 
 import cn.hutool.core.lang.tree.Tree;
 import jakarta.validation.Valid;
-import top.wyhao.admin.tenant.model.query.TenantQuery;
-import top.wyhao.admin.tenant.model.req.TenantRequest;
-import top.wyhao.admin.tenant.model.resp.TenantDetailResp;
-import top.wyhao.admin.tenant.model.resp.TenantResp;
+import top.wyhao.tenant.model.query.TenantQuery;
+import top.wyhao.tenant.model.req.TenantRequest;
+import top.wyhao.tenant.model.resp.TenantDetailResp;
+import top.wyhao.tenant.model.resp.TenantResp;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;

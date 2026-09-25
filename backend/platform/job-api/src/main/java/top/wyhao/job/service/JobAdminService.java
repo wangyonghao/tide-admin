@@ -15,11 +15,11 @@ import top.wyhao.job.domain.SysJob;
 import top.wyhao.job.domain.SysJobLog;
 import top.wyhao.job.mapper.SysJobLogMapper;
 import top.wyhao.job.mapper.SysJobMapper;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 import top.wyhao.starter.quartz.JobHandlerRegistry;
 import top.wyhao.starter.quartz.QuartzJobScheduler;
 import top.wyhao.starter.quartz.spi.JobHandlerDescriptor;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.time.Instant;
 import java.time.LocalDateTime;
@@ -58,7 +58,7 @@ public class JobAdminService {
                         .eq(StringUtils.hasText(query.getHandlerCode()), SysJob::getHandlerCode, query.getHandlerCode())
                         .eq(query.getStatus() != null, SysJob::getStatus, query.getStatus())
                         .orderByDesc(SysJob::getCreateTime));
-        return PageResult.build(page, records -> records.stream().map(this::toResponse).toList());
+        return PageResult.of(page).map(this::toResponse);
     }
 
     public JobResponse detail(Long id) {
@@ -157,7 +157,7 @@ public class JobAdminService {
                         .eq(StringUtils.hasText(query.getHandlerCode()), SysJobLog::getHandlerCode, query.getHandlerCode())
                         .eq(query.getStatus() != null, SysJobLog::getStatus, query.getStatus())
                         .orderByDesc(SysJobLog::getStartTime));
-        return PageResult.build(page, records -> records.stream().map(this::toLogResponse).toList());
+        return PageResult.of(page).map(this::toLogResponse);
     }
 
     public void reconcile() {

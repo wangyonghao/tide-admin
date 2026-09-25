@@ -3,6 +3,7 @@ package top.wyhao.cmn.db.query;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import lombok.Data;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.function.Function;
@@ -40,11 +41,40 @@ public class PageResult<T> {
     }
 
     /**
+     * 对已在内存中的全量列表做分页。
+     */
+    public static <T> PageResult<T> of(long page, long pageSize, List<T> list) {
+        PageResult<T> r = new PageResult<>();
+        r.setPage(page);
+        r.setPageSize(pageSize);
+        if (list == null || list.isEmpty()) {
+            r.setRecords(Collections.emptyList());
+            r.setTotal(0);
+            r.setPages(0);
+            return r;
+        }
+        long total = list.size();
+        long fromIndex = (page - 1) * pageSize;
+        List<T> pageList;
+        if (fromIndex < 0 || fromIndex >= list.size()) {
+            pageList = new ArrayList<>(0);
+        } else {
+            int toIndex = (int) Math.min(fromIndex + pageSize, list.size());
+            pageList = list.subList((int) fromIndex, toIndex);
+        }
+        r.setRecords(pageList);
+        r.setTotal(total);
+        r.setPages(pageSize <= 0 ? 0 : (total + pageSize - 1) / pageSize);
+        return r;
+    }
+
+    /**
      * 实体 -> VO 转换，省去每个 Service 手动拷贝分页元信息
      */
     public <R> PageResult<R> map(Function<T, R> converter) {
+        List<T> source = records == null ? Collections.emptyList() : records;
         PageResult<R> r = new PageResult<>();
-        r.setRecords(records.stream().map(converter).collect(Collectors.toList()));
+        r.setRecords(source.stream().map(converter).collect(Collectors.toList()));
         r.setTotal(total);
         r.setPage(page);
         r.setPageSize(pageSize);

@@ -1,21 +1,21 @@
 
-package top.wyhao.admin.tenant.service.impl;
+package top.wyhao.tenant.service.impl;
 
 import cn.hutool.core.lang.tree.Tree;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.tenant.exception.PackageException;
-import top.wyhao.admin.tenant.mapper.SysTenantMapper;
-import top.wyhao.admin.tenant.mapper.TenantPackageMapper;
-import top.wyhao.admin.tenant.model.entity.TenantPackage;
-import top.wyhao.admin.tenant.model.query.PackageQuery;
-import top.wyhao.admin.tenant.model.req.PackageRequest;
-import top.wyhao.admin.tenant.model.resp.PackageDetailResp;
-import top.wyhao.admin.tenant.model.resp.PackageResp;
-import top.wyhao.admin.tenant.service.PackageService;
+import top.wyhao.tenant.exception.PackageException;
+import top.wyhao.tenant.mapper.SysTenantMapper;
+import top.wyhao.tenant.mapper.TenantPackageMapper;
+import top.wyhao.tenant.model.entity.TenantPackage;
+import top.wyhao.tenant.model.query.PackageQuery;
+import top.wyhao.tenant.model.req.PackageRequest;
+import top.wyhao.tenant.model.resp.PackageDetailResp;
+import top.wyhao.tenant.model.resp.PackageResp;
+import top.wyhao.tenant.service.PackageService;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;
 

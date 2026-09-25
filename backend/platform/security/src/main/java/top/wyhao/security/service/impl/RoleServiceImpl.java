@@ -18,11 +18,10 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.security.assembler.MenuAssembler;
 import top.wyhao.security.entity.SysMenu;
 import top.wyhao.security.entity.SysRole;
-import top.wyhao.identity.entity.SysUser;
+import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.security.entity.SysUserRole;
 import top.wyhao.security.mapper.SysMenuMapper;
 import top.wyhao.security.mapper.SysRoleMapper;
-import top.wyhao.identity.mapper.SysUserMapper;
 import top.wyhao.security.mapper.SysUserRoleMapper;
 import top.wyhao.security.model.dto.RolePermissionUpdateRequest;
 import top.wyhao.security.model.result.MenuVO;
@@ -30,14 +29,14 @@ import top.wyhao.security.service.RoleDeptService;
 import top.wyhao.security.service.RoleMenuService;
 import top.wyhao.security.service.RoleService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
-import top.wyhao.starter.core.constant.CacheConstants;
-import top.wyhao.starter.core.enums.DataScopeEnum;
-import top.wyhao.starter.core.enums.RoleCodeEnum;
+import top.wyhao.cmn.core.constant.CacheConstants;
+import top.wyhao.cmn.core.enums.DataScopeEnum;
+import top.wyhao.cmn.core.enums.RoleCodeEnum;
 import top.wyhao.security.exception.RoleException;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
@@ -63,7 +62,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
 
     private final RoleMenuService roleMenuService;
     private final RoleDeptService roleDeptService;
-    private final SysUserMapper userMapper;
+    private final UserRepository userRepository;
     private final SysUserRoleMapper userRoleMapper;
     private final SysMenuMapper menuMapper;
     private final SysRoleMapper roleMapper;
@@ -73,7 +72,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     public PageResult<RoleResult> page(RoleQuery query, PageQuery pageQuery) {
         IPage<SysRole> page = roleMapper.selectPage(new Page<>(pageQuery.getPage(), pageQuery.getPageSize()), QueryWrapperBuilder.build(query,SysRole.class));
 
-        return PageResult.build(page, this::convertToRoleRespList);
+        return PageResult.of(page).map(this::convertToRoleResp);
     }
 
     @Override
@@ -256,7 +255,7 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean assignRolesToUser(List<Long> newRoleIds, Long userId) {
-        SysUser userDO = userMapper.selectById(userId);
+        userRepository.findById(userId);
         // 检查是否有变更
         List<Long> oldRoleIds = userRoleMapper.lambdaQuery()
                 .select(SysUserRole::getRoleId)
@@ -338,13 +337,6 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
             return;
         }
         userRoleMapper.lambdaUpdate().in(SysUserRole::getUserId, userIds).remove();
-    }
-
-    private List<RoleResult> convertToRoleRespList(List<SysRole> entities) {
-        if (entities == null || entities.isEmpty()) {
-            return List.of();
-        }
-        return entities.stream().map(this::convertToRoleResp).collect(Collectors.toList());
     }
 
     private RoleResult convertToRoleResp(SysRole entity) {

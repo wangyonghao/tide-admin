@@ -18,15 +18,15 @@ import top.wyhao.settings.entity.SysConfig;
 import top.wyhao.settings.exception.ConfigException;
 import top.wyhao.settings.mapper.SysConfigMapper;
 import top.wyhao.settings.model.result.config.*;
-import top.wyhao.identity.model.result.config.LoginConfigVO;
-import top.wyhao.identity.model.result.config.SecurityConfigVO;
-import top.wyhao.identity.model.result.config.SiteConfigVO;
+import top.wyhao.identity.adapter.web.result.config.LoginConfigVO;
+import top.wyhao.identity.adapter.web.result.config.SecurityConfigVO;
+import top.wyhao.identity.adapter.web.result.config.SiteConfigVO;
 import top.wyhao.settings.service.ConfigService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
-import top.wyhao.starter.core.model.MailConfig;
+import top.wyhao.cmn.core.model.MailConfig;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;
 import top.wyhao.settings.model.dto.ConfigQuery;
@@ -52,7 +52,7 @@ public class ConfigServiceImpl implements ConfigService {
                 new Page<>(pageQuery.getPage(), pageQuery.getPageSize()),
                 QueryWrapperBuilder.build(query, SysConfig.class)
         );
-        return PageResult.build(page);
+        return PageResult.of(page);
     }
 
     @Override

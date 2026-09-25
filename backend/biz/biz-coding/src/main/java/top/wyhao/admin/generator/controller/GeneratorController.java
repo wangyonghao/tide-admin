@@ -17,9 +17,9 @@ import top.wyhao.admin.generator.model.req.GenConfigReq;
 import top.wyhao.admin.generator.model.resp.GeneratePreviewResp;
 import top.wyhao.admin.generator.service.GeneratorService;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.starter.web.core.model.LabelValueResult;
-import top.wyhao.starter.web.excel.DictApi;
+import top.wyhao.starter.web.excel.OptionApi;
 
 import java.sql.SQLException;
 import java.util.List;
@@ -34,7 +34,7 @@ import java.util.List;
 public class GeneratorController {
 
     private final GeneratorService baseService;
-    private final DictApi dictApi;
+    private final OptionApi optionApi;
 
     @Operation(summary = "分页查询生成配置", description = "分页查询生成配置列表")
     @SaCheckPermission("code:generator:list")
@@ -93,10 +93,10 @@ public class GeneratorController {
         baseService.generateCode(tableNames);
     }
 
-    @Operation(summary = "查询字典", description = "查询字典列表（包含枚举字典）")
+    @Operation(summary = "查询选项类型", description = "查询选项类型列表")
     @SaCheckPermission("code:generator:config")
-    @GetMapping("/dict")
-    public List<LabelValueResult> listDict() {
-        return dictApi.listAll();
+    @GetMapping("/option")
+    public List<LabelValueResult> listOption() {
+        return optionApi.listAll();
     }
 }

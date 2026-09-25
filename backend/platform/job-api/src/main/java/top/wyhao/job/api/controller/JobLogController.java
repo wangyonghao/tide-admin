@@ -11,7 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.job.api.model.JobLogQuery;
 import top.wyhao.job.api.model.JobLogResponse;
 import top.wyhao.job.service.JobAdminService;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 @Tag(name = "定时任务日志")
 @RestController

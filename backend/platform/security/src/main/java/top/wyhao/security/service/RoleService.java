@@ -7,7 +7,7 @@ import top.wyhao.security.model.dto.RolePermissionUpdateRequest;
 import top.wyhao.security.entity.SysRole;
 import top.wyhao.security.model.result.MenuVO;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;
 import top.wyhao.security.model.vo.RoleDetailResult;

@@ -42,13 +42,13 @@ import top.wyhao.admin.generator.model.resp.GeneratePreviewResp;
 import top.wyhao.admin.generator.service.GeneratorService;
 import top.wyhao.cmn.db.dialect.DatabaseType;
 import top.wyhao.cmn.db.util.DBMetaUtils;
-import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
-import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.core.enums.BaseEnum;
-import top.wyhao.starter.core.exception.SystemException;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.autoconfigure.application.ApplicationProperties;
+import top.wyhao.cmn.core.constant.StringConstants;
+import top.wyhao.cmn.core.enums.BaseEnum;
+import top.wyhao.cmn.core.exception.SystemException;
+import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.starter.web.util.HttpUtil;
 
 import javax.sql.DataSource;
@@ -101,7 +101,7 @@ public class GeneratorServiceImpl implements GeneratorService {
                 .thenComparing(GenConfig::getCreateTime, Comparator.nullsLast(Comparator.naturalOrder())))
             .toList();
         // 分页
-        return PageResult.build(pageQuery.getPage(), pageQuery.getPageSize(), list);
+        return PageResult.of(pageQuery.getPage(), pageQuery.getPageSize(), list);
     }
 
     @Override

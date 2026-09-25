@@ -1,4 +1,4 @@
-package top.wyhao.admin.tenant.controller;
+package top.wyhao.tenant.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,15 +8,15 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.tenant.model.query.TenantQuery;
-import top.wyhao.admin.tenant.model.req.TenantRequest;
-import top.wyhao.admin.tenant.model.resp.TenantDetailResp;
-import top.wyhao.admin.tenant.model.resp.TenantResp;
-import top.wyhao.admin.tenant.service.TenantService;
+import top.wyhao.tenant.model.query.TenantQuery;
+import top.wyhao.tenant.model.req.TenantRequest;
+import top.wyhao.tenant.model.resp.TenantDetailResp;
+import top.wyhao.tenant.model.resp.TenantResp;
+import top.wyhao.tenant.service.TenantService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.LabelValueResult;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;
 

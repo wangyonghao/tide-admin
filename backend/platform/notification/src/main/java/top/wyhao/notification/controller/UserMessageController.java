@@ -17,7 +17,7 @@ import top.wyhao.notification.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.IdsRequest;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.Collections;
 import java.util.List;

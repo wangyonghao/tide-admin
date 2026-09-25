@@ -15,10 +15,10 @@ import top.wyhao.file.api.model.FileResponse;
 import top.wyhao.file.api.model.FileUploadResponse;
 import top.wyhao.file.core.domain.File;
 import top.wyhao.file.core.service.FileService;
-import top.wyhao.starter.core.UserContextHolder;
+import top.wyhao.identity.client.UserContextHolder;
 import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.PageResult;
+import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.starter.web.util.HttpUtil;
 
 import java.io.InputStream;
@@ -49,9 +49,9 @@ public class FileController {
             @RequestParam(required = false) String category,
             @RequestParam(required = false, defaultValue = "desc") String sortOrder,
             @Validated PageQuery pageQuery) {
-        return PageResult.build(
-                fileService.page(fileName, category, sortOrder, pageQuery.getPage(), pageQuery.getPageSize()),
-                fileAssembler::toResponseList);
+        return PageResult.of(
+                fileService.page(fileName, category, sortOrder, pageQuery.getPage(), pageQuery.getPageSize()))
+                .map(fileAssembler::toResponse);
     }
 
     @Operation(summary = "上传文件")
