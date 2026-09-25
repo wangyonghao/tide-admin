@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.controller;
+package top.wyhao.notification.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -8,13 +8,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.service.SmsService;
+import top.wyhao.notification.service.SmsService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.SmsLogQuery;
-import top.wyhao.admin.system.model.vo.SmsLogResult;
+import top.wyhao.notification.model.dto.SmsLogQuery;
+import top.wyhao.notification.model.vo.SmsLogResult;
 
 /**
  * 短信日志管理 API

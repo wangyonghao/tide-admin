@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.security.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -15,25 +15,25 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.assembler.MenuAssembler;
-import top.wyhao.admin.system.entity.SysMenu;
-import top.wyhao.admin.system.entity.SysRole;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.entity.SysUserRole;
-import top.wyhao.admin.system.mapper.SysMenuMapper;
-import top.wyhao.admin.system.mapper.SysRoleMapper;
-import top.wyhao.admin.system.mapper.SysUserMapper;
-import top.wyhao.admin.system.mapper.SysUserRoleMapper;
-import top.wyhao.admin.system.model.dto.RolePermissionUpdateRequest;
-import top.wyhao.admin.system.model.result.MenuVO;
-import top.wyhao.admin.system.service.RoleDeptService;
-import top.wyhao.admin.system.service.RoleMenuService;
-import top.wyhao.admin.system.service.RoleService;
+import top.wyhao.security.assembler.MenuAssembler;
+import top.wyhao.security.entity.SysMenu;
+import top.wyhao.security.entity.SysRole;
+import top.wyhao.identity.entity.SysUser;
+import top.wyhao.security.entity.SysUserRole;
+import top.wyhao.security.mapper.SysMenuMapper;
+import top.wyhao.security.mapper.SysRoleMapper;
+import top.wyhao.identity.mapper.SysUserMapper;
+import top.wyhao.security.mapper.SysUserRoleMapper;
+import top.wyhao.security.model.dto.RolePermissionUpdateRequest;
+import top.wyhao.security.model.result.MenuVO;
+import top.wyhao.security.service.RoleDeptService;
+import top.wyhao.security.service.RoleMenuService;
+import top.wyhao.security.service.RoleService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.enums.DataScopeEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
-import top.wyhao.admin.system.exception.RoleException;
+import top.wyhao.security.exception.RoleException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -43,12 +43,12 @@ import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import top.wyhao.admin.system.model.vo.RoleDetailResult;
-import top.wyhao.admin.system.model.dto.RoleMemberQuery;
-import top.wyhao.admin.system.model.vo.RoleMemberResult;
-import top.wyhao.admin.system.model.dto.RoleQuery;
-import top.wyhao.admin.system.model.dto.RoleRequest;
-import top.wyhao.admin.system.model.vo.RoleResult;
+import top.wyhao.security.model.vo.RoleDetailResult;
+import top.wyhao.security.model.dto.RoleMemberQuery;
+import top.wyhao.security.model.vo.RoleMemberResult;
+import top.wyhao.security.model.dto.RoleQuery;
+import top.wyhao.security.model.dto.RoleRequest;
+import top.wyhao.security.model.vo.RoleResult;
 
 /**
  * 角色 Service
@@ -330,6 +330,14 @@ public class RoleServiceImpl extends ServiceImpl<SysRoleMapper, SysRole> impleme
             throw RoleException.notFound();
         }
         userRoleMapper.lambdaUpdate().eq(SysUserRole::getRoleId, roleId).in(SysUserRole::getUserId, userIds).remove();
+    }
+
+    @Override
+    public void deleteUserRolesByUserIds(List<Long> userIds) {
+        if (CollUtil.isEmpty(userIds)) {
+            return;
+        }
+        userRoleMapper.lambdaUpdate().in(SysUserRole::getUserId, userIds).remove();
     }
 
     private List<RoleResult> convertToRoleRespList(List<SysRole> entities) {

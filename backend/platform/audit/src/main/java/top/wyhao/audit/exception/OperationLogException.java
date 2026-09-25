@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.exception;
+package top.wyhao.audit.exception;
 
 import top.wyhao.starter.core.exception.BizException;
 

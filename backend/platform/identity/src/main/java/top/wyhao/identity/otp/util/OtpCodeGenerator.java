@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.util;
+package top.wyhao.identity.otp.util;
 
 import java.security.SecureRandom;
 

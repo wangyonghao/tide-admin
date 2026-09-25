@@ -3,7 +3,7 @@ package top.wyhao.admin.job;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
-import top.wyhao.admin.system.service.LoginLogService;
+import top.wyhao.identity.service.LoginLogService;
 import top.wyhao.starter.quartz.annotation.JobHandler;
 import top.wyhao.starter.quartz.spi.JobContext;
 import top.wyhao.starter.quartz.spi.JobTask;

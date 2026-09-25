@@ -1,4 +1,4 @@
-package top.wyhao.admin.auth.service;
+package top.wyhao.identity.auth.service;
 
 import org.springframework.stereotype.Service;
 

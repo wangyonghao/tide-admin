@@ -1,14 +1,14 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.security.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.entity.SysUserRole;
+import top.wyhao.security.entity.SysUserRole;
 import top.wyhao.cmn.db.model.BaseMapper;
-import top.wyhao.admin.system.model.vo.RoleMemberResult;
+import top.wyhao.security.model.vo.RoleMemberResult;
 
 /**
  * 用户和角色 Mapper

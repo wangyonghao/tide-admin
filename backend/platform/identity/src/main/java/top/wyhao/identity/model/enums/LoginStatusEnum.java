@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.model.enums;
+package top.wyhao.identity.model.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
 import com.fasterxml.jackson.annotation.JsonValue;

@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.result.config;
+package top.wyhao.identity.model.result.config;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

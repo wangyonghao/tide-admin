@@ -1,12 +1,12 @@
-package top.wyhao.admin.system.assembler;
+package top.wyhao.settings.assembler;
 
 import org.mapstruct.Mapper;
-import top.wyhao.admin.system.entity.SysConfig;
+import top.wyhao.settings.entity.SysConfig;
 import top.wyhao.starter.web.convert.MapStructConfig;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.ConfigRequest;
-import top.wyhao.admin.system.model.vo.ConfigResult;
+import top.wyhao.settings.model.dto.ConfigRequest;
+import top.wyhao.settings.model.vo.ConfigResult;
 
 /**
  * 系统配置对象转换

@@ -1,8 +1,8 @@
-package top.wyhao.admin.system.provider;
+package top.wyhao.settings.provider;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.system.mapper.SysConfigMapper;
+import top.wyhao.settings.mapper.SysConfigMapper;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.core.spi.MailConfigProvider;
 

@@ -1,20 +1,20 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.identity.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import org.springframework.web.multipart.MultipartFile;
-import top.wyhao.admin.system.model.vo.UserDetail;
-import top.wyhao.admin.system.model.dto.UserQuery;
-import top.wyhao.admin.system.model.dto.UserRequest;
-import top.wyhao.admin.system.model.vo.UserResult;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.model.dto.UserBasicInfoUpdateReq;
-import top.wyhao.admin.system.model.dto.UserImportRequest;
-import top.wyhao.admin.system.model.dto.UserPasswordResetRequest;
-import top.wyhao.admin.system.model.dto.UserRoleUpdateReq;
-import top.wyhao.admin.system.model.result.user.UserImportParseResp;
-import top.wyhao.admin.system.model.result.user.UserImportResp;
+import top.wyhao.identity.model.vo.UserDetail;
+import top.wyhao.identity.model.dto.UserQuery;
+import top.wyhao.identity.model.dto.UserRequest;
+import top.wyhao.identity.model.vo.UserResult;
+import top.wyhao.identity.entity.SysUser;
+import top.wyhao.identity.model.dto.UserBasicInfoUpdateReq;
+import top.wyhao.identity.model.dto.UserImportRequest;
+import top.wyhao.identity.model.dto.UserPasswordResetRequest;
+import top.wyhao.identity.model.dto.UserRoleUpdateReq;
+import top.wyhao.identity.model.result.user.UserImportParseResp;
+import top.wyhao.identity.model.result.user.UserImportResp;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
 

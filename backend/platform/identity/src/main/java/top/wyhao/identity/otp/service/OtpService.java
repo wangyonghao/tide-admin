@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.service;
+package top.wyhao.identity.otp.service;
 
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
@@ -11,18 +11,18 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.wyhao.admin.cmn.mail.MailClient;
-import top.wyhao.admin.system.otp.config.OtpProperties;
-import top.wyhao.admin.system.otp.enums.OtpChannel;
-import top.wyhao.admin.system.otp.enums.OtpScene;
-import top.wyhao.admin.system.otp.exception.OtpException;
-import top.wyhao.admin.system.otp.model.OtpSession;
-import top.wyhao.admin.system.otp.model.request.OtpSendRequest;
-import top.wyhao.admin.system.otp.model.request.OtpVerifyRequest;
-import top.wyhao.admin.system.otp.model.result.OtpSendResult;
-import top.wyhao.admin.system.otp.model.result.OtpVerifyResult;
-import top.wyhao.admin.system.otp.service.impl.EmailChannelService;
-import top.wyhao.admin.system.otp.util.OtpCodeGenerator;
-import top.wyhao.admin.system.service.SmsService;
+import top.wyhao.identity.otp.config.OtpProperties;
+import top.wyhao.identity.otp.enums.OtpChannel;
+import top.wyhao.identity.otp.enums.OtpScene;
+import top.wyhao.identity.otp.exception.OtpException;
+import top.wyhao.identity.otp.model.OtpSession;
+import top.wyhao.identity.otp.model.request.OtpSendRequest;
+import top.wyhao.identity.otp.model.request.OtpVerifyRequest;
+import top.wyhao.identity.otp.model.result.OtpSendResult;
+import top.wyhao.identity.otp.model.result.OtpVerifyResult;
+import top.wyhao.identity.otp.service.impl.EmailChannelService;
+import top.wyhao.identity.otp.util.OtpCodeGenerator;
+import top.wyhao.identity.otp.spi.OtpSmsSender;
 
 import java.util.List;
 import java.util.Map;
@@ -50,7 +50,7 @@ public class OtpService {
     private final RateLimiter rateLimiter;
     private final TemplateService templateService;
     private final List<ChannelService> channelServices;
-    private final SmsService smsService;
+    private final OtpSmsSender otpSmsSender;
 
     private Map<OtpChannel, ChannelService> channelServiceMap;
 
@@ -128,7 +128,7 @@ public class OtpService {
         String code = OtpCodeGenerator.generate(otpProperties.getCode().getLength());
 
         // 3. 发送验证码
-        smsService.sendOtp(req.target(), req.scene());
+        otpSmsSender.sendOtp(req.target(), req.scene());
 
         // 4. 存储会话数据
         long now = System.currentTimeMillis() / 1000;

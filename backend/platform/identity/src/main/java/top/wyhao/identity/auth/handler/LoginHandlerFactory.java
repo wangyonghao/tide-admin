@@ -1,7 +1,7 @@
-package top.wyhao.admin.auth.handler;
+package top.wyhao.identity.auth.handler;
 
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.enums.GrantType;
+import top.wyhao.identity.auth.model.enums.GrantType;
 
 import java.util.List;
 import java.util.Map;

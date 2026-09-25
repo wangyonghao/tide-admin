@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.service;
+package top.wyhao.identity.otp.service;
 
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.io.resource.ResourceUtil;
@@ -10,10 +10,10 @@ import cn.hutool.extra.template.TemplateUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.otp.config.OtpProperties;
-import top.wyhao.admin.system.otp.enums.OtpChannel;
-import top.wyhao.admin.system.otp.enums.OtpScene;
-import top.wyhao.admin.system.otp.util.TargetMasker;
+import top.wyhao.identity.otp.config.OtpProperties;
+import top.wyhao.identity.otp.enums.OtpChannel;
+import top.wyhao.identity.otp.enums.OtpScene;
+import top.wyhao.identity.otp.util.TargetMasker;
 
 import java.util.HashMap;
 import java.util.Map;

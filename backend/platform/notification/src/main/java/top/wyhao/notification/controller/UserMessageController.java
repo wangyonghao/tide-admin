@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.controller;
+package top.wyhao.notification.controller;
 
 import cn.hutool.core.collection.CollUtil;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,11 +9,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.exception.NoticeException;
-import top.wyhao.admin.system.model.enums.NoticeMethods;
-import top.wyhao.admin.system.model.enums.NoticeScopes;
-import top.wyhao.admin.system.service.MessageService;
-import top.wyhao.admin.system.service.NoticeService;
+import top.wyhao.notification.exception.NoticeException;
+import top.wyhao.notification.model.enums.NoticeMethods;
+import top.wyhao.notification.model.enums.NoticeScopes;
+import top.wyhao.notification.service.MessageService;
+import top.wyhao.notification.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.IdsRequest;
@@ -21,14 +21,14 @@ import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.Collections;
 import java.util.List;
-import top.wyhao.admin.system.model.vo.MessageDetailResult;
-import top.wyhao.admin.system.model.dto.MessageQuery;
-import top.wyhao.admin.system.model.vo.MessageResult;
-import top.wyhao.admin.system.model.vo.MessageUnreadResult;
-import top.wyhao.admin.system.model.vo.NotificationDetailResult;
-import top.wyhao.admin.system.model.dto.NotificationQuery;
-import top.wyhao.admin.system.model.vo.NotificationResult;
-import top.wyhao.admin.system.model.vo.NotificationUnreadCountResult;
+import top.wyhao.notification.model.vo.MessageDetailResult;
+import top.wyhao.notification.model.dto.MessageQuery;
+import top.wyhao.notification.model.vo.MessageResult;
+import top.wyhao.notification.model.vo.MessageUnreadResult;
+import top.wyhao.notification.model.vo.NotificationDetailResult;
+import top.wyhao.notification.model.dto.NotificationQuery;
+import top.wyhao.notification.model.vo.NotificationResult;
+import top.wyhao.notification.model.vo.NotificationUnreadCountResult;
 
 /**
  * 个人消息 API

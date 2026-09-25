@@ -1,14 +1,14 @@
-package top.wyhao.admin.auth.service.impl;
+package top.wyhao.identity.auth.service.impl;
 
 import cn.dev33.satoken.exception.NotLoginException;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.auth.handler.LoginHandler;
-import top.wyhao.admin.auth.handler.LoginHandlerFactory;
-import top.wyhao.admin.auth.model.dto.LoginRequest;
-import top.wyhao.admin.auth.model.vo.LoginResult;
-import top.wyhao.admin.auth.service.AuthService;
+import top.wyhao.identity.auth.handler.LoginHandler;
+import top.wyhao.identity.auth.handler.LoginHandlerFactory;
+import top.wyhao.identity.auth.model.dto.LoginRequest;
+import top.wyhao.identity.auth.model.vo.LoginResult;
+import top.wyhao.identity.auth.service.AuthService;
 import top.wyhao.common.security.util.LoginUtil;
 
 @Service

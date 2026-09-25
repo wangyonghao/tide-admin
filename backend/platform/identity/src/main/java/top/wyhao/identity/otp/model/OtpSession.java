@@ -1,11 +1,11 @@
-package top.wyhao.admin.system.otp.model;
+package top.wyhao.identity.otp.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import top.wyhao.admin.system.otp.enums.OtpChannel;
-import top.wyhao.admin.system.otp.enums.OtpScene;
+import top.wyhao.identity.otp.enums.OtpChannel;
+import top.wyhao.identity.otp.enums.OtpScene;
 
 import java.io.Serializable;
 

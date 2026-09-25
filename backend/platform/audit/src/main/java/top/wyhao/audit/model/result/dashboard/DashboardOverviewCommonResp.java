@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.result.dashboard;
+package top.wyhao.audit.model.result.dashboard;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;

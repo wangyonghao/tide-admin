@@ -1,11 +1,11 @@
-package top.wyhao.admin.system.assembler;
+package top.wyhao.organization.assembler;
 
 import org.mapstruct.Mapper;
-import top.wyhao.admin.system.entity.SysDept;
+import top.wyhao.organization.entity.SysDept;
 import top.wyhao.starter.web.convert.MapStructConfig;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.DeptResult;
+import top.wyhao.organization.model.vo.DeptResult;
 
 /**
  * 部门对象转换

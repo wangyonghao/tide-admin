@@ -443,10 +443,10 @@
         <version>${revision}</version>
       </dependency>
 
-      <!-- 能力开放插件（后续会改造为独立插件） -->
+      <!-- 开放 API（interfaces/open-api） -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>biz-openapi</artifactId>
+        <artifactId>open-api</artifactId>
         <version>${revision}</version>
       </dependency>
 
@@ -622,6 +622,36 @@
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>file-api</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>identity</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>security</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>organization</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>notification</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>settings</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>audit</artifactId>
         <version>${revision}</version>
       </dependency>
 

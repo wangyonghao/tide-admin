@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.model.dto;
+package top.wyhao.notification.model.dto;
 
 import cn.sticki.spel.validator.constrain.SpelFuture;
 import cn.sticki.spel.validator.constrain.SpelNotEmpty;
@@ -11,8 +11,8 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.admin.system.model.enums.NoticeScopes;
-import top.wyhao.admin.system.model.enums.NoticeStatus;
+import top.wyhao.notification.model.enums.NoticeScopes;
+import top.wyhao.notification.model.enums.NoticeStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -48,7 +48,7 @@ public class NotificationRequest {
     private NoticeScopes noticeScope;
 
     @Schema(description = "通知用户", example = "[1,2,3]")
-    @SpelNotEmpty(condition = "#this.noticeScope == T(top.wyhao.admin.system.model.enums.NoticeScopes).USER", message = "通知用户不能为空")
+    @SpelNotEmpty(condition = "#this.noticeScope == T(top.wyhao.notification.model.enums.NoticeScopes).USER", message = "通知用户不能为空")
     private List<String> noticeUsers;
 
     @Schema(description = "通知方式", example = "[1,2]")

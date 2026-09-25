@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.config;
+package top.wyhao.identity.otp.config;
 
 import lombok.Data;
 import org.springframework.boot.context.properties.ConfigurationProperties;

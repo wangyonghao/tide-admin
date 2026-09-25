@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.entity;
+package top.wyhao.security.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;

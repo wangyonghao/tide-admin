@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.service;
+package top.wyhao.identity.otp.service;
 
 /**
  * 限流器接口

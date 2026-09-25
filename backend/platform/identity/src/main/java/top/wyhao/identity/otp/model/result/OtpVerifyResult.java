@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.model.result;
+package top.wyhao.identity.otp.model.result;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 

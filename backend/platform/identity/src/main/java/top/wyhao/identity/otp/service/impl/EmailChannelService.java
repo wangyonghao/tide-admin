@@ -1,14 +1,14 @@
-package top.wyhao.admin.system.otp.service.impl;
+package top.wyhao.identity.otp.service.impl;
 
 import cn.hutool.core.util.ReUtil;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.cmn.mail.MailClient;
-import top.wyhao.admin.system.otp.config.OtpProperties;
-import top.wyhao.admin.system.otp.enums.OtpChannel;
-import top.wyhao.admin.system.otp.exception.OtpException;
-import top.wyhao.admin.system.otp.service.ChannelService;
+import top.wyhao.identity.otp.config.OtpProperties;
+import top.wyhao.identity.otp.enums.OtpChannel;
+import top.wyhao.identity.otp.exception.OtpException;
+import top.wyhao.identity.otp.service.ChannelService;
 
 /**
  * 邮件渠道服务实现

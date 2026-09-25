@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.controller;
+package top.wyhao.security.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,14 +10,14 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.result.MenuTreeVO;
-import top.wyhao.admin.system.model.result.MenuVO;
-import top.wyhao.admin.system.service.MenuService;
+import top.wyhao.security.model.result.MenuTreeVO;
+import top.wyhao.security.model.result.MenuVO;
+import top.wyhao.security.service.MenuService;
 import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.MenuQuery;
-import top.wyhao.admin.system.model.dto.MenuRequest;
+import top.wyhao.security.model.dto.MenuQuery;
+import top.wyhao.security.model.dto.MenuRequest;
 
 /**
  * 菜单管理 API

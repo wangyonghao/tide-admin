@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.result;
+package top.wyhao.notification.model.result;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;

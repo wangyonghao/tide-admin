@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.model.vo;
+package top.wyhao.notification.model.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
@@ -8,8 +8,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import top.wyhao.admin.system.model.enums.NoticeScopes;
-import top.wyhao.admin.system.model.enums.NoticeStatus;
+import top.wyhao.notification.model.enums.NoticeScopes;
+import top.wyhao.notification.model.enums.NoticeStatus;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 import top.wyhao.starter.web.excel.DictExcelProperty;
 

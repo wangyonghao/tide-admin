@@ -1,4 +1,4 @@
-package top.wyhao.admin.auth.exception;
+package top.wyhao.identity.auth.exception;
 
 import cn.hutool.core.util.StrUtil;
 import top.wyhao.starter.core.exception.BizException;

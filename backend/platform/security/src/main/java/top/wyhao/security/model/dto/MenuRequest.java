@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.model.dto;
+package top.wyhao.security.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Min;
@@ -8,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.admin.system.model.enums.MenuType;
+import top.wyhao.security.model.enums.MenuType;
 import top.wyhao.starter.core.enums.StatusEnum;
 
 /**

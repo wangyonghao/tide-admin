@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.security.service.impl;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.StrUtil;
@@ -8,16 +8,16 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.assembler.MenuAssembler;
-import top.wyhao.admin.system.entity.SysMenu;
-import top.wyhao.admin.system.exception.MenuException;
-import top.wyhao.admin.system.mapper.SysMenuMapper;
-import top.wyhao.admin.system.model.SystemConstants;
-import top.wyhao.admin.system.model.enums.MenuType;
-import top.wyhao.admin.system.model.result.MenuTreeVO;
-import top.wyhao.admin.system.model.result.MenuVO;
-import top.wyhao.admin.system.service.MenuService;
-import top.wyhao.admin.system.service.UserService;
+import top.wyhao.security.assembler.MenuAssembler;
+import top.wyhao.security.entity.SysMenu;
+import top.wyhao.security.exception.MenuException;
+import top.wyhao.security.mapper.SysMenuMapper;
+import top.wyhao.starter.core.constant.SystemConstants;
+import top.wyhao.security.model.enums.MenuType;
+import top.wyhao.security.model.result.MenuTreeVO;
+import top.wyhao.security.model.result.MenuVO;
+import top.wyhao.security.service.MenuService;
+import top.wyhao.identity.service.UserService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.core.constant.StringConstants;
@@ -26,8 +26,8 @@ import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.util.TreeUtils;
 import java.util.ArrayList;
 import java.util.List;
-import top.wyhao.admin.system.model.dto.MenuQuery;
-import top.wyhao.admin.system.model.dto.MenuRequest;
+import top.wyhao.security.model.dto.MenuQuery;
+import top.wyhao.security.model.dto.MenuRequest;
 
 /**
  * 菜单 Service

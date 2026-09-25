@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.auth.model.enums;
+package top.wyhao.identity.auth.model.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

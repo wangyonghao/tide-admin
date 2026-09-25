@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.organization.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -7,13 +7,13 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.assembler.DeptAssembler;
-import top.wyhao.admin.system.entity.SysDept;
-import top.wyhao.admin.system.exception.DeptException;
-import top.wyhao.admin.system.mapper.SysDeptMapper;
-import top.wyhao.admin.system.service.DeptService;
-import top.wyhao.admin.system.service.RoleDeptService;
-import top.wyhao.admin.system.service.UserService;
+import top.wyhao.organization.assembler.DeptAssembler;
+import top.wyhao.organization.entity.SysDept;
+import top.wyhao.organization.exception.DeptException;
+import top.wyhao.organization.mapper.SysDeptMapper;
+import top.wyhao.organization.service.DeptService;
+import top.wyhao.starter.core.spi.RoleDeptApi;
+import top.wyhao.starter.core.spi.UserApi;
 import top.wyhao.cmn.db.dialect.DatabaseType;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.cmn.db.util.DBMetaUtils;
@@ -26,9 +26,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import top.wyhao.admin.system.model.dto.DeptQuery;
-import top.wyhao.admin.system.model.dto.DeptRequest;
-import top.wyhao.admin.system.model.vo.DeptResult;
+import top.wyhao.organization.model.dto.DeptQuery;
+import top.wyhao.organization.model.dto.DeptRequest;
+import top.wyhao.organization.model.vo.DeptResult;
 
 /**
  * 部门业务实现
@@ -39,9 +39,9 @@ import top.wyhao.admin.system.model.vo.DeptResult;
 @RequiredArgsConstructor
 public class DeptServiceImpl implements DeptService {
 
-    private final RoleDeptService roleDeptService;
+    private final RoleDeptApi roleDeptApi;
     private final DataSource dataSource;
-    private final UserService userService;
+    private final UserApi userApi;
 
     private final SysDeptMapper baseMapper;
     private final DeptAssembler deptAssembler;
@@ -179,11 +179,11 @@ public class DeptServiceImpl implements DeptService {
         if (this.countChildren(ids) > 0) {
             throw DeptException.hasChildren();
         }
-        if (userService.countByDeptIds(ids) > 0) {
+        if (userApi.countByDeptIds(ids) > 0) {
             throw DeptException.hasUsers();
         }
         // 删除角色和部门关联
-        roleDeptService.deleteByDeptIds(ids);
+        roleDeptApi.deleteByDeptIds(ids);
         baseMapper.deleteByIds(ids);
     }
 

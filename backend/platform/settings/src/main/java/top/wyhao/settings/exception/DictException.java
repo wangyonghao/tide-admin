@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.exception;
+package top.wyhao.settings.exception;
 
 import cn.hutool.core.util.StrUtil;
 import top.wyhao.starter.core.exception.BizException;

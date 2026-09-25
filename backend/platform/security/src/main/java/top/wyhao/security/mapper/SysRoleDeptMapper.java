@@ -1,10 +1,10 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.security.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import top.wyhao.admin.system.entity.SysRoleDept;
+import top.wyhao.security.entity.SysRoleDept;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;

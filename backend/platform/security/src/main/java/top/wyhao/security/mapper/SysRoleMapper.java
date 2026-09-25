@@ -1,8 +1,8 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.security.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import top.wyhao.admin.system.entity.SysRole;
+import top.wyhao.security.entity.SysRole;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 /**

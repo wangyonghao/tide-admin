@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.result.dashboard;
+package top.wyhao.notification.model.result.dashboard;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

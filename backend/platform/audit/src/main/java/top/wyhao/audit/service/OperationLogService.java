@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.audit.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.event.EventListener;
@@ -7,9 +7,9 @@ import org.springframework.scheduling.annotation.Async;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.log.OperationLog;
-import top.wyhao.admin.system.model.vo.OperationLogDetailResult;
-import top.wyhao.admin.system.model.dto.OperationLogQuery;
-import top.wyhao.admin.system.model.vo.OperationLogResult;
+import top.wyhao.audit.model.vo.OperationLogDetailResult;
+import top.wyhao.audit.model.dto.OperationLogQuery;
+import top.wyhao.audit.model.vo.OperationLogResult;
 
 /**
  * 操作日志 Service

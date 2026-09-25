@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.config.sms;
+package top.wyhao.notification.config.sms;
 
 import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
@@ -9,7 +9,7 @@ import org.dromara.sms4j.provider.factory.BaseProviderFactory;
 import org.dromara.sms4j.provider.factory.ProviderFactoryHolder;
 import org.springframework.stereotype.Component;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.admin.system.service.ConfigService;
+import top.wyhao.settings.config.SmsConfigApi;
 
 import java.util.List;
 
@@ -22,17 +22,17 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SmsConfigProvider implements SmsReadConfig {
 
-    private final ConfigService configService;
+    private final SmsConfigApi smsConfigApi;
 
     @Override
     public BaseConfig getSupplierConfig(String configId) {
-        SmsConfig smsConfig = configService.getSmsConfig();
+        SmsConfig smsConfig = smsConfigApi.getSmsConfig();
         return from(smsConfig);
     }
 
     @Override
     public List<BaseConfig> getSupplierConfigList() {
-        SmsConfig smsConfig = configService.getSmsConfig();
+        SmsConfig smsConfig = smsConfigApi.getSmsConfig();
         if(smsConfig == null){
             return List.of();
         }

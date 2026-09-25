@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.enums;
+package top.wyhao.identity.model.enums;
 
 import cn.hutool.core.collection.CollUtil;
 import lombok.Getter;

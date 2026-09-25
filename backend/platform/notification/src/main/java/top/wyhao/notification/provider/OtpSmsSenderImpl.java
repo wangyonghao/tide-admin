@@ -2,9 +2,9 @@ package top.wyhao.notification.provider;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.notification.service.SmsService;
 import top.wyhao.identity.otp.enums.OtpScene;
 import top.wyhao.identity.otp.spi.OtpSmsSender;
+import top.wyhao.notification.service.SmsService;
 
 /**
  * OTP 短信发送适配

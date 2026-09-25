@@ -1,13 +1,13 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.notification.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.entity.SysNoticeLog;
-import top.wyhao.admin.system.mapper.SysNoticeLogMapper;
-import top.wyhao.admin.system.service.NoticeLogService;
+import top.wyhao.notification.entity.SysNoticeLog;
+import top.wyhao.notification.mapper.SysNoticeLogMapper;
+import top.wyhao.notification.service.NoticeLogService;
 import top.wyhao.starter.core.util.CollUtils;
 
 import java.time.LocalDateTime;

@@ -1,4 +1,4 @@
-package top.wyhao.admin.auth.model.dto;
+package top.wyhao.identity.auth.model.dto;
 
 import com.fasterxml.jackson.annotation.JsonSubTypes;
 import com.fasterxml.jackson.annotation.JsonTypeInfo;

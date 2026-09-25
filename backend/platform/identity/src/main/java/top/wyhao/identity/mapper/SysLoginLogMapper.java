@@ -1,7 +1,7 @@
-package top.wyhao.admin.system.mapper;
+package top.wyhao.identity.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import top.wyhao.admin.system.entity.SysLoginLog;
+import top.wyhao.identity.entity.SysLoginLog;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 /**

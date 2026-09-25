@@ -1,16 +1,16 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.notification.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import top.wyhao.admin.system.otp.enums.OtpScene;
+import top.wyhao.identity.otp.enums.OtpScene;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.SmsLogQuery;
-import top.wyhao.admin.system.model.dto.SmsLogRequest;
-import top.wyhao.admin.system.model.vo.SmsLogResult;
+import top.wyhao.notification.model.dto.SmsLogQuery;
+import top.wyhao.notification.model.dto.SmsLogRequest;
+import top.wyhao.notification.model.vo.SmsLogResult;
 
 /**
  * 短信 Service

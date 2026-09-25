@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.exception;
+package top.wyhao.identity.otp.exception;
 
 import lombok.Getter;
 import top.wyhao.starter.core.exception.BizException;

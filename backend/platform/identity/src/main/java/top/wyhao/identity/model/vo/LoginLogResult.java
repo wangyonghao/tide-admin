@@ -1,9 +1,9 @@
-package top.wyhao.admin.system.model.vo;
+package top.wyhao.identity.model.vo;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.admin.system.model.enums.LoginStatusEnum;
+import top.wyhao.identity.model.enums.LoginStatusEnum;
 
 import java.time.LocalDateTime;
 

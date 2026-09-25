@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.controller;
+package top.wyhao.organization.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
@@ -9,15 +9,15 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.service.DeptService;
+import top.wyhao.organization.service.DeptService;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.IdsRequest;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.DeptQuery;
-import top.wyhao.admin.system.model.dto.DeptRequest;
-import top.wyhao.admin.system.model.vo.DeptResult;
+import top.wyhao.organization.model.dto.DeptQuery;
+import top.wyhao.organization.model.dto.DeptRequest;
+import top.wyhao.organization.model.vo.DeptResult;
 
 /**
  * 部门管理 API

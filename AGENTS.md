@@ -60,25 +60,12 @@ backend/svr-job/      # 任务调度服务模块
 ##### 2. 业务模块 (biz/)
 ```
 backend/biz/
-├── biz-system/       # 系统管理核心模块
-│   └── src/main/java/top/wyhao/system/
-│       ├── auth/             # 认证相关
-│       │   ├── controller/   # 登录、登出等 API
-│       │   ├── service/      # 认证业务逻辑
-│       │   ├── model/        # 认证相关模型
-│       │   └── config/       # 认证配置
-│       └── system/           # 系统管理
-│           ├── controller/   # 用户、角色、菜单等 API
-│           ├── service/      # 业务逻辑
-│           ├── mapper/       # MyBatis Mapper
-│           ├── model/        # 数据模型
-│           │   ├── entity/   # 实体类
-│           │   ├── query/    # 查询条件
-│           │   ├── req/      # 请求参数
-│           │   └── resp/     # 响应参数
-│           ├── enums/        # 枚举
-│           ├── constant/     # 常量
-│           └── config/       # 配置
+├── biz-system/       # 系统管理（仪表盘等；其余能力已拆至 platform）
+│   └── src/main/java/top/wyhao/admin/system/
+│       ├── controller/       # Common / Dashboard 相关
+│       ├── service/          # 业务逻辑
+│       ├── exception/        # 域异常
+│       └── provider/         # 租户数据初始化等跨域组装
 │
 ├── biz-coding/       # 代码生成器插件
 │   └── src/main/
@@ -86,13 +73,6 @@ backend/biz/
 │       └── resources/templates/  # 代码生成模板
 │           ├── backend/          # 后端模板
 │           └── frontend/         # 前端模板
-│
-├── biz-openapi/      # 能力开放插件（第三方应用接入）
-│   └── src/main/java/top/wyhao/open/
-│       ├── controller/       # 应用管理 API
-│       ├── service/          # 业务逻辑
-│       ├── model/            # 数据模型
-│       └── sign/             # API 签名算法
 │
 ├── biz-tenant/       # 多租户插件
 │   └── src/main/java/top/wyhao/tenant/
@@ -110,6 +90,38 @@ backend/biz/
 │
 └── pom.xml           # 业务模块父 POM
 ```
+
+##### 2.2 接口模块 (interfaces/)
+```
+backend/interfaces/
+├── tide-web/         # 内部 Web API
+└── open-api/         # 开放 API（第三方应用接入、签名鉴权）
+    └── src/main/java/top/wyhao/admin/open/
+        ├── controller/       # 应用管理 API
+        ├── service/          # 业务逻辑
+        ├── model/            # 数据模型
+        └── sign/             # API 签名算法
+```
+
+##### 2.1 平台域模块 (platform/)
+```
+backend/platform/
+├── identity/         # 身份：用户、认证登录、OTP、个人资料、登录日志
+│   └── src/main/java/top/wyhao/identity/
+├── security/         # 授权：角色、菜单、用户角色、数据权限
+│   └── src/main/java/top/wyhao/security/
+├── organization/     # 组织：部门与组织树
+│   └── src/main/java/top/wyhao/organization/
+├── notification/     # 通知：站内消息、公告、短信、邮件
+│   └── src/main/java/top/wyhao/notification/
+├── settings/         # 设置：系统配置与数据字典
+│   └── src/main/java/top/wyhao/settings/
+├── audit/            # 审计：操作日志
+│   └── src/main/java/top/wyhao/audit/
+├── file-api/ / file-service/
+└── job-api/
+```
+跨域依赖通过 `top.wyhao.starter.core.spi`（UserApi / RoleApi / DeptApi / MenuApi / MessageNotifyApi / SmsConfigApi 等）解耦。
 
 ##### 3. 公共模块 (cmn/)
 ```
@@ -480,10 +492,13 @@ packages/utils, packages/types (工具和类型)
 - **启动类**: `backend/tide-bootstrap/src/main/java/top/wyhao/admin/AdminApplication.java`
 - **配置文件**: `backend/tide-bootstrap/src/main/resources/config/application-dev.yml`
 - **本地启动**: `cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
-- **用户管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/user/`
-- **角色管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/role/`
-- **菜单管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/menu/`
-- **文件管理**: `backend/biz/biz-system/src/main/java/top/wyhao/system/file/`
+- **用户管理**: `backend/platform/identity/src/main/java/top/wyhao/identity/`
+- **角色/菜单**: `backend/platform/security/src/main/java/top/wyhao/security/`
+- **部门管理**: `backend/platform/organization/src/main/java/top/wyhao/organization/`
+- **通知/消息/短信**: `backend/platform/notification/src/main/java/top/wyhao/notification/`
+- **系统配置/字典**: `backend/platform/settings/src/main/java/top/wyhao/settings/`
+- **操作日志**: `backend/platform/audit/src/main/java/top/wyhao/audit/`
+- **文件管理**: `backend/platform/file-api/` / `file-service/`
 
 #### 前端
 - **入口文件**: `frontend/apps/web-naive/src/main.ts`

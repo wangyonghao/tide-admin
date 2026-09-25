@@ -23,17 +23,15 @@ import top.wyhao.starter.tenant.servlet.TenantInterceptor;
 @ConditionalOnProperty(prefix = PropertiesConstants.TENANT, name = PropertiesConstants.ENABLED, havingValue = "true", matchIfMissing = true)
 public class TenantWebMvcAutoConfiguration implements WebMvcConfigurer {
 
-    private final TenantProperties tenantProperties;
     private final TenantProvider tenantProvider;
 
-    public TenantWebMvcAutoConfiguration(TenantProperties tenantProperties, TenantProvider tenantProvider) {
-        this.tenantProperties = tenantProperties;
+    public TenantWebMvcAutoConfiguration(TenantProvider tenantProvider) {
         this.tenantProvider = tenantProvider;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TenantInterceptor(tenantProperties, tenantProvider))
+        registry.addInterceptor(new TenantInterceptor(tenantProvider))
             .order(OrderedConstants.Interceptor.TENANT_INTERCEPTOR);
     }
 }

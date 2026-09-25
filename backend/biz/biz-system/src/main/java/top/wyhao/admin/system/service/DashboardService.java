@@ -1,10 +1,10 @@
 
 package top.wyhao.admin.system.service;
 
-import top.wyhao.admin.system.model.result.dashboard.DashboardAccessTrendResp;
-import top.wyhao.admin.system.model.result.dashboard.DashboardChartCommonResp;
-import top.wyhao.admin.system.model.result.dashboard.DashboardNoticeResp;
-import top.wyhao.admin.system.model.result.dashboard.DashboardOverviewCommonResp;
+import top.wyhao.audit.model.result.dashboard.DashboardAccessTrendResp;
+import top.wyhao.audit.model.result.dashboard.DashboardChartCommonResp;
+import top.wyhao.notification.model.result.dashboard.DashboardNoticeResp;
+import top.wyhao.audit.model.result.dashboard.DashboardOverviewCommonResp;
 
 import java.io.IOException;
 import java.util.List;

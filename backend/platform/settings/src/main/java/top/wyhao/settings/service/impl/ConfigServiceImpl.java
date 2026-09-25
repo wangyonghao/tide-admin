@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.settings.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
@@ -13,12 +13,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.admin.system.assembler.ConfigAssembler;
-import top.wyhao.admin.system.entity.SysConfig;
-import top.wyhao.admin.system.exception.ConfigException;
-import top.wyhao.admin.system.mapper.SysConfigMapper;
-import top.wyhao.admin.system.model.result.config.*;
-import top.wyhao.admin.system.service.ConfigService;
+import top.wyhao.settings.assembler.ConfigAssembler;
+import top.wyhao.settings.entity.SysConfig;
+import top.wyhao.settings.exception.ConfigException;
+import top.wyhao.settings.mapper.SysConfigMapper;
+import top.wyhao.settings.model.result.config.*;
+import top.wyhao.identity.model.result.config.LoginConfigVO;
+import top.wyhao.identity.model.result.config.SecurityConfigVO;
+import top.wyhao.identity.model.result.config.SiteConfigVO;
+import top.wyhao.settings.service.ConfigService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -26,9 +29,9 @@ import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.ConfigQuery;
-import top.wyhao.admin.system.model.dto.ConfigRequest;
-import top.wyhao.admin.system.model.vo.ConfigResult;
+import top.wyhao.settings.model.dto.ConfigQuery;
+import top.wyhao.settings.model.dto.ConfigRequest;
+import top.wyhao.settings.model.vo.ConfigResult;
 
 /**
  * 系统配置业务实现

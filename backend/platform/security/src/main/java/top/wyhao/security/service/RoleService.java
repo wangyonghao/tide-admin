@@ -1,21 +1,21 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.security.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import top.wyhao.admin.system.model.dto.RolePermissionUpdateRequest;
-import top.wyhao.admin.system.entity.SysRole;
-import top.wyhao.admin.system.model.result.MenuVO;
+import top.wyhao.security.model.dto.RolePermissionUpdateRequest;
+import top.wyhao.security.entity.SysRole;
+import top.wyhao.security.model.result.MenuVO;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.RoleDetailResult;
-import top.wyhao.admin.system.model.dto.RoleMemberQuery;
-import top.wyhao.admin.system.model.vo.RoleMemberResult;
-import top.wyhao.admin.system.model.dto.RoleQuery;
-import top.wyhao.admin.system.model.dto.RoleRequest;
-import top.wyhao.admin.system.model.vo.RoleResult;
+import top.wyhao.security.model.vo.RoleDetailResult;
+import top.wyhao.security.model.dto.RoleMemberQuery;
+import top.wyhao.security.model.vo.RoleMemberResult;
+import top.wyhao.security.model.dto.RoleQuery;
+import top.wyhao.security.model.dto.RoleRequest;
+import top.wyhao.security.model.vo.RoleResult;
 
 /**
  * 角色业务接口
@@ -160,4 +160,9 @@ public interface RoleService {
 
 
     void deleteMember(Long roleId, List<Long> ids);
+
+    /**
+     * 删除用户的全部角色关联
+     */
+    void deleteUserRolesByUserIds(List<Long> userIds);
 }

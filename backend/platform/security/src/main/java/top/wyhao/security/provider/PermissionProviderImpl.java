@@ -1,11 +1,8 @@
-package top.wyhao.admin.system.provider;
+package top.wyhao.security.provider;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.system.mapper.SysMenuMapper;
-import top.wyhao.admin.system.mapper.SysUserMapper;
-import top.wyhao.admin.system.service.UserService;
-import top.wyhao.starter.core.enums.RoleCodeEnum;
+import top.wyhao.identity.service.UserService;
 import top.wyhao.starter.core.spi.PermissionProvider;
 
 import java.util.List;

@@ -1,4 +1,4 @@
-package top.wyhao.admin.auth.model.dto;
+package top.wyhao.identity.auth.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.Email;

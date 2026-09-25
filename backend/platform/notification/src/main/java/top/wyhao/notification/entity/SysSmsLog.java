@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.entity;
+package top.wyhao.notification.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;

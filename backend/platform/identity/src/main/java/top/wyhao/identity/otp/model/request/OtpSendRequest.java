@@ -1,9 +1,9 @@
-package top.wyhao.admin.system.otp.model.request;
+package top.wyhao.identity.otp.model.request;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import top.wyhao.admin.system.otp.enums.OtpScene;
+import top.wyhao.identity.otp.enums.OtpScene;
 
 import java.io.Serial;
 import java.io.Serializable;

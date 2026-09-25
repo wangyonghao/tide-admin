@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.auth.controller;
+package top.wyhao.identity.auth.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
@@ -21,18 +21,18 @@ import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.auth.model.dto.LoginRequest;
-import top.wyhao.admin.auth.model.vo.AuthInfoResult;
-import top.wyhao.admin.auth.model.vo.LoginResult;
-import top.wyhao.admin.auth.model.vo.OnlineUserResult;
-import top.wyhao.admin.auth.model.vo.SocialAuthorizeUrlResult;
-import top.wyhao.admin.auth.service.AuthService;
-import top.wyhao.admin.system.model.dto.UserPasswordResetRequest;
-import top.wyhao.admin.system.service.LoginLogService;
-import top.wyhao.admin.system.service.MenuService;
-import top.wyhao.admin.system.service.UserService;
+import top.wyhao.identity.auth.model.dto.LoginRequest;
+import top.wyhao.identity.auth.model.vo.AuthInfoResult;
+import top.wyhao.identity.auth.model.vo.LoginResult;
+import top.wyhao.identity.auth.model.vo.OnlineUserResult;
+import top.wyhao.identity.auth.model.vo.SocialAuthorizeUrlResult;
+import top.wyhao.identity.auth.service.AuthService;
+import top.wyhao.identity.model.dto.UserPasswordResetRequest;
+import top.wyhao.identity.service.LoginLogService;
+import top.wyhao.starter.core.spi.MenuApi;
+import top.wyhao.identity.service.UserService;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.admin.auth.exception.AuthException;
+import top.wyhao.identity.auth.exception.AuthException;
 import top.wyhao.starter.core.util.RsaUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
@@ -41,8 +41,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import top.wyhao.admin.system.model.dto.LoginLogQuery;
-import top.wyhao.admin.system.model.vo.LoginLogResult;
+import top.wyhao.identity.model.dto.LoginLogQuery;
+import top.wyhao.identity.model.vo.LoginLogResult;
 
 /**
  * 用户认证 API
@@ -54,7 +54,7 @@ public class AuthController {
     private final JustAuthProperties authProperties;
 
     private final UserService userService;
-    private final MenuService menuService;
+    private final MenuApi menuApi;
     private final LoginLogService loginLogService;
     private final AuthService authService;
 
@@ -106,7 +106,7 @@ public class AuthController {
                 userService.detail(userId),
                 userService.findUserRoles(userId),
                 userService.findUserPermissions(userId),
-                menuService.getMenuTreeByUserId(userId)
+                menuApi.getMenuTreeByUserId(userId)
         );
     }
 

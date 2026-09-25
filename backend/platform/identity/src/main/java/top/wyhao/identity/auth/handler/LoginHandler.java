@@ -1,9 +1,9 @@
 
-package top.wyhao.admin.auth.handler;
+package top.wyhao.identity.auth.handler;
 
-import top.wyhao.admin.auth.model.dto.LoginRequest;
-import top.wyhao.admin.auth.model.enums.GrantType;
-import top.wyhao.admin.auth.model.vo.LoginResult;
+import top.wyhao.identity.auth.model.dto.LoginRequest;
+import top.wyhao.identity.auth.model.enums.GrantType;
+import top.wyhao.identity.auth.model.vo.LoginResult;
 
 /**
  * 登录处理器

@@ -1,18 +1,18 @@
 
-package top.wyhao.admin.auth.handler;
+package top.wyhao.identity.auth.handler;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.exception.AuthException;
-import top.wyhao.admin.auth.model.dto.LoginRequest;
-import top.wyhao.admin.auth.model.dto.PhoneLoginRequest;
-import top.wyhao.admin.auth.model.enums.GrantType;
-import top.wyhao.admin.auth.model.vo.LoginResult;
-import top.wyhao.admin.system.assembler.UserAssembler;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.service.UserService;
+import top.wyhao.identity.auth.exception.AuthException;
+import top.wyhao.identity.auth.model.dto.LoginRequest;
+import top.wyhao.identity.auth.model.dto.PhoneLoginRequest;
+import top.wyhao.identity.auth.model.enums.GrantType;
+import top.wyhao.identity.auth.model.vo.LoginResult;
+import top.wyhao.identity.assembler.UserAssembler;
+import top.wyhao.identity.entity.SysUser;
+import top.wyhao.identity.service.UserService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.constant.CacheConstants;

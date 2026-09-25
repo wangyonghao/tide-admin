@@ -1,13 +1,13 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.security.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.entity.SysRoleDept;
-import top.wyhao.admin.system.mapper.SysRoleDeptMapper;
-import top.wyhao.admin.system.service.RoleDeptService;
+import top.wyhao.security.entity.SysRoleDept;
+import top.wyhao.security.mapper.SysRoleDeptMapper;
+import top.wyhao.security.service.RoleDeptService;
 import top.wyhao.starter.core.util.CollUtils;
 
 import java.util.List;

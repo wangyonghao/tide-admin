@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.model.dto;
+package top.wyhao.security.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

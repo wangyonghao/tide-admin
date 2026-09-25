@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.enums;
+package top.wyhao.identity.otp.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

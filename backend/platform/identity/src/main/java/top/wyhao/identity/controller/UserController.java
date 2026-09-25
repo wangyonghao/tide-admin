@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.controller;
+package top.wyhao.identity.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.io.resource.ResourceUtil;
@@ -14,15 +14,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.model.vo.UserDetail;
-import top.wyhao.admin.system.model.dto.UserQuery;
-import top.wyhao.admin.system.model.dto.UserRequest;
-import top.wyhao.admin.system.model.vo.UserResult;
-import top.wyhao.admin.system.model.dto.UserImportRequest;
-import top.wyhao.admin.system.service.UserService;
+import top.wyhao.identity.model.vo.UserDetail;
+import top.wyhao.identity.model.dto.UserQuery;
+import top.wyhao.identity.model.dto.UserRequest;
+import top.wyhao.identity.model.vo.UserResult;
+import top.wyhao.identity.model.dto.UserImportRequest;
+import top.wyhao.identity.service.UserService;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.admin.system.exception.UserException;
+import top.wyhao.identity.exception.UserException;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.IdsRequest;

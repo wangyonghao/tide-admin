@@ -21,5 +21,17 @@
         <module>file-api</module>
         <!-- 定时任务管理 API -->
         <module>job-api</module>
+        <!-- 身份：用户、认证、凭证 -->
+        <module>identity</module>
+        <!-- 授权：角色、菜单权限 -->
+        <module>security</module>
+        <!-- 组织：部门与组织关系 -->
+        <module>organization</module>
+        <!-- 通知：站内消息、公告、短信、邮件 -->
+        <module>notification</module>
+        <!-- 设置：系统配置与数据字典 -->
+        <module>settings</module>
+        <!-- 审计：操作日志 -->
+        <module>audit</module>
     </modules>
 </project>

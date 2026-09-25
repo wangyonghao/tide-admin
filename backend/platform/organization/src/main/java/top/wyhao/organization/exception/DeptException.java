@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.exception;
+package top.wyhao.organization.exception;
 
 import cn.hutool.core.util.StrUtil;
 import top.wyhao.starter.core.exception.BizException;
@@ -62,5 +62,29 @@ public class DeptException extends BizException {
 
     public static DeptException hasUsers() {
         return of("DEPT_HAS_USERS", "所选部门存在用户关联，请解除关联后重试");
+    }
+
+    public static DeptException pathBlank() {
+        return of("DEPT_PATH_BLANK", "部门路径不能为空");
+    }
+
+    public static DeptException pathFormatInvalid(String deptPath) {
+        return of("DEPT_PATH_FORMAT_INVALID", StrUtil.format("部门路径格式无效：{}", deptPath));
+    }
+
+    public static DeptException pathContainsBlank(String deptPath) {
+        return of("DEPT_PATH_CONTAINS_BLANK", StrUtil.format("部门路径包含空段：{}", deptPath));
+    }
+
+    public static DeptException notFoundInPath(String name, String deptPath) {
+        return of("DEPT_NOT_FOUND_IN_PATH", StrUtil.format("路径 [{}] 中未找到部门 [{}]", deptPath, name));
+    }
+
+    public static DeptException notFoundByName(String deptName) {
+        return of("DEPT_NOT_FOUND_BY_NAME", StrUtil.format("部门 [{}] 不存在", deptName));
+    }
+
+    public static DeptException nameDuplicate(String deptName) {
+        return of("DEPT_NAME_DUPLICATE", StrUtil.format("存在多个同名部门 [{}]，请使用完整层级路径", deptName));
     }
 }

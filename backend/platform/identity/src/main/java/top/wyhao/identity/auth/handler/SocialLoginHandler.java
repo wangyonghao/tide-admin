@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.auth.handler;
+package top.wyhao.identity.auth.handler;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
@@ -17,30 +17,30 @@ import me.zhyd.oauth.model.AuthResponse;
 import me.zhyd.oauth.model.AuthUser;
 import me.zhyd.oauth.request.AuthRequest;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.model.dto.LoginRequest;
-import top.wyhao.admin.auth.model.dto.SocialLoginRequest;
-import top.wyhao.admin.auth.model.enums.GrantType;
-import top.wyhao.admin.auth.model.vo.LoginResult;
-import top.wyhao.admin.system.assembler.UserAssembler;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.entity.SysUserSocial;
-import top.wyhao.admin.system.model.SystemConstants;
-import top.wyhao.admin.system.model.enums.MessageTemplates;
-import top.wyhao.admin.system.model.enums.MessageType;
-import top.wyhao.admin.system.service.*;
+import top.wyhao.identity.auth.model.dto.LoginRequest;
+import top.wyhao.identity.auth.model.dto.SocialLoginRequest;
+import top.wyhao.identity.auth.model.enums.GrantType;
+import top.wyhao.identity.auth.model.vo.LoginResult;
+import top.wyhao.identity.assembler.UserAssembler;
+import top.wyhao.identity.entity.SysUser;
+import top.wyhao.identity.entity.SysUserSocial;
+import top.wyhao.starter.core.constant.SystemConstants;
+import top.wyhao.identity.service.UserService;
+import top.wyhao.identity.service.UserSocialService;
+import top.wyhao.starter.core.spi.MessageNotifyApi;
+import top.wyhao.starter.core.spi.RoleApi;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
 import top.wyhao.starter.core.constant.RegexConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.admin.auth.exception.AuthException;
+import top.wyhao.identity.auth.exception.AuthException;
 import top.wyhao.starter.core.model.LoginUser;
 import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
-import top.wyhao.admin.system.model.dto.MessageRequest;
 
 /**
  * 第三方账号登录处理器
@@ -54,8 +54,8 @@ public class SocialLoginHandler implements LoginHandler {
 
     private final UserService userService;
     private final UserSocialService userSocialService;
-    private final RoleService roleService;
-    private final MessageService messageService;
+    private final RoleApi roleApi;
+    private final MessageNotifyApi messageNotifyApi;
     private final UserAssembler userAssembler;
 
     @Override
@@ -105,8 +105,7 @@ public class SocialLoginHandler implements LoginHandler {
             user.setStatus(StatusEnum.ENABLE.getValue());
             userService.save(user);
             Long userId = user.getId();
-            roleService.assignRolesToUser(Collections.singletonList(roleService
-                    .getIdByCode(RoleCodeEnum.GENERAL_USER.getCode())), userId);
+            roleApi.assignRolesToUser(Collections.singletonList(roleApi.getIdByCode(RoleCodeEnum.GENERAL_USER.getCode())), userId);
             userSocial = new SysUserSocial();
             userSocial.setUserId(userId);
             userSocial.setSource(source);
@@ -161,13 +160,8 @@ public class SocialLoginHandler implements LoginHandler {
      * @param user 用户信息
      */
     private void sendSecurityMsg(SysUser user) {
-        MessageTemplates template = MessageTemplates.SOCIAL_REGISTER;
-        MessageRequest req = new MessageRequest(
-                template.getTitle().formatted(applicationProperties.getName()),
-                template.getContent().formatted(user.getNickname()),
-                MessageType.SECURITY,
-                null
-        );
-        messageService.add(req, CollUtil.toList(user.getId().toString()));
+        String title = "欢迎加入 %s".formatted(applicationProperties.getName());
+        String content = "您好，%s！您已通过第三方账号完成注册。".formatted(user.getNickname());
+        messageNotifyApi.notifyUsers(title, content, "SECURITY", CollUtil.toList(user.getId().toString()));
     }
 }

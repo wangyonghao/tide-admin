@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.entity;
+package top.wyhao.settings.entity;
 
 import com.baomidou.mybatisplus.annotation.*;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;

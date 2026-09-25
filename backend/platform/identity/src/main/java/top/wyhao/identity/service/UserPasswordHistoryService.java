@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.identity.service;
 
 import java.util.List;
 

@@ -1,9 +1,9 @@
 
-package top.wyhao.admin.system.entity;
+package top.wyhao.security.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.admin.system.model.enums.MenuType;
+import top.wyhao.security.model.enums.MenuType;
 import top.wyhao.cmn.db.model.BaseEntity;
 import top.wyhao.starter.core.enums.StatusEnum;
 

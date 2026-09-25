@@ -1,13 +1,13 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.settings.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.entity.SysDict;
-import top.wyhao.admin.system.mapper.SysDictMapper;
-import top.wyhao.admin.system.service.DictService;
+import top.wyhao.settings.entity.SysDict;
+import top.wyhao.settings.mapper.SysDictMapper;
+import top.wyhao.settings.service.DictService;
 import top.wyhao.cmn.db.query.PageFactory;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
@@ -16,7 +16,7 @@ import top.wyhao.starter.web.core.model.LabelValueResult;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import top.wyhao.admin.system.model.dto.DictQuery;
+import top.wyhao.settings.model.dto.DictQuery;
 
 /**
  * 字典业务实现

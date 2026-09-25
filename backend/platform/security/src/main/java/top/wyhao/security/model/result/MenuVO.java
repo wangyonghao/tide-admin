@@ -1,12 +1,12 @@
 
-package top.wyhao.admin.system.model.result;
+package top.wyhao.security.model.result;
 
 import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.admin.system.model.enums.MenuType;
+import top.wyhao.security.model.enums.MenuType;
 import top.wyhao.starter.core.enums.StatusEnum;
 
 import java.time.LocalDateTime;

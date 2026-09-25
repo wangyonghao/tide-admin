@@ -13,18 +13,17 @@ import top.wyhao.starter.tenant.context.TenantContextHolder;
  */
 public class TenantInterceptor implements HandlerInterceptor {
 
-    private final TenantProperties tenantProperties;
+    private static final String TENANT_ID = "X-Tenant-Id";
     private final TenantProvider tenantProvider;
 
-    public TenantInterceptor(TenantProperties tenantProperties, TenantProvider tenantProvider) {
-        this.tenantProperties = tenantProperties;
+    public TenantInterceptor(TenantProvider tenantProvider) {
         this.tenantProvider = tenantProvider;
     }
 
     @Override
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) {
         // 设置上下文
-        String tenantId = request.getHeader(tenantProperties.getTenantIdHeader());
+        String tenantId = request.getHeader(TENANT_ID);
         if(tenantId != null){
             TenantContextHolder.setContext(tenantProvider.getByTenantId(tenantId, true));
         }

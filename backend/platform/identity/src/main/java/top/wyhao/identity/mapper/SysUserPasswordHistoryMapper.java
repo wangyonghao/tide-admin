@@ -1,9 +1,9 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.identity.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.entity.SysUserPasswordHistory;
+import top.wyhao.identity.entity.SysUserPasswordHistory;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 /**

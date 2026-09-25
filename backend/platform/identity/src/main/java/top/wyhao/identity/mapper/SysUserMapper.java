@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.identity.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -7,9 +7,9 @@ import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import top.wyhao.admin.system.model.vo.UserDetail;
-import top.wyhao.admin.system.model.vo.UserResult;
-import top.wyhao.admin.system.entity.SysUser;
+import top.wyhao.identity.model.vo.UserDetail;
+import top.wyhao.identity.model.vo.UserResult;
+import top.wyhao.identity.entity.SysUser;
 import top.wyhao.cmn.db.datapermission.annotation.DataPermission;
 import top.wyhao.cmn.db.datapermission.mapper.DataPermissionMapper;
 

@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.notification.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.collection.CollUtil;
@@ -8,13 +8,13 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.entity.SysMessage;
-import top.wyhao.admin.system.entity.SysMessageLog;
-import top.wyhao.admin.system.mapper.SysMessageLogMapper;
-import top.wyhao.admin.system.mapper.SysMessageMapper;
-import top.wyhao.admin.system.model.enums.MessageType;
-import top.wyhao.admin.system.model.enums.NoticeScopes;
-import top.wyhao.admin.system.service.MessageService;
+import top.wyhao.notification.entity.SysMessage;
+import top.wyhao.notification.entity.SysMessageLog;
+import top.wyhao.notification.mapper.SysMessageLogMapper;
+import top.wyhao.notification.mapper.SysMessageMapper;
+import top.wyhao.notification.model.enums.MessageType;
+import top.wyhao.notification.model.enums.NoticeScopes;
+import top.wyhao.notification.service.MessageService;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.messaging.websocket.util.WebSocketUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -23,12 +23,12 @@ import top.wyhao.starter.web.core.model.PageResult;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
-import top.wyhao.admin.system.model.vo.MessageDetailResult;
-import top.wyhao.admin.system.model.dto.MessageQuery;
-import top.wyhao.admin.system.model.dto.MessageRequest;
-import top.wyhao.admin.system.model.vo.MessageResult;
-import top.wyhao.admin.system.model.vo.MessageUnreadCountResult;
-import top.wyhao.admin.system.model.vo.MessageUnreadResult;
+import top.wyhao.notification.model.vo.MessageDetailResult;
+import top.wyhao.notification.model.dto.MessageQuery;
+import top.wyhao.notification.model.dto.MessageRequest;
+import top.wyhao.notification.model.vo.MessageResult;
+import top.wyhao.notification.model.vo.MessageUnreadCountResult;
+import top.wyhao.notification.model.vo.MessageUnreadResult;
 
 /**
  * 消息业务实现

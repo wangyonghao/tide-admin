@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.entity;
+package top.wyhao.notification.entity;
 
 import com.baomidou.mybatisplus.annotation.FieldFill;
 import com.baomidou.mybatisplus.annotation.TableField;
@@ -7,8 +7,8 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.handlers.JacksonTypeHandler;
 import lombok.Data;
-import top.wyhao.admin.system.model.enums.MessageType;
-import top.wyhao.admin.system.model.enums.NoticeScopes;
+import top.wyhao.notification.model.enums.MessageType;
+import top.wyhao.notification.model.enums.NoticeScopes;
 
 import java.io.Serial;
 import java.io.Serializable;

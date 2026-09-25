@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.identity.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
@@ -7,9 +7,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.entity.SysUserPasswordHistory;
-import top.wyhao.admin.system.mapper.SysUserPasswordHistoryMapper;
-import top.wyhao.admin.system.service.UserPasswordHistoryService;
+import top.wyhao.identity.entity.SysUserPasswordHistory;
+import top.wyhao.identity.mapper.SysUserPasswordHistoryMapper;
+import top.wyhao.identity.service.UserPasswordHistoryService;
 import top.wyhao.starter.core.util.CollUtils;
 
 import java.util.List;

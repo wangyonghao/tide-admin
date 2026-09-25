@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.audit.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -9,22 +9,22 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.assembler.OperationLogAssembler;
-import top.wyhao.admin.system.entity.SysOperationLog;
-import top.wyhao.admin.system.mapper.SysOperationLogMapper;
-import top.wyhao.admin.system.service.OperationLogService;
+import top.wyhao.audit.assembler.OperationLogAssembler;
+import top.wyhao.audit.entity.SysOperationLog;
+import top.wyhao.audit.mapper.SysOperationLogMapper;
+import top.wyhao.audit.service.OperationLogService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
-import top.wyhao.admin.system.exception.OperationLogException;
+import top.wyhao.audit.exception.OperationLogException;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.log.OperationLog;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.OperationLogDetailResult;
-import top.wyhao.admin.system.model.vo.OperationLogExcelResult;
-import top.wyhao.admin.system.model.dto.OperationLogQuery;
-import top.wyhao.admin.system.model.vo.OperationLogResult;
+import top.wyhao.audit.model.vo.OperationLogDetailResult;
+import top.wyhao.audit.model.vo.OperationLogExcelResult;
+import top.wyhao.audit.model.dto.OperationLogQuery;
+import top.wyhao.audit.model.vo.OperationLogResult;
 
 /**
  * 操作日志服务

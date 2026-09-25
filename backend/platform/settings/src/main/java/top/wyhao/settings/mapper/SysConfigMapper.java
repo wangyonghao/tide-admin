@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.settings.mapper;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
@@ -7,10 +7,10 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.entity.SysConfig;
+import top.wyhao.settings.entity.SysConfig;
 import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.starter.web.json.util.JSONUtils;
-import top.wyhao.admin.system.model.vo.ConfigResult;
+import top.wyhao.settings.model.vo.ConfigResult;
 
 /**
  * 系统配置 Mapper

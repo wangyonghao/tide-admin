@@ -1,19 +1,19 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.notification.service;
 
-import top.wyhao.admin.system.model.enums.NoticeMethods;
-import top.wyhao.admin.system.entity.SysNotice;
-import top.wyhao.admin.system.model.result.dashboard.DashboardNoticeResp;
+import top.wyhao.notification.model.enums.NoticeMethods;
+import top.wyhao.notification.entity.SysNotice;
+import top.wyhao.notification.model.result.dashboard.DashboardNoticeResp;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.NotificationDetailResult;
-import top.wyhao.admin.system.model.dto.NotificationQuery;
-import top.wyhao.admin.system.model.dto.NotificationRequest;
-import top.wyhao.admin.system.model.vo.NotificationResult;
+import top.wyhao.notification.model.vo.NotificationDetailResult;
+import top.wyhao.notification.model.dto.NotificationQuery;
+import top.wyhao.notification.model.dto.NotificationRequest;
+import top.wyhao.notification.model.vo.NotificationResult;
 
 /**
  * 公告管理 API

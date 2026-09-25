@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.controller;
+package top.wyhao.audit.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
@@ -13,12 +13,12 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.admin.system.service.OperationLogService;
+import top.wyhao.audit.service.OperationLogService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.admin.system.model.vo.OperationLogDetailResult;
-import top.wyhao.admin.system.model.dto.OperationLogQuery;
-import top.wyhao.admin.system.model.vo.OperationLogResult;
+import top.wyhao.audit.model.vo.OperationLogDetailResult;
+import top.wyhao.audit.model.dto.OperationLogQuery;
+import top.wyhao.audit.model.vo.OperationLogResult;
 
 /**
  * 操作日志 API

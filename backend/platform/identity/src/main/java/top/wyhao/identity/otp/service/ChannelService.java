@@ -1,6 +1,6 @@
-package top.wyhao.admin.system.otp.service;
+package top.wyhao.identity.otp.service;
 
-import top.wyhao.admin.system.otp.enums.OtpChannel;
+import top.wyhao.identity.otp.enums.OtpChannel;
 
 /**
  * 渠道服务接口

@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.enums;
+package top.wyhao.identity.model.enums;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.convert.Convert;
@@ -8,12 +8,11 @@ import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import cn.hutool.extra.spring.SpringUtil;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.exception.ConfigException;
-import top.wyhao.admin.system.exception.UserException;
-import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
-import top.wyhao.admin.system.service.ConfigService;
-import top.wyhao.admin.system.service.UserPasswordHistoryService;
+import top.wyhao.identity.entity.SysUser;
+import top.wyhao.identity.exception.UserException;
+import top.wyhao.identity.model.result.config.SecurityConfigVO;
+import top.wyhao.identity.config.SystemConfigApi;
+import top.wyhao.identity.service.UserPasswordHistoryService;
 import top.wyhao.starter.core.constant.GlobalConstants;
 import top.wyhao.starter.core.constant.RegexConstants;
 
@@ -53,12 +52,12 @@ public enum PasswordPolicies {
                 super.validateRange(value, policyMap);
                 return;
             }
-            SecurityConfigVO securityConfigVO = SpringUtil.getBean(ConfigService.class).getSecurityConfig();
+            SecurityConfigVO securityConfigVO = SpringUtil.getBean(SystemConfigApi.class).getSecurityConfig();
             Integer passwordExpirationDays = ObjectUtil.defaultIfNull(Convert.toInt(policyMap
                 .get(PASSWORD_EXPIRATION_DAYS.name())), securityConfigVO.getPasswordExpireDays());
             if (passwordExpirationDays > GlobalConstants.Boolean.NO) {
                 if (value >= passwordExpirationDays) {
-                    throw ConfigException.passwordWarningDaysExceedExpiration();
+                    throw UserException.passwordWarningDaysExceedExpiration();
                 }
                 return;
             }
@@ -91,7 +90,7 @@ public enum PasswordPolicies {
         @Override
         public void validateRange(int value, Map<String, String> policyMap) {
             if (value != GlobalConstants.Boolean.YES && value != GlobalConstants.Boolean.NO) {
-                throw ConfigException.passwordPolicyInvalid(this.getDescription()
+                throw UserException.passwordPolicyInvalid(this.getDescription()
                     .formatted(GlobalConstants.Boolean.YES, GlobalConstants.Boolean.NO));
             }
         }
@@ -111,7 +110,7 @@ public enum PasswordPolicies {
         @Override
         public void validateRange(int value, Map<String, String> policyMap) {
             if (value != GlobalConstants.Boolean.YES && value != GlobalConstants.Boolean.NO) {
-                throw ConfigException.passwordPolicyInvalid(this.getDescription()
+                throw UserException.passwordPolicyInvalid(this.getDescription()
                     .formatted(GlobalConstants.Boolean.YES, GlobalConstants.Boolean.NO));
             }
         }
@@ -185,11 +184,6 @@ public enum PasswordPolicies {
     }
 
     /**
-     * 策略类别
-     */
-    public static final ConfigCategory CATEGORY = ConfigCategory.PASSWORD;
-
-    /**
      * 校验取值范围
      *
      * @param value     值
@@ -199,7 +193,7 @@ public enum PasswordPolicies {
         Integer minValue = this.getMin();
         Integer maxValue = this.getMax();
         if (value < minValue || value > maxValue) {
-            throw ConfigException.passwordPolicyInvalid(this.getDescription().formatted(minValue, maxValue));
+            throw UserException.passwordPolicyInvalid(this.getDescription().formatted(minValue, maxValue));
         }
     }
 

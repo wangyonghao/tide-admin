@@ -1,12 +1,12 @@
 
-package top.wyhao.admin.system.model.dto;
+package top.wyhao.identity.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.admin.system.model.enums.ImportPolicies;
+import top.wyhao.identity.model.enums.ImportPolicies;
 
 /**
  * 用户导入请求参数

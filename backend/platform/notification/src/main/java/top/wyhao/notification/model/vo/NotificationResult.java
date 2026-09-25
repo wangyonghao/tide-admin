@@ -1,12 +1,12 @@
-package top.wyhao.admin.system.model.vo;
+package top.wyhao.notification.model.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.admin.system.model.enums.NoticeScopes;
-import top.wyhao.admin.system.model.enums.NoticeStatus;
+import top.wyhao.notification.model.enums.NoticeScopes;
+import top.wyhao.notification.model.enums.NoticeStatus;
 
 import java.time.LocalDateTime;
 import java.util.List;

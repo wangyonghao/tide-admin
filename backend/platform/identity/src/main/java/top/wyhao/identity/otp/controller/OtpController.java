@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.otp.controller;
+package top.wyhao.identity.otp.controller;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -8,11 +8,11 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.admin.system.otp.model.request.OtpSendRequest;
-import top.wyhao.admin.system.otp.model.request.OtpVerifyRequest;
-import top.wyhao.admin.system.otp.model.result.OtpSendResult;
-import top.wyhao.admin.system.otp.model.result.OtpVerifyResult;
-import top.wyhao.admin.system.otp.service.OtpService;
+import top.wyhao.identity.otp.model.request.OtpSendRequest;
+import top.wyhao.identity.otp.model.request.OtpVerifyRequest;
+import top.wyhao.identity.otp.model.result.OtpSendResult;
+import top.wyhao.identity.otp.model.result.OtpVerifyResult;
+import top.wyhao.identity.otp.service.OtpService;
 import top.wyhao.starter.web.ratelimit.LimitType;
 import top.wyhao.starter.web.ratelimit.RateLimiter;
 import top.wyhao.starter.web.ratelimit.RateLimiters;

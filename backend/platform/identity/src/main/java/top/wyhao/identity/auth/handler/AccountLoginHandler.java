@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.auth.handler;
+package top.wyhao.identity.auth.handler;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.util.ReUtil;
@@ -10,17 +10,17 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.auth.exception.AuthException;
-import top.wyhao.admin.auth.model.dto.AccountLoginRequest;
-import top.wyhao.admin.auth.model.dto.LoginRequest;
-import top.wyhao.admin.auth.model.enums.GrantType;
-import top.wyhao.admin.auth.model.vo.LoginResult;
-import top.wyhao.admin.system.assembler.UserAssembler;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.exception.UserException;
-import top.wyhao.admin.system.model.result.config.LoginConfigVO;
-import top.wyhao.admin.system.service.ConfigService;
-import top.wyhao.admin.system.service.UserService;
+import top.wyhao.identity.auth.exception.AuthException;
+import top.wyhao.identity.auth.model.dto.AccountLoginRequest;
+import top.wyhao.identity.auth.model.dto.LoginRequest;
+import top.wyhao.identity.auth.model.enums.GrantType;
+import top.wyhao.identity.auth.model.vo.LoginResult;
+import top.wyhao.identity.assembler.UserAssembler;
+import top.wyhao.identity.entity.SysUser;
+import top.wyhao.identity.exception.UserException;
+import top.wyhao.identity.model.result.config.LoginConfigVO;
+import top.wyhao.identity.config.SystemConfigApi;
+import top.wyhao.identity.service.UserService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.constant.RegexConstants;
@@ -47,7 +47,7 @@ public class AccountLoginHandler implements LoginHandler {
 
     private final PasswordEncoder passwordEncoder;
     private final UserService userService;
-    private final ConfigService configService;
+    private final SystemConfigApi systemConfigApi;
     private final UserAssembler userAssembler;
 
     @Override
@@ -150,13 +150,13 @@ public class AccountLoginHandler implements LoginHandler {
     }
 
     private boolean exceedRetryLimit(String retryKey) {
-        LoginConfigVO config = configService.getLoginConfig();
+        LoginConfigVO config = systemConfigApi.getLoginConfig();
         int remain = config.getMaxRetry() - getRetryCount(retryKey);
         return remain <= 0;
     }
 
     private String buildRetryMessage(String retryKey) {
-        LoginConfigVO config = configService.getLoginConfig();
+        LoginConfigVO config = systemConfigApi.getLoginConfig();
         int remain = config.getMaxRetry() - getRetryCount(retryKey);
         return remain > 0
                 ? "用户名或密码错误，还剩" + remain + "次机会"
@@ -186,7 +186,7 @@ public class AccountLoginHandler implements LoginHandler {
 
     private void validateCaptcha(String captchaUUID, String captchaValue) {
         // 校验验证码
-        LoginConfigVO configVO = configService.getLoginConfig();
+        LoginConfigVO configVO = systemConfigApi.getLoginConfig();
         boolean loginCaptchaEnabled = configVO.getCaptchaEnabled();
         if (!loginCaptchaEnabled) {
             return;
@@ -205,7 +205,7 @@ public class AccountLoginHandler implements LoginHandler {
 
     private void incrementRetry(String retryKey) {
         RedisUtils.incr(retryKey);
-        LoginConfigVO configVO = configService.getLoginConfig();
+        LoginConfigVO configVO = systemConfigApi.getLoginConfig();
         RedisUtils.expire(retryKey, Duration.ofMinutes(configVO.getLockTime()));
     }
 
@@ -230,7 +230,7 @@ public class AccountLoginHandler implements LoginHandler {
      */
     private void checkRetryLimit(String retryKey) {
         int retryCount = getRetryCount(retryKey);
-        LoginConfigVO loginConfig = configService.getLoginConfig();
+        LoginConfigVO loginConfig = systemConfigApi.getLoginConfig();
         int maxRetry = loginConfig.getMaxRetry();
         if (retryCount >= maxRetry) {
             long ttl = RedisUtils.getTimeToLive(retryKey);

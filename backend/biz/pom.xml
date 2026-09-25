@@ -19,7 +19,6 @@
         <module>biz-system</module>
         <!-- 插件模块 -->
         <module>biz-coding</module>
-        <module>biz-openapi</module>
         <module>biz-tenant</module>
     </modules>
 </project>

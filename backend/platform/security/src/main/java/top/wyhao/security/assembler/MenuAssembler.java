@@ -1,15 +1,15 @@
-package top.wyhao.admin.system.assembler;
+package top.wyhao.security.assembler;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
-import top.wyhao.admin.system.entity.SysMenu;
-import top.wyhao.admin.system.model.result.MenuTreeVO;
-import top.wyhao.admin.system.model.result.MenuVO;
+import top.wyhao.security.entity.SysMenu;
+import top.wyhao.security.model.result.MenuTreeVO;
+import top.wyhao.security.model.result.MenuVO;
 import top.wyhao.starter.web.convert.MapStructConfig;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.MenuRequest;
+import top.wyhao.security.model.dto.MenuRequest;
 
 /**
  * 菜单对象转换

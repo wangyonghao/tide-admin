@@ -1,8 +1,8 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.identity.service;
 
 import me.zhyd.oauth.model.AuthUser;
-import top.wyhao.admin.system.entity.SysUserSocial;
+import top.wyhao.identity.entity.SysUserSocial;
 
 import java.util.List;
 

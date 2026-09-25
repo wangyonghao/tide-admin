@@ -1,4 +1,4 @@
-package top.wyhao.admin.auth.model.vo;
+package top.wyhao.identity.auth.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

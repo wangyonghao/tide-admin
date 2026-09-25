@@ -1,10 +1,10 @@
-package top.wyhao.admin.system.service;
+package top.wyhao.identity.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
-import top.wyhao.admin.system.model.dto.LoginLogQuery;
-import top.wyhao.admin.system.model.vo.LoginLogResult;
+import top.wyhao.identity.model.dto.LoginLogQuery;
+import top.wyhao.identity.model.vo.LoginLogResult;
 
 /**
  * 登录日志 Service

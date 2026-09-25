@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.exception;
+package top.wyhao.identity.exception;
 
 import cn.hutool.core.util.StrUtil;
 import top.wyhao.starter.core.exception.BizException;
@@ -190,5 +190,13 @@ public class UserException extends BizException {
 
     public static UserException socialBoundByOther(String source, String username) {
         return of("USER_SOCIAL_BOUND_BY_OTHER", StrUtil.format("[{}] 平台账号 [{}] 已被其他用户绑定", source, username));
+    }
+
+    public static UserException passwordPolicyInvalid(String message) {
+        return of("USER_PASSWORD_POLICY_INVALID", message);
+    }
+
+    public static UserException passwordWarningDaysExceedExpiration() {
+        return of("USER_PASSWORD_WARNING_DAYS_EXCEED_EXPIRATION", "密码到期提醒时间应小于密码有效期");
     }
 }

@@ -1,10 +1,10 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.settings.mapper;
 
 import com.alicp.jetcache.anno.Cached;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.entity.SysDict;
+import top.wyhao.settings.entity.SysDict;
 import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.starter.core.constant.CacheConstants;
 import top.wyhao.starter.web.core.model.LabelValueResult;

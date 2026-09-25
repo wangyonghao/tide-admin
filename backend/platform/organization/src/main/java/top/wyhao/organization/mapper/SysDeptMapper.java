@@ -1,8 +1,8 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.organization.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import top.wyhao.admin.system.entity.SysDept;
+import top.wyhao.organization.entity.SysDept;
 import top.wyhao.cmn.db.dialect.DatabaseType;
 import top.wyhao.cmn.db.model.BaseMapper;
 

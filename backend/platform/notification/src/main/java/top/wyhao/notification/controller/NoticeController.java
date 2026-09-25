@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.controller;
+package top.wyhao.notification.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;
@@ -8,17 +8,17 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.service.NoticeService;
+import top.wyhao.notification.service.NoticeService;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.IdResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.NotificationDetailResult;
-import top.wyhao.admin.system.model.dto.NotificationQuery;
-import top.wyhao.admin.system.model.dto.NotificationRequest;
-import top.wyhao.admin.system.model.vo.NotificationResult;
+import top.wyhao.notification.model.vo.NotificationDetailResult;
+import top.wyhao.notification.model.dto.NotificationQuery;
+import top.wyhao.notification.model.dto.NotificationRequest;
+import top.wyhao.notification.model.vo.NotificationResult;
 
 /**
  * 公告管理 API

@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.controller;
+package top.wyhao.settings.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.hutool.core.text.CharSequenceUtil;
@@ -12,15 +12,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.admin.system.model.vo.UserDetail;
-import top.wyhao.admin.system.model.result.config.*;
-import top.wyhao.admin.system.service.ConfigService;
-import top.wyhao.admin.system.service.UserService;
+import top.wyhao.identity.model.vo.UserDetail;
+import top.wyhao.settings.model.result.config.*;
+import top.wyhao.identity.model.result.config.LoginConfigVO;
+import top.wyhao.identity.model.result.config.SecurityConfigVO;
+import top.wyhao.identity.model.result.config.SiteConfigVO;
+import top.wyhao.settings.service.ConfigService;
+import top.wyhao.identity.service.UserService;
 import top.wyhao.starter.core.UserContextHolder;
-import top.wyhao.admin.system.exception.ConfigException;
+import top.wyhao.settings.exception.ConfigException;
 import top.wyhao.starter.core.model.MailConfig;
-import top.wyhao.admin.system.model.dto.ConfigQuery;
-import top.wyhao.admin.system.model.vo.ConfigResult;
+import top.wyhao.settings.model.dto.ConfigQuery;
+import top.wyhao.settings.model.vo.ConfigResult;
 
 /**
  * 系统配置 API

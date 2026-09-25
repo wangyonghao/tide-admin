@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.model.vo;
+package top.wyhao.settings.model.vo;
 
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

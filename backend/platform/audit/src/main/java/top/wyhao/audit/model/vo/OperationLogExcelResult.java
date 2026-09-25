@@ -1,10 +1,10 @@
-package top.wyhao.admin.system.model.vo;
+package top.wyhao.audit.model.vo;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.admin.system.model.enums.LogStatus;
+import top.wyhao.audit.model.enums.LogStatus;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 
 import java.time.LocalDateTime;

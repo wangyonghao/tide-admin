@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.model.dto;
+package top.wyhao.notification.model.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
@@ -7,7 +7,7 @@ import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.admin.system.model.enums.MessageType;
+import top.wyhao.notification.model.enums.MessageType;
 
 /**
  * 消息创建请求参数

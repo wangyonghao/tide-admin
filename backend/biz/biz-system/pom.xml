@@ -13,9 +13,35 @@
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>系统管理模块（存放系统管理相关业务功能，例如：部门管理、角色管理、用户管理等）</description>
+  <description>系统管理模块（仪表盘等；配置/字典/审计/身份/授权/组织/通知已拆至 platform）</description>
 
   <dependencies>
+
+    <!-- 平台域模块 -->
+    <dependency>
+      <groupId>top.wyhao</groupId>
+      <artifactId>identity</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>top.wyhao</groupId>
+      <artifactId>security</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>top.wyhao</groupId>
+      <artifactId>organization</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>top.wyhao</groupId>
+      <artifactId>notification</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>top.wyhao</groupId>
+      <artifactId>settings</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>top.wyhao</groupId>
+      <artifactId>audit</artifactId>
+    </dependency>
     <!-- Tide Starter 认证模块 - SaToken -->
     <dependency>
       <groupId>top.wyhao</groupId>

@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.controller;
+package top.wyhao.settings.controller;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import com.baomidou.mybatisplus.core.metadata.IPage;
@@ -10,9 +10,9 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.entity.SysDict;
-import top.wyhao.admin.system.exception.DictException;
-import top.wyhao.admin.system.service.DictService;
+import top.wyhao.settings.entity.SysDict;
+import top.wyhao.settings.exception.DictException;
+import top.wyhao.settings.service.DictService;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.constant.CacheConstants;
@@ -21,9 +21,9 @@ import top.wyhao.starter.web.core.model.LabelValueResult;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.DictQuery;
-import top.wyhao.admin.system.model.dto.DictRequest;
-import top.wyhao.admin.system.model.vo.DictResult;
+import top.wyhao.settings.model.dto.DictQuery;
+import top.wyhao.settings.model.dto.DictRequest;
+import top.wyhao.settings.model.vo.DictResult;
 
 /**
  * 字典管理 API

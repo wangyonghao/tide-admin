@@ -1,8 +1,8 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.notification.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
-import top.wyhao.admin.system.entity.SysSmsLog;
+import top.wyhao.notification.entity.SysSmsLog;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 /**

@@ -1,4 +1,4 @@
-package top.wyhao.admin.auth.config;
+package top.wyhao.identity.auth.config;
 
 import lombok.Data;
 import org.springframework.beans.factory.annotation.Value;

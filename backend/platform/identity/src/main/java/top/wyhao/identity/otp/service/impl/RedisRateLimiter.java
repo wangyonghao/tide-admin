@@ -1,9 +1,9 @@
-package top.wyhao.admin.system.otp.service.impl;
+package top.wyhao.identity.otp.service.impl;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.stereotype.Component;
-import top.wyhao.admin.system.otp.service.RateLimiter;
+import top.wyhao.identity.otp.service.RateLimiter;
 
 import java.util.concurrent.TimeUnit;
 

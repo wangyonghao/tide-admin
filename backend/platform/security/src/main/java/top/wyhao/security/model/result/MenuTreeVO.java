@@ -1,9 +1,9 @@
 
-package top.wyhao.admin.system.model.result;
+package top.wyhao.security.model.result;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.admin.system.model.enums.MenuType;
+import top.wyhao.security.model.enums.MenuType;
 
 import java.util.List;
 

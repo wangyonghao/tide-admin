@@ -5,15 +5,15 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>top.wyhao</groupId>
-        <artifactId>biz</artifactId>
+        <artifactId>interfaces</artifactId>
         <version>${revision}</version>
     </parent>
 
-    <artifactId>biz-openapi</artifactId>
+    <artifactId>open-api</artifactId>
     <packaging>jar</packaging>
 
     <name>${project.artifactId}</name>
-    <description>能力开放插件（包括应用管理、API开放授权、API开发等）</description>
+    <description>开放 API - 第三方应用接入、签名鉴权与开放能力</description>
 
     <dependencies>
         <dependency>

@@ -1,14 +1,14 @@
-package top.wyhao.admin.system.assembler;
+package top.wyhao.audit.assembler;
 
 import org.mapstruct.Mapper;
-import top.wyhao.admin.system.entity.SysOperationLog;
+import top.wyhao.audit.entity.SysOperationLog;
 import top.wyhao.starter.web.convert.MapStructConfig;
 import top.wyhao.starter.web.log.OperationLog;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.OperationLogDetailResult;
-import top.wyhao.admin.system.model.vo.OperationLogExcelResult;
-import top.wyhao.admin.system.model.vo.OperationLogResult;
+import top.wyhao.audit.model.vo.OperationLogDetailResult;
+import top.wyhao.audit.model.vo.OperationLogExcelResult;
+import top.wyhao.audit.model.vo.OperationLogResult;
 
 /**
  * 操作日志对象转换

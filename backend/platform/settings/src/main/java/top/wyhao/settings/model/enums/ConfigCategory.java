@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.enums;
+package top.wyhao.settings.model.enums;
 
 /**
  * 参数类别枚举

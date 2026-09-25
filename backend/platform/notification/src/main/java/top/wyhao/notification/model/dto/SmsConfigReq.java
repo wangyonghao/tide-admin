@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.dto;
+package top.wyhao.notification.model.dto;
 
 import jakarta.validation.constraints.*;
 

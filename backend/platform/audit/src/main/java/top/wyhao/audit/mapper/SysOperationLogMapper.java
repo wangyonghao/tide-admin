@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.audit.mapper;
 
 import com.alicp.jetcache.anno.Cached;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
@@ -8,17 +8,17 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.entity.SysOperationLog;
-import top.wyhao.admin.system.model.result.dashboard.DashboardAccessTrendResp;
-import top.wyhao.admin.system.model.result.dashboard.DashboardChartCommonResp;
-import top.wyhao.admin.system.model.result.dashboard.DashboardOverviewCommonResp;
+import top.wyhao.audit.entity.SysOperationLog;
+import top.wyhao.audit.model.result.dashboard.DashboardAccessTrendResp;
+import top.wyhao.audit.model.result.dashboard.DashboardChartCommonResp;
+import top.wyhao.audit.model.result.dashboard.DashboardOverviewCommonResp;
 import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.starter.core.constant.CacheConstants;
 
 import java.util.Date;
 import java.util.List;
-import top.wyhao.admin.system.model.vo.OperationLogExcelResult;
-import top.wyhao.admin.system.model.vo.OperationLogResult;
+import top.wyhao.audit.model.vo.OperationLogExcelResult;
+import top.wyhao.audit.model.vo.OperationLogResult;
 
 /**
  * 系统日志 Mapper

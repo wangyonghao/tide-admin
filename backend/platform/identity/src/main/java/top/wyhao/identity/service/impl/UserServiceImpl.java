@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.identity.service.impl;
 
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.bean.BeanUtil;
@@ -28,19 +28,34 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import top.wyhao.admin.system.assembler.UserAssembler;
-import top.wyhao.admin.system.model.vo.UserDetail;
-import top.wyhao.admin.system.model.dto.UserQuery;
-import top.wyhao.admin.system.model.dto.UserRequest;
-import top.wyhao.admin.system.model.vo.UserResult;
-import top.wyhao.admin.system.entity.*;
-import top.wyhao.admin.system.mapper.*;
-import top.wyhao.admin.system.model.SystemConstants;
-import top.wyhao.admin.system.model.dto.*;
-import top.wyhao.admin.system.model.result.config.SecurityConfigVO;
-import top.wyhao.admin.system.model.result.user.UserImportParseResp;
-import top.wyhao.admin.system.model.result.user.UserImportResp;
-import top.wyhao.admin.system.service.*;
+import top.wyhao.identity.assembler.UserAssembler;
+import top.wyhao.identity.config.SystemConfigApi;
+import top.wyhao.identity.entity.SysUser;
+import top.wyhao.identity.entity.SysUserPasswordHistory;
+import top.wyhao.identity.exception.UserException;
+import top.wyhao.identity.mapper.SysUserMapper;
+import top.wyhao.identity.mapper.SysUserPasswordHistoryMapper;
+import top.wyhao.identity.model.dto.UserBasicInfoUpdateReq;
+import top.wyhao.identity.model.dto.UserImportRequest;
+import top.wyhao.identity.model.dto.UserImportRowReq;
+import top.wyhao.identity.model.dto.UserPasswordResetRequest;
+import top.wyhao.identity.model.dto.UserQuery;
+import top.wyhao.identity.model.dto.UserRequest;
+import top.wyhao.identity.model.dto.UserRoleUpdateReq;
+import top.wyhao.identity.model.dto.ProfileEmailUpdateRequest;
+import top.wyhao.identity.model.dto.ProfilePasswordUpdateRequest;
+import top.wyhao.identity.model.dto.ProfilePhoneUpdateRequest;
+import top.wyhao.identity.model.result.config.SecurityConfigVO;
+import top.wyhao.identity.model.result.user.UserImportParseResp;
+import top.wyhao.identity.model.result.user.UserImportResp;
+import top.wyhao.identity.model.vo.UserDetail;
+import top.wyhao.identity.model.vo.UserResult;
+import top.wyhao.identity.service.UserPasswordHistoryService;
+import top.wyhao.identity.service.UserService;
+import top.wyhao.identity.service.UserSocialService;
+import top.wyhao.starter.core.constant.SystemConstants;
+import top.wyhao.starter.core.spi.DeptApi;
+import top.wyhao.starter.core.spi.RoleApi;
 import top.wyhao.cmn.db.query.PageFactory;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
@@ -55,7 +70,6 @@ import top.wyhao.starter.core.constant.StringConstants;
 import top.wyhao.starter.core.enums.GenderEnum;
 import top.wyhao.starter.core.enums.RoleCodeEnum;
 import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.admin.system.exception.UserException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.ExceptionUtils;
 import top.wyhao.starter.core.util.RsaUtils;
@@ -68,8 +82,8 @@ import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
-import static top.wyhao.admin.system.model.enums.ImportPolicies.*;
-import static top.wyhao.admin.system.model.enums.PasswordPolicies.*;
+import static top.wyhao.identity.model.enums.ImportPolicies.*;
+import static top.wyhao.identity.model.enums.PasswordPolicies.*;
 
 /**
  * 用户业务实现
@@ -84,14 +98,12 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
     private final UserPasswordHistoryService userPasswordHistoryService;
     private final UserSocialService userSocialService;
-    private final RoleService roleService;
+    private final RoleApi roleApi;
+    private final DeptApi deptApi;
     private final FileService fileService;
     private final SysUserMapper userMapper;
-    private final SysDeptMapper deptMapper;
     private final SysUserPasswordHistoryMapper passwordHistoryMapper;
-    private final SysUserRoleMapper userRoleMapper;
-    private final SysMenuMapper menuMapper;
-    private final ConfigService configService;
+    private final SystemConfigApi systemConfigApi;
     private final UserAssembler userAssembler;
 
     @Value("${avatar.support-suffix}")
@@ -135,12 +147,12 @@ public class UserServiceImpl implements UserService {
 
         /* 执行业务 */
         newUser.setPassword(passwordEncoder.encode(rawPassword));
-        SecurityConfigVO loginConfig = configService.getSecurityConfig();
+        SecurityConfigVO loginConfig = systemConfigApi.getSecurityConfig();
         newUser.setPwdExpireDate(LocalDate.now().plusDays(loginConfig.getPasswordExpireDays()));
         userMapper.insert(newUser);
 
         // 保存用户和角色的关联
-        roleService.assignRolesToUser(request.getRoleIds(), newUser.getId());
+        roleApi.assignRolesToUser(request.getRoleIds(), newUser.getId());
         return newUser.getId();
     }
 
@@ -175,7 +187,7 @@ public class UserServiceImpl implements UserService {
         updateUser.setId(userId);
         userMapper.updateById(updateUser);
         // 保存用户和角色的关联
-        roleService.assignRolesToUser(userRequest.getRoleIds(), userId);
+        roleApi.assignRolesToUser(userRequest.getRoleIds(), userId);
 
         // 用户被禁用，则踢出在线用户
         if (StatusEnum.DISABLE.equals(userRequest.getStatus())) {
@@ -203,7 +215,7 @@ public class UserServiceImpl implements UserService {
             throw UserException.builtinDeleteNotAllowed(builtinUser.get().getNickname());
         }
         // 删除用户和角色关联
-        userRoleMapper.lambdaUpdate().in(SysUserRole::getUserId, ids).remove();
+        roleApi.deleteUserRolesByUserIds(ids);
         // 删除历史密码
         userPasswordHistoryService.deleteByUserIds(ids);
         // 删除用户绑定的第三方账号信息
@@ -259,13 +271,13 @@ public class UserServiceImpl implements UserService {
 
         // 校验是否存在无效角色
         List<String> roleNames = validRowList.stream().map(UserImportRowReq::getRoleName).distinct().toList();
-        int existRoleCount = roleService.countByNames(roleNames);
+        int existRoleCount = roleApi.countByNames(roleNames);
         if (existRoleCount < roleNames.size()) {
             throw UserException.importRoleInvalid();
         }
         // 校验是否存在无效部门（支持多级部门解析）
         Set<String> deptNames = CollUtils.mapToSet(validRowList, UserImportRowReq::getDeptName);
-        int existDeptCount = countValidMultiLevelDepts(deptNames);
+        int existDeptCount = deptApi.countValidDeptPaths(deptNames);
         if (existDeptCount < deptNames.size()) {
             throw UserException.importDeptInvalid();
         }
@@ -314,13 +326,12 @@ public class UserServiceImpl implements UserService {
         // 基础数据准备
         Map<String, Long> userMap = existUserList.stream()
                 .collect(Collectors.toMap(SysUser::getUsername, SysUser::getId));
-        List<SysRole> roleList = roleService.listByNames(importUserList.stream()
+        Map<String, Long> roleMap = roleApi.mapIdByNames(importUserList.stream()
                 .map(UserImportRowReq::getRoleName)
                 .distinct()
                 .toList());
-        Map<String, Long> roleMap = roleList.stream().collect(Collectors.toMap(SysRole::getName, SysRole::getId));
         // 获取多级部门映射
-        Map<String, Long> deptMap = buildMultiLevelDeptMapping(importUserList.stream()
+        Map<String, Long> deptMap = deptApi.resolveDeptIdsByPaths(importUserList.stream()
                 .map(UserImportRowReq::getDeptName)
                 .distinct()
                 .toList());
@@ -328,7 +339,7 @@ public class UserServiceImpl implements UserService {
         // 批量操作数据库集合
         List<SysUser> insertList = new ArrayList<>();
         List<SysUser> updateList = new ArrayList<>();
-        List<SysUserRole> userRoleDOList = new ArrayList<>();
+        List<long[]> userRolePairs = new ArrayList<>();
         // ID生成器
         IdGenerator idGenerator = DefaultIdGeneratorProvider.INSTANCE.getShare();
         for (UserImportRowReq row : importUserList) {
@@ -350,9 +361,9 @@ public class UserServiceImpl implements UserService {
                 userDO.setIsBuiltin(false);
                 insertList.add(userDO);
             }
-            userRoleDOList.add(new SysUserRole(userDO.getId(), roleMap.get(row.getRoleName())));
+            userRolePairs.add(new long[]{userDO.getId(), roleMap.get(row.getRoleName())});
         }
-        doImportUser(insertList, updateList, userRoleDOList);
+        doImportUser(insertList, updateList, userRolePairs);
         RedisUtils.delete(CacheConstants.DATA_IMPORT_KEY + req.getImportKey());
         return new UserImportResp(insertList.size() + updateList.size(), insertList.size(), updateList.size());
     }
@@ -374,7 +385,7 @@ public class UserServiceImpl implements UserService {
     public void resetPassword(UserPasswordResetRequest resetRequest, Long id) {
         String rawPassword = resetRequest.getNewPassword();
 
-        SecurityConfigVO loginConfig = configService.getSecurityConfig();
+        SecurityConfigVO loginConfig = systemConfigApi.getSecurityConfig();
         userMapper.lambdaUpdate()
                 .set(SysUser::getPassword, passwordEncoder.encode(rawPassword))
                 .set(SysUser::getPwdExpireDate, LocalDateTime.now().plusDays(loginConfig.getPasswordExpireDays()))
@@ -445,7 +456,7 @@ public class UserServiceImpl implements UserService {
         this.getById(id);
         List<Long> roleIds = updateReq.getRoleIds();
         // 保存用户和角色关联
-        roleService.assignRolesToUser(roleIds, id);
+        roleApi.assignRolesToUser(roleIds, id);
     }
 
     @Override
@@ -597,10 +608,7 @@ public class UserServiceImpl implements UserService {
     public List<String> findUserPermissions(Long userId) {
         List<String> roleCodeSet = this.findUserRoles(userId);
         // 超级管理员赋予全部权限
-        if (roleCodeSet.contains(RoleCodeEnum.SUPER_ADMIN.getCode())) {
-            return List.of("*:*:*");
-        }
-        return menuMapper.selectPermissionByUserId(userId);
+        return roleApi.listPermissionsByUserId(userId);
     }
 
     @Override
@@ -617,7 +625,7 @@ public class UserServiceImpl implements UserService {
         // 获取排除用户 ID 列表
         List<Long> excludeUserIdList = null;
         if (query.getRoleId() != null) {
-            excludeUserIdList = roleService.listMemberIds(query.getRoleId());
+            excludeUserIdList = roleApi.listMemberIds(query.getRoleId());
         }
         return new QueryWrapper<SysUser>().and(CharSequenceUtil.isNotBlank(description),
                         q -> q.like("t1.username", description)
@@ -629,9 +637,7 @@ public class UserServiceImpl implements UserService {
                 .between(CollUtil.isNotEmpty(createTimeList), "t1.create_time", CollUtil.getFirst(createTimeList), CollUtil
                         .getLast(createTimeList))
                 .and(deptId != null && !SystemConstants.SUPER_DEPT_ID.equals(deptId), q -> {
-                    List<Long> deptIdList = CollUtils.mapToList(deptMapper.listChildren(deptId), SysDept::getId);
-                    deptIdList.add(deptId);
-                    q.in("t1.dept_id", deptIdList);
+                    q.in("t1.dept_id", deptApi.listSelfAndDescendantIds(deptId));
                 })
                 .in(CollUtil.isNotEmpty(userIdList), "t1.id", userIdList)
                 .notIn(CollUtil.isNotEmpty(excludeUserIdList), "t1.id", excludeUserIdList);
@@ -644,16 +650,18 @@ public class UserServiceImpl implements UserService {
      * @param updateList   修改用户
      * @param userRoleList 用户角色关联
      */
-    private void doImportUser(List<SysUser> insertList, List<SysUser> updateList, List<SysUserRole> userRoleList) {
+    private void doImportUser(List<SysUser> insertList, List<SysUser> updateList, List<long[]> userRolePairs) {
         if (CollUtil.isNotEmpty(insertList)) {
             userMapper.insert(insertList);
         }
         if (CollUtil.isNotEmpty(updateList)) {
             userMapper.updateBatchById(updateList);
-            userRoleMapper.lambdaUpdate().in(SysUserRole::getUserId, CollUtils.mapToList(updateList, SysUser::getId)).remove();
+            roleApi.deleteUserRolesByUserIds(CollUtils.mapToList(updateList, SysUser::getId));
         }
-        if (CollUtil.isNotEmpty(userRoleList)) {
-            userRoleMapper.insert(userRoleList);
+        if (CollUtil.isNotEmpty(userRolePairs)) {
+            for (long[] pair : userRolePairs) {
+                roleApi.assignRolesToUser(List.of(pair[1]), pair[0]);
+            }
         }
     }
 
@@ -761,7 +769,7 @@ public class UserServiceImpl implements UserService {
      * @return 密码允许重复使用次数
      */
     private int checkPassword(String password, SysUser user) {
-        SecurityConfigVO securityConfig = configService.getSecurityConfig();
+        SecurityConfigVO securityConfig = systemConfigApi.getSecurityConfig();
         // 密码最小长度
         PASSWORD_MIN_LENGTH.validate(password, securityConfig.getPasswordMinLength(), user);
         // 密码是否必须包含特殊字符
@@ -844,150 +852,5 @@ public class UserServiceImpl implements UserService {
         return user;
     }
 
-    /**
-     * 统计有效的多级部门数量
-     * <p>
-     * 支持多级部门路径解析，使用冒号(:)作为层级分隔符
-     * 例如：公司A:研发部:前端组 或 研发部
-     * </p>
-     *
-     * @param deptNames 部门名称集合
-     * @return 有效部门数量
-     */
-    private int countValidMultiLevelDepts(Set<String> deptNames) {
-        if (ObjectUtil.isEmpty(deptNames)) {
-            throw UserException.deptNamesEmpty();
-        }
-
-        int validCount = 0;
-        List<String> invalidDepts = new ArrayList<>();
-
-        for (String deptName : deptNames) {
-            try {
-                findDeptByHierarchicalPath(deptName);
-                validCount++;
-            } catch (Exception e) {
-                invalidDepts.add(deptName);
-            }
-        }
-
-        if (CollUtil.isNotEmpty(invalidDepts)) {
-            throw UserException.deptsInvalidOrAmbiguous(String.join(", ", invalidDepts));
-        }
-
-        return validCount;
-    }
-
-    /**
-     * 构建多级部门映射关系
-     * <p>
-     * 将部门名称列表转换为部门名称到ID的映射，支持多级部门路径解析
-     * </p>
-     *
-     * @param deptNames 部门名称列表
-     * @return 部门名称到ID的映射
-     */
-    private Map<String, Long> buildMultiLevelDeptMapping(List<String> deptNames) {
-        if (ObjectUtil.isEmpty(deptNames)) {
-            throw UserException.deptNameListEmpty();
-        }
-
-        Map<String, Long> deptMap = new HashMap<>();
-        for (String deptName : deptNames) {
-            SysDept dept = findDeptByHierarchicalPath(deptName);
-            if (dept == null) {
-                throw UserException.deptNotFoundOrAmbiguous(deptName);
-            }
-            deptMap.put(deptName, dept.getId());
-        }
-        return deptMap;
-    }
-
-    /**
-     * 根据层级路径查找部门
-     * <p>
-     * 支持两种格式：
-     * <ul>
-     * <li>多级部门：公司A/研发部/前端组</li>
-     * <li>单级部门：研发部</li>
-     * </ul>
-     * 使用左斜杠/作为层级分隔符，会逐级查找对应的部门
-     * </p>
-     *
-     * @param deptPath 部门路径
-     * @return 部门信息，未找到时返回null
-     */
-    private SysDept findDeptByHierarchicalPath(String deptPath) {
-        if (CharSequenceUtil.isBlank(deptPath)) {
-            throw UserException.deptPathBlank();
-        }
-        return deptPath.contains(StringConstants.SLASH)
-                ? findMultiLevelDept(deptPath)
-                : findSingleLevelDept(deptPath.trim());
-    }
-
-    /**
-     * 查找多级部门
-     * <p>
-     * 从根部门开始逐级查找，确保部门层级关系正确
-     * </p>
-     *
-     * @param deptPath 多级部门路径
-     * @return 部门信息，未找到时返回null
-     */
-    private SysDept findMultiLevelDept(String deptPath) {
-        String[] pathParts = deptPath.split(StringConstants.SLASH);
-        if (pathParts.length == 0) {
-            throw UserException.deptPathFormatInvalid(deptPath);
-        }
-
-        // 从根部门开始逐级查找
-        SysDept currentDept = null;
-        Long parentId = 0L; // 根部门的parentId为null
-
-        for (String part : pathParts) {
-            String trimmedPart = part.trim();
-            if (CharSequenceUtil.isBlank(trimmedPart)) {
-                throw UserException.deptPathContainsBlank(deptPath);
-            }
-
-            // 查找当前层级下指定名称的部门
-            currentDept = deptMapper.lambdaQuery()
-                    .eq(SysDept::getName, trimmedPart)
-                    .eq(SysDept::getParentId, parentId)
-                    .one();
-
-            if (currentDept == null) {
-                throw UserException.deptNotFoundInPath(trimmedPart, deptPath);
-            }
-            parentId = currentDept.getId(); // 更新父级ID为当前部门ID
-        }
-
-        return currentDept;
-    }
-
-    /**
-     * 查找单级部门
-     * <p>
-     * 当只提供部门名称时，检查是否存在多个同名部门
-     * 如果存在多个同名部门，则要求用户提供完整的层级路径
-     * </p>
-     *
-     * @param deptName 部门名称
-     * @return 部门信息，未找到或存在歧义时返回null
-     */
-    private SysDept findSingleLevelDept(String deptName) {
-        // 查找所有同名部门
-        List<SysDept> deptList = deptMapper.lambdaQuery().eq(SysDept::getName, deptName).list();
-
-        if (ObjectUtil.isEmpty(deptList)) {
-            throw UserException.deptNotFound(deptName);
-        }
-        if (deptList.size() > 1) {
-            throw UserException.deptNameDuplicate(deptName);
-        }
-
-        return deptList.get(0);
-    }
 
 }

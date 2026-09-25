@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.controller;
+package top.wyhao.identity.controller;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.xkcoding.justauth.autoconfigure.JustAuthProperties;
@@ -19,26 +19,26 @@ import me.zhyd.oauth.request.AuthRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import top.wyhao.admin.system.entity.SysUserSocial;
-import top.wyhao.admin.system.exception.UserException;
-import top.wyhao.admin.system.model.dto.UserBasicInfoUpdateReq;
-import top.wyhao.admin.system.model.enums.SocialSource;
-import top.wyhao.admin.system.model.result.user.UserSocialBindResp;
-import top.wyhao.admin.system.service.UserService;
-import top.wyhao.admin.system.service.UserSocialService;
+import top.wyhao.identity.entity.SysUserSocial;
+import top.wyhao.identity.exception.UserException;
+import top.wyhao.identity.model.dto.UserBasicInfoUpdateReq;
+import top.wyhao.identity.model.enums.SocialSource;
+import top.wyhao.identity.model.result.user.UserSocialBindResp;
+import top.wyhao.identity.service.UserService;
+import top.wyhao.identity.service.UserSocialService;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.constant.CacheConstants;
-import top.wyhao.admin.auth.exception.AuthException;
+import top.wyhao.identity.auth.exception.AuthException;
 import top.wyhao.starter.core.util.CollUtils;
 import top.wyhao.starter.core.util.RsaUtils;
 
 import java.io.IOException;
 import java.util.List;
-import top.wyhao.admin.system.model.vo.ProfileAvatarResult;
-import top.wyhao.admin.system.model.dto.ProfileEmailUpdateRequest;
-import top.wyhao.admin.system.model.dto.ProfilePasswordUpdateRequest;
-import top.wyhao.admin.system.model.dto.ProfilePhoneUpdateRequest;
+import top.wyhao.identity.model.vo.ProfileAvatarResult;
+import top.wyhao.identity.model.dto.ProfileEmailUpdateRequest;
+import top.wyhao.identity.model.dto.ProfilePasswordUpdateRequest;
+import top.wyhao.identity.model.dto.ProfilePhoneUpdateRequest;
 
 /**
  * 个人信息 API

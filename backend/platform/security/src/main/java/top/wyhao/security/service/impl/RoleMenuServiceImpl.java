@@ -1,14 +1,13 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.security.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.system.entity.SysRoleMenu;
-import top.wyhao.admin.system.mapper.SysRoleMenuMapper;
-import top.wyhao.admin.system.service.RoleMenuService;
-import top.wyhao.cmn.db.model.impl.BaseServiceImpl;
+import top.wyhao.security.entity.SysRoleMenu;
+import top.wyhao.security.mapper.SysRoleMenuMapper;
+import top.wyhao.security.service.RoleMenuService;
 import top.wyhao.starter.core.util.CollUtils;
 
 import java.util.ArrayList;
@@ -22,7 +21,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class RoleMenuServiceImpl extends BaseServiceImpl<SysRoleMenuMapper, SysRoleMenu> implements RoleMenuService {
+public class RoleMenuServiceImpl implements RoleMenuService {
     private final SysRoleMenuMapper roleMenuMapper;
 
     @Override

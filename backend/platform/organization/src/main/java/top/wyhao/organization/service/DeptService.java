@@ -1,13 +1,13 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.organization.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import top.wyhao.admin.system.entity.SysDept;
+import top.wyhao.organization.entity.SysDept;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.DeptQuery;
-import top.wyhao.admin.system.model.dto.DeptRequest;
-import top.wyhao.admin.system.model.vo.DeptResult;
+import top.wyhao.organization.model.dto.DeptQuery;
+import top.wyhao.organization.model.dto.DeptRequest;
+import top.wyhao.organization.model.vo.DeptResult;
 
 /**
  * 部门业务接口

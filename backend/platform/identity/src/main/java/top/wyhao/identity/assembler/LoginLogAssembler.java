@@ -1,12 +1,12 @@
-package top.wyhao.admin.system.assembler;
+package top.wyhao.identity.assembler;
 
 import org.mapstruct.Mapper;
-import top.wyhao.admin.system.entity.SysLoginLog;
+import top.wyhao.identity.entity.SysLoginLog;
 import top.wyhao.starter.web.convert.MapStructConfig;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.LoginLogExcelResult;
-import top.wyhao.admin.system.model.vo.LoginLogResult;
+import top.wyhao.identity.model.vo.LoginLogExcelResult;
+import top.wyhao.identity.model.vo.LoginLogResult;
 
 /**
  * 登录日志对象转换

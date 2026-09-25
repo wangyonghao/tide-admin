@@ -1,4 +1,4 @@
-package top.wyhao.admin.auth.controller;
+package top.wyhao.identity.auth.controller;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.date.LocalDateTimeUtil;
@@ -14,17 +14,17 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.admin.auth.model.vo.CaptchaImageResult;
+import top.wyhao.identity.auth.model.vo.CaptchaImageResult;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsClient;
-import top.wyhao.admin.auth.config.CaptchaProperties;
-import top.wyhao.admin.system.model.result.config.LoginConfigVO;
-import top.wyhao.admin.system.model.result.config.SiteConfigVO;
-import top.wyhao.admin.system.service.ConfigService;
+import top.wyhao.identity.auth.config.CaptchaProperties;
+import top.wyhao.identity.model.result.config.LoginConfigVO;
+import top.wyhao.identity.model.result.config.SiteConfigVO;
+import top.wyhao.identity.config.SystemConfigApi;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.captcha.graphic.core.ImageCaptchaService;
 import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
-import top.wyhao.admin.auth.exception.AuthException;
+import top.wyhao.identity.auth.exception.AuthException;
 import top.wyhao.starter.core.model.Result;
 import top.wyhao.starter.core.util.TemplateUtils;
 import top.wyhao.starter.web.validation.Mobile;
@@ -52,7 +52,7 @@ public class CaptchaController {
     private final ApplicationProperties applicationProperties;
     private final CaptchaProperties captchaProperties;
     private final ImageCaptchaService imageCaptchaService;
-    private final ConfigService configService;
+    private final SystemConfigApi systemConfigApi;
 
     private final MailClient mailClient;
     private final SmsClient smsClient;
@@ -60,7 +60,7 @@ public class CaptchaController {
     @Operation(summary = "获取图片验证码", description = "获取图片验证码（Base64编码，带图片格式：data:image/gif;base64）")
     @GetMapping("/captcha/image")
     public CaptchaImageResult getImageCaptcha() {
-        LoginConfigVO loginConfigVO = configService.getLoginConfig();
+        LoginConfigVO loginConfigVO = systemConfigApi.getLoginConfig();
         boolean loginCaptchaEnabled = loginConfigVO.getCaptchaEnabled();
         if (!loginCaptchaEnabled) {
             return new CaptchaImageResult(null, null, null, false);
@@ -107,7 +107,7 @@ public class CaptchaController {
         String captcha = RandomUtil.randomNumbers(captchaEmail.getLength());
         Long expirationInMinutes = captchaEmail.getExpirationInMinutes();
         // 发送验证码
-        SiteConfigVO site = configService.getSiteConfig();
+        SiteConfigVO site = systemConfigApi.getSiteConfig();
         String content = TemplateUtils.render(captchaEmail.getTemplatePath(), Dict.create()
                 .set("siteUrl", applicationProperties.getUrl())
                 .set("siteTitle", site.getSiteName())

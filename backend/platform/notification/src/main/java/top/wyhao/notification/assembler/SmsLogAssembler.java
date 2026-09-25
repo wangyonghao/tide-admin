@@ -1,12 +1,12 @@
-package top.wyhao.admin.system.assembler;
+package top.wyhao.notification.assembler;
 
 import org.mapstruct.Mapper;
-import top.wyhao.admin.system.entity.SysSmsLog;
+import top.wyhao.notification.entity.SysSmsLog;
 import top.wyhao.starter.web.convert.MapStructConfig;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.SmsLogRequest;
-import top.wyhao.admin.system.model.vo.SmsLogResult;
+import top.wyhao.notification.model.dto.SmsLogRequest;
+import top.wyhao.notification.model.vo.SmsLogResult;
 
 /**
  * 短信日志对象转换

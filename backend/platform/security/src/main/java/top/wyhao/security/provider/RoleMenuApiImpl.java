@@ -1,10 +1,10 @@
 
-package top.wyhao.admin.system.provider;
+package top.wyhao.security.provider;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.entity.SysRoleMenu;
-import top.wyhao.admin.system.service.RoleMenuService;
+import top.wyhao.security.entity.SysRoleMenu;
+import top.wyhao.security.service.RoleMenuService;
 import top.wyhao.starter.core.spi.RoleMenuApi;
 import top.wyhao.starter.core.util.CollUtils;
 

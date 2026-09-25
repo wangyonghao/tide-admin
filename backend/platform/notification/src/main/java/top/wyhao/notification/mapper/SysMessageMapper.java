@@ -1,17 +1,17 @@
 
-package top.wyhao.admin.system.mapper;
+package top.wyhao.notification.mapper;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
-import top.wyhao.admin.system.entity.SysMessage;
+import top.wyhao.notification.entity.SysMessage;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.MessageDetailResult;
-import top.wyhao.admin.system.model.dto.MessageQuery;
-import top.wyhao.admin.system.model.vo.MessageResult;
+import top.wyhao.notification.model.vo.MessageDetailResult;
+import top.wyhao.notification.model.dto.MessageQuery;
+import top.wyhao.notification.model.vo.MessageResult;
 
 /**
  * 消息 Mapper

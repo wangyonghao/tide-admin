@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.notification.service.impl;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -8,23 +8,23 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import top.wyhao.admin.cmn.sms.SmsClient;
-import top.wyhao.admin.system.assembler.SmsLogAssembler;
-import top.wyhao.admin.system.entity.SysSmsLog;
-import top.wyhao.admin.system.mapper.SysSmsLogMapper;
-import top.wyhao.admin.system.otp.enums.OtpScene;
-import top.wyhao.admin.system.service.ConfigService;
-import top.wyhao.admin.system.service.SmsService;
+import top.wyhao.notification.assembler.SmsLogAssembler;
+import top.wyhao.notification.entity.SysSmsLog;
+import top.wyhao.notification.mapper.SysSmsLogMapper;
+import top.wyhao.identity.otp.enums.OtpScene;
+import top.wyhao.settings.config.SmsConfigApi;
+import top.wyhao.notification.service.SmsService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
-import top.wyhao.admin.system.exception.SmsException;
+import top.wyhao.notification.exception.SmsException;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.LinkedHashMap;
 import java.util.List;
-import top.wyhao.admin.system.model.dto.SmsLogQuery;
-import top.wyhao.admin.system.model.dto.SmsLogRequest;
-import top.wyhao.admin.system.model.vo.SmsLogResult;
+import top.wyhao.notification.model.dto.SmsLogQuery;
+import top.wyhao.notification.model.dto.SmsLogRequest;
+import top.wyhao.notification.model.vo.SmsLogResult;
 
 /**
  * 短信日志业务实现
@@ -34,7 +34,7 @@ import top.wyhao.admin.system.model.vo.SmsLogResult;
 @Service
 @RequiredArgsConstructor
 public class SmsServiceImpl implements SmsService {
-    private final ConfigService configService;
+    private final SmsConfigApi smsConfigApi;
     private final SysSmsLogMapper sysSmsLogMapper;
     private final SmsClient client;
     private final SmsLogAssembler smsLogAssembler;
@@ -84,6 +84,6 @@ public class SmsServiceImpl implements SmsService {
     }
 
     private String getTemplateId(OtpScene scene) {
-        return configService.getSmsTemplate(scene.name());
+        return smsConfigApi.getSmsTemplate(scene.name());
     }
 }

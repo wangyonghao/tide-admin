@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.config.sms;
+package top.wyhao.notification.config.sms;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;

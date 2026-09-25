@@ -1,16 +1,16 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.identity.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.json.JSONUtil;
 import lombok.RequiredArgsConstructor;
 import me.zhyd.oauth.model.AuthUser;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.entity.SysUserSocial;
-import top.wyhao.admin.system.exception.UserException;
-import top.wyhao.admin.system.mapper.SysUserSocialMapper;
-import top.wyhao.admin.system.model.enums.SocialSource;
-import top.wyhao.admin.system.service.UserSocialService;
+import top.wyhao.identity.entity.SysUserSocial;
+import top.wyhao.identity.exception.UserException;
+import top.wyhao.identity.mapper.SysUserSocialMapper;
+import top.wyhao.identity.model.enums.SocialSource;
+import top.wyhao.identity.service.UserSocialService;
 import top.wyhao.starter.core.util.CollUtils;
 
 import java.time.LocalDateTime;

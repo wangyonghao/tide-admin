@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.model.result.config;
+package top.wyhao.settings.model.result.config;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;

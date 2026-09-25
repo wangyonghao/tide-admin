@@ -1,17 +1,22 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.settings.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.admin.system.model.result.config.*;
+import top.wyhao.settings.model.result.config.*;
+import top.wyhao.identity.config.SystemConfigApi;
+import top.wyhao.settings.config.SmsConfigApi;
+import top.wyhao.identity.model.result.config.LoginConfigVO;
+import top.wyhao.identity.model.result.config.SecurityConfigVO;
+import top.wyhao.identity.model.result.config.SiteConfigVO;
 import top.wyhao.starter.core.model.MailConfig;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.ConfigQuery;
-import top.wyhao.admin.system.model.dto.ConfigRequest;
-import top.wyhao.admin.system.model.vo.ConfigResult;
+import top.wyhao.settings.model.dto.ConfigQuery;
+import top.wyhao.settings.model.dto.ConfigRequest;
+import top.wyhao.settings.model.vo.ConfigResult;
 
 /**
  * 系统配置业务
@@ -19,7 +24,7 @@ import top.wyhao.admin.system.model.vo.ConfigResult;
 
  * @since 2024/04/26
  */
-public interface ConfigService {
+public interface ConfigService extends SystemConfigApi, SmsConfigApi {
 
     /**
      * 分页查询列表

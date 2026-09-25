@@ -1,15 +1,15 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.notification.service;
 
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.util.List;
-import top.wyhao.admin.system.model.vo.MessageDetailResult;
-import top.wyhao.admin.system.model.dto.MessageQuery;
-import top.wyhao.admin.system.model.dto.MessageRequest;
-import top.wyhao.admin.system.model.vo.MessageResult;
-import top.wyhao.admin.system.model.vo.MessageUnreadResult;
+import top.wyhao.notification.model.vo.MessageDetailResult;
+import top.wyhao.notification.model.dto.MessageQuery;
+import top.wyhao.notification.model.dto.MessageRequest;
+import top.wyhao.notification.model.vo.MessageResult;
+import top.wyhao.notification.model.vo.MessageUnreadResult;
 
 /**
  * 消息业务接口

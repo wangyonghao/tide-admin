@@ -1,4 +1,4 @@
-package top.wyhao.admin.auth.handler;
+package top.wyhao.identity.auth.handler;
 
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
@@ -10,11 +10,10 @@ import cn.hutool.http.useragent.UserAgentUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
-import top.wyhao.admin.auth.exception.AuthException;
-import top.wyhao.admin.system.entity.SysDept;
-import top.wyhao.admin.system.entity.SysUser;
-import top.wyhao.admin.system.service.DeptService;
-import top.wyhao.admin.system.service.LoginLogService;
+import top.wyhao.identity.auth.exception.AuthException;
+import top.wyhao.identity.entity.SysUser;
+import top.wyhao.starter.core.spi.DeptApi;
+import top.wyhao.identity.service.LoginLogService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.enums.StatusEnum;
 import top.wyhao.starter.core.model.LoginUser;
@@ -70,9 +69,8 @@ public class LoginHandlerHelper {
         if (ObjectUtil.equal(StatusEnum.DISABLE, user.getStatus())) {
             throw AuthException.accountDisabled();
         }
-        DeptService deptService = SpringUtil.getBean(DeptService.class);
-        SysDept dept = deptService.getById(user.getDeptId());
-        if (ObjectUtil.equal(StatusEnum.DISABLE, dept.getStatus())) {
+        DeptApi deptApi = SpringUtil.getBean(DeptApi.class);
+        if (deptApi.isDisabled(user.getDeptId())) {
             throw AuthException.accountDeptDisabled();
         }
     }

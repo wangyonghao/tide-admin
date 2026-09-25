@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.notification.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -7,25 +7,25 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.entity.SysNotice;
-import top.wyhao.admin.system.mapper.SysNoticeMapper;
-import top.wyhao.admin.system.model.enums.*;
-import top.wyhao.admin.system.model.result.dashboard.DashboardNoticeResp;
-import top.wyhao.admin.system.service.MessageService;
-import top.wyhao.admin.system.service.NoticeLogService;
-import top.wyhao.admin.system.service.NoticeService;
+import top.wyhao.notification.entity.SysNotice;
+import top.wyhao.notification.mapper.SysNoticeMapper;
+import top.wyhao.notification.model.enums.*;
+import top.wyhao.notification.model.result.dashboard.DashboardNoticeResp;
+import top.wyhao.notification.service.MessageService;
+import top.wyhao.notification.service.NoticeLogService;
+import top.wyhao.notification.service.NoticeService;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.admin.system.exception.NoticeException;
+import top.wyhao.notification.exception.NoticeException;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.starter.web.core.model.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import top.wyhao.admin.system.model.dto.MessageRequest;
-import top.wyhao.admin.system.model.vo.NotificationDetailResult;
-import top.wyhao.admin.system.model.dto.NotificationQuery;
-import top.wyhao.admin.system.model.dto.NotificationRequest;
-import top.wyhao.admin.system.model.vo.NotificationResult;
+import top.wyhao.notification.model.dto.MessageRequest;
+import top.wyhao.notification.model.vo.NotificationDetailResult;
+import top.wyhao.notification.model.dto.NotificationQuery;
+import top.wyhao.notification.model.dto.NotificationRequest;
+import top.wyhao.notification.model.vo.NotificationResult;
 
 /**
  * 公告管理 Service 实现

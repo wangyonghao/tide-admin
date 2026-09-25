@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.service.impl;
+package top.wyhao.identity.service.impl;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.http.useragent.UserAgent;
@@ -11,11 +11,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.system.assembler.LoginLogAssembler;
-import top.wyhao.admin.system.entity.SysLoginLog;
-import top.wyhao.admin.system.mapper.SysLoginLogMapper;
-import top.wyhao.admin.system.model.enums.LoginDeviceEnum;
-import top.wyhao.admin.system.service.LoginLogService;
+import top.wyhao.identity.assembler.LoginLogAssembler;
+import top.wyhao.identity.entity.SysLoginLog;
+import top.wyhao.identity.mapper.SysLoginLogMapper;
+import top.wyhao.identity.model.enums.LoginDeviceEnum;
+import top.wyhao.identity.service.LoginLogService;
 import top.wyhao.common.security.util.LoginUtil;
 import top.wyhao.starter.core.UserContextHolder;
 import top.wyhao.starter.core.util.IpUtils;
@@ -26,9 +26,9 @@ import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import top.wyhao.admin.system.model.vo.LoginLogExcelResult;
-import top.wyhao.admin.system.model.dto.LoginLogQuery;
-import top.wyhao.admin.system.model.vo.LoginLogResult;
+import top.wyhao.identity.model.vo.LoginLogExcelResult;
+import top.wyhao.identity.model.dto.LoginLogQuery;
+import top.wyhao.identity.model.vo.LoginLogResult;
 
 /**
  * 登录日志 Service 实现

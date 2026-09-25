@@ -34,10 +34,10 @@
             <artifactId>biz-system</artifactId>
         </dependency>
 
-        <!-- 能力开放插件 -->
+        <!-- 开放 API -->
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>biz-openapi</artifactId>
+            <artifactId>open-api</artifactId>
         </dependency>
 
         <!-- 定时任务管理 -->

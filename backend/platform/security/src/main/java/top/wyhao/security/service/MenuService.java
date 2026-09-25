@@ -1,14 +1,14 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.security.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import top.wyhao.admin.system.model.result.MenuTreeVO;
-import top.wyhao.admin.system.model.result.MenuVO;
+import top.wyhao.security.model.result.MenuTreeVO;
+import top.wyhao.security.model.result.MenuVO;
 
 import java.util.List;
-import top.wyhao.admin.system.model.dto.MenuQuery;
-import top.wyhao.admin.system.model.dto.MenuRequest;
+import top.wyhao.security.model.dto.MenuQuery;
+import top.wyhao.security.model.dto.MenuRequest;
 
 /**
  * 菜单业务接口

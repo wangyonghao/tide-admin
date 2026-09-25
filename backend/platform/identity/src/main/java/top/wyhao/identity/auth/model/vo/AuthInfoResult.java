@@ -1,11 +1,10 @@
-package top.wyhao.admin.auth.model.vo;
+package top.wyhao.identity.auth.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import top.wyhao.admin.system.model.result.MenuTreeVO;
-import top.wyhao.admin.system.model.vo.UserDetail;
+import top.wyhao.identity.model.vo.UserDetail;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -44,5 +43,5 @@ public class AuthInfoResult {
      * 用户菜单
      */
     @Schema(description = "用户菜单", example = "")
-    private List<MenuTreeVO> menus;
+    private List<?> menus;
 }

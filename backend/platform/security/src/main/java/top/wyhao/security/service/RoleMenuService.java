@@ -1,7 +1,7 @@
 
-package top.wyhao.admin.system.service;
+package top.wyhao.security.service;
 
-import top.wyhao.admin.system.entity.SysRoleMenu;
+import top.wyhao.security.entity.SysRoleMenu;
 import top.wyhao.cmn.db.model.BaseService;
 
 import java.util.List;
@@ -12,7 +12,7 @@ import java.util.List;
 
  * @since 2023/2/19 10:40
  */
-public interface RoleMenuService extends BaseService<SysRoleMenu> {
+public interface RoleMenuService {
 
     /**
      * 新增
