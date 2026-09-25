@@ -22,8 +22,8 @@ import top.wyhao.notification.model.result.dashboard.DashboardNoticeResp;
 import top.wyhao.audit.model.result.dashboard.DashboardOverviewCommonResp;
 import top.wyhao.admin.system.service.DashboardService;
 import top.wyhao.notification.service.NoticeService;
-import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.constant.StringConstants;
+import top.wyhao.cmn.core.util.CollUtils;
 
 import java.io.IOException;
 import java.math.BigDecimal;

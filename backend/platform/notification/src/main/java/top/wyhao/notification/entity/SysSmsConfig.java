@@ -8,7 +8,7 @@ import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
 import top.wyhao.cmn.db.model.BaseEntity;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 import java.time.LocalDateTime;
 

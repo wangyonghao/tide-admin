@@ -14,8 +14,7 @@ import io.undertow.Undertow;
 import io.undertow.server.handlers.DisallowedMethodsHandler;
 import io.undertow.util.HttpString;
 import org.springframework.context.annotation.PropertySource;
-import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.starter.core.util.GeneralPropertySourceFactory;
+import top.wyhao.cmn.core.util.GeneralPropertySourceFactory;
 
 import java.util.Set;
 

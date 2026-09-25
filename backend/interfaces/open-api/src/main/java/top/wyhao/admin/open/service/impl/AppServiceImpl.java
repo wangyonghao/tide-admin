@@ -22,7 +22,7 @@ import top.wyhao.cmn.db.query.PageFactory;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.starter.excel.util.ExcelUtils;
 
 import java.util.List;

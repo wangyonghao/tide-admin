@@ -74,13 +74,6 @@ backend/biz/
 │           ├── backend/          # 后端模板
 │           └── frontend/         # 前端模板
 │
-├── biz-tenant/       # 多租户插件
-│   └── src/main/java/top/wyhao/tenant/
-│       ├── api/              # 租户公共 API
-│       ├── controller/       # 租户管理 API
-│       ├── service/          # 业务逻辑
-│       └── model/            # 数据模型
-│
 ├── biz-job/          # 任务调度插件
 │   └── src/main/java/top/wyhao/schedule/
 │       ├── controller/       # 任务管理 API
@@ -118,10 +111,12 @@ backend/platform/
 │   └── src/main/java/top/wyhao/settings/
 ├── audit/            # 审计：操作日志
 │   └── src/main/java/top/wyhao/audit/
+├── tenant/           # 租户：租户、套餐与套餐菜单
+│   └── src/main/java/top/wyhao/tenant/
 ├── file-api/ / file-service/
 └── job-api/
 ```
-跨域依赖通过 `top.wyhao.starter.core.spi`（UserApi / RoleApi / DeptApi / MenuApi / MessageNotifyApi / SmsConfigApi 等）解耦。
+跨域依赖通过各业务域的 `*-client` 模块（`identity-client` / `security-client` / `organization-client` / `notification-client` / `settings-client` / `tenant-client`）解耦。
 
 ##### 3. 公共模块 (cmn/)
 ```
@@ -173,7 +168,6 @@ backend/cmn/
 ├── cmn-trace/        # 链路追踪（TLog）
 ├── cmn-email/        # 邮件发送
 ├── cmn-websocket/    # WebSocket 支持
-├── cmn-tenant/       # 多租户支持
 ├── cmn-license/      # License 管理
 │   ├── cmn-generator/      # License 生成器
 │   ├── cmn-license-core/   # License 核心
@@ -1386,3 +1380,17 @@ Closes #123
 - **前端**：基于 Vue 3 + TypeScript + Vite 的现代化前端技术栈
 - **架构**：前后端分离，模块化设计，易于扩展和维护
 - **工具链**：完善的开发工具链，提高开发效率和代码质量
+
+
+# 交付与修改规范 (General Output Specification)  
+## 1. 核心原则：最终交付态 (Final Production-Ready Standard) 
+- 【干净交付】：修改后的产出（无论是文本、代码、配置文件还是注释）必须是直接可投入生产/发布使用的“最终完成态”。 
+- 【禁止行内痕迹】：严禁在正文、代码行或代码注释中加入类似 `(已修正此处错误)`、`// 这里修改了变量名` 等校对标记或解释性废话。 
+- 【专业与沉稳】：代码注释仅保留解释“为什么这么做”的必要技术说明；文本仅保留符合规范的语言表达。  
+## 2. 变更记录标准 (Changelog Format) 如果需要告知修改细节，必须将“交付内容”与“变更说明”彻底剥离。一律在主内容下方，以独立的 Changelog 模块呈现：  
+- **代码/配置变更**：标注修改位置与技术变更要点（例如：优化算法复杂度、修正逻辑漏洞、补充类型声明）。 
+- **文本/文档变更**：标注章节/段落与具体改动项（例如：统一术语表达、修正错误数据）。
+
+风格遵循 https://developer.apple.com/cn/design/human-interface-guidelines/
+在操作的时候，不要上来就开始，要听取用户的需求描述，如果有任何不清楚的模糊的再次与用户求证，至少采用三个信息源交叉验证，执行计划时记得完整通过再进行交付，交付完成请清理测试文件脚本等过期文件，存储记忆，方便调用
+回应请尽量使用中文

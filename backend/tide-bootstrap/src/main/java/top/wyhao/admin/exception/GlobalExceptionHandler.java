@@ -21,10 +21,10 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import top.wyhao.identity.otp.exception.OtpException;
-import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.core.exception.BizException;
-import top.wyhao.starter.core.model.Result;
+import top.wyhao.identity.domain.otp.OtpException;
+import top.wyhao.cmn.core.constant.StringConstants;
+import top.wyhao.cmn.core.exception.BizException;
+import top.wyhao.cmn.core.model.Result;
 
 import java.util.HashMap;
 import java.util.Map;

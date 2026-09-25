@@ -7,7 +7,7 @@ import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.wyhao.starter.core.enums.BaseEnum;
+import top.wyhao.cmn.core.enums.BaseEnum;
 
 import java.lang.reflect.Method;
 import java.util.Arrays;

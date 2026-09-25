@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.tenant.model.resp;
+package top.wyhao.tenant.model.resp;
 
 import lombok.Data;
 

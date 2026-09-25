@@ -4,7 +4,7 @@ package top.wyhao.starter.encrypt.encryptor;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.crypto.symmetric.SymmetricAlgorithm;
 import cn.hutool.crypto.symmetric.SymmetricCrypto;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.starter.encrypt.context.CryptoContext;
 
 import java.nio.charset.StandardCharsets;

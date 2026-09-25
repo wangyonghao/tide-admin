@@ -9,7 +9,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
 import top.wyhao.security.model.enums.MenuType;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 /**
  * 菜单创建或修改请求参数

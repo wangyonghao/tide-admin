@@ -8,7 +8,7 @@ import com.fasterxml.jackson.databind.JsonMappingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.starter.web.sensitive.annotation.Sensitive;
 import top.wyhao.starter.web.sensitive.enums.SensitiveMethod;
 

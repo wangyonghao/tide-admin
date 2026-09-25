@@ -3,7 +3,7 @@ package top.wyhao.security.model.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import top.wyhao.starter.core.enums.BaseEnum;
+import top.wyhao.cmn.core.enums.BaseEnum;
 
 /**
  * 菜单类型枚举

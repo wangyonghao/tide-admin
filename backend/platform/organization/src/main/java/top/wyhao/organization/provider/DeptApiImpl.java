@@ -8,10 +8,10 @@ import top.wyhao.organization.entity.SysDept;
 import top.wyhao.organization.exception.DeptException;
 import top.wyhao.organization.mapper.SysDeptMapper;
 import top.wyhao.organization.service.DeptService;
-import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.spi.DeptApi;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.constant.StringConstants;
+import top.wyhao.cmn.core.enums.StatusEnum;
+import top.wyhao.organization.client.DeptApi;
+import top.wyhao.cmn.core.util.CollUtils;
 
 import java.util.Collection;
 import java.util.HashMap;

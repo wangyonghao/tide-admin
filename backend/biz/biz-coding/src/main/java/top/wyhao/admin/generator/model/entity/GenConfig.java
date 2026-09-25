@@ -10,11 +10,9 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.starter.core.constant.RegexConstants;
-import top.wyhao.starter.core.util.StrUtils;
+import top.wyhao.cmn.core.constant.RegexConstants;
+import top.wyhao.cmn.core.util.StrUtils;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**

@@ -21,6 +21,18 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
+            <artifactId>identity-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>organization-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>security-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
             <artifactId>cmn-web</artifactId>
         </dependency>
         <dependency>

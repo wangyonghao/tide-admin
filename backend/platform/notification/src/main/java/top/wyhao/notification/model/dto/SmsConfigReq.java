@@ -8,10 +8,7 @@ import lombok.Data;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.starter.core.enums.StatusEnum;
-
-import java.io.Serial;
-import java.io.Serializable;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 /**
  * 短信配置创建或修改请求参数

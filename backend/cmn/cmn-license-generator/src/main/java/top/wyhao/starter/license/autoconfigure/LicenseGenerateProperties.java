@@ -17,7 +17,7 @@
 package top.wyhao.starter.license.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
 
 /**
  * license 生成模块配置属性

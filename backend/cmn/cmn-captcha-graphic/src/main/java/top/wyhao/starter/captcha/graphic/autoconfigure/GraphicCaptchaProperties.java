@@ -3,7 +3,7 @@ package top.wyhao.starter.captcha.graphic.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import top.wyhao.starter.captcha.graphic.enums.GraphicCaptchaType;
-import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
 
 /**
  * 图形验证码配置属性

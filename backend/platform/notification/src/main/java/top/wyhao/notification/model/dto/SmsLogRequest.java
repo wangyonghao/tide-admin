@@ -3,7 +3,7 @@ package top.wyhao.notification.model.dto;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import top.wyhao.starter.core.enums.ResultStatusEnum;
+import top.wyhao.cmn.core.enums.ResultStatusEnum;
 
 /**
  * 短信日志创建或修改请求参数

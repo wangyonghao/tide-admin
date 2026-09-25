@@ -7,7 +7,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.PropertySource;
-import top.wyhao.starter.core.util.GeneralPropertySourceFactory;
+import top.wyhao.cmn.core.util.GeneralPropertySourceFactory;
 
 /**
  * JetCache 自动配置

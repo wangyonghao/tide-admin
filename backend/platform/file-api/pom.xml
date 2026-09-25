@@ -27,6 +27,10 @@
             <groupId>top.wyhao</groupId>
             <artifactId>cmn-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>identity-client</artifactId>
+        </dependency>
 
         <!-- Swagger 注解 -->
         <dependency>

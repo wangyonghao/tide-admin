@@ -5,7 +5,7 @@ import cn.dev33.satoken.stp.StpUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.http.server.ServletServerHttpRequest;
 import org.springframework.stereotype.Component;
-import top.wyhao.starter.core.exception.SystemException;
+import top.wyhao.cmn.core.exception.SystemException;
 import top.wyhao.starter.messaging.websocket.core.WebSocketClientService;
 
 /**

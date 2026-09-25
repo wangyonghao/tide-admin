@@ -17,7 +17,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.util.AntPathMatcher;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.starter.apidoc.autoconfigure.SpringDocExtensionProperties;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.starter.web.config.SecurityProperties;
 
 import java.lang.reflect.Method;

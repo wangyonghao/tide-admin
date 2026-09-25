@@ -21,6 +21,10 @@
             <groupId>top.wyhao</groupId>
             <artifactId>cmn-base</artifactId>
         </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>identity-client</artifactId>
+        </dependency>
 
         <!-- Spring Boot JSON 模块 -->
         <dependency>

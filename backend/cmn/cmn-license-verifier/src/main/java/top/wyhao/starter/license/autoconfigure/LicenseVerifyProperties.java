@@ -18,7 +18,7 @@ package top.wyhao.starter.license.autoconfigure;
 
 import cn.hutool.core.io.FileUtil;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
 
 /**
  * license 校验模块配置属性

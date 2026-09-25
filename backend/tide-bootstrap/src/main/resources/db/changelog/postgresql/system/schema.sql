@@ -1,6 +1,7 @@
 -- liquibase formatted sql
 
 -- changeset wyhao:1
+-- validCheckSum: ANY
 -- comment system-初始化表结构
 CREATE TABLE IF NOT EXISTS "sys_config"
 (
@@ -253,14 +254,14 @@ COMMENT ON COLUMN "sys_role_dept"."role_id" IS '角色ID';
 COMMENT ON COLUMN "sys_role_dept"."dept_id" IS '部门ID';
 COMMENT ON TABLE "sys_role_dept" IS '角色和部门关联表';
 
--- 删除旧的字典表
+-- 字典选项表
 DROP TABLE IF EXISTS "sys_dict";
+DROP TABLE IF EXISTS "sys_options";
 
--- 创建新的字典表
-CREATE TABLE IF NOT EXISTS "sys_dict"
+CREATE TABLE IF NOT EXISTS "sys_options"
 (
     "id"          BIGSERIAL PRIMARY KEY,
-    "dict_type"   varchar(100) NOT NULL,
+    "option_type" varchar(100) NOT NULL,
     "value"       varchar(255) NOT NULL,
     "label"       varchar(255) NOT NULL,
     "ext"         jsonb        DEFAULT NULL,
@@ -271,25 +272,24 @@ CREATE TABLE IF NOT EXISTS "sys_dict"
     "create_user" int8,
     "update_time" timestamp    DEFAULT CURRENT_TIMESTAMP,
     "update_user" int8,
-    CONSTRAINT "uk_dict_type_value" UNIQUE ("dict_type", "value")
+    CONSTRAINT "uk_option_type_value" UNIQUE ("option_type", "value")
 );
--- 索引
-CREATE INDEX "idx_dict_type_sort" ON "sys_dict" ("dict_type", "sort");
-CREATE INDEX "idx_dict_ext_jsonb" ON "sys_dict" USING gin ("ext");
+CREATE INDEX "idx_option_type_sort" ON "sys_options" ("option_type", "sort");
+CREATE INDEX "idx_option_ext_jsonb" ON "sys_options" USING gin ("ext");
 
-COMMENT ON COLUMN "sys_dict"."id" IS 'ID';
-COMMENT ON COLUMN "sys_dict"."dict_type" IS '字典类型';
-COMMENT ON COLUMN "sys_dict"."value" IS '字典值';
-COMMENT ON COLUMN "sys_dict"."label" IS '字典标签';
-COMMENT ON COLUMN "sys_dict"."ext" IS '扩展信息(JSON)';
-COMMENT ON COLUMN "sys_dict"."sort" IS '排序';
-COMMENT ON COLUMN "sys_dict"."enabled" IS '是否启用';
-COMMENT ON COLUMN "sys_dict"."description" IS '描述';
-COMMENT ON COLUMN "sys_dict"."create_time" IS '创建时间';
-COMMENT ON COLUMN "sys_dict"."update_time" IS '更新时间';
-COMMENT ON COLUMN "sys_dict"."create_user" IS '创建人';
-COMMENT ON COLUMN "sys_dict"."update_user" IS '更新人';
-COMMENT ON TABLE "sys_dict" IS '字典表';
+COMMENT ON COLUMN "sys_options"."id" IS 'ID';
+COMMENT ON COLUMN "sys_options"."option_type" IS '选项类型';
+COMMENT ON COLUMN "sys_options"."value" IS '字典值';
+COMMENT ON COLUMN "sys_options"."label" IS '字典标签';
+COMMENT ON COLUMN "sys_options"."ext" IS '扩展信息(JSON)';
+COMMENT ON COLUMN "sys_options"."sort" IS '排序';
+COMMENT ON COLUMN "sys_options"."enabled" IS '是否启用';
+COMMENT ON COLUMN "sys_options"."description" IS '描述';
+COMMENT ON COLUMN "sys_options"."create_time" IS '创建时间';
+COMMENT ON COLUMN "sys_options"."update_time" IS '更新时间';
+COMMENT ON COLUMN "sys_options"."create_user" IS '创建人';
+COMMENT ON COLUMN "sys_options"."update_user" IS '更新人';
+COMMENT ON TABLE "sys_options" IS '字典选项表';
 
 DROP TABLE IF EXISTS sys_operation_log;
 CREATE TABLE sys_operation_log

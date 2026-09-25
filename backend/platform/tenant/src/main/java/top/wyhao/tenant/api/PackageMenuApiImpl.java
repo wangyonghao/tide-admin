@@ -1,10 +1,10 @@
 
-package top.wyhao.admin.tenant.api;
+package top.wyhao.tenant.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.tenant.service.PackageMenuService;
-import top.wyhao.starter.core.spi.PackageMenuApi;
+import top.wyhao.tenant.service.PackageMenuService;
+import top.wyhao.tenant.client.PackageMenuApi;
 
 import java.util.List;
 

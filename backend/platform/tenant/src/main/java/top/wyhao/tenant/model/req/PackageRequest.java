@@ -1,15 +1,13 @@
 
-package top.wyhao.admin.tenant.model.req;
+package top.wyhao.tenant.model.req;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.util.List;
 
 /**

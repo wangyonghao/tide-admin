@@ -21,6 +21,10 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
+            <artifactId>security-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
             <artifactId>cmn-security</artifactId>
             <exclusions>
                 <exclusion>

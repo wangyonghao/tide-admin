@@ -22,6 +22,10 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
+            <artifactId>settings-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
             <artifactId>cmn-cache</artifactId>
         </dependency>
         <!-- Java 邮件支持 -->

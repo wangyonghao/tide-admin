@@ -12,13 +12,13 @@ import top.wyhao.organization.entity.SysDept;
 import top.wyhao.organization.exception.DeptException;
 import top.wyhao.organization.mapper.SysDeptMapper;
 import top.wyhao.organization.service.DeptService;
-import top.wyhao.starter.core.spi.RoleDeptApi;
-import top.wyhao.starter.core.spi.UserApi;
+import top.wyhao.security.client.RoleDeptApi;
+import top.wyhao.identity.client.UserApi;
 import top.wyhao.cmn.db.dialect.DatabaseType;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.cmn.db.util.DBMetaUtils;
-import top.wyhao.starter.core.enums.StatusEnum;
-import top.wyhao.starter.core.util.TreeUtils;
+import top.wyhao.cmn.core.enums.StatusEnum;
+import top.wyhao.cmn.core.util.TreeUtils;
 import top.wyhao.starter.excel.util.ExcelUtils;
 
 import javax.sql.DataSource;

@@ -21,7 +21,6 @@ import jakarta.annotation.PostConstruct;
 import jakarta.validation.ConstraintValidator;
 import jakarta.validation.ConstraintValidatorContext;
 import org.springframework.beans.factory.annotation.Value;
-import top.wyhao.starter.core.constant.PropertiesConstants;
 
 import java.util.List;
 

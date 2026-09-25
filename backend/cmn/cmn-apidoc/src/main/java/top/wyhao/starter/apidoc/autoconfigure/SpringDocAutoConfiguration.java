@@ -24,9 +24,9 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import top.wyhao.starter.apidoc.handler.BaseEnumParameterHandler;
-import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
-import top.wyhao.starter.core.util.CollUtils;
-import top.wyhao.starter.core.util.GeneralPropertySourceFactory;
+import top.wyhao.cmn.core.autoconfigure.application.ApplicationProperties;
+import top.wyhao.cmn.core.util.CollUtils;
+import top.wyhao.cmn.core.util.GeneralPropertySourceFactory;
 
 import java.util.List;
 import java.util.Map;

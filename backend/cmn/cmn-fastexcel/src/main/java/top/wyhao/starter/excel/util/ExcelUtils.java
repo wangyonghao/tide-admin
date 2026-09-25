@@ -9,7 +9,7 @@ import cn.idev.excel.write.style.column.LongestMatchColumnWidthStyleStrategy;
 import jakarta.servlet.http.HttpServletResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.wyhao.starter.core.exception.SystemException;
+import top.wyhao.cmn.core.exception.SystemException;
 import top.wyhao.starter.excel.converter.ExcelBigNumberConverter;
 
 import java.util.Collections;

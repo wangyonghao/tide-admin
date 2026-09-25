@@ -1,6 +1,7 @@
 -- liquibase formatted sql
 
 -- changeset wangyonghao:1
+-- validCheckSum: ANY
 -- comment system-初始化表数据
 INSERT INTO "sys_menu"
 ("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
@@ -59,13 +60,13 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (1117, '创建文件夹', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:file:createDir', 7, 1, 1, NOW()),
        (1118, '计算文件夹大小', 1110, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:file:calcDirSize', 8, 1, 1, NOW()),
 
-       (1130, '字典管理', 1000, 2, '/system/dict', 'system/dict/index', NULL, 'arcticons:colordict', FALSE, FALSE, FALSE, NULL, 7, 1, 1, NOW()),
-       (1131, '列表', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:list', 1, 1, 1, NOW()),
-       (1132, '详情', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:get', 2, 1, 1, NOW()),
-       (1133, '新增', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:create', 3, 1, 1, NOW()),
-       (1134, '修改', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:update', 4, 1, 1, NOW()),
-       (1135, '删除', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:delete', 5, 1, 1, NOW()),
-       (1136, '清除缓存', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dict:clearCache', 6, 1, 1, NOW()),
+       (1130, '选项管理', 1000, 2, '/system/option', 'system/option/index', NULL, 'arcticons:colordict', FALSE, FALSE, FALSE, NULL, 7, 1, 1, NOW()),
+       (1131, '列表', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:option:list', 1, 1, 1, NOW()),
+       (1132, '详情', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:option:get', 2, 1, 1, NOW()),
+       (1133, '新增', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:option:create', 3, 1, 1, NOW()),
+       (1134, '修改', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:option:update', 4, 1, 1, NOW()),
+       (1135, '删除', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:option:delete', 5, 1, 1, NOW()),
+       (1136, '清除缓存', 1130, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:option:clearCache', 6, 1, 1, NOW()),
       
        (1150, '系统配置', 1000, 2, '/system/config', 'system/config/index', NULL, 'lucide:settings', FALSE, FALSE, FALSE, NULL, 9, 1, 1, NOW()),
        (1151, '查看', 1150, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:config:get', 1, 1, 1, NOW()),
@@ -119,7 +120,7 @@ VALUES
 (547888897925840928, 2023);
 
 -- 初始化字典数据
-INSERT INTO "sys_dict" ("dict_type", "value", "label", "ext", "sort", "enabled", "description")
+INSERT INTO "sys_options" ("option_type", "value", "label", "ext", "sort", "enabled", "description")
 VALUES
     ('notice_type', '1', '产品新闻', '{"color": "primary"}', 1, true, NULL),
     ('notice_type', '2', '企业动态', '{"color": "success"}', 2, true, NULL),
@@ -138,3 +139,51 @@ VALUES
 INSERT INTO "sys_menu"
 ("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
 VALUES (1095, '新增', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:create', 3, 1, 1, NOW());
+
+-- changeset wyhao:rename-sys-dict-to-sys-options-1
+-- comment 已有库将字典表 sys_dict 重命名为 sys_options
+DO $$
+BEGIN
+    IF to_regclass('sys_dict') IS NOT NULL AND to_regclass('sys_options') IS NULL THEN
+        ALTER TABLE "sys_dict" RENAME TO "sys_options";
+        IF to_regclass('idx_dict_type_sort') IS NOT NULL THEN
+            ALTER INDEX "idx_dict_type_sort" RENAME TO "idx_option_type_sort";
+        END IF;
+        IF to_regclass('idx_dict_ext_jsonb') IS NOT NULL THEN
+            ALTER INDEX "idx_dict_ext_jsonb" RENAME TO "idx_option_ext_jsonb";
+        END IF;
+        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uk_dict_type_value') THEN
+            ALTER TABLE "sys_options" RENAME CONSTRAINT "uk_dict_type_value" TO "uk_option_type_value";
+        END IF;
+        IF to_regclass('sys_dict_id_seq') IS NOT NULL THEN
+            ALTER SEQUENCE "sys_dict_id_seq" RENAME TO "sys_options_id_seq";
+        END IF;
+        COMMENT ON TABLE "sys_options" IS '字典选项表';
+    END IF;
+END $$;
+
+-- changeset wyhao:option-menu-permission-1
+-- comment 字典菜单权限改为 system:option
+UPDATE "sys_menu"
+SET permission = REPLACE(permission, 'system:dict:', 'system:option:')
+WHERE permission LIKE 'system:dict:%';
+
+-- changeset wyhao:option-type-and-menu-1
+-- comment 选项类型字段与管理页路由统一为 option
+DO $$
+BEGIN
+    IF to_regclass('sys_options') IS NOT NULL
+       AND EXISTS (
+           SELECT 1 FROM information_schema.columns
+           WHERE table_name = 'sys_options' AND column_name = 'dict_type'
+       ) THEN
+        ALTER TABLE "sys_options" RENAME COLUMN "dict_type" TO "option_type";
+        COMMENT ON COLUMN "sys_options"."option_type" IS '选项类型';
+    END IF;
+END $$;
+
+UPDATE "sys_menu"
+SET name = '选项管理',
+    path = '/system/option',
+    component = 'system/option/index'
+WHERE id = 1130;

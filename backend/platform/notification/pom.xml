@@ -21,6 +21,10 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
+            <artifactId>notification-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
             <artifactId>settings</artifactId>
         </dependency>
         <dependency>

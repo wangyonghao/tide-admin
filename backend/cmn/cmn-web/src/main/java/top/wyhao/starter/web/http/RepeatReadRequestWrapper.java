@@ -9,7 +9,7 @@ import jakarta.servlet.http.HttpServletRequestWrapper;
 import org.springframework.http.MediaType;
 import org.springframework.util.FastByteArrayOutputStream;
 import org.springframework.util.StreamUtils;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 
 import java.io.*;
 import java.net.URLEncoder;

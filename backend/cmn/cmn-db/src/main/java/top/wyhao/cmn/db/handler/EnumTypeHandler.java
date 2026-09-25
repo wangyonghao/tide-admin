@@ -13,7 +13,7 @@ import org.apache.ibatis.reflection.ReflectorFactory;
 import org.apache.ibatis.reflection.invoker.Invoker;
 import org.apache.ibatis.type.BaseTypeHandler;
 import org.apache.ibatis.type.JdbcType;
-import top.wyhao.starter.core.enums.BaseEnum;
+import top.wyhao.cmn.core.enums.BaseEnum;
 
 import java.lang.reflect.Field;
 import java.math.BigDecimal;

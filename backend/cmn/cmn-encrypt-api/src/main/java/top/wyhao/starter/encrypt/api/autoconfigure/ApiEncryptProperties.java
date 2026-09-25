@@ -17,7 +17,7 @@
 package top.wyhao.starter.encrypt.api.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
 
 /**
  * API 加密配置属性

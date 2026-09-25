@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.starter.core.enums.DataScopeEnum;
+import top.wyhao.cmn.core.enums.DataScopeEnum;
 
 import java.time.LocalDateTime;
 

@@ -15,10 +15,8 @@ import lombok.NoArgsConstructor;
 import lombok.NonNull;
 import top.wyhao.admin.generator.enums.FormTypeEnum;
 import top.wyhao.admin.generator.enums.QueryTypeEnum;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 
-import java.io.Serial;
-import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**

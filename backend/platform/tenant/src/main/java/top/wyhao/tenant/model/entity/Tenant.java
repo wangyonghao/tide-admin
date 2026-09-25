@@ -1,12 +1,10 @@
 
-package top.wyhao.admin.tenant.model.entity;
+package top.wyhao.tenant.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.model.BaseEntity;
-import top.wyhao.starter.core.enums.StatusEnum;
 
-import java.io.Serial;
 import java.time.LocalDateTime;
 
 /**

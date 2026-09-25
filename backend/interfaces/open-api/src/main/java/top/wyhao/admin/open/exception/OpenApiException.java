@@ -1,7 +1,7 @@
 package top.wyhao.admin.open.exception;
 
 import cn.hutool.core.util.StrUtil;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 /**
  * 能力开放业务异常

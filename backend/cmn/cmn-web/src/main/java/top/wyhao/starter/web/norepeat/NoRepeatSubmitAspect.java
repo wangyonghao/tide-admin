@@ -30,9 +30,9 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
-import top.wyhao.starter.core.UserContextHolder;
+import top.wyhao.identity.client.UserContextHolder;
 import top.wyhao.starter.web.http.ServletUtils;
-import top.wyhao.starter.core.exception.DuplicateRequestException;
+import top.wyhao.cmn.core.exception.DuplicateRequestException;
 
 import java.time.Duration;
 import java.util.Collection;

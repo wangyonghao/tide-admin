@@ -1,6 +1,6 @@
 package top.wyhao.audit.exception;
 
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 /**
  * 操作日志业务异常

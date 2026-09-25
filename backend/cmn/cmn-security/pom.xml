@@ -21,6 +21,14 @@
             <groupId>top.wyhao</groupId>
             <artifactId>cmn-base</artifactId>
         </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>identity-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>security-client</artifactId>
+        </dependency>
         <!-- 缓存模块 - Redisson -->
         <dependency>
             <groupId>top.wyhao</groupId>

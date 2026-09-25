@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.notification.entity.SysNoticeLog;
 import top.wyhao.notification.mapper.SysNoticeLogMapper;
 import top.wyhao.notification.service.NoticeLogService;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.util.CollUtils;
 
 import java.time.LocalDateTime;
 import java.util.Collection;

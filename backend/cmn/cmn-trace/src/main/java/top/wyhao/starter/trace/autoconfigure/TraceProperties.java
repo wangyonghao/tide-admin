@@ -18,7 +18,7 @@ package top.wyhao.starter.trace.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.NestedConfigurationProperty;
-import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
 
 /**
  * 链路追踪配置属性

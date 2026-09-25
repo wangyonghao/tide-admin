@@ -13,7 +13,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.InterceptorRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import top.wyhao.admin.config.satoken.ApiSignTemplate;
-import top.wyhao.starter.core.constant.OrderedConstants;
+import top.wyhao.cmn.core.constant.OrderedConstants;
 import top.wyhao.starter.web.config.SecurityProperties;
 
 @Slf4j

@@ -8,7 +8,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import top.wyhao.starter.core.enums.DataScopeEnum;
+import top.wyhao.cmn.core.enums.DataScopeEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 
 import java.time.LocalDateTime;

@@ -1,6 +1,6 @@
 package top.wyhao.admin.system.exception;
 
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 /**
  * 仪表盘业务异常

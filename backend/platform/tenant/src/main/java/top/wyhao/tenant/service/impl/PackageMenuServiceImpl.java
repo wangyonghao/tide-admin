@@ -1,14 +1,14 @@
 
-package top.wyhao.admin.tenant.service.impl;
+package top.wyhao.tenant.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.tenant.mapper.TenantPackageMenuMapper;
-import top.wyhao.admin.tenant.model.entity.TenantPackageMenu;
-import top.wyhao.admin.tenant.service.PackageMenuService;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.tenant.mapper.TenantPackageMenuMapper;
+import top.wyhao.tenant.model.entity.TenantPackageMenu;
+import top.wyhao.tenant.service.PackageMenuService;
+import top.wyhao.cmn.core.util.CollUtils;
 
 import java.util.List;
 

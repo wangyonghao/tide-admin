@@ -1,7 +1,7 @@
 
 package top.wyhao.starter.web.ratelimit;
 
-import top.wyhao.starter.core.exception.SystemException;
+import top.wyhao.cmn.core.exception.SystemException;
 
 /**
  * 限流异常

@@ -7,7 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.model.BaseEntity;
-import top.wyhao.starter.core.enums.ResultStatusEnum;
+import top.wyhao.cmn.core.enums.ResultStatusEnum;
 
 import java.time.LocalDateTime;
 

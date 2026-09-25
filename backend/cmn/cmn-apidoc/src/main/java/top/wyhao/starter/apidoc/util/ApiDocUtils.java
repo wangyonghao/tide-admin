@@ -3,7 +3,7 @@ package top.wyhao.starter.apidoc.util;
 
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.starter.core.enums.BaseEnum;
+import top.wyhao.cmn.core.enums.BaseEnum;
 
 import java.lang.reflect.ParameterizedType;
 import java.lang.reflect.Type;

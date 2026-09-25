@@ -26,7 +26,6 @@
     <module>cmn-encrypt-api</module>
     <module>cmn-fastexcel</module>
     <module>cmn-poi</module>
-    <module>cmn-tenant</module>
     <module>cmn-license-core</module>
     <module>cmn-license-generator</module>
     <module>cmn-license-verifier</module>

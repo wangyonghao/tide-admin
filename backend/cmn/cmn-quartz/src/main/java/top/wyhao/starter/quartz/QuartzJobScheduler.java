@@ -1,7 +1,7 @@
 package top.wyhao.starter.quartz;
 
 import org.quartz.*;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 import top.wyhao.starter.quartz.dispatch.ConcurrentJobDispatcher;
 import top.wyhao.starter.quartz.dispatch.DisallowConcurrentJobDispatcher;
 import top.wyhao.starter.quartz.spi.JobHandlerDescriptor;

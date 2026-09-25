@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.core.enums.ResultStatusEnum;
+import top.wyhao.cmn.core.enums.ResultStatusEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
 
 import java.time.LocalDateTime;

@@ -6,8 +6,8 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.starter.core.constant.RegexConstants;
-import top.wyhao.starter.core.enums.DataScopeEnum;
+import top.wyhao.cmn.core.constant.RegexConstants;
+import top.wyhao.cmn.core.enums.DataScopeEnum;
 
 import java.util.List;
 

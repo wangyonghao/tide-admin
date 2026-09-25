@@ -7,7 +7,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.admin.open.exception.OpenApiException;
 import top.wyhao.admin.open.model.entity.SysApp;
 import top.wyhao.admin.open.service.AppService;

@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.starter.core.constant.CacheConstants;
+import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.admin.system.exception.DashboardException;
 import top.wyhao.audit.model.result.dashboard.DashboardAccessTrendResp;
 import top.wyhao.audit.model.result.dashboard.DashboardChartCommonResp;

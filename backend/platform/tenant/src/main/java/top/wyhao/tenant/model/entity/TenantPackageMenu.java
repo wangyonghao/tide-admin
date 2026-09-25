@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.tenant.model.entity;
+package top.wyhao.tenant.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;

@@ -3,7 +3,7 @@ package top.wyhao.organization.model.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.cmn.db.query.Query;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 /**
  * 部门查询条件

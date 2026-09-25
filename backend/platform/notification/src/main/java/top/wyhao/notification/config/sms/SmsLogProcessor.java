@@ -7,7 +7,7 @@ import lombok.RequiredArgsConstructor;
 import org.dromara.sms4j.api.entity.SmsResponse;
 import org.dromara.sms4j.api.proxy.CoreMethodProcessor;
 import org.springframework.stereotype.Component;
-import top.wyhao.starter.core.enums.ResultStatusEnum;
+import top.wyhao.cmn.core.enums.ResultStatusEnum;
 import top.wyhao.notification.service.SmsService;
 
 import java.util.LinkedHashMap;

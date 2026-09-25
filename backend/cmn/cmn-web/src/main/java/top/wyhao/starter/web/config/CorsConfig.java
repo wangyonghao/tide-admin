@@ -14,8 +14,8 @@ import org.springframework.context.annotation.Lazy;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 import org.springframework.web.filter.CorsFilter;
-import top.wyhao.starter.core.constant.PropertiesConstants;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 
 import java.util.ArrayList;
 import java.util.List;

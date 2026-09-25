@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.quartz.CronExpression;
 import top.wyhao.job.api.model.ScheduleSpec;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 import java.text.ParseException;
 import java.time.LocalDateTime;

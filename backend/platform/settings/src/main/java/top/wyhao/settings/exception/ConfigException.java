@@ -1,6 +1,6 @@
 package top.wyhao.settings.exception;
 
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 /**
  * 系统配置业务异常

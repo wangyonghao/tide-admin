@@ -17,7 +17,7 @@ import org.springframework.context.annotation.ComponentScan;
 import org.springframework.scheduling.annotation.EnableAsync;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.starter.core.autoconfigure.application.ApplicationProperties;
+import top.wyhao.cmn.core.autoconfigure.application.ApplicationProperties;
 
 /**
  * 启动程序

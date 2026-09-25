@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.tenant.model.query;
+package top.wyhao.tenant.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

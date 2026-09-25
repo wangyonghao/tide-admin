@@ -1,13 +1,13 @@
 
-package top.wyhao.admin.tenant.config;
+package top.wyhao.tenant.config;
 
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.wyhao.admin.tenant.service.TenantService;
-import top.wyhao.starter.tenant.annotation.ConditionalOnEnabledTenant;
-import top.wyhao.starter.tenant.config.TenantProperties;
-import top.wyhao.starter.tenant.config.TenantProvider;
+import top.wyhao.tenant.service.TenantService;
+import top.wyhao.tenant.annotation.ConditionalOnEnabledTenant;
+import top.wyhao.tenant.config.TenantProperties;
+import top.wyhao.tenant.config.TenantProvider;
 
 /**
  * 租户配置

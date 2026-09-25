@@ -12,16 +12,17 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.identity.model.vo.UserDetail;
+import top.wyhao.cmn.core.model.LoginUser;
+import top.wyhao.identity.adapter.web.vo.UserDetail;
 import top.wyhao.settings.model.result.config.*;
-import top.wyhao.identity.model.result.config.LoginConfigVO;
-import top.wyhao.identity.model.result.config.SecurityConfigVO;
-import top.wyhao.identity.model.result.config.SiteConfigVO;
+import top.wyhao.identity.adapter.web.result.config.LoginConfigVO;
+import top.wyhao.identity.adapter.web.result.config.SecurityConfigVO;
+import top.wyhao.identity.adapter.web.result.config.SiteConfigVO;
 import top.wyhao.settings.service.ConfigService;
-import top.wyhao.identity.service.UserService;
-import top.wyhao.starter.core.UserContextHolder;
+import top.wyhao.identity.app.service.UserService;
+import top.wyhao.identity.client.UserContextHolder;
 import top.wyhao.settings.exception.ConfigException;
-import top.wyhao.starter.core.model.MailConfig;
+import top.wyhao.cmn.core.model.MailConfig;
 import top.wyhao.settings.model.dto.ConfigQuery;
 import top.wyhao.settings.model.vo.ConfigResult;
 
@@ -128,7 +129,7 @@ public class ConfigController {
     @PostMapping("/system/config/mail/test")
     public void sendTestMail(MailConfig mailConfig) {
         // 获取当前登录用户
-        top.wyhao.starter.core.model.LoginUser loginUser = top.wyhao.starter.core.UserContextHolder.getCurrentUser();
+        LoginUser loginUser = top.wyhao.identity.client.UserContextHolder.getCurrentUser();
         if (loginUser == null) {
             throw ConfigException.mailTestUserNotLoggedIn();
         }

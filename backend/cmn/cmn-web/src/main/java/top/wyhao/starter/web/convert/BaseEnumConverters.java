@@ -1,10 +1,10 @@
 package top.wyhao.starter.web.convert;
 
 import org.springframework.stereotype.Component;
-import top.wyhao.starter.core.enums.BaseEnum;
-import top.wyhao.starter.core.enums.GenderEnum;
-import top.wyhao.starter.core.enums.ResultStatusEnum;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.BaseEnum;
+import top.wyhao.cmn.core.enums.GenderEnum;
+import top.wyhao.cmn.core.enums.ResultStatusEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 /**
  * BaseEnum 与存储值之间的 MapStruct 转换

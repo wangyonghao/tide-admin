@@ -152,14 +152,8 @@ public class MybatisPlusAutoConfiguration {
         return configuration -> {
             if (aesKey != null) {
                 EncryptTypeHandler.init(aesKey);
-                log.info("[cmn-db] EncryptTypeHandler - AES密钥初始化完成，密钥长度：{}", aesKey.length());
+                log.info("[cmn-mybatis] EncryptTypeHandler - AES密钥初始化完成，密钥长度：{}", aesKey.length());
             }
         };
     }
-
-    @PostConstruct
-    public void postConstruct() {
-        log.debug("[cmn-db] - 'MyBatis Plus' configured.");
-    }
-
 }

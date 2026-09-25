@@ -3,8 +3,8 @@ package top.wyhao.notification.model.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import top.wyhao.starter.core.constant.UiConstants;
-import top.wyhao.starter.core.enums.BaseEnum;
+import top.wyhao.cmn.core.constant.UiConstants;
+import top.wyhao.cmn.core.enums.BaseEnum;
 
 /**
  * 公告状态枚举

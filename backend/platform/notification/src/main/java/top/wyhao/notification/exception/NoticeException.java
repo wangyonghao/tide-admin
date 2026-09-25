@@ -1,6 +1,6 @@
 package top.wyhao.notification.exception;
 
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 /**
  * 公告业务异常

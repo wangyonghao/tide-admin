@@ -16,9 +16,7 @@
 
 package top.wyhao.starter.license.exception;
 
-import top.wyhao.starter.core.exception.SystemException;
-
-import java.io.Serial;
+import top.wyhao.cmn.core.exception.SystemException;
 
 /**
  * 自定义证书认证异常

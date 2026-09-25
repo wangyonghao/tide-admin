@@ -2,7 +2,7 @@ package top.wyhao.starter.quartz;
 
 import org.springframework.aop.support.AopUtils;
 import org.springframework.beans.factory.InitializingBean;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 import top.wyhao.starter.quartz.annotation.JobHandler;
 import top.wyhao.starter.quartz.spi.JobHandlerDescriptor;
 import top.wyhao.starter.quartz.spi.JobTask;

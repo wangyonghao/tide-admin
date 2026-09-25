@@ -3,7 +3,7 @@ package top.wyhao.notification.model.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.cmn.db.query.Query;
-import top.wyhao.starter.core.enums.ResultStatusEnum;
+import top.wyhao.cmn.core.enums.ResultStatusEnum;
 
 /**
  * 短信日志查询条件

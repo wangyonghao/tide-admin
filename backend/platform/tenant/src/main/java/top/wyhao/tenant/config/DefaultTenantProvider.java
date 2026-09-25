@@ -1,11 +1,11 @@
 
-package top.wyhao.admin.tenant.config;
+package top.wyhao.tenant.config;
 
 import lombok.RequiredArgsConstructor;
-import top.wyhao.admin.tenant.service.TenantService;
-import top.wyhao.starter.tenant.config.TenantProperties;
-import top.wyhao.starter.tenant.config.TenantProvider;
-import top.wyhao.starter.tenant.context.TenantContext;
+import top.wyhao.tenant.service.TenantService;
+import top.wyhao.tenant.config.TenantProperties;
+import top.wyhao.tenant.config.TenantProvider;
+import top.wyhao.tenant.context.TenantContext;
 
 /**
  * 默认租户提供者

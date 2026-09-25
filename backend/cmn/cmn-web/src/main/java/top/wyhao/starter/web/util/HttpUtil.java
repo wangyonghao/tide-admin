@@ -3,7 +3,7 @@ package top.wyhao.starter.web.util;
 import cn.hutool.core.io.IoUtil;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.http.HttpHeaders;
-import top.wyhao.starter.core.exception.SystemException;
+import top.wyhao.cmn.core.exception.SystemException;
 
 import java.io.IOException;
 import java.io.InputStream;

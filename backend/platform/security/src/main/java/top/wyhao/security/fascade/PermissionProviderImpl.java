@@ -1,9 +1,9 @@
-package top.wyhao.security.provider;
+package top.wyhao.security.fascade;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.identity.service.UserService;
-import top.wyhao.starter.core.spi.PermissionProvider;
+import top.wyhao.identity.app.service.UserService;
+import top.wyhao.security.client.PermissionProvider;
 
 import java.util.List;
 

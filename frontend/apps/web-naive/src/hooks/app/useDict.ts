@@ -1,6 +1,6 @@
 import { ref, toRefs } from 'vue';
 
-import { dictApi } from '#/api/system/dict';
+import { optionApi } from '#/api/system/option';
 import { useDictStore } from '#/store';
 
 const pendingRequests = new Map<string, Promise<any>>();
@@ -18,7 +18,7 @@ export function useDict(...codes: string[]) {
       return;
     }
     if (!pendingRequests.has(code)) {
-      const request = dictApi.listDict(code)
+      const request = optionApi.list(code)
         .then((data) => {
           dictStore.setDict(code, data);
           return data;

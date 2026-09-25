@@ -10,7 +10,7 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.organization.service.DeptService;
-import top.wyhao.starter.core.model.Result;
+import top.wyhao.cmn.core.model.Result;
 import top.wyhao.starter.web.core.model.IdResult;
 import top.wyhao.starter.web.core.model.IdsRequest;
 

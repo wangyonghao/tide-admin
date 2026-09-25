@@ -8,7 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.security.entity.SysRoleMenu;
 import top.wyhao.security.mapper.SysRoleMenuMapper;
 import top.wyhao.security.service.RoleMenuService;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.util.CollUtils;
 
 import java.util.ArrayList;
 import java.util.List;

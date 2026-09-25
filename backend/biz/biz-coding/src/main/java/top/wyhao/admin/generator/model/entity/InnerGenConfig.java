@@ -4,9 +4,8 @@ package top.wyhao.admin.generator.model.entity;
 import cn.hutool.core.date.DateUtil;
 import cn.hutool.core.util.StrUtil;
 import lombok.Data;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 
-import java.io.Serial;
 import java.util.List;
 import java.util.Set;
 

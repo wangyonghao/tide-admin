@@ -9,9 +9,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.starter.core.model.LoginUser;
-import top.wyhao.starter.core.model.Result;
-import top.wyhao.starter.tenant.context.TenantContextHolder;
+import top.wyhao.cmn.core.model.LoginUser;
+import top.wyhao.cmn.core.model.Result;
+import top.wyhao.tenant.context.TenantContextHolder;
 import top.wyhao.starter.web.http.ServletUtils;
 import top.wyhao.starter.web.json.util.JSONUtils;
 

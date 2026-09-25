@@ -2,8 +2,8 @@ package top.wyhao.security.model.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.core.enums.GenderEnum;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.GenderEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 import java.util.List;
 

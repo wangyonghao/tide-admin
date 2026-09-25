@@ -25,9 +25,9 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
-import top.wyhao.starter.core.constant.OrderedConstants;
-import top.wyhao.starter.core.constant.PropertiesConstants;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.OrderedConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.starter.encrypt.api.filter.ApiEncryptFilter;
 
 /**

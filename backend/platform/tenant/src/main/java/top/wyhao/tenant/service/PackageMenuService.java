@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.tenant.service;
+package top.wyhao.tenant.service;
 
 import java.util.List;
 

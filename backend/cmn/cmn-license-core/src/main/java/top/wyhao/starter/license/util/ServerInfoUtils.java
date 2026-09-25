@@ -22,8 +22,8 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.io.IoUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import top.wyhao.starter.core.constant.StringConstants;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.constant.StringConstants;
+import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.starter.license.exception.LicenseException;
 import top.wyhao.starter.license.model.LicenseExtraModel;
 

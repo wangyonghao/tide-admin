@@ -12,7 +12,7 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import top.wyhao.starter.cache.redisson.autoconfigure.RedissonAutoConfiguration;
-import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
 import top.wyhao.starter.web.ratelimit.RateLimiterAspect;
 import top.wyhao.starter.web.ratelimit.DefaultRateLimiterNameGenerator;
 import top.wyhao.starter.web.ratelimit.RateLimiterNameGenerator;

@@ -3,7 +3,6 @@ package top.wyhao.admin.generator.enums;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
-import top.wyhao.starter.core.enums.BaseEnum;
 
 /**
  * 查询类型枚举

@@ -13,7 +13,7 @@ import top.wyhao.audit.model.result.dashboard.DashboardAccessTrendResp;
 import top.wyhao.audit.model.result.dashboard.DashboardChartCommonResp;
 import top.wyhao.audit.model.result.dashboard.DashboardOverviewCommonResp;
 import top.wyhao.cmn.db.model.BaseMapper;
-import top.wyhao.starter.core.constant.CacheConstants;
+import top.wyhao.cmn.core.constant.CacheConstants;
 
 import java.util.Date;
 import java.util.List;

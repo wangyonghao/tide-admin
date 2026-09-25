@@ -1,7 +1,7 @@
 package top.wyhao.admin.cmn.sms;
 
 import lombok.Data;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 import java.util.Map;
 

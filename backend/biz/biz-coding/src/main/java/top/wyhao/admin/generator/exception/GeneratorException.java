@@ -1,7 +1,7 @@
 package top.wyhao.admin.generator.exception;
 
 import cn.hutool.core.util.StrUtil;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 /**
  * 代码生成业务异常

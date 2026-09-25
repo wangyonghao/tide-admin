@@ -9,7 +9,7 @@ import top.wyhao.notification.mapper.SysNoticeMapper;
 import top.wyhao.notification.model.enums.NoticeMethods;
 import top.wyhao.notification.model.enums.NoticeStatus;
 import top.wyhao.notification.service.NoticeService;
-import top.wyhao.starter.core.util.CollUtils;
+import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.starter.quartz.annotation.JobHandler;
 import top.wyhao.starter.quartz.spi.JobContext;
 import top.wyhao.starter.quartz.spi.JobTask;

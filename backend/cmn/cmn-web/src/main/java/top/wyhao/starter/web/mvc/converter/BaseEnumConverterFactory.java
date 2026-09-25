@@ -3,7 +3,7 @@ package top.wyhao.starter.web.mvc.converter;
 
 import org.springframework.core.convert.converter.Converter;
 import org.springframework.core.convert.converter.ConverterFactory;
-import top.wyhao.starter.core.enums.BaseEnum;
+import top.wyhao.cmn.core.enums.BaseEnum;
 
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;

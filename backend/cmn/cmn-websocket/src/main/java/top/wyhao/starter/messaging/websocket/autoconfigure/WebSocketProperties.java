@@ -2,8 +2,8 @@
 package top.wyhao.starter.messaging.websocket.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import top.wyhao.starter.core.constant.PropertiesConstants;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 
 import java.util.ArrayList;
 import java.util.Collections;

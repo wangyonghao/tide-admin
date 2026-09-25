@@ -24,8 +24,8 @@ import org.aspectj.lang.annotation.AfterThrowing;
 import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.util.StopWatch;
-import top.wyhao.starter.core.UserContextHolder;
-import top.wyhao.starter.core.model.LoginUser;
+import top.wyhao.identity.client.UserContextHolder;
+import top.wyhao.cmn.core.model.LoginUser;
 import top.wyhao.starter.web.http.ServletUtils;
 
 import java.time.LocalDateTime;

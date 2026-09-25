@@ -1,12 +1,10 @@
 
-package top.wyhao.admin.tenant.model.query;
+package top.wyhao.tenant.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.cmn.db.query.Query;
-import top.wyhao.starter.core.enums.StatusEnum;
-
-import java.io.Serializable;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 /**
  * 套餐查询条件

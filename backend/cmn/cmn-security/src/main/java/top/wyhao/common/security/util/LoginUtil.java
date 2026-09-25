@@ -3,15 +3,7 @@ package top.wyhao.common.security.util;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
-import cn.hutool.extra.servlet.JakartaServletUtil;
-import cn.hutool.http.useragent.UserAgent;
-import cn.hutool.http.useragent.UserAgentUtil;
-import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.web.context.request.RequestContextHolder;
-import org.springframework.web.context.request.ServletRequestAttributes;
-import top.wyhao.starter.core.model.LoginUser;
-import top.wyhao.starter.core.util.ExceptionUtils;
-import top.wyhao.starter.core.util.IpUtils;
+import top.wyhao.cmn.core.model.LoginUser;
 
 import java.util.ArrayList;
 import java.util.List;

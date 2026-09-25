@@ -21,6 +21,18 @@
         <module>file-api</module>
         <!-- 定时任务管理 API -->
         <module>job-api</module>
+        <!-- 身份客户端 -->
+        <module>identity-client</module>
+        <!-- 授权客户端：跨模块契约，避免循环依赖 -->
+        <module>security-client</module>
+        <!-- 组织客户端 -->
+        <module>organization-client</module>
+        <!-- 通知客户端 -->
+        <module>notification-client</module>
+        <!-- 设置客户端 -->
+        <module>settings-client</module>
+        <!-- 租户客户端 -->
+        <module>tenant-client</module>
         <!-- 身份：用户、认证、凭证 -->
         <module>identity</module>
         <!-- 授权：角色、菜单权限 -->
@@ -33,5 +45,7 @@
         <module>settings</module>
         <!-- 审计：操作日志 -->
         <module>audit</module>
+        <!-- 租户：租户、套餐与套餐菜单 -->
+        <module>tenant</module>
     </modules>
 </project>

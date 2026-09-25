@@ -1,9 +1,9 @@
-package top.wyhao.security.provider;
+package top.wyhao.security.fascade;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.security.service.RoleDeptService;
-import top.wyhao.starter.core.spi.RoleDeptApi;
+import top.wyhao.security.client.RoleDeptApi;
 
 import java.util.List;
 

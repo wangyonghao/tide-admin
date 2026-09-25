@@ -1,9 +1,9 @@
-package top.wyhao.security.provider;
+package top.wyhao.security.fascade;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.security.service.MenuService;
-import top.wyhao.starter.core.spi.MenuApi;
+import top.wyhao.security.client.MenuApi;
 
 import java.util.List;
 

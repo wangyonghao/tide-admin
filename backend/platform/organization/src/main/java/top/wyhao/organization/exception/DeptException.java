@@ -1,7 +1,7 @@
 package top.wyhao.organization.exception;
 
 import cn.hutool.core.util.StrUtil;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 /**
  * 部门业务异常

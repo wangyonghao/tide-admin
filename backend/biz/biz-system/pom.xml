@@ -20,6 +20,10 @@
     <!-- 平台域模块 -->
     <dependency>
       <groupId>top.wyhao</groupId>
+      <artifactId>tenant-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>top.wyhao</groupId>
       <artifactId>identity</artifactId>
     </dependency>
     <dependency>
@@ -110,7 +114,7 @@
     </dependency>
     <dependency>
       <groupId>top.wyhao</groupId>
-      <artifactId>cmn-tenant</artifactId>
+      <artifactId>tenant</artifactId>
     </dependency>
 
   </dependencies>

@@ -15,7 +15,7 @@ import io.swagger.v3.oas.models.parameters.Parameter;
 import org.springdoc.core.customizers.ParameterCustomizer;
 import org.springframework.core.MethodParameter;
 import top.wyhao.starter.apidoc.util.ApiDocUtils;
-import top.wyhao.starter.core.enums.BaseEnum;
+import top.wyhao.cmn.core.enums.BaseEnum;
 
 import java.lang.reflect.Type;
 import java.util.Arrays;

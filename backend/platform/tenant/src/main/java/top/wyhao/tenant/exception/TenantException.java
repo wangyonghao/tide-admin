@@ -1,7 +1,7 @@
-package top.wyhao.admin.tenant.exception;
+package top.wyhao.tenant.exception;
 
 import cn.hutool.core.util.StrUtil;
-import top.wyhao.starter.core.exception.BizException;
+import top.wyhao.cmn.core.exception.BizException;
 
 /**
  * 租户业务异常

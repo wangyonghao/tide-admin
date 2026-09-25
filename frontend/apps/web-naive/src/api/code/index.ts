@@ -47,7 +47,7 @@ export function generateCode(tableNames: Array<string>) {
 }
 /** 查询字典列表 */
 export function listFieldConfigDict() {
-  return http.get<Option[]>(`/code/generator/dict`);
+  return http.get<Option[]>(`/code/generator/option`);
 }
 
 // ========== 类型定义 ==========

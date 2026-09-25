@@ -1,10 +1,10 @@
 
-package top.wyhao.admin.tenant.model.entity;
+package top.wyhao.tenant.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.model.BaseEntity;
-import top.wyhao.starter.core.enums.StatusEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
 
 /**
  * 套餐实体

@@ -14,7 +14,7 @@ import org.springframework.web.socket.WebSocketHandler;
 import org.springframework.web.socket.config.annotation.EnableWebSocket;
 import org.springframework.web.socket.config.annotation.WebSocketConfigurer;
 import org.springframework.web.socket.server.HandshakeInterceptor;
-import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
 import top.wyhao.starter.messaging.websocket.core.WebSocketClientService;
 import top.wyhao.starter.messaging.websocket.core.WebSocketInterceptor;
 import top.wyhao.starter.messaging.websocket.dao.WebSocketSessionDao;

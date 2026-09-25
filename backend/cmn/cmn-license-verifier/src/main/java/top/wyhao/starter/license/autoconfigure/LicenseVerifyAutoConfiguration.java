@@ -25,7 +25,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.DependsOn;
-import top.wyhao.starter.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
 import top.wyhao.starter.license.bean.LicenseInstallerBean;
 import top.wyhao.starter.license.initializing.LicenseStarterInitializingBean;
 import top.wyhao.starter.license.manager.CustomLicenseManager;

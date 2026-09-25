@@ -5,7 +5,7 @@ import org.springframework.stereotype.Service;
 import top.wyhao.notification.model.dto.MessageRequest;
 import top.wyhao.notification.model.enums.MessageType;
 import top.wyhao.notification.service.MessageService;
-import top.wyhao.starter.core.spi.MessageNotifyApi;
+import top.wyhao.notification.client.MessageNotifyApi;
 
 import java.util.List;
 

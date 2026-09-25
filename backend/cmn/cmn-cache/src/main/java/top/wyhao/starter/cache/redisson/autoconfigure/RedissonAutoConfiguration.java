@@ -19,8 +19,8 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import top.wyhao.starter.cache.redisson.handler.NameMapperHandler;
-import top.wyhao.starter.core.constant.PropertiesConstants;
-import top.wyhao.starter.core.constant.StringConstants;
+import top.wyhao.cmn.core.constant.PropertiesConstants;
+import top.wyhao.cmn.core.constant.StringConstants;
 
 import java.util.List;
 

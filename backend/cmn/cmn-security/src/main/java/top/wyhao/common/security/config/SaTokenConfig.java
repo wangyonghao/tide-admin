@@ -16,10 +16,10 @@ import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
 import top.wyhao.common.security.context.SaUserContext;
-import top.wyhao.starter.core.UserContextHolder;
-import top.wyhao.starter.core.spi.PermissionProvider;
+import top.wyhao.identity.client.UserContextHolder;
+import top.wyhao.security.client.PermissionProvider;
 import top.wyhao.common.security.handler.SaTokenExceptionHandler;
-import top.wyhao.starter.core.spi.UserContext;
+import top.wyhao.identity.client.UserContext;
 
 /**
  * Sa-Token 自动配置

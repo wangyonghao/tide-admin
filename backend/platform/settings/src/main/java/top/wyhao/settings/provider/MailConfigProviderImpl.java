@@ -3,8 +3,8 @@ package top.wyhao.settings.provider;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import top.wyhao.settings.mapper.SysConfigMapper;
-import top.wyhao.starter.core.model.MailConfig;
-import top.wyhao.starter.core.spi.MailConfigProvider;
+import top.wyhao.cmn.core.model.MailConfig;
+import top.wyhao.settings.client.MailConfigProvider;
 
 @Component
 @RequiredArgsConstructor

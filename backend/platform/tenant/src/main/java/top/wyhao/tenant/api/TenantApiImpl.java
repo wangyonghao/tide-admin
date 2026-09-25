@@ -1,10 +1,10 @@
 
-package top.wyhao.admin.tenant.api;
+package top.wyhao.tenant.api;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.admin.tenant.mapper.SysTenantMapper;
-import top.wyhao.starter.core.spi.TenantApi;
+import top.wyhao.tenant.mapper.SysTenantMapper;
+import top.wyhao.tenant.client.TenantApi;
 
 /**
  * 租户业务 API 实现

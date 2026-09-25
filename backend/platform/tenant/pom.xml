@@ -3,19 +3,27 @@
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <parent>
-    <groupId>top.wyhao</groupId>
-    <artifactId>biz</artifactId>
-    <version>${revision}</version>
-  </parent>
+    <parent>
+        <groupId>top.wyhao</groupId>
+        <artifactId>platform</artifactId>
+        <version>${revision}</version>
+    </parent>
 
-  <artifactId>biz-tenant</artifactId>
+  <artifactId>tenant</artifactId>
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>租户插件</description>
+  <description>租户模块 - 租户、套餐与套餐菜单</description>
 
   <dependencies>
+    <dependency>
+      <groupId>top.wyhao</groupId>
+      <artifactId>tenant-client</artifactId>
+    </dependency>
+    <dependency>
+      <groupId>top.wyhao</groupId>
+      <artifactId>security-client</artifactId>
+    </dependency>
     <dependency>
       <groupId>top.wyhao</groupId>
       <artifactId>cmn-security</artifactId>
@@ -24,13 +32,17 @@
       <groupId>top.wyhao</groupId>
       <artifactId>cmn-db</artifactId>
     </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>cmn-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>cmn-tenant</artifactId>
-    </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-web</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.baomidou</groupId>
+            <artifactId>mybatis-plus-jsqlparser</artifactId>
+        </dependency>
   </dependencies>
 </project>

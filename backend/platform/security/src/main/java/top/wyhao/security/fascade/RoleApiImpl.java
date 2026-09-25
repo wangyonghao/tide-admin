@@ -1,12 +1,9 @@
-package top.wyhao.security.provider;
+package top.wyhao.security.fascade;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.security.service.RoleService;
-import top.wyhao.starter.core.enums.RoleCodeEnum;
-import top.wyhao.starter.core.spi.RoleApi;
-import top.wyhao.security.mapper.SysMenuMapper;
-import top.wyhao.identity.service.UserService;
+import top.wyhao.security.client.RoleApi;
 
 import java.util.Collection;
 import java.util.List;
@@ -21,8 +18,6 @@ import java.util.stream.Collectors;
 public class RoleApiImpl implements RoleApi {
 
     private final RoleService roleService;
-    private final SysMenuMapper menuMapper;
-    private final UserService userService;
 
     @Override
     public Long getIdByCode(String code) {
@@ -61,14 +56,5 @@ public class RoleApiImpl implements RoleApi {
             return;
         }
         roleService.deleteUserRolesByUserIds(List.copyOf(userIds));
-    }
-
-    @Override
-    public List<String> listPermissionsByUserId(Long userId) {
-        List<String> roleCodeSet = userService.findUserRoles(userId);
-        if (roleCodeSet.contains(RoleCodeEnum.SUPER_ADMIN.getCode())) {
-            return List.of("*:*:*");
-        }
-        return menuMapper.selectPermissionByUserId(userId);
     }
 }
