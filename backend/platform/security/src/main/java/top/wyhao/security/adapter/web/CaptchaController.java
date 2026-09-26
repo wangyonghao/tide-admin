@@ -1,4 +1,4 @@
-package top.wyhao.identity.adapter.web.auth;
+package top.wyhao.security.adapter.web;
 
 import cn.dev33.satoken.annotation.SaIgnore;
 import cn.hutool.core.date.LocalDateTimeUtil;
@@ -14,17 +14,18 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.identity.adapter.web.auth.vo.CaptchaImageResult;
+import top.wyhao.security.adapter.web.vo.CaptchaImageResult;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsClient;
-import top.wyhao.identity.infrastructure.config.CaptchaProperties;
-import top.wyhao.identity.adapter.web.result.config.LoginConfigVO;
-import top.wyhao.identity.adapter.web.result.config.SiteConfigVO;
-import top.wyhao.identity.domain.gateway.SystemConfigApi;
+import top.wyhao.security.infrastructure.config.CaptchaProperties;
+import top.wyhao.security.client.AuthenticationConfigApi;
+import top.wyhao.security.client.config.AuthenticationConfigVO;
+import top.wyhao.settings.client.SiteConfigApi;
+import top.wyhao.settings.client.SiteConfigVO;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.captcha.graphic.core.ImageCaptchaService;
 import top.wyhao.cmn.core.autoconfigure.application.ApplicationProperties;
-import top.wyhao.identity.domain.auth.AuthException;
+import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.cmn.core.model.Result;
 import top.wyhao.cmn.core.util.TemplateUtils;
 import top.wyhao.starter.web.validation.Mobile;
@@ -52,7 +53,8 @@ public class CaptchaController {
     private final ApplicationProperties applicationProperties;
     private final CaptchaProperties captchaProperties;
     private final ImageCaptchaService imageCaptchaService;
-    private final SystemConfigApi systemConfigApi;
+    private final AuthenticationConfigApi authenticationConfigApi;
+    private final SiteConfigApi siteConfigApi;
 
     private final MailClient mailClient;
     private final SmsClient smsClient;
@@ -60,8 +62,8 @@ public class CaptchaController {
     @Operation(summary = "获取图片验证码", description = "获取图片验证码（Base64编码，带图片格式：data:image/gif;base64）")
     @GetMapping("/captcha/image")
     public CaptchaImageResult getImageCaptcha() {
-        LoginConfigVO loginConfigVO = systemConfigApi.getLoginConfig();
-        boolean loginCaptchaEnabled = loginConfigVO.getCaptchaEnabled();
+        AuthenticationConfigVO loginConfigVO = authenticationConfigApi.get();
+        boolean loginCaptchaEnabled = loginConfigVO != null && Boolean.TRUE.equals(loginConfigVO.getCaptchaEnabled());
         if (!loginCaptchaEnabled) {
             return new CaptchaImageResult(null, null, null, false);
         }
@@ -107,11 +109,13 @@ public class CaptchaController {
         String captcha = RandomUtil.randomNumbers(captchaEmail.getLength());
         Long expirationInMinutes = captchaEmail.getExpirationInMinutes();
         // 发送验证码
-        SiteConfigVO site = systemConfigApi.getSiteConfig();
+        SiteConfigVO site = siteConfigApi.get();
+        String siteName = site != null ? site.getSiteName() : applicationProperties.getName();
+        String siteCopyright = site != null ? site.getSiteCopyright() : "";
         String content = TemplateUtils.render(captchaEmail.getTemplatePath(), Dict.create()
                 .set("siteUrl", applicationProperties.getUrl())
-                .set("siteTitle", site.getSiteName())
-                .set("siteCopyright", site.getSiteCopyright())
+                .set("siteTitle", siteName)
+                .set("siteCopyright", siteCopyright)
                 .set("captcha", captcha)
                 .set("expiration", expirationInMinutes));
         mailClient.sendHtml(email, "【%s】邮箱验证码".formatted(applicationProperties.getName()), content);
@@ -149,7 +153,7 @@ public class CaptchaController {
         String templateId = "";
         boolean isSuccess = smsClient.send(phone, templateId, (LinkedHashMap<String, String>)valueMap);
         if(!isSuccess){
-            throw AuthException.captchaSendFailed();
+            throw AuthenticationException.captchaSendFailed();
         }
         // 保存验证码
         String captchaKey = CAPTCHA_KEY + phone;

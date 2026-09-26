@@ -106,6 +106,7 @@ const loginForm = ref<LoginConfig>({
   captchaType: 'graphic',
   maxRetry: 5,
   lockTime: 30,
+  sessionTimeout: 30,
 });
 
 const registerForm = ref<RegisterConfig>({
@@ -145,7 +146,9 @@ const securityForm = ref<SecurityConfig>({
   passwordRequireLowercase: true,
   passwordRequireNumber: true,
   passwordRequireSpecial: false,
-  sessionTimeout: 30,
+  passwordExpireDays: 90,
+  passwordAllowContainUsername: false,
+  passwordRepetitionTimes: 3,
 });
 
 // ==================== 选项数据 ====================
@@ -491,6 +494,15 @@ async function handleVerifyCode() {
                   class="w-full"
                 />
               </NFormItem>
+              <NFormItem label="会话超时时间(分钟)" path="sessionTimeout">
+                <NInputNumber
+                  v-model:value="loginForm.sessionTimeout"
+                  :min="5"
+                  :max="1440"
+                  placeholder="请输入会话超时时间"
+                  class="w-full"
+                />
+              </NFormItem>
             </NForm>
 
             <!-- 注册配置 -->
@@ -642,12 +654,24 @@ async function handleVerifyCode() {
               <NFormItem label="需要特殊字符" path="passwordRequireSpecial">
                 <NCheckbox v-model:checked="securityForm.passwordRequireSpecial">启用</NCheckbox>
               </NFormItem>
-              <NFormItem label="会话超时时间(分钟)" path="sessionTimeout">
+              <NFormItem label="密码过期天数" path="passwordExpireDays">
                 <NInputNumber
-                  v-model:value="securityForm.sessionTimeout"
-                  :min="5"
-                  :max="1440"
-                  placeholder="请输入会话超时时间"
+                  v-model:value="securityForm.passwordExpireDays"
+                  :min="0"
+                  :max="999"
+                  placeholder="请输入密码过期天数"
+                  class="w-full"
+                />
+              </NFormItem>
+              <NFormItem label="允许包含用户名" path="passwordAllowContainUsername">
+                <NCheckbox v-model:checked="securityForm.passwordAllowContainUsername">允许</NCheckbox>
+              </NFormItem>
+              <NFormItem label="历史密码重复次数" path="passwordRepetitionTimes">
+                <NInputNumber
+                  v-model:value="securityForm.passwordRepetitionTimes"
+                  :min="3"
+                  :max="32"
+                  placeholder="请输入历史密码重复校验次数"
                   class="w-full"
                 />
               </NFormItem>

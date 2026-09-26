@@ -10,7 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.organization.entity.SysDept;
-import top.wyhao.security.entity.SysRole;
+import top.wyhao.security.domain.model.SysRole;
 import top.wyhao.identity.domain.exception.UserException;
 import top.wyhao.identity.domain.gateway.PasswordHistoryRepository;
 import top.wyhao.identity.domain.gateway.UserRepository;
@@ -20,12 +20,12 @@ import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
 import top.wyhao.audit.mapper.SysOperationLogMapper;
 import top.wyhao.organization.mapper.SysDeptMapper;
-import top.wyhao.security.mapper.SysRoleDeptMapper;
-import top.wyhao.security.mapper.SysRoleMapper;
-import top.wyhao.security.mapper.SysRoleMenuMapper;
-import top.wyhao.security.mapper.SysUserRoleMapper;
-import top.wyhao.security.service.RoleMenuService;
-import top.wyhao.security.service.RoleService;
+import top.wyhao.security.domain.gateway.RoleDeptRepository;
+import top.wyhao.security.domain.gateway.RoleMenuRepository;
+import top.wyhao.security.domain.gateway.RoleRepository;
+import top.wyhao.security.domain.gateway.UserRoleRepository;
+import top.wyhao.security.app.service.RoleMenuService;
+import top.wyhao.security.app.service.RoleService;
 import top.wyhao.cmn.core.constant.GlobalConstants;
 import top.wyhao.cmn.core.enums.DataScopeEnum;
 import top.wyhao.cmn.core.enums.GenderEnum;
@@ -55,16 +55,16 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private final TenantApi tenantApi;
     private final RoleMenuService roleMenuService;
     private final SysDeptMapper deptMapper;
-    private final SysRoleMapper roleMapper;
-    private final SysRoleMenuMapper roleMenuMapper;
+    private final RoleRepository roleRepository;
+    private final RoleMenuRepository roleMenuRepository;
     private final SysOperationLogMapper operationLogMapper;
     private final SysMessageMapper messageMapper;
     private final SysMessageMapper messageUserMapper;
     private final SysNoticeMapper noticeMapper;
-    private final SysRoleDeptMapper roleDeptMapper;
+    private final RoleDeptRepository roleDeptRepository;
     private final UserRepository userRepository;
     private final PasswordHistoryRepository passwordHistoryRepository;
-    private final SysUserRoleMapper userRoleMapper;
+    private final UserRoleRepository userRoleRepository;
     private final UserSocialRepository userSocialRepository;
     private final RoleService roleService;
 
@@ -113,13 +113,13 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         // 通知清除
         noticeMapper.delete(queryWrapper);
         // 角色相关数据清除
-        roleMapper.delete(queryWrapper);
-        roleDeptMapper.delete(queryWrapper);
-        roleMenuMapper.delete(queryWrapper);
+        roleRepository.deleteAll();
+        roleDeptRepository.deleteAll();
+        roleMenuRepository.deleteAll();
         // 用户数据清除
         userRepository.deleteAll();
         passwordHistoryRepository.deleteAll();
-        userRoleMapper.delete(queryWrapper);
+        userRoleRepository.deleteAll();
         userSocialRepository.deleteAll();
     }
 
@@ -161,7 +161,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         role.setIsBuiltin(true);
         role.setMenuCheckStrictly(true);
         role.setDeptCheckStrictly(true);
-        roleMapper.insert(role);
+        roleRepository.insert(role);
         return role.getId();
     }
 

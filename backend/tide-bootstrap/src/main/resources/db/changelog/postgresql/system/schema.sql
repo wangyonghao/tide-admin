@@ -15,7 +15,7 @@ CREATE TABLE IF NOT EXISTS "sys_config"
 CREATE INDEX IF NOT EXISTS "idx_sys_config_key" ON "sys_config" ("config_key");
 COMMENT ON TABLE "sys_config" IS '系统配置表';
 COMMENT ON COLUMN "sys_config"."id" IS 'ID';
-COMMENT ON COLUMN "sys_config"."config_key" IS '配置键，如 site, login, email, sms, storage, security';
+COMMENT ON COLUMN "sys_config"."config_key" IS '配置键，如 site, login, mail, sms, storage, password-policy';
 COMMENT ON COLUMN "sys_config"."config_value" IS '配置值，JSON格式存储';
 COMMENT ON COLUMN "sys_config"."description" IS '配置说明';
 COMMENT ON COLUMN "sys_config"."create_time" IS '创建时间';

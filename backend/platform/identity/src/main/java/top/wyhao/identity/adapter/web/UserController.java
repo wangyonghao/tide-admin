@@ -20,6 +20,7 @@ import top.wyhao.identity.adapter.web.dto.UserRequest;
 import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.adapter.web.dto.UserImportRequest;
 import top.wyhao.identity.app.service.UserService;
+import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.identity.domain.exception.UserException;
@@ -41,6 +42,7 @@ import java.util.List;
 @RequestMapping("/system/user")
 public class UserController {
     private final UserService userService;
+    private final PasswordApi passwordApi;
 
     /**
      * 分页查询列表
@@ -161,6 +163,6 @@ public class UserController {
     @SaCheckPermission("system:user:resetPwd")
     @PutMapping("/{id}/password/reset")
     public String resetPassword(@PathVariable Long id) {
-        return userService.resetPassword(id);
+        return passwordApi.resetToRandomPassword(id);
     }
 }

@@ -17,7 +17,7 @@
     <dependencies>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>identity</artifactId>
+            <artifactId>security-client</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
@@ -25,7 +25,7 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>settings</artifactId>
+            <artifactId>settings-client</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>

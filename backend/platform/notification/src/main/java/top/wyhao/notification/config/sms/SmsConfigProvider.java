@@ -9,7 +9,7 @@ import org.dromara.sms4j.provider.factory.BaseProviderFactory;
 import org.dromara.sms4j.provider.factory.ProviderFactoryHolder;
 import org.springframework.stereotype.Component;
 import top.wyhao.admin.cmn.sms.SmsConfig;
-import top.wyhao.settings.config.SmsConfigApi;
+import top.wyhao.settings.client.SmsConfigApi;
 
 import java.util.List;
 

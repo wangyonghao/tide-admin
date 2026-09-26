@@ -1,9 +1,7 @@
-
 package top.wyhao.settings.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.text.CharSequenceUtil;
-import cn.hutool.json.JSONUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -12,31 +10,28 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.admin.cmn.sms.SmsConfig;
+import top.wyhao.cmn.core.model.MailConfig;
+import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.settings.assembler.ConfigAssembler;
+import top.wyhao.settings.client.ConfigKeys;
+import top.wyhao.settings.client.ConfigStoreApi;
 import top.wyhao.settings.entity.SysConfig;
 import top.wyhao.settings.exception.ConfigException;
 import top.wyhao.settings.mapper.SysConfigMapper;
-import top.wyhao.settings.model.result.config.*;
-import top.wyhao.identity.adapter.web.result.config.LoginConfigVO;
-import top.wyhao.identity.adapter.web.result.config.SecurityConfigVO;
-import top.wyhao.identity.adapter.web.result.config.SiteConfigVO;
-import top.wyhao.settings.service.ConfigService;
-import top.wyhao.cmn.db.query.QueryWrapperBuilder;
-import top.wyhao.cmn.core.model.MailConfig;
-import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
-
-import java.util.List;
 import top.wyhao.settings.model.dto.ConfigQuery;
 import top.wyhao.settings.model.dto.ConfigRequest;
+import top.wyhao.settings.model.result.config.RegisterConfigVO;
+import top.wyhao.settings.model.result.config.StorageConfigVO;
 import top.wyhao.settings.model.vo.ConfigResult;
+import top.wyhao.settings.service.ConfigService;
+import top.wyhao.starter.excel.util.ExcelUtils;
+import top.wyhao.starter.web.core.model.PageQuery;
+
+import java.util.List;
 
 /**
- * 系统配置业务实现
- *
- * @since 2024/04/26
+ * 系统配置业务实现。
  */
 @Slf4j
 @Service
@@ -45,12 +40,13 @@ public class ConfigServiceImpl implements ConfigService {
 
     private final SysConfigMapper configMapper;
     private final ConfigAssembler configAssembler;
+    private final ConfigStoreApi configStoreApi;
 
     @Override
     public PageResult<ConfigResult> page(ConfigQuery query, PageQuery pageQuery) {
         IPage<ConfigResult> page = configMapper.selectConfigPage(
-                new Page<>(pageQuery.getPage(), pageQuery.getPageSize()),
-                QueryWrapperBuilder.build(query, SysConfig.class)
+            new Page<>(pageQuery.getPage(), pageQuery.getPageSize()),
+            QueryWrapperBuilder.build(query, SysConfig.class)
         );
         return PageResult.of(page);
     }
@@ -61,7 +57,6 @@ public class ConfigServiceImpl implements ConfigService {
         if (configDO == null) {
             throw ConfigException.notFound();
         }
-
         return configAssembler.toResult(configDO);
     }
 
@@ -73,53 +68,29 @@ public class ConfigServiceImpl implements ConfigService {
         if (configDO == null) {
             throw ConfigException.notFound();
         }
-
         return configAssembler.toResult(configDO);
-    }
-
-
-    @Override
-    public SiteConfigVO getSiteConfig() {
-        return this.configMapper.getConfig("site", SiteConfigVO.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateSiteConfig(SiteConfigVO config) {
-        this.updateConfig("site", config);
-    }
-
-    @Override
-    public LoginConfigVO getLoginConfig() {
-        return this.configMapper.getConfig("login", LoginConfigVO.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateLoginConfig(LoginConfigVO config) {
-        this.updateConfig("login", config);
     }
 
     @Override
     public RegisterConfigVO getRegisterConfig() {
-        return this.configMapper.getConfig("register", RegisterConfigVO.class);
+        return configStoreApi.get(ConfigKeys.REGISTER, RegisterConfigVO.class);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateRegisterConfig(RegisterConfigVO config) {
-        this.updateConfig("register", config);
+        configStoreApi.put(ConfigKeys.REGISTER, config);
     }
 
     @Override
     public MailConfig getMailConfig() {
-        return this.configMapper.getConfig("mail", MailConfig.class);
+        return configStoreApi.get(ConfigKeys.MAIL, MailConfig.class);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateMailConfig(MailConfig config) {
-        this.updateConfig("mail", config);
+        configStoreApi.put(ConfigKeys.MAIL, config);
     }
 
     public void checkMailConfig(MailConfig mailConfig) {
@@ -138,49 +109,20 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public SmsConfig getSmsConfig() {
-        return this.configMapper.getConfig("sms", SmsConfig.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateSmsConfig(SmsConfigVO config) {
-        this.updateConfig("sms", config);
-    }
-
-    @Override
-    public String getSmsTemplate(String scene) {
-        return configMapper.getConfig("sms-template-" + scene, String.class);
-    }
-
-    @Override
     public StorageConfigVO getStorageConfig() {
-        return this.configMapper.getConfig("storage", StorageConfigVO.class);
+        return configStoreApi.get(ConfigKeys.STORAGE, StorageConfigVO.class);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void updateStorageConfig(StorageConfigVO config) {
-        this.updateConfig("storage", config);
-    }
-
-    @Override
-    public SecurityConfigVO getSecurityConfig() {
-        return this.configMapper.getConfig("security", SecurityConfigVO.class);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void updateSecurityConfig(SecurityConfigVO config) {
-        this.updateConfig("security", config);
+        configStoreApi.put(ConfigKeys.STORAGE, config);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public Long create(ConfigRequest request) {
-        // 检查唯一性
         this.checkUnique(request.getConfigKey(), null);
-
         SysConfig configDO = configAssembler.toEntity(request);
         configMapper.insert(configDO);
         return configDO.getId();
@@ -193,15 +135,11 @@ public class ConfigServiceImpl implements ConfigService {
         if (oldConfig == null) {
             throw ConfigException.notFound();
         }
-
-        // 检查唯一性（排除自己）
         if (CharSequenceUtil.isNotBlank(request.getConfigKey())) {
             this.checkUnique(request.getConfigKey(), id);
         }
-
         SysConfig configDO = configAssembler.toEntity(request);
         configDO.setId(id);
-
         int updated = configMapper.updateById(configDO);
         if (updated <= 0) {
             throw ConfigException.updateConflict();
@@ -217,12 +155,10 @@ public class ConfigServiceImpl implements ConfigService {
         if (existConfig == null) {
             throw ConfigException.notFound();
         }
-
         SysConfig configDO = new SysConfig();
         configDO.setId(existConfig.getId());
         configDO.setConfigValue(request.getConfigValue());
         configDO.setDescription(request.getDescription());
-
         int updated = configMapper.updateById(configDO);
         if (updated <= 0) {
             throw ConfigException.updateConflict();
@@ -241,75 +177,16 @@ public class ConfigServiceImpl implements ConfigService {
     @Override
     public void export(ConfigQuery query, HttpServletResponse response) {
         List<SysConfig> list = configMapper.selectList(QueryWrapperBuilder.build(query, SysConfig.class));
-
         List<ConfigResult> resultList = configAssembler.toResultList(list);
-
         ExcelUtils.export(resultList, "系统配置", ConfigResult.class, response);
     }
 
-    /**
-     * 更新配置
-     *
-     * @param configKey 配置键
-     * @param config    配置对象
-     */
-    private void updateConfig(String configKey, Object config) {
-        SysConfig existConfig = configMapper.lambdaQuery().eq(SysConfig::getConfigKey, configKey).one();
-        String configValue = JSONUtil.toJsonStr(config);
-
-        if (existConfig != null) {
-            // 更新现有配置
-            SysConfig updateConfig = new SysConfig();
-            updateConfig.setId(existConfig.getId());
-            updateConfig.setConfigValue(configValue);
-
-            int updated = configMapper.updateById(updateConfig);
-            if (updated <= 0) {
-                throw ConfigException.updateFailed();
-            }
-        } else {
-            // 创建新配置
-            SysConfig newConfig = new SysConfig();
-            newConfig.setConfigKey(configKey);
-            newConfig.setConfigValue(configValue);
-            newConfig.setDescription(configKey + "配置");
-
-            configMapper.insert(newConfig);
-        }
-    }
-
-    /**
-     * 构建查询条件
-     *
-     * @param query 查询条件
-     * @return 查询包装器
-     */
-    private QueryWrapper<SysConfig> buildQueryWrapper(ConfigQuery query) {
-        String configKey = query.getConfigKey();
-        String searchWords = query.getSearchWords();
-
-        return new QueryWrapper<SysConfig>()
-                .like(CharSequenceUtil.isNotBlank(configKey), "config_key", configKey)
-                .and(CharSequenceUtil.isNotBlank(searchWords), q -> q
-                        .like("config_key", searchWords)
-                        .or()
-                        .like("description", searchWords))
-                .orderByAsc("config_key");
-    }
-
-    /**
-     * 检查唯一性
-     *
-     * @param configKey 配置键
-     * @param id        当前配置ID（更新时传入，新增时传null）
-     */
     private void checkUnique(String configKey, Long id) {
         QueryWrapper<SysConfig> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("config_key", configKey);
         if (id != null) {
             queryWrapper.ne("id", id);
         }
-
         Long count = configMapper.selectCount(queryWrapper);
         if (count > 0) {
             throw ConfigException.keyExists();

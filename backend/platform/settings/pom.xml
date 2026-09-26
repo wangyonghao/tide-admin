@@ -12,12 +12,12 @@
     <artifactId>settings</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <description>系统设置模块 - 系统配置与数据字典</description>
+    <description>系统设置模块 - 通用配置存储与数据字典</description>
 
     <dependencies>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>identity</artifactId>
+            <artifactId>identity-client</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
@@ -44,10 +44,6 @@
         <dependency>
             <groupId>top.wyhao</groupId>
             <artifactId>cmn-mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>top.wyhao</groupId>
-            <artifactId>cmn-sms</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>

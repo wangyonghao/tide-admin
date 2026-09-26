@@ -12,7 +12,7 @@
     <artifactId>identity</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <description>身份模块 - 用户身份、认证登录、凭证与个人资料</description>
+    <description>身份模块 - 用户档案、联系方式、第三方绑定与密码凭证</description>
 
     <dependencies>
         <dependency>
@@ -31,10 +31,6 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-captcha-graphic</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>top.wyhao</groupId>
             <artifactId>cmn-web</artifactId>
         </dependency>
         <dependency>
@@ -44,14 +40,6 @@
         <dependency>
             <groupId>top.wyhao</groupId>
             <artifactId>cmn-fastexcel</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>top.wyhao</groupId>
-            <artifactId>cmn-mail</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>top.wyhao</groupId>
-            <artifactId>cmn-sms</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
@@ -67,11 +55,11 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>organization-client</artifactId>
+            <artifactId>settings-client</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>notification-client</artifactId>
+            <artifactId>organization-client</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>

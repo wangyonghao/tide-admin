@@ -1,5 +1,5 @@
 
-package top.wyhao.identity.app.auth.handler;
+package top.wyhao.security.app.handler;
 
 import cn.dev33.satoken.temp.SaTempUtil;
 import cn.hutool.core.util.ReUtil;
@@ -10,17 +10,16 @@ import org.jspecify.annotations.NonNull;
 import org.jspecify.annotations.Nullable;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
-import top.wyhao.identity.domain.auth.AuthException;
-import top.wyhao.identity.adapter.web.auth.dto.AccountLoginRequest;
-import top.wyhao.identity.adapter.web.auth.dto.LoginRequest;
-import top.wyhao.identity.domain.auth.GrantType;
-import top.wyhao.identity.adapter.web.auth.vo.LoginResult;
-import top.wyhao.identity.app.assembler.UserAssembler;
-import top.wyhao.identity.domain.model.SysUser;
-import top.wyhao.identity.domain.exception.UserException;
-import top.wyhao.identity.adapter.web.result.config.LoginConfigVO;
-import top.wyhao.identity.domain.gateway.SystemConfigApi;
-import top.wyhao.identity.app.service.UserService;
+import top.wyhao.security.client.AuthenticationException;
+import top.wyhao.security.adapter.web.dto.AccountAuthenticationRequest;
+import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
+import top.wyhao.security.domain.model.GrantType;
+import top.wyhao.security.adapter.web.vo.AuthenticationResult;
+import top.wyhao.security.app.AuthenticatedUsers;
+import top.wyhao.identity.client.CredentialUser;
+import top.wyhao.security.client.AuthenticationConfigApi;
+import top.wyhao.security.client.config.AuthenticationConfigVO;
+import top.wyhao.identity.client.UserApi;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.identity.client.UserContextHolder;
 import top.wyhao.cmn.core.constant.RegexConstants;
@@ -40,15 +39,14 @@ import java.util.Objects;
  */
 @Component
 @RequiredArgsConstructor
-public class AccountLoginHandler implements LoginHandler {
+public class AccountAuthenticationHandler implements AuthenticationHandler {
 
     private static final String RETRY_KEY_PREFIX = "login:retry:";
     private static final String CAPTCHA_KEY = "login:captcha:";
 
     private final PasswordEncoder passwordEncoder;
-    private final UserService userService;
-    private final SystemConfigApi systemConfigApi;
-    private final UserAssembler userAssembler;
+    private final UserApi userApi;
+    private final AuthenticationConfigApi authenticationConfigApi;
 
     @Override
     public GrantType grantType() {
@@ -56,8 +54,8 @@ public class AccountLoginHandler implements LoginHandler {
     }
 
     @Override
-    public LoginResult login(LoginRequest request) {
-        AccountLoginRequest req = (AccountLoginRequest) request;
+    public AuthenticationResult authenticate(AuthenticationRequest request) {
+        AccountAuthenticationRequest req = (AccountAuthenticationRequest) request;
         // 解密密码
         String password = decryptPassword(req.getPassword());
         String ip = ServletUtils.getRequestIp();
@@ -76,61 +74,61 @@ public class AccountLoginHandler implements LoginHandler {
             checkRetryLimit(retryKey);
 
             // 3. 查询用户
-            SysUser user = loadUser(req.getUsername(), retryKey, ip, userAgent);
+            CredentialUser user = loadUser(req.getUsername(), retryKey, ip, userAgent);
 
             // 4. 校验密码
             validatePassword(user, password, retryKey, ip, userAgent);
 
             // 5. 检查用户状态
-            LoginHandlerHelper.checkUserStatus(user);
+            AuthenticationHandlerHelper.checkUserStatus(user);
 
             // 6. 密码过期时，强制用户修改密码
-            LoginResult expiredResult = handlePasswordExpired(user, ip, userAgent);
+            AuthenticationResult expiredResult = handlePasswordExpired(user, ip, userAgent);
             if (expiredResult != null) {
                 return expiredResult;
             }
             // 7. 登录（创建会话、签发Token）
-            LoginHandlerHelper.doLogin(user.getId());
+            AuthenticationHandlerHelper.issueToken(user.id());
 
             // 8. 保存用户信息到会话
-            LoginHandlerHelper.setSession(userAssembler.toLoginUser(user), "PC");
+            AuthenticationHandlerHelper.setSession(AuthenticatedUsers.from(user), "PC");
 
             // 9. 记录登录成功日志
-            LoginHandlerHelper.loginSuccess(user.getUsername(), ip, userAgent);
+            AuthenticationHandlerHelper.recordSuccess(user.username(), ip, userAgent);
 
-            return new LoginResult("200", UserContextHolder.getToken(), null);
+            return new AuthenticationResult("200", UserContextHolder.getToken(), null);
         } catch (BizException e) {
             // 如果是业务异常且还没记录日志，记录失败日志
             if (!"USERNAME_PASSWORD_ERROR".equals(e.getCode())) {
-                LoginHandlerHelper.loginFail(req.getUsername(), ip, userAgent, e.getMessage());
+                AuthenticationHandlerHelper.recordFailure(req.getUsername(), ip, userAgent, e.getMessage());
             }
             throw e;
         } catch (Exception e) {
             // 其他异常也记录失败日志
-            LoginHandlerHelper.loginFail(req.getUsername(), ip, userAgent, "系统异常: " + e.getMessage());
+            AuthenticationHandlerHelper.recordFailure(req.getUsername(), ip, userAgent, "系统异常: " + e.getMessage());
             throw e;
         }
     }
 
 
-    private @Nullable LoginResult handlePasswordExpired(SysUser user, String ip, String userAgent) {
-        if (user.getPwdExpireDate() != null && user.getPwdExpireDate().isBefore(LocalDate.now())) {
-            String tempToken = SaTempUtil.createToken(user.getId(), 600); // 10分钟
+    private @Nullable AuthenticationResult handlePasswordExpired(CredentialUser user, String ip, String userAgent) {
+        if (user.pwdExpireDate() != null && user.pwdExpireDate().isBefore(LocalDate.now())) {
+            String tempToken = SaTempUtil.createToken(user.id(), 600); // 10分钟
             // 记录登录失败日志（密码过期）
-            LoginHandlerHelper.loginFail(user.getUsername(), ip, userAgent, "密码已过期");
-            return new LoginResult("PASSWORD_EXPIRED", tempToken, null);
+            AuthenticationHandlerHelper.recordFailure(user.username(), ip, userAgent, "密码已过期");
+            return new AuthenticationResult("PASSWORD_EXPIRED", tempToken, null);
         }
         return null;
     }
 
-    private void validatePassword(SysUser user, String password, String retryKey, String ip, String userAgent) {
-        if (passwordEncoder.matches(password, user.getPassword())) {
+    private void validatePassword(CredentialUser user, String password, String retryKey, String ip, String userAgent) {
+        if (passwordEncoder.matches(password, user.password())) {
             clearRetryCount(retryKey);
             return;
         }
         incrementRetry(retryKey);
         // 记录登录失败日志
-        LoginHandlerHelper.loginFail(user.getUsername(), ip, userAgent, "密码错误");
+        AuthenticationHandlerHelper.recordFailure(user.username(), ip, userAgent, "密码错误");
         throw handlePasswordError(retryKey);
     }
 
@@ -139,32 +137,32 @@ public class AccountLoginHandler implements LoginHandler {
         return count >= 2;
     }
 
-    private AuthException handlePasswordError(String retryKey) {
+    private AuthenticationException handlePasswordError(String retryKey) {
         if (needCaptcha(retryKey)) {
-            return AuthException.needCaptcha();
+            return AuthenticationException.needCaptcha();
         } else if (exceedRetryLimit(retryKey)) {
-            return AuthException.passwordErrorExceeded();
+            return AuthenticationException.passwordErrorExceeded();
         } else {
-            return AuthException.passwordError();
+            return AuthenticationException.passwordError();
         }
     }
 
     private boolean exceedRetryLimit(String retryKey) {
-        LoginConfigVO config = systemConfigApi.getLoginConfig();
+        AuthenticationConfigVO config = authenticationConfigApi.get();
         int remain = config.getMaxRetry() - getRetryCount(retryKey);
         return remain <= 0;
     }
 
     private String buildRetryMessage(String retryKey) {
-        LoginConfigVO config = systemConfigApi.getLoginConfig();
+        AuthenticationConfigVO config = authenticationConfigApi.get();
         int remain = config.getMaxRetry() - getRetryCount(retryKey);
         return remain > 0
                 ? "用户名或密码错误，还剩" + remain + "次机会"
                 : "用户名或密码错误，账号已锁定";
     }
 
-    private SysUser loadUser(String username, String retryKey, String ip, String userAgent) {
-        SysUser user = userService.getByUsername(username);
+    private CredentialUser loadUser(String username, String retryKey, String ip, String userAgent) {
+        CredentialUser user = userApi.findByUsername(username);
 
         if (Objects.nonNull(user)) {
             return user;
@@ -174,7 +172,7 @@ public class AccountLoginHandler implements LoginHandler {
         incrementRetry(retryKey);
 
         // 记录登录失败日志
-        LoginHandlerHelper.loginFail(username, ip, userAgent, "用户不存在");
+        AuthenticationHandlerHelper.recordFailure(username, ip, userAgent, "用户不存在");
         // 防止用户名探测，统一提示：用户名或密码错误
         throw handlePasswordError(retryKey);
     }
@@ -186,26 +184,26 @@ public class AccountLoginHandler implements LoginHandler {
 
     private void validateCaptcha(String captchaUUID, String captchaValue) {
         // 校验验证码
-        LoginConfigVO configVO = systemConfigApi.getLoginConfig();
+        AuthenticationConfigVO configVO = authenticationConfigApi.get();
         boolean loginCaptchaEnabled = configVO.getCaptchaEnabled();
         if (!loginCaptchaEnabled) {
             return;
         }
         if (StrUtil.isBlank(captchaValue)) {
-            throw AuthException.captchaRequired();
+            throw AuthenticationException.captchaRequired();
         }
         if (StrUtil.isBlank(captchaUUID)) {
-            throw AuthException.captchaInvalid();
+            throw AuthenticationException.captchaInvalid();
         }
         String cachedCaptcha = RedisUtils.getAndDelete(CAPTCHA_KEY + captchaUUID);
         if (StrUtil.isBlank(cachedCaptcha)) {
-            throw AuthException.captchaExpired();
+            throw AuthenticationException.captchaExpired();
         }
     }
 
     private void incrementRetry(String retryKey) {
         RedisUtils.incr(retryKey);
-        LoginConfigVO configVO = systemConfigApi.getLoginConfig();
+        AuthenticationConfigVO configVO = authenticationConfigApi.get();
         RedisUtils.expire(retryKey, Duration.ofMinutes(configVO.getLockTime()));
     }
 
@@ -230,21 +228,21 @@ public class AccountLoginHandler implements LoginHandler {
      */
     private void checkRetryLimit(String retryKey) {
         int retryCount = getRetryCount(retryKey);
-        LoginConfigVO loginConfig = systemConfigApi.getLoginConfig();
+        AuthenticationConfigVO loginConfig = authenticationConfigApi.get();
         int maxRetry = loginConfig.getMaxRetry();
         if (retryCount >= maxRetry) {
             long ttl = RedisUtils.getTimeToLive(retryKey);
-            throw AuthException.accountLocked(ttl / 60);
+            throw AuthenticationException.accountLocked(ttl / 60);
         }
     }
 
     private String decryptPassword(String encryptedPassword) {
         String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(encryptedPassword));
         if (StrUtil.isBlank(rawPassword)) {
-            throw UserException.passwordDecryptFailed();
+            throw AuthenticationException.passwordDecryptFailed();
         }
         if (!ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword)) {
-            throw UserException.passwordFormatInvalid();
+            throw AuthenticationException.passwordFormatInvalid();
         }
         return rawPassword;
     }

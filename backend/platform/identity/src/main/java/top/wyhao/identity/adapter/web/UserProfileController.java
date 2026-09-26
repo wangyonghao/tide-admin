@@ -1,7 +1,6 @@
 
 package top.wyhao.identity.adapter.web;
 
-import cn.hutool.core.text.CharSequenceUtil;
 import com.xkcoding.justauth.autoconfigure.JustAuthProperties;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -19,17 +18,18 @@ import me.zhyd.oauth.request.AuthRequest;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import top.wyhao.identity.app.service.PasswordService;
 import top.wyhao.identity.domain.model.SysUserSocial;
 import top.wyhao.identity.domain.exception.UserException;
 import top.wyhao.identity.adapter.web.dto.UserBasicInfoUpdateReq;
 import top.wyhao.identity.domain.model.SocialSource;
-import top.wyhao.identity.adapter.web.result.user.UserSocialBindResp;
+import top.wyhao.identity.adapter.web.vo.UserSocialBindResp;
 import top.wyhao.identity.app.service.UserService;
 import top.wyhao.identity.app.service.UserSocialService;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.identity.client.UserContextHolder;
-import top.wyhao.cmn.core.constant.CacheConstants;
-import top.wyhao.identity.domain.auth.AuthException;
+import top.wyhao.security.client.AuthenticationException;
+import top.wyhao.security.client.ContactCaptchaApi;
+import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.cmn.core.util.RsaUtils;
 
@@ -56,6 +56,8 @@ public class UserProfileController {
     private final UserService userService;
     private final UserSocialService userSocialService;
     private final JustAuthProperties authProperties;
+    private final PasswordService passwordService;
+    private final ContactCaptchaApi contactCaptchaApi;
 
     @Operation(summary = "修改头像", description = "用户修改个人头像")
     @PatchMapping("/user/profile/avatar")
@@ -78,22 +80,14 @@ public class UserProfileController {
     public void updatePassword(@RequestBody @Valid ProfilePasswordUpdateRequest updateReq) {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
         String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getNewPassword(), "新密码解密失败");
-        userService.updatePassword(oldPassword, newPassword, UserContextHolder.getUserId());
+        passwordService.changePassword(UserContextHolder.getUserId(), oldPassword, newPassword);
     }
 
     @Operation(summary = "修改手机号", description = "修改手机号")
     @PatchMapping("/user/profile/phone")
     public void updatePhone(@RequestBody @Valid ProfilePhoneUpdateRequest updateReq) {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
-        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + updateReq.getPhone();
-        String captcha = RedisUtils.get(captchaKey);
-        if (CharSequenceUtil.isBlank(captcha)) {
-            throw AuthException.captchaOutdated();
-        }
-        if (!CharSequenceUtil.equalsIgnoreCase(updateReq.getCaptcha(), captcha)) {
-            throw AuthException.captchaIncorrect();
-        }
-        RedisUtils.delete(captchaKey);
+        contactCaptchaApi.verifyPhone(updateReq.getPhone(), updateReq.getCaptcha());
         userService.updatePhone(updateReq.getPhone(), oldPassword, UserContextHolder.getUserId());
     }
 
@@ -101,14 +95,7 @@ public class UserProfileController {
     @PatchMapping("/user/profile/email")
     public void updateEmail(@RequestBody @Valid ProfileEmailUpdateRequest request) {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(request.getOldPassword(), DECRYPT_FAILED);
-        String captchaKey = CacheConstants.CAPTCHA_KEY_PREFIX + request.getEmail();
-        String captcha = RedisUtils.getAndDelete(captchaKey);
-        if (CharSequenceUtil.isBlank(captcha)) {
-            throw AuthException.captchaOutdated();
-        }
-        if (!CharSequenceUtil.equalsIgnoreCase(request.getCaptcha(), captcha)) {
-            throw AuthException.captchaIncorrect();
-        }
+        contactCaptchaApi.verifyEmail(request.getEmail(), request.getCaptcha());
         userService.updateEmail(request.getEmail(), oldPassword, UserContextHolder.getUserId());
     }
 
@@ -132,7 +119,7 @@ public class UserProfileController {
         AuthRequest authRequest = this.getAuthRequest(source);
         AuthResponse<AuthUser> response = authRequest.login(callback);
         if (!response.ok()) {
-            throw AuthException.socialAuthFailed(response.getMsg());
+            throw AuthenticationException.socialAuthFailed(response.getMsg());
         }
         AuthUser authUser = response.getData();
         userSocialService.bind(authUser, UserContextHolder.getUserId());
@@ -150,7 +137,7 @@ public class UserProfileController {
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw AuthException.platformNotSupport(source);
+            throw AuthenticationException.platformNotSupport(source);
         }
     }
 }

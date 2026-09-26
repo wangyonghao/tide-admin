@@ -12,16 +12,56 @@
     <artifactId>security</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <description>授权模块 - 角色、菜单权限、用户角色关系与数据权限</description>
+    <description>安全模块 - 认证、授权、登录会话与验证码</description>
 
     <dependencies>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>identity</artifactId>
+            <artifactId>identity-client</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
             <artifactId>security-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>settings-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>organization-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>notification-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>tenant</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-justauth</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-captcha-graphic</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-mail</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-sms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-cache</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.security</groupId>
+            <artifactId>spring-security-crypto</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>

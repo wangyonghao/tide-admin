@@ -1,5 +1,5 @@
 
-package top.wyhao.identity.adapter.web.auth;
+package top.wyhao.security.adapter.web;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import cn.dev33.satoken.annotation.SaIgnore;
@@ -21,18 +21,19 @@ import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.identity.adapter.web.auth.dto.LoginRequest;
-import top.wyhao.identity.adapter.web.auth.vo.AuthInfoResult;
-import top.wyhao.identity.adapter.web.auth.vo.LoginResult;
-import top.wyhao.identity.adapter.web.auth.vo.OnlineUserResult;
-import top.wyhao.identity.adapter.web.auth.vo.SocialAuthorizeUrlResult;
-import top.wyhao.identity.app.auth.service.AuthService;
-import top.wyhao.identity.adapter.web.dto.UserPasswordResetRequest;
-import top.wyhao.identity.app.service.LoginLogService;
+import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
+import top.wyhao.security.adapter.web.vo.AuthenticationInfoResult;
+import top.wyhao.security.adapter.web.vo.AuthenticationResult;
+import top.wyhao.security.adapter.web.vo.OnlineUserResult;
+import top.wyhao.security.adapter.web.vo.SocialAuthorizeUrlResult;
+import top.wyhao.security.app.service.AuthenticationService;
+import top.wyhao.identity.client.PasswordApi;
+import top.wyhao.identity.client.UserApi;
+import top.wyhao.security.app.service.AuthenticationLogService;
 import top.wyhao.security.client.MenuApi;
-import top.wyhao.identity.app.service.UserService;
+import top.wyhao.security.client.PermissionProvider;
 import top.wyhao.common.security.util.LoginUtil;
-import top.wyhao.identity.domain.auth.AuthException;
+import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
@@ -41,8 +42,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import top.wyhao.identity.adapter.web.dto.LoginLogQuery;
-import top.wyhao.identity.adapter.web.vo.LoginLogResult;
+import top.wyhao.security.adapter.web.dto.AuthenticationLogQuery;
+import top.wyhao.security.adapter.web.vo.AuthenticationLogResult;
 
 /**
  * 用户认证 API
@@ -50,26 +51,28 @@ import top.wyhao.identity.adapter.web.vo.LoginLogResult;
 @Tag(name = "用户认证 API")
 @RestController
 @RequiredArgsConstructor
-public class AuthController {
+public class AuthenticationController {
     private final JustAuthProperties authProperties;
 
-    private final UserService userService;
+    private final UserApi userApi;
     private final MenuApi menuApi;
-    private final LoginLogService loginLogService;
-    private final AuthService authService;
+    private final AuthenticationLogService authenticationLogService;
+    private final AuthenticationService authenticationService;
+    private final PasswordApi passwordApi;
+    private final PermissionProvider permissionProvider;
 
     @SaIgnore
     @Operation(summary = "登录", description = "用户统一登录入口")
     @PostMapping("/auth/login")
-    public LoginResult login(@RequestBody @Valid LoginRequest loginRequest) {
-        return authService.login(loginRequest);
+    public AuthenticationResult authenticate(@RequestBody @Valid AuthenticationRequest authenticationRequest) {
+        return authenticationService.authenticate(authenticationRequest);
     }
 
     @Operation(summary = "登出", description = "注销用户的当前登录")
     @Parameter(name = "Authorization", description = "令牌", required = true, example = "Bearer xxxx-xxxx-xxxx-xxxx", in = ParameterIn.HEADER)
     @PostMapping("/auth/logout")
     public void logout() {
-        authService.logout();
+        authenticationService.logout();
     }
 
     @SaIgnore
@@ -80,14 +83,11 @@ public class AuthController {
         String newPasswordEnc = body.get("newPassword");
         Object userIdObj = SaTempUtil.parseToken(tempToken);
         if (userIdObj == null) {
-            throw AuthException.tempTokenExpired();
+            throw AuthenticationException.tempTokenExpired();
         }
         String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(newPasswordEnc, "新密码解密失败");
-        UserPasswordResetRequest resetReq = new UserPasswordResetRequest();
-        resetReq.setNewPassword(newPassword);
-        userService.resetPassword(resetReq, Convert.toLong(userIdObj));
+        passwordApi.resetPassword(Convert.toLong(userIdObj), newPassword);
     }
-
 
     @SaIgnore
     @Operation(summary = "三方账号登录授权", description = "三方账号登录授权")
@@ -100,12 +100,12 @@ public class AuthController {
 
     @Operation(summary = "获取认证信息", description = "获取认证信息")
     @GetMapping("/auth/info")
-    public AuthInfoResult getAuthInfo() {
+    public AuthenticationInfoResult getAuthenticationInfo() {
         Long userId = LoginUtil.getUserId();
-        return new AuthInfoResult(
-                userService.detail(userId),
-                userService.findUserRoles(userId),
-                userService.findUserPermissions(userId),
+        return new AuthenticationInfoResult(
+                userApi.profile(userId),
+                permissionProvider.findUserRoles(userId),
+                permissionProvider.findUserPermissions(userId),
                 menuApi.getMenuTreeByUserId(userId)
         );
     }
@@ -115,21 +115,21 @@ public class AuthController {
             AuthConfig authConfig = authProperties.getType().get(source.toUpperCase());
             return AuthRequestBuilder.builder().source(source).authConfig(authConfig).build();
         } catch (Exception e) {
-            throw AuthException.platformNotSupport(source);
+            throw AuthenticationException.platformNotSupport(source);
         }
     }
 
     @Operation(summary = "查询登录日志", description = "分页查询登录日志列表")
     @GetMapping("/auth/login-log")
-    public PageResult<LoginLogResult> page(LoginLogQuery query, PageQuery pageQuery) {
-        return loginLogService.page(query, pageQuery);
+    public PageResult<AuthenticationLogResult> page(AuthenticationLogQuery query, PageQuery pageQuery) {
+        return authenticationLogService.page(query, pageQuery);
     }
 
     @Operation(summary = "导出", description = "导出登录日志数据")
     @SaCheckPermission("monitor:log:export")
     @GetMapping("/auth/login-log/export")
-    public void export(LoginLogQuery query, HttpServletResponse response) {
-        loginLogService.export(query, response);
+    public void export(AuthenticationLogQuery query, HttpServletResponse response) {
+        authenticationLogService.export(query, response);
     }
 
     @Operation(summary = "分页查询列表", description = "分页查询列表")
@@ -175,7 +175,7 @@ public class AuthController {
     public void kickout(@PathVariable String token) {
         String currentToken = LoginUtil.getTokenValue();
         if (ObjectUtil.equal(token, currentToken)) {
-            throw AuthException.kickoutSelfNotAllowed();
+            throw AuthenticationException.kickoutSelfNotAllowed();
         }
         LoginUtil.kickout(token);
     }

@@ -22,7 +22,8 @@ VALUES
       "captchaEnabled": true,
       "captchaType": "graphic",
       "maxRetry": 5,
-      "lockTime": 30
+      "lockTime": 30,
+      "sessionTimeout": 30
     }'::jsonb, '登录配置'),
 
     -- 邮件配置
@@ -51,15 +52,17 @@ VALUES
       "bucket": ""
     }'::jsonb, '存储配置'),
 
-    -- 安全配置
-    ('security', '{
+    -- 密码策略配置
+    ('password-policy', '{
       "passwordMinLength": 8,
       "passwordRequireUppercase": true,
       "passwordRequireLowercase": true,
       "passwordRequireNumber": true,
       "passwordRequireSpecial": false,
-      "sessionTimeout": 30
-    }'::jsonb, '安全配置');
+      "passwordExpireDays": 90,
+      "passwordAllowContainUsername": false,
+      "passwordRepetitionTimes": 3
+    }'::jsonb, '密码策略配置');
 
 --
 -- -- 初始化默认参数

@@ -12,12 +12,25 @@
     <artifactId>settings-client</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <description>设置客户端 - 邮件与存储配置契约，避免模块循环依赖</description>
+    <description>设置客户端 - 通用配置存储及邮件/短信配置契约</description>
 
     <dependencies>
         <dependency>
             <groupId>top.wyhao</groupId>
             <artifactId>cmn-base</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-sms</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
         </dependency>
     </dependencies>
 </project>

@@ -16,6 +16,7 @@ export interface LoginConfig {
   captchaType: string;
   maxRetry: number;
   lockTime: number;
+  sessionTimeout: number;
 }
 
 /** 注册配置 */
@@ -53,14 +54,16 @@ export interface StorageConfig {
   bucket: string;
 }
 
-/** 安全配置 */
+/** 密码策略配置 */
 export interface SecurityConfig {
   passwordMinLength: number;
   passwordRequireUppercase: boolean;
   passwordRequireLowercase: boolean;
   passwordRequireNumber: boolean;
   passwordRequireSpecial: boolean;
-  sessionTimeout: number;
+  passwordExpireDays: number;
+  passwordAllowContainUsername: boolean;
+  passwordRepetitionTimes: number;
 }
 
 /* ==================== API 定义 ==================== */
