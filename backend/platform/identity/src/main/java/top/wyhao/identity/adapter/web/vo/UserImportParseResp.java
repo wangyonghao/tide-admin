@@ -1,13 +1,10 @@
 
-package top.wyhao.identity.adapter.web.result.user;
+package top.wyhao.identity.adapter.web.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * 用户导入解析响应参数

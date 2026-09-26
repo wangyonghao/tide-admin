@@ -120,11 +120,6 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public List<String> findRoleCodesByUserId(Long userId) {
-        return userMapper.selectRoleCodesByUserId(userId);
-    }
-
-    @Override
     public boolean existsUsername(String username) {
         return userMapper.lambdaQuery().eq(SysUser::getUsername, username).exists();
     }

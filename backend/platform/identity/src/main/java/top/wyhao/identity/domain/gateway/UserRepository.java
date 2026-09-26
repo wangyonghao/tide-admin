@@ -46,8 +46,6 @@ public interface UserRepository {
 
     long countByDeptIds(Collection<Long> deptIds);
 
-    List<String> findRoleCodesByUserId(Long userId);
-
     boolean existsUsername(String username);
 
     boolean existsEmail(String email, Long excludeUserId);

@@ -6,7 +6,7 @@ import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import top.wyhao.cmn.core.enums.StatusEnum;
-import top.wyhao.identity.domain.model.ImportPolicies;
+import top.wyhao.identity.domain.service.UserImportPolicy;
 
 /**
  * 用户导入请求参数
@@ -30,21 +30,21 @@ public class UserImportRequest {
      */
     @Schema(description = "重复用户策略", example = "1")
     @NotNull(message = "重复用户策略不能为空")
-    private ImportPolicies duplicateUser;
+    private UserImportPolicy.Strategy duplicateUser;
 
     /**
      * 重复邮箱策略
      */
     @Schema(description = "重复邮箱策略", example = "1")
     @NotNull(message = "重复邮箱策略不能为空")
-    private ImportPolicies duplicateEmail;
+    private UserImportPolicy.Strategy duplicateEmail;
 
     /**
      * 重复手机策略
      */
     @Schema(description = "重复手机策略", example = "1")
     @NotNull(message = "重复手机策略不能为空")
-    private ImportPolicies duplicatePhone;
+    private UserImportPolicy.Strategy duplicatePhone;
 
     /**
      * 默认状态

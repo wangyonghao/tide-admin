@@ -81,12 +81,4 @@ public interface SysUserMapper extends DataPermissionMapper<SysUser> {
     String selectNicknameById(@Param("id") Long id);
 
 
-    /**
-     * 根据用户ID获取角色编码列表
-     */
-    @Select("SELECT r.code FROM sys_role r " +
-            "INNER JOIN sys_user_role ur ON r.id = ur.role_id " +
-            "WHERE ur.user_id = #{userId}")
-    List<String> selectRoleCodesByUserId(@Param("userId") Long userId);
-
 }

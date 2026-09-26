@@ -1,5 +1,5 @@
 
-package top.wyhao.identity.adapter.web.result.user;
+package top.wyhao.identity.adapter.web.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

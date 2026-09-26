@@ -11,10 +11,9 @@ import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.identity.adapter.web.dto.UserBasicInfoUpdateReq;
 import top.wyhao.identity.adapter.web.dto.UserImportRequest;
-import top.wyhao.identity.adapter.web.dto.UserPasswordResetRequest;
 import top.wyhao.identity.adapter.web.dto.UserRoleUpdateReq;
-import top.wyhao.identity.adapter.web.result.user.UserImportParseResp;
-import top.wyhao.identity.adapter.web.result.user.UserImportResp;
+import top.wyhao.identity.adapter.web.vo.UserImportParseResp;
+import top.wyhao.identity.adapter.web.vo.UserImportResp;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
 
@@ -44,22 +43,6 @@ public interface UserService {
     UserImportResp importUser(UserImportRequest req);
 
     /**
-     * 重置密码
-     *
-     * @param req 请求参数
-     * @param id  ID
-     */
-    void resetPassword(UserPasswordResetRequest req, Long id);
-
-    /**
-     * 重置密码（生成随机密码）
-     *
-     * @param id 用户ID
-     * @return 新密码
-     */
-    String resetPassword(Long id);
-
-    /**
      * 修改角色
      *
      * @param updateReq 修改信息
@@ -83,15 +66,6 @@ public interface UserService {
      * @param id  ID
      */
     void updateBasicInfo(UserBasicInfoUpdateReq req, Long id);
-
-    /**
-     * 修改密码
-     *
-     * @param oldPassword 当前密码
-     * @param newPassword 新密码
-     * @param id          ID
-     */
-    void updatePassword(String oldPassword, String newPassword, Long id);
 
     /**
      * 修改手机号
@@ -156,20 +130,4 @@ public interface UserService {
     void update(Long id, @Valid UserRequest req);
 
     void delete(List<Long> id);
-
-    /**
-     * 获取用户权限码集合
-     *
-     * @param userId 用户ID
-     * @return 权限码集合
-     */
-    List<String> findUserPermissions(Long userId);
-
-    /**
-     * 获取用户角色码集合
-     *
-     * @param userId 用户ID
-     * @return 角色码集合
-     */
-    List<String> findUserRoles(Long userId);
 }
