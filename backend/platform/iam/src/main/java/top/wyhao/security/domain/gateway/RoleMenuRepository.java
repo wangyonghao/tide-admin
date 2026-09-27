@@ -17,6 +17,11 @@ public interface RoleMenuRepository {
 
     boolean insertBatch(List<SysRoleMenu> roleMenus);
 
+    /**
+     * 覆盖式保存角色菜单关联；无变更返回 false。
+     */
+    boolean replaceByRoleId(Long roleId, List<Long> menuIds);
+
     List<Long> listMenuIdsByRoleIds(List<Long> roleIds);
 
     Set<Long> listRoleIdsNotInMenuIds(List<Long> menuIds);

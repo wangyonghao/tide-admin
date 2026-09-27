@@ -14,7 +14,7 @@ public interface UserRoleRepository {
 
     boolean existsByRoleId(Long roleId);
 
-    List<Long> listRoleIdsByUserId(Long userId);
+    List<SysUserRole> listByUserId(Long userId);
 
     List<Long> listUserIdsByRoleId(Long roleId);
 

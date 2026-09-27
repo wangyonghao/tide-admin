@@ -4,7 +4,7 @@ package top.wyhao.common.security.context;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
-import top.wyhao.cmn.core.model.LoginUser;
+import top.wyhao.identity.client.LoginUser;
 import top.wyhao.identity.client.UserContext;
 
 public class SaUserContext implements UserContext {

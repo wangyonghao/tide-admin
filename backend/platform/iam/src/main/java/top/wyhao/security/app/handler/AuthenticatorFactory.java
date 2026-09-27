@@ -9,19 +9,19 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Component
-public class AuthenticationHandlerFactory {
+public class AuthenticatorFactory {
 
-    private final Map<String, AuthenticationHandler> handlers;
+    private final Map<String, Authenticator> handlers;
 
-    public AuthenticationHandlerFactory(List<AuthenticationHandler> list) {
+    public AuthenticatorFactory(List<Authenticator> list) {
         handlers = list.stream()
                 .collect(Collectors.toMap(
                         handler -> handler.grantType().getValue(),
                         Function.identity()));
     }
 
-    public AuthenticationHandler getHandler(String grantType) {
-        AuthenticationHandler handler = handlers.get(grantType);
+    public Authenticator getHandler(String grantType) {
+        Authenticator handler = handlers.get(grantType);
         if (handler == null) {
             // 兼容历史值 PASSWORD → ACCOUNT
             if ("PASSWORD".equals(grantType)) {

@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.core.toolkit.Constants;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.cmn.db.model.BaseMapper;
-import top.wyhao.cmn.db.datapermission.annotation.DataPermission;
+import top.wyhao.cmn.db.datapermission.annotation.DataScope;
 
 import java.io.Serializable;
 import java.util.List;
@@ -24,7 +24,7 @@ public interface DataPermissionMapper<T> extends BaseMapper<T> {
      * @param queryWrapper 实体对象封装操作类（可以为 null）
      * @return 全部记录
      */
-    @DataPermission
+    @DataScope
     @Override
     List<T> selectList(@Param(Constants.WRAPPER) Wrapper<T> queryWrapper);
 
@@ -35,7 +35,7 @@ public interface DataPermissionMapper<T> extends BaseMapper<T> {
      * @param queryWrapper 实体对象封装操作类（可以为 null）
      * @return 全部记录（并翻页）
      */
-    @DataPermission
+    @DataScope
     @Override
     List<T> selectList(IPage<T> page, @Param(Constants.WRAPPER) Wrapper<T> queryWrapper);
 
@@ -45,7 +45,7 @@ public interface DataPermissionMapper<T> extends BaseMapper<T> {
      * @param id id
      * @return 删除个数
      */
-    @DataPermission
+    @DataScope
     @Override
     int deleteById(@Param("id") Serializable id);
 }

@@ -21,7 +21,7 @@ import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
 import top.wyhao.security.adapter.web.dto.SocialAuthenticationRequest;
 import top.wyhao.security.domain.model.GrantType;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
-import top.wyhao.security.app.AuthenticatedUsers;
+import top.wyhao.security.app.assembler.LoginUserAssembler;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.SocialLink;
 import top.wyhao.identity.client.UserApi;
@@ -33,12 +33,9 @@ import top.wyhao.cmn.core.autoconfigure.application.ApplicationProperties;
 import top.wyhao.cmn.core.constant.RegexConstants;
 import top.wyhao.cmn.core.enums.GenderEnum;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
-import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.security.client.AuthenticationException;
-import top.wyhao.identity.client.LoginUser;
 import top.wyhao.starter.web.http.ServletUtils;
 
-import java.time.LocalDateTime;
 import java.util.Collections;
 
 /**
@@ -46,7 +43,7 @@ import java.util.Collections;
  */
 @Component
 @RequiredArgsConstructor
-public class SocialAuthenticationHandler implements AuthenticationHandler {
+public class SocialAuthenticator implements Authenticator {
 
     private final JustAuthProperties authProperties;
     private final ApplicationProperties applicationProperties;
@@ -54,6 +51,7 @@ public class SocialAuthenticationHandler implements AuthenticationHandler {
     private final UserApi userApi;
     private final RoleApi roleApi;
     private final MessageNotifyApi messageNotifyApi;
+    private final LoginUserAssembler loginUserAssembler;
 
     @Override
     public GrantType grantType() {
@@ -103,24 +101,19 @@ public class SocialAuthenticationHandler implements AuthenticationHandler {
             user = userApi.findById(userSocial.userId());
         }
         // 检查用户状态
-        AuthenticationHandlerHelper.checkUserStatus(user);
+        AuthenticatorHelper.checkUserStatus(user);
         userApi.saveSocialLogin(user.id(), source, openId, JSONUtil.toJsonStr(authUser));
-        // 执行认证
-        // 获取权限、角色、密码过期天数
-        LoginUser loginUser = AuthenticatedUsers.from(user);
-        loginUser.setDeviceType("PC");
-
         // 7. 登录（创建会话、签发Token）
-        AuthenticationHandlerHelper.issueToken(user.id());
+        AuthenticatorHelper.issueToken(user.id());
 
         // 8. 保存用户信息到会话
-        AuthenticationHandlerHelper.setSession(loginUser, "PC");
+        AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC");
 
         // 9. 记录登录成功日志
         String ip = ServletUtils.getRequestIp();
         HttpServletRequest httpRequest = ServletUtils.getRequest();
         String userAgent = httpRequest != null ? httpRequest.getHeader("User-Agent") : null;
-        AuthenticationHandlerHelper.recordSuccess(user.username(), ip, userAgent);
+        AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
         return new AuthenticationResult("200", UserContextHolder.getToken(), null);
     }

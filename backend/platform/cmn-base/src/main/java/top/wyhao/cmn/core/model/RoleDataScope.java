@@ -5,6 +5,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import top.wyhao.cmn.core.enums.DataScopeEnum;
 
+import java.util.List;
+
 /**
  * 角色上下文
  *
@@ -13,11 +15,7 @@ import top.wyhao.cmn.core.enums.DataScopeEnum;
  */
 @Data
 @NoArgsConstructor
-public class RoleVO {
-
-    /**
-     * ID
-     */
+public class RoleDataScope {
     private Long id;
 
     /**
@@ -30,9 +28,5 @@ public class RoleVO {
      */
     private DataScopeEnum dataScope;
 
-    public RoleVO(Long id, String code, DataScopeEnum dataScope) {
-        this.id = id;
-        this.code = code;
-        this.dataScope = dataScope;
-    }
+    private List<Long> visibleDeptIds;
 }

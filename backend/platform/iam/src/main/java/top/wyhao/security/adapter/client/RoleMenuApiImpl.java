@@ -1,9 +1,7 @@
-
 package top.wyhao.security.adapter.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.security.app.service.RoleMenuService;
 import top.wyhao.security.client.RoleMenuApi;
 import top.wyhao.security.domain.gateway.RoleMenuRepository;
 
@@ -13,14 +11,12 @@ import java.util.Set;
 /**
  * 角色和菜单关联业务 API 实现
  *
-
  * @since 2025/7/26 9:39
  */
 @Service
 @RequiredArgsConstructor
 public class RoleMenuApiImpl implements RoleMenuApi {
 
-    private final RoleMenuService roleMenuService;
     private final RoleMenuRepository roleMenuRepository;
 
     @Override
@@ -30,7 +26,7 @@ public class RoleMenuApiImpl implements RoleMenuApi {
 
     @Override
     public List<Long> listMenuIdByRoleIds(List<Long> roleIds) {
-        return roleMenuService.listMenuIdByRoleIds(roleIds);
+        return roleMenuRepository.listMenuIdsByRoleIds(roleIds);
     }
 
     @Override
@@ -40,6 +36,6 @@ public class RoleMenuApiImpl implements RoleMenuApi {
 
     @Override
     public boolean add(List<Long> menuIds, Long roleId) {
-        return roleMenuService.save(menuIds, roleId);
+        return roleMenuRepository.replaceByRoleId(roleId, menuIds);
     }
 }

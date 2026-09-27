@@ -2,8 +2,8 @@ package top.wyhao.security.adapter.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-import top.wyhao.security.app.service.RoleDeptService;
 import top.wyhao.security.client.RoleDeptApi;
+import top.wyhao.security.domain.gateway.RoleDeptRepository;
 
 import java.util.List;
 
@@ -14,10 +14,10 @@ import java.util.List;
 @RequiredArgsConstructor
 public class RoleDeptApiImpl implements RoleDeptApi {
 
-    private final RoleDeptService roleDeptService;
+    private final RoleDeptRepository roleDeptRepository;
 
     @Override
     public void deleteByDeptIds(List<Long> deptIds) {
-        roleDeptService.deleteByDeptIds(deptIds);
+        roleDeptRepository.deleteByDeptIds(deptIds);
     }
 }

@@ -23,7 +23,7 @@ import top.wyhao.cmn.core.util.IpUtils;
 /**
  * 登录帮助类
  */
-public class AuthenticationHandlerHelper {
+public class AuthenticatorHelper {
 
     /**
      * 创建登录会话并签发 Token
@@ -34,7 +34,7 @@ public class AuthenticationHandlerHelper {
         StpUtil.login(userId);
     }
 
-    public static void setSession(LoginUser loginUser, String deviceType) {
+    public static void createSession(LoginUser loginUser, String deviceType) {
         RequestMeta info = getRequestMeta();
         // 写入Session
         SaSession session = StpUtil.getTokenSession();

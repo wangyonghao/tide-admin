@@ -1,8 +1,10 @@
 package top.wyhao.security.infrastructure.persistence;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
+import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.security.domain.gateway.RoleDeptRepository;
 import top.wyhao.security.domain.model.SysRoleDept;
 import top.wyhao.security.infrastructure.persistence.mapper.SysRoleDeptMapper;
@@ -26,17 +28,35 @@ public class RoleDeptRepositoryImpl implements RoleDeptRepository {
 
     @Override
     public void deleteByRoleId(Long roleId) {
-        roleDeptMapper.lambdaUpdate().in(SysRoleDept::getRoleId, roleId).remove();
+        roleDeptMapper.lambdaUpdate().eq(SysRoleDept::getRoleId, roleId).remove();
     }
 
     @Override
     public void deleteByDeptIds(List<Long> deptIds) {
+        if (CollUtil.isEmpty(deptIds)) {
+            return;
+        }
         roleDeptMapper.lambdaUpdate().in(SysRoleDept::getDeptId, deptIds).remove();
     }
 
     @Override
     public boolean insertBatch(List<SysRoleDept> roleDepts) {
         return roleDeptMapper.insertBatch(roleDepts);
+    }
+
+    @Override
+    public boolean replaceByRoleId(Long roleId, List<Long> deptIds) {
+        List<Long> ids = CollUtil.emptyIfNull(deptIds);
+        List<Long> oldIds = listDeptIdsByRoleId(roleId);
+        if (CollUtil.isEmpty(CollUtil.disjunction(ids, oldIds))) {
+            return false;
+        }
+        deleteByRoleId(roleId);
+        if (CollUtil.isEmpty(ids)) {
+            return true;
+        }
+        List<SysRoleDept> roleDepts = CollUtils.mapToList(ids, deptId -> new SysRoleDept(roleId, deptId));
+        return insertBatch(roleDepts);
     }
 
     @Override

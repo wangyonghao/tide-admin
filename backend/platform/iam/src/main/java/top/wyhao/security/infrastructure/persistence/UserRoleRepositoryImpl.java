@@ -30,13 +30,12 @@ public class UserRoleRepositoryImpl implements UserRoleRepository {
     }
 
     @Override
-    public List<Long> listRoleIdsByUserId(Long userId) {
+    public List<SysUserRole> listByUserId(Long userId) {
         return userRoleMapper.lambdaQuery()
                 .select(SysUserRole::getRoleId)
                 .eq(SysUserRole::getUserId, userId)
                 .list()
                 .stream()
-                .map(SysUserRole::getRoleId)
                 .toList();
     }
 

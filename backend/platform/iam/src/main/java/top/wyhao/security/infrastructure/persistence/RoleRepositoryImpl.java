@@ -81,4 +81,9 @@ public class RoleRepositoryImpl implements RoleRepository {
     public boolean deleteExcluding(Collection<Long> keepIds) {
         return roleMapper.lambdaUpdate().notIn(SysRole::getId, keepIds).remove();
     }
+
+    @Override
+    public List<SysRole> selectRolesByUserId(Long userId) {
+        return roleMapper.selectRolesByUserId(userId);
+    }
 }

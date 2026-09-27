@@ -37,7 +37,7 @@ public enum DataScopeEnum implements BaseEnum {
     /**
      * 自定义数据权限
      */
-    CUSTOM(5, "自定义数据权限"),;
+    CUSTOM_DEPT(5, "自定义部门数据权限"),;
 
     private final Integer value;
     private final String description;

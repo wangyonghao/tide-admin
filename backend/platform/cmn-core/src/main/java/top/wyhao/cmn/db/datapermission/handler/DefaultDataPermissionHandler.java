@@ -1,39 +1,27 @@
 
 package top.wyhao.cmn.db.datapermission.handler;
 
-import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.core.toolkit.StringUtils;
-import com.baomidou.mybatisplus.extension.plugins.handler.DataPermissionHandler;
+import com.baomidou.mybatisplus.extension.plugins.handler.MultiDataPermissionHandler;
 import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.Function;
 import net.sf.jsqlparser.expression.LongValue;
-import net.sf.jsqlparser.expression.StringValue;
-import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
-import net.sf.jsqlparser.expression.operators.relational.*;
+import net.sf.jsqlparser.expression.operators.relational.EqualsTo;
+import net.sf.jsqlparser.expression.operators.relational.ExpressionList;
+import net.sf.jsqlparser.expression.operators.relational.InExpression;
+import net.sf.jsqlparser.expression.operators.relational.ParenthesedExpressionList;
 import net.sf.jsqlparser.schema.Column;
 import net.sf.jsqlparser.schema.Table;
-import net.sf.jsqlparser.statement.select.ParenthesedSelect;
-import net.sf.jsqlparser.statement.select.PlainSelect;
-import net.sf.jsqlparser.statement.select.SelectItem;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import top.wyhao.identity.client.UserContextHolder;
-import top.wyhao.cmn.core.enums.DataScopeEnum;
+import top.wyhao.cmn.core.model.RoleDataScope;
+import top.wyhao.cmn.db.datapermission.annotation.DataScope;
 import top.wyhao.identity.client.LoginUser;
-import top.wyhao.cmn.core.model.RoleVO;
-import top.wyhao.cmn.db.datapermission.annotation.DataPermission;
-import top.wyhao.cmn.db.datapermission.exception.DataPermissionException;
-import top.wyhao.cmn.db.dialect.DatabaseType;
-import top.wyhao.cmn.db.util.DBMetaUtils;
+import top.wyhao.identity.client.UserContextHolder;
 
-import javax.sql.DataSource;
 import java.lang.reflect.Method;
-import java.util.Collections;
-import java.util.HashSet;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 
 /**
@@ -41,251 +29,85 @@ import java.util.concurrent.ConcurrentHashMap;
  *
  */
 @Slf4j
-public class DefaultDataPermissionHandler implements DataPermissionHandler {
+public class DefaultDataPermissionHandler implements MultiDataPermissionHandler {
     /**
-     * 数据库字段：祖先节点
+     * 缓存 mappedStatementId -> DataScope注解,避免每次反射解析
      */
-    public static final String ANCESTORS_COLUMN = "ancestors";
-
-    /**
-     * 方法名后缀：COUNT
-     */
-    public static final String COUNT_METHOD_SUFFIX = "_COUNT";
-
-    /**
-     * Mapper类中所有方法数据权限注解缓存
-     */
-    private final Map<String, Map<String, DataPermission>> annotationCache = new ConcurrentHashMap<>();
+    private static final Map<String, DataScope> ANNOTATION_CACHE = new ConcurrentHashMap<>();
 
     @Override
-    public Expression getSqlSegment(Expression where, String mappedStatementId) {
-        try {
-            LoginUser user = UserContextHolder.getCurrentUser();
-            // 未登录或超管:不加任何限制
-            if (user == null || UserContextHolder.isSuperadmin()) {
-                return where;
-            }
-
-            DataPermission dataPermission = findDataPermissionAnnotation(mappedStatementId);
-            if (dataPermission == null) {
-                return where; // 该方法没标注解,不做数据权限过滤
-            }
-            return buildDataScopeFilter(dataPermission, where);
-        } catch (Exception e) {
-            log.error("Data permission handler build data scope filter occurred an error: {}.", e.getMessage(), e);
-        }
-        return where;
-    }
-
-    /**
-     * 查找数据权限注解
-     *
-     * @param mappedStatementId Mapper 方法 ID
-     * @return 数据权限注解
-     */
-    private DataPermission findDataPermissionAnnotation(String mappedStatementId) {
-        try {
-            int lastDotIndex = mappedStatementId.lastIndexOf(".");
-            if (lastDotIndex == -1) {
-                return null;
-            }
-
-            String className = mappedStatementId.substring(0, lastDotIndex);
-            String methodName = mappedStatementId.substring(lastDotIndex + 1);
-
-            // 先根据类名从缓存获取，如果methodAnnotations不为空，则说明该类中的所有方法都已缓存， 只是值为null。
-            Map<String, DataPermission> methodAnnotations = annotationCache.get(className);
-            if (methodAnnotations != null) {
-                // methodName 可能是 ** 或者 **_COUNT
-                return methodAnnotations.getOrDefault(methodName, methodAnnotations.get(methodName + COUNT_METHOD_SUFFIX));
-            }
-
-            // 缓存未命中，执行反射操作
-            Class<?> clazz = Class.forName(className);
-            Method[] methods = clazz.getMethods();
-
-            // 创建新的缓存映射
-            Map<String, DataPermission> newMethodAnnotations = new ConcurrentHashMap<>();
-
-            // 缓存所有带@DataPermission注解的方法
-            for (Method method : methods) {
-                String name = method.getName();
-                DataPermission annotation = method.getAnnotation(DataPermission.class);
-                if (annotation != null) {
-                    newMethodAnnotations.put(name, annotation);
-                }
-            }
-            // 存入缓存
-            annotationCache.put(className, newMethodAnnotations);
-
-            return newMethodAnnotations.get(methodName);
-        } catch (ClassNotFoundException e) {
-            throw DataPermissionException.methodNotFound(mappedStatementId);
-        }
-    }
-
-    /**
-     * 构建数据范围过滤条件
-     *
-     * @param dataPermission 数据权限
-     * @param where          当前查询条件
-     * @return 构建后查询条件
-     */
-    private Expression buildDataScopeFilter(DataPermission dataPermission, Expression where) {
+    public Expression getSqlSegment(final Table table, final Expression where, final String mappedStatementId) {
         LoginUser user = UserContextHolder.getCurrentUser();
-
-
-        Expression expression = null;
-        Set<RoleVO> roles = new HashSet<>(); // todo by wyh 完善角色数据权限
-//        Set<RoleVO> roles = userData.getRoles();
-
-        for (RoleVO roleData : user.getRoleDataScopes()) {
-            DataScopeEnum dataScope = roleData.getDataScope();
-            expression = switch (dataScope) {
-                case ALL -> null;
-                case DEPT_AND_CHILD -> buildDeptAndChildExpression(dataPermission, user.getDeptId(), expression);
-                case DEPT -> buildDeptExpression(dataPermission, user.getDeptId(), expression);
-                case SELF -> buildEqExpression(dataPermission, user.getUserId(), expression);
-                case CUSTOM -> buildCustomExpression(dataPermission, roleData, expression);
-                default -> throw DataPermissionException.unsupportedDataScope(dataScope.toString());
-            };
+        // 未登录或超管:不加任何限制
+        if (user == null || UserContextHolder.isSuperadmin()) {
+            return null;
         }
 
-        return where != null ? new AndExpression(where, new ParenthesedExpressionList<>(expression)) : expression;
-    }
-
-    /**
-     * 构建本部门及以下数据权限表达式
-     *
-     * <p>
-     * 处理完后的 SQL 示例：<br /> select t1.* from table as t1 where t1.dept_id in (select id from sys_dept where id = xxx or
-     * find_in_set(xxx, ancestors));
-     * </p>
-     *
-     * @param dataPermission 数据权限
-     * @param deptId         用户所属部门Id
-     * @param expression     处理前的表达式
-     * @return 处理完后的表达式
-     */
-    private Expression buildDeptAndChildExpression(DataPermission dataPermission, Long deptId, Expression expression) {
-        ParenthesedSelect subSelect = new ParenthesedSelect();
-        PlainSelect select = new PlainSelect();
-        select.setSelectItems(Collections.singletonList(new SelectItem<>(new Column(dataPermission.id()))));
-        select.setFromItem(new Table(dataPermission.deptTableAlias()));
-
-        EqualsTo equalsTo = new EqualsTo();
-        equalsTo.setLeftExpression(new Column(dataPermission.id()));
-        equalsTo.setRightExpression(new LongValue(deptId));
-
-        DatabaseType databaseType = DBMetaUtils.getDatabaseType(SpringUtil.getBean(DataSource.class));
-        Expression inSetExpression;
-        if (DatabaseType.MYSQL.getDatabase().equalsIgnoreCase(databaseType.getDatabase())) {
-            Function findInSetFunction = new Function();
-            findInSetFunction.setName("find_in_set");
-            findInSetFunction.setParameters(new ExpressionList(new LongValue(deptId), new Column(ANCESTORS_COLUMN)));
-            inSetExpression = findInSetFunction;
-        } else if (DatabaseType.POSTGRE_SQL.getDatabase().equalsIgnoreCase(databaseType.getDatabase())) {
-            // 构建 concat 函数
-            Function concatFunction = new Function("concat");
-            concatFunction.setParameters(new ExpressionList<>(new Column(ANCESTORS_COLUMN), new StringValue(",")));
-
-            // 创建 LIKE 函数
-            LikeExpression likeExpression = new LikeExpression();
-            likeExpression.setLeftExpression(concatFunction);
-            likeExpression.setRightExpression(new StringValue("%," + deptId + ",%"));
-            inSetExpression = likeExpression;
-        } else {
-            throw DataPermissionException.unsupportedDatabase(databaseType.getDatabase());
+        DataScope dataPermission = getAnnotation(mappedStatementId);
+        if (dataPermission == null) {
+            return null; // 该方法没标注解,不做数据权限过滤
         }
 
-        select.setWhere(new OrExpression(equalsTo, inSetExpression));
-        subSelect.setSelect(select);
-        // 构建父查询
-        InExpression inExpression = new InExpression();
-        inExpression.setLeftExpression(this.buildColumn(dataPermission.tableAlias(), dataPermission.deptId()));
-        inExpression.setRightExpression(subSelect);
-        return expression != null ? new OrExpression(expression, inExpression) : inExpression;
-    }
-
-    /**
-     * 构建本部门数据权限表达式
-     *
-     * <p>
-     * 处理完后的 SQL 示例：<br /> select t1.* from table as t1 where t1.dept_id = xxx;
-     * </p>
-     *
-     * @param dataPermission 数据权限
-     * @param deptId         用户所属部门Id
-     * @param expression     处理前的表达式
-     * @return 处理完后的表达式
-     */
-    private Expression buildDeptExpression(DataPermission dataPermission, Long deptId, Expression expression) {
-        EqualsTo equalsTo = new EqualsTo();
-        equalsTo.setLeftExpression(this.buildColumn(dataPermission.tableAlias(), dataPermission.deptId()));
-        equalsTo.setRightExpression(new LongValue(deptId));
-        return expression != null ? new OrExpression(expression, equalsTo) : equalsTo;
-    }
-
-    /**
-     * 构建仅本人数据权限表达式
-     *
-     * <p>
-     * 处理完后的 SQL 示例：<br /> select t1.* from table as t1 where t1.create_user = xxx;
-     * </p>
-     *
-     * @param dataPermission 数据权限
-     * @param userId         用户Id
-     * @param expression     处理前的表达式
-     * @return 处理完后的表达式
-     */
-    private Expression buildEqExpression(DataPermission dataPermission, Long userId, Expression expression) {
-        EqualsTo equalsTo = new EqualsTo();
-        equalsTo.setLeftExpression(this.buildColumn(dataPermission.tableAlias(), dataPermission.userId()));
-        equalsTo.setRightExpression(new LongValue(userId));
-        return expression != null ? new OrExpression(expression, equalsTo) : equalsTo;
-    }
-
-    /**
-     * 构建自定义数据权限表达式
-     *
-     * <p>
-     * 处理完后的 SQL 示例：<br /> select t1.* from table as t1 where t1.dept_id in (select dept_id from sys_role_dept where
-     * role_id = xxx);
-     * </p>
-     *
-     * @param dataPermission 数据权限
-     * @param roleData       角色上下文
-     * @param expression     处理前的表达式
-     * @return 处理完后的表达式
-     */
-    private Expression buildCustomExpression(DataPermission dataPermission, RoleVO roleData, Expression expression) {
-        ParenthesedSelect subSelect = new ParenthesedSelect();
-        PlainSelect select = new PlainSelect();
-        select.setSelectItems(Collections.singletonList(new SelectItem<>(new Column(dataPermission.deptId()))));
-        select.setFromItem(new Table(dataPermission.roleDeptTableAlias()));
-        EqualsTo equalsTo = new EqualsTo();
-        equalsTo.setLeftExpression(new Column(dataPermission.roleId()));
-        equalsTo.setRightExpression(new LongValue(roleData.getId()));
-        select.setWhere(equalsTo);
-        subSelect.setSelect(select);
-        // 构建父查询
-        InExpression inExpression = new InExpression();
-        inExpression.setLeftExpression(this.buildColumn(dataPermission.tableAlias(), dataPermission.deptId()));
-        inExpression.setRightExpression(subSelect);
-        return expression != null ? new OrExpression(expression, inExpression) : inExpression;
-    }
-
-    /**
-     * 构建 Column
-     *
-     * @param tableAlias 表别名
-     * @param columnName 字段名称
-     * @return 带表别名字段
-     */
-    private Column buildColumn(String tableAlias, String columnName) {
-        if (StringUtils.isNotEmpty(tableAlias)) {
-            return new Column("%s.%s".formatted(tableAlias, columnName));
+        List<Expression> orConditions = new ArrayList<>();
+        for (RoleDataScope role : user.getRoleDataScopes()) {
+            switch (role.getDataScope()) {
+                case ALL:
+                    return null; // 不加任何限制
+                case SELF:
+                    orConditions.add(buildEqExpression(dataPermission.userAlias(), dataPermission.userIdColumn(), user.getUserId()));
+                case DEPT_AND_CHILD, DEPT, CUSTOM_DEPT:
+                    orConditions.add(buildInExpression(dataPermission.deptAlias(), dataPermission.deptIdColumn(), role.getVisibleDeptIds()));
+                default:
+                    break;
+            } ;
         }
-        return new Column(columnName);
+        if (orConditions.isEmpty()) {
+            // 没有任何一个角色命中有效范围,兜底:让查询查不到任何数据(避免误开权限)
+            return new EqualsTo(new LongValue(1), new LongValue(0));
+        }
+
+        // 多角色取并集(OR),用括号包起来,和原有 WHERE 用 AND 连接
+        Expression combined = orConditions.get(0);
+        for (int i = 1; i < orConditions.size(); i++) {
+            combined = new OrExpression(combined, orConditions.get(i));
+        }
+        return new ParenthesedExpressionList(combined);
+    }
+
+    /**
+     * 根据 mappedStatementId(形如 com.xxx.mapper.SysUserMapper.selectUserList)
+     * 反射拿到方法上的 @DataScope 注解
+     */
+    private DataScope getAnnotation(String mappedStatementId) {
+        return ANNOTATION_CACHE.computeIfAbsent(mappedStatementId, id -> {
+            try {
+                int idx = id.lastIndexOf(".");
+                String className = id.substring(0, idx);
+                String methodName = id.substring(idx + 1);
+                Class<?> clazz = Class.forName(className);
+                for (Method method : clazz.getMethods()) {
+                    if (method.getName().equals(methodName)
+                            && method.isAnnotationPresent(DataScope.class)) {
+                        return method.getAnnotation(DataScope.class);
+                    }
+                }
+            } catch (Exception ignored) {}
+            return null;
+        });
+    }
+
+    private Expression buildInExpression(String alias, String column, List<Long> values) {
+        Column col = new Column(StringUtils.isBlank(alias) ? column : alias + "." + column);
+        ExpressionList<Expression> list = new ExpressionList<>();
+        values.forEach(v -> list.addExpressions(new LongValue(v)));
+        InExpression in = new InExpression();
+        in.setLeftExpression(col);
+        in.setRightExpression(list);
+        return in;
+    }
+
+    private Expression buildEqExpression(String alias, String column, Long value) {
+        Column col = new Column(StringUtils.isBlank(alias) ? column : alias + "." + column);
+        return new EqualsTo(col, new LongValue(value));
     }
 }

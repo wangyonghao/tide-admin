@@ -9,40 +9,12 @@ import java.lang.annotation.*;
 @Target(ElementType.METHOD)
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DataPermission {
+public @interface DataScope {
+    String deptAlias() default ""; // 部门ID字段所在表别名,如 "d"
 
-    /**
-     * 表别名
-     */
-    String tableAlias() default "";
+    String userAlias() default ""; // 创建人字段所在表别名,如 "u"
 
-    /**
-     * ID
-     */
-    String id() default "id";
+    String deptIdColumn() default "dept_id";
 
-    /**
-     * 部门 ID
-     */
-    String deptId() default "dept_id";
-
-    /**
-     * 用户 ID
-     */
-    String userId() default "create_user";
-
-    /**
-     * 角色 ID（角色和部门关联表）
-     */
-    String roleId() default "role_id";
-
-    /**
-     * 部门表别名
-     */
-    String deptTableAlias() default "sys_dept";
-
-    /**
-     * 角色和部门关联表别名
-     */
-    String roleDeptTableAlias() default "sys_role_dept";
+    String userIdColumn() default "create_user";
 }

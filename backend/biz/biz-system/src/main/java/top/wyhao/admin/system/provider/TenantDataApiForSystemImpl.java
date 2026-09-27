@@ -9,9 +9,13 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.organization.domain.gateway.DeptRepository;
-import top.wyhao.organization.domain.model.SysDept;
-import top.wyhao.security.domain.model.SysRole;
+import top.wyhao.audit.mapper.SysOperationLogMapper;
+import top.wyhao.cmn.core.enums.DataScopeEnum;
+import top.wyhao.cmn.core.enums.GenderEnum;
+import top.wyhao.cmn.core.enums.RoleCodeEnum;
+import top.wyhao.cmn.core.enums.StatusEnum;
+import top.wyhao.cmn.core.util.ExceptionUtils;
+import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.identity.domain.exception.UserException;
 import top.wyhao.identity.domain.gateway.PasswordHistoryRepository;
 import top.wyhao.identity.domain.gateway.UserRepository;
@@ -19,24 +23,18 @@ import top.wyhao.identity.domain.gateway.UserSocialRepository;
 import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
-import top.wyhao.audit.mapper.SysOperationLogMapper;
+import top.wyhao.organization.domain.gateway.DeptRepository;
+import top.wyhao.organization.domain.model.SysDept;
+import top.wyhao.security.app.service.RoleService;
 import top.wyhao.security.domain.gateway.RoleDeptRepository;
 import top.wyhao.security.domain.gateway.RoleMenuRepository;
 import top.wyhao.security.domain.gateway.RoleRepository;
 import top.wyhao.security.domain.gateway.UserRoleRepository;
-import top.wyhao.security.app.service.RoleMenuService;
-import top.wyhao.security.app.service.RoleService;
-import top.wyhao.cmn.core.constant.GlobalConstants;
-import top.wyhao.cmn.core.enums.DataScopeEnum;
-import top.wyhao.cmn.core.enums.GenderEnum;
-import top.wyhao.cmn.core.enums.RoleCodeEnum;
-import top.wyhao.cmn.core.enums.StatusEnum;
-import top.wyhao.cmn.core.model.TenantBO;
+import top.wyhao.security.domain.model.SysRole;
 import top.wyhao.tenant.client.PackageMenuApi;
 import top.wyhao.tenant.client.TenantApi;
+import top.wyhao.tenant.client.TenantBO;
 import top.wyhao.tenant.client.TenantDataApi;
-import top.wyhao.cmn.core.util.ExceptionUtils;
-import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.tenant.util.TenantUtils;
 
 import java.time.LocalDateTime;
@@ -53,7 +51,6 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
 
     private final PackageMenuApi packageMenuApi;
     private final TenantApi tenantApi;
-    private final RoleMenuService roleMenuService;
     private final DeptRepository deptRepository;
     private final RoleRepository roleRepository;
     private final RoleMenuRepository roleMenuRepository;
@@ -79,7 +76,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
             Long roleId = this.initRoleData(tenant);
             // 角色绑定菜单
             List<Long> menuIds = packageMenuApi.listMenuIdsByPackageId(tenant.getPackageId());
-            roleMenuService.save(menuIds, roleId);
+            roleMenuRepository.replaceByRoleId(roleId, menuIds);
             // 初始化管理用户
             Long userId = this.initUserData(tenant, deptId);
             // 用户绑定角色
@@ -123,6 +120,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         userSocialRepository.deleteAll();
     }
 
+    public static final Long ROOT_PARENT_ID = 0L;
     /**
      * 初始化部门数据
      *
@@ -134,8 +132,8 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         dept.setName(tenant.getName());
         dept.setCode("000000"); // todo
         dept.setType(1); // todo
-        dept.setParentId(GlobalConstants.ROOT_PARENT_ID);
-        dept.setAncestors(GlobalConstants.ROOT_PARENT_ID.toString());
+        dept.setParentId(ROOT_PARENT_ID);
+        dept.setAncestors(ROOT_PARENT_ID.toString());
         dept.setDescription("系统初始部门");
         dept.setSort(1);
         dept.setStatus(StatusEnum.ENABLE.getValue());

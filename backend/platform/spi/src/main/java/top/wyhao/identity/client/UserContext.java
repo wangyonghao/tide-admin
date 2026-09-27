@@ -1,6 +1,6 @@
 package top.wyhao.identity.client;
 
-import top.wyhao.cmn.core.model.LoginUser;
+import top.wyhao.identity.client.LoginUser;
 
 /**
  * 登录用户上下文

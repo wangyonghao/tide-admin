@@ -9,39 +9,34 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.security.app.assembler.MenuAssembler;
-import top.wyhao.security.app.query.RoleViewQuery;
-import top.wyhao.security.domain.gateway.MenuRepository;
-import top.wyhao.security.domain.gateway.RoleRepository;
-import top.wyhao.security.domain.gateway.UserRoleRepository;
-import top.wyhao.security.domain.model.SysMenu;
-import top.wyhao.security.domain.model.SysRole;
-import top.wyhao.identity.client.UserApi;
-import top.wyhao.security.domain.model.SysUserRole;
-import top.wyhao.security.adapter.web.dto.RolePermissionUpdateRequest;
-import top.wyhao.security.adapter.web.vo.MenuVO;
-import top.wyhao.security.app.service.RoleDeptService;
-import top.wyhao.security.app.service.RoleMenuService;
-import top.wyhao.security.app.service.RoleService;
 import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.cmn.core.enums.DataScopeEnum;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
-import top.wyhao.security.domain.exception.RoleException;
 import top.wyhao.cmn.core.util.CollUtils;
+import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.security.adapter.web.dto.RoleMemberQuery;
+import top.wyhao.security.adapter.web.dto.RolePermissionUpdateRequest;
+import top.wyhao.security.adapter.web.dto.RoleQuery;
+import top.wyhao.security.adapter.web.dto.RoleRequest;
+import top.wyhao.security.adapter.web.vo.MenuVO;
+import top.wyhao.security.adapter.web.vo.RoleDetailResult;
+import top.wyhao.security.adapter.web.vo.RoleMemberResult;
+import top.wyhao.security.adapter.web.vo.RoleResult;
+import top.wyhao.security.app.assembler.MenuAssembler;
+import top.wyhao.security.app.query.RoleViewQuery;
+import top.wyhao.security.app.service.RoleService;
+import top.wyhao.security.domain.exception.RoleException;
+import top.wyhao.security.domain.gateway.*;
+import top.wyhao.security.domain.model.SysMenu;
+import top.wyhao.security.domain.model.SysRole;
+import top.wyhao.security.domain.model.SysUserRole;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
-import top.wyhao.security.adapter.web.vo.RoleDetailResult;
-import top.wyhao.security.adapter.web.dto.RoleMemberQuery;
-import top.wyhao.security.adapter.web.vo.RoleMemberResult;
-import top.wyhao.security.adapter.web.dto.RoleQuery;
-import top.wyhao.security.adapter.web.dto.RoleRequest;
-import top.wyhao.security.adapter.web.vo.RoleResult;
 
 /**
  * 角色 Service
@@ -54,9 +49,8 @@ public class RoleServiceImpl implements RoleService {
      */
     public static final Long SUPERADMIN_ROLE_ID = 1L;
 
-    private final RoleMenuService roleMenuService;
-    private final RoleDeptService roleDeptService;
-    private final UserApi userApi;
+    private final RoleMenuRepository roleMenuRepository;
+    private final RoleDeptRepository roleDeptRepository;
     private final UserRoleRepository userRoleRepository;
     private final MenuRepository menuRepository;
     private final RoleRepository roleRepository;
@@ -83,8 +77,8 @@ public class RoleServiceImpl implements RoleService {
             throw RoleException.notFound();
         }
         RoleDetailResult detail = convertToRoleDetailResp(entity);
-        detail.setMenuIds(roleMenuService.listMenuIdByRoleIds(List.of(detail.getId())));
-        detail.setDeptIds(roleDeptService.listDeptIdByRoleId(detail.getId()));
+        detail.setMenuIds(roleMenuRepository.listMenuIdsByRoleIds(List.of(detail.getId())));
+        detail.setDeptIds(roleDeptRepository.listDeptIdsByRoleId(detail.getId()));
         return detail;
     }
 
@@ -104,7 +98,7 @@ public class RoleServiceImpl implements RoleService {
             throw RoleException.createFailed();
         }
         // 保存角色和部门关联
-        roleDeptService.add(req.getDeptIds(), entity.getId());
+        roleDeptRepository.replaceByRoleId(entity.getId(), req.getDeptIds());
         return entity.getId();
     }
 
@@ -130,7 +124,7 @@ public class RoleServiceImpl implements RoleService {
             return;
         }
         // 保存角色和部门关联
-        boolean isSaveDeptSuccess = roleDeptService.add(req.getDeptIds(), id);
+        boolean isSaveDeptSuccess = roleDeptRepository.replaceByRoleId(id, req.getDeptIds());
         // 如果数据权限有变更，则更新在线用户权限信息
         if (isSaveDeptSuccess || ObjectUtil.notEqual(req.getDataScope(), oldDataScope)) {
             this.updateUserContext(id);
@@ -143,12 +137,17 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
-    @Override
-    public void delete(Long id) {
+    public SysRole requireByid(Long id) {
         SysRole role = roleRepository.findById(id);
         if (role == null) {
             throw RoleException.notFound();
         }
+        return role;
+    }
+
+    @Override
+    public void delete(Long id) {
+        SysRole role = requireByid(id);
         if (role.getIsBuiltin()) {
             throw RoleException.builtinNotAllowedDelete(role.getName());
         }
@@ -157,9 +156,9 @@ public class RoleServiceImpl implements RoleService {
         }
 
         // 删除角色和菜单关联
-        roleMenuService.deleteByRoleId(id);
+        roleMenuRepository.deleteByRoleId(id);
         // 删除角色和部门关联
-        roleDeptService.deleteByRoleId(id);
+        roleDeptRepository.deleteByRoleId(id);
         // 删除角色
         roleRepository.deleteById(id);
     }
@@ -182,7 +181,7 @@ public class RoleServiceImpl implements RoleService {
             throw RoleException.builtinPermissionUpdateNotAllowed(role.getName());
         }
         // 保存角色和菜单关联
-        roleMenuService.save(req.getMenuIds(), roleId);
+        roleMenuRepository.replaceByRoleId(roleId, req.getMenuIds());
         roleRepository.updateMenuCheckStrictly(roleId, req.getMenuCheckStrictly());
     }
 
@@ -245,23 +244,23 @@ public class RoleServiceImpl implements RoleService {
     @Override
     @Transactional(rollbackFor = Exception.class)
     public boolean assignRolesToUser(List<Long> newRoleIds, Long userId) {
-        userApi.findById(userId);
-        // 检查是否有变更
-        List<Long> oldRoleIds = userRoleRepository.listRoleIdsByUserId(userId);
-        if (CollUtil.isEmpty(CollUtil.disjunction(newRoleIds, oldRoleIds))) {
+        List<Long> roleIds = CollUtil.emptyIfNull(newRoleIds);
+        List<Long> oldRoleIds = this.findRoleIdsByUserId(userId);
+        if (CollUtil.isEmpty(CollUtil.disjunction(roleIds, oldRoleIds))) {
             return false;
         }
         userRoleRepository.deleteByUserId(userId);
-        // 保存最新关联
-        List<SysUserRole> userRoleList = CollUtils.mapToList(newRoleIds, roleId -> new SysUserRole(userId, roleId));
+        if (CollUtil.isEmpty(roleIds)) {
+            return true;
+        }
+        List<SysUserRole> userRoleList = CollUtils.mapToList(roleIds, roleId -> new SysUserRole(userId, roleId));
         return userRoleRepository.insertBatch(userRoleList);
     }
 
     @Override
     public List<Long> findRoleIdsByUserId(Long userId) {
-        return userRoleRepository.listRoleIdsByUserId(userId);
+        return CollUtils.mapToList(userRoleRepository.listByUserId(userId), SysUserRole::getRoleId);
     }
-
 
     @Override
     @Cached(key = "#roleId", name = CacheConstants.ROLE_MENU_KEY_PREFIX)

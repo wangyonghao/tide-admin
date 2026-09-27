@@ -15,7 +15,7 @@ import top.wyhao.security.adapter.web.dto.AccountAuthenticationRequest;
 import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
 import top.wyhao.security.domain.model.GrantType;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
-import top.wyhao.security.app.AuthenticatedUsers;
+import top.wyhao.security.app.assembler.LoginUserAssembler;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.security.client.AuthenticationConfigApi;
 import top.wyhao.security.client.config.AuthenticationConfigVO;
@@ -39,7 +39,7 @@ import java.util.Objects;
  */
 @Component
 @RequiredArgsConstructor
-public class AccountAuthenticationHandler implements AuthenticationHandler {
+public class AccountAuthenticator implements Authenticator {
 
     private static final String RETRY_KEY_PREFIX = "login:retry:";
     private static final String CAPTCHA_KEY = "login:captcha:";
@@ -47,6 +47,7 @@ public class AccountAuthenticationHandler implements AuthenticationHandler {
     private final PasswordEncoder passwordEncoder;
     private final UserApi userApi;
     private final AuthenticationConfigApi authenticationConfigApi;
+    private final LoginUserAssembler loginUserAssembler;
 
     @Override
     public GrantType grantType() {
@@ -80,7 +81,7 @@ public class AccountAuthenticationHandler implements AuthenticationHandler {
             validatePassword(user, password, retryKey, ip, userAgent);
 
             // 5. 检查用户状态
-            AuthenticationHandlerHelper.checkUserStatus(user);
+            AuthenticatorHelper.checkUserStatus(user);
 
             // 6. 密码过期时，强制用户修改密码
             AuthenticationResult expiredResult = handlePasswordExpired(user, ip, userAgent);
@@ -88,24 +89,24 @@ public class AccountAuthenticationHandler implements AuthenticationHandler {
                 return expiredResult;
             }
             // 7. 登录（创建会话、签发Token）
-            AuthenticationHandlerHelper.issueToken(user.id());
+            AuthenticatorHelper.issueToken(user.id());
 
             // 8. 保存用户信息到会话
-            AuthenticationHandlerHelper.setSession(AuthenticatedUsers.from(user), "PC");
+            AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC");
 
             // 9. 记录登录成功日志
-            AuthenticationHandlerHelper.recordSuccess(user.username(), ip, userAgent);
+            AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
             return new AuthenticationResult("200", UserContextHolder.getToken(), null);
         } catch (BizException e) {
             // 如果是业务异常且还没记录日志，记录失败日志
             if (!"USERNAME_PASSWORD_ERROR".equals(e.getCode())) {
-                AuthenticationHandlerHelper.recordFailure(req.getUsername(), ip, userAgent, e.getMessage());
+                AuthenticatorHelper.recordFailure(req.getUsername(), ip, userAgent, e.getMessage());
             }
             throw e;
         } catch (Exception e) {
             // 其他异常也记录失败日志
-            AuthenticationHandlerHelper.recordFailure(req.getUsername(), ip, userAgent, "系统异常: " + e.getMessage());
+            AuthenticatorHelper.recordFailure(req.getUsername(), ip, userAgent, "系统异常: " + e.getMessage());
             throw e;
         }
     }
@@ -115,7 +116,7 @@ public class AccountAuthenticationHandler implements AuthenticationHandler {
         if (user.pwdExpireDate() != null && user.pwdExpireDate().isBefore(LocalDate.now())) {
             String tempToken = SaTempUtil.createToken(user.id(), 600); // 10分钟
             // 记录登录失败日志（密码过期）
-            AuthenticationHandlerHelper.recordFailure(user.username(), ip, userAgent, "密码已过期");
+            AuthenticatorHelper.recordFailure(user.username(), ip, userAgent, "密码已过期");
             return new AuthenticationResult("PASSWORD_EXPIRED", tempToken, null);
         }
         return null;
@@ -128,7 +129,7 @@ public class AccountAuthenticationHandler implements AuthenticationHandler {
         }
         incrementRetry(retryKey);
         // 记录登录失败日志
-        AuthenticationHandlerHelper.recordFailure(user.username(), ip, userAgent, "密码错误");
+        AuthenticatorHelper.recordFailure(user.username(), ip, userAgent, "密码错误");
         throw handlePasswordError(retryKey);
     }
 
@@ -172,7 +173,7 @@ public class AccountAuthenticationHandler implements AuthenticationHandler {
         incrementRetry(retryKey);
 
         // 记录登录失败日志
-        AuthenticationHandlerHelper.recordFailure(username, ip, userAgent, "用户不存在");
+        AuthenticatorHelper.recordFailure(username, ip, userAgent, "用户不存在");
         // 防止用户名探测，统一提示：用户名或密码错误
         throw handlePasswordError(retryKey);
     }

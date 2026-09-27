@@ -18,6 +18,11 @@ public interface RoleDeptRepository {
 
     boolean insertBatch(List<SysRoleDept> roleDepts);
 
+    /**
+     * 覆盖式保存角色部门关联；无变更返回 false。
+     */
+    boolean replaceByRoleId(Long roleId, List<Long> deptIds);
+
     void deleteAll();
 
     boolean deleteByRoleIdNotIn(Collection<Long> keepRoleIds);

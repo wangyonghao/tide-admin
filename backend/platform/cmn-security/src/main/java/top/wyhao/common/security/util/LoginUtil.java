@@ -3,7 +3,7 @@ package top.wyhao.common.security.util;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
-import top.wyhao.cmn.core.model.LoginUser;
+import top.wyhao.identity.client.LoginUser;
 
 import java.util.ArrayList;
 import java.util.List;

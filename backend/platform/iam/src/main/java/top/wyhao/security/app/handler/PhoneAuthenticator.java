@@ -1,22 +1,20 @@
-
 package top.wyhao.security.app.handler;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.security.client.AuthenticationException;
-import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
-import top.wyhao.security.adapter.web.dto.PhoneAuthenticationRequest;
-import top.wyhao.security.domain.model.GrantType;
-import top.wyhao.security.adapter.web.vo.AuthenticationResult;
-import top.wyhao.security.app.AuthenticatedUsers;
+import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.UserApi;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.identity.client.UserContextHolder;
-import top.wyhao.cmn.core.constant.CacheConstants;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
+import top.wyhao.security.adapter.web.dto.PhoneAuthenticationRequest;
+import top.wyhao.security.adapter.web.vo.AuthenticationResult;
+import top.wyhao.security.app.assembler.LoginUserAssembler;
+import top.wyhao.security.client.AuthenticationException;
+import top.wyhao.security.domain.model.GrantType;
+import top.wyhao.starter.cache.redisson.util.RedisUtils;
 import top.wyhao.starter.web.http.ServletUtils;
 
 /**
@@ -24,8 +22,9 @@ import top.wyhao.starter.web.http.ServletUtils;
  */
 @RequiredArgsConstructor
 @Component
-public class PhoneAuthenticationHandler implements AuthenticationHandler {
+public class PhoneAuthenticator implements Authenticator {
     private final UserApi userApi;
+    private final LoginUserAssembler loginUserAssembler;
 
     @Override
     public GrantType grantType() {
@@ -42,23 +41,19 @@ public class PhoneAuthenticationHandler implements AuthenticationHandler {
             throw AuthenticationException.phoneNotBound();
         }
         // 检查用户状态
-        AuthenticationHandlerHelper.checkUserStatus(user);
-        // 执行认证
-        // 获取权限、角色、密码过期天数
-        LoginUser loginUser = AuthenticatedUsers.from(user);
-        loginUser.setDeviceType("PC");
+        AuthenticatorHelper.checkUserStatus(user);
 
         // 7. 登录（创建会话、签发Token）
-        AuthenticationHandlerHelper.issueToken(user.id());
+        AuthenticatorHelper.issueToken(user.id());
 
         // 8. 保存用户信息到会话
-        AuthenticationHandlerHelper.setSession(loginUser, "PC");
+        AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC");
 
         // 9. 记录登录成功日志
         String ip = ServletUtils.getRequestIp();
         HttpServletRequest httpServletRequest = ServletUtils.getRequest();
         String userAgent = httpServletRequest != null ? httpServletRequest.getHeader("User-Agent") : null;
-        AuthenticationHandlerHelper.recordSuccess(user.username(), ip, userAgent);
+        AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
         return new AuthenticationResult("200", UserContextHolder.getToken(), null);
     }

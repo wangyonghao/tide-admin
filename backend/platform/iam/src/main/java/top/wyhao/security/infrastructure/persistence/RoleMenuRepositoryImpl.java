@@ -1,5 +1,6 @@
 package top.wyhao.security.infrastructure.persistence;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
@@ -9,6 +10,7 @@ import top.wyhao.security.domain.model.SysRoleMenu;
 import top.wyhao.security.infrastructure.persistence.mapper.SysRoleMenuMapper;
 
 import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
 
@@ -34,7 +36,7 @@ public class RoleMenuRepositoryImpl implements RoleMenuRepository {
 
     @Override
     public void deleteByRoleId(Long roleId) {
-        roleMenuMapper.lambdaUpdate().in(SysRoleMenu::getRoleId, roleId).remove();
+        roleMenuMapper.lambdaUpdate().eq(SysRoleMenu::getRoleId, roleId).remove();
     }
 
     @Override
@@ -43,7 +45,25 @@ public class RoleMenuRepositoryImpl implements RoleMenuRepository {
     }
 
     @Override
+    public boolean replaceByRoleId(Long roleId, List<Long> menuIds) {
+        List<Long> ids = CollUtil.emptyIfNull(menuIds);
+        List<Long> oldIds = listMenuIdsByRoleId(roleId);
+        if (CollUtil.isEmpty(CollUtil.disjunction(ids, oldIds))) {
+            return false;
+        }
+        deleteByRoleId(roleId);
+        if (CollUtil.isEmpty(ids)) {
+            return true;
+        }
+        List<SysRoleMenu> roleMenus = CollUtils.mapToList(ids, menuId -> new SysRoleMenu(roleId, menuId));
+        return insertBatch(roleMenus);
+    }
+
+    @Override
     public List<Long> listMenuIdsByRoleIds(List<Long> roleIds) {
+        if (CollUtil.isEmpty(roleIds)) {
+            return Collections.emptyList();
+        }
         return roleMenuMapper.selectMenuIdByRoleIds(roleIds);
     }
 

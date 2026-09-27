@@ -33,4 +33,6 @@ public interface RoleRepository {
     long countExcluding(Collection<Long> keepIds);
 
     boolean deleteExcluding(Collection<Long> keepIds);
+
+    List<SysRole> selectRolesByUserId(Long id);
 }
