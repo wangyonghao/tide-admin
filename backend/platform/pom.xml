@@ -12,40 +12,28 @@
     <artifactId>platform</artifactId>
     <packaging>pom</packaging>
     <name>${project.artifactId}</name>
-    <description>平台基础能力模块 - 提供通用的、与具体业务无关的基础能力（文件服务、加密工具等）</description>
+    <description>平台能力（含基础设施 cmn 与业务平台域）</description>
 
     <modules>
-        <!-- 文件服务：领域模型 + 服务逻辑（仅依赖 cmn-storage-api） -->
-        <module>file-service</module>
-        <!-- 文件服务：HTTP API -->
-        <module>file-api</module>
-        <!-- 定时任务管理 API -->
-        <module>job-api</module>
-        <!-- 身份客户端 -->
-        <module>identity-client</module>
-        <!-- 授权客户端：跨模块契约，避免循环依赖 -->
-        <module>security-client</module>
-        <!-- 组织客户端 -->
-        <module>organization-client</module>
-        <!-- 通知客户端 -->
-        <module>notification-client</module>
-        <!-- 设置客户端 -->
-        <module>settings-client</module>
-        <!-- 租户客户端 -->
-        <module>tenant-client</module>
-        <!-- 身份：用户、认证、凭证 -->
-        <module>identity</module>
-        <!-- 授权：角色、菜单权限 -->
-        <module>security</module>
-        <!-- 组织：部门与组织关系 -->
-        <module>organization</module>
-        <!-- 通知：站内消息、公告、短信、邮件 -->
-        <module>notification</module>
-        <!-- 设置：系统配置与数据字典 -->
-        <module>settings</module>
-        <!-- 审计：操作日志 -->
-        <module>audit</module>
-        <!-- 租户：租户、套餐与套餐菜单 -->
+        <!-- 基础层 -->
+        <module>cmn-base</module>
+        <module>spi</module>
+        <module>cmn-core</module>
+        <module>cmn-security</module>
+        <module>cmn-messaging</module>
+        <module>cmn-crypto</module>
+        <module>cmn-fastexcel</module>
+        <module>cmn-poi</module>
+        <module>cmn-license-core</module>
+        <module>cmn-license-generator</module>
+        <module>cmn-license-verifier</module>
+        <module>cmn-storage</module>
+        <!-- 平台域 -->
+        <module>file</module>
+        <module>job</module>
         <module>tenant</module>
+        <module>iam</module>
+        <module>ops</module>
+        <module>coder</module>
     </modules>
 </project>

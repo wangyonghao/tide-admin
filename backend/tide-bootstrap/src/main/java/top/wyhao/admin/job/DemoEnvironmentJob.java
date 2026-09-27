@@ -9,30 +9,23 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.open.mapper.SysAppMapper;
 import top.wyhao.admin.open.model.entity.SysApp;
-import top.wyhao.settings.entity.SysOption;
 import top.wyhao.notification.entity.SysMessage;
 import top.wyhao.notification.entity.SysMessageLog;
 import top.wyhao.notification.entity.SysNotice;
 import top.wyhao.notification.entity.SysNoticeLog;
-import top.wyhao.settings.mapper.SysOptionMapper;
+import top.wyhao.settings.domain.gateway.OptionRepository;
 import top.wyhao.notification.mapper.SysMessageLogMapper;
 import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.mapper.SysNoticeLogMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
 import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.identity.domain.gateway.UserSocialRepository;
-import top.wyhao.organization.entity.SysDept;
-import top.wyhao.organization.mapper.SysDeptMapper;
-import top.wyhao.security.entity.SysMenu;
-import top.wyhao.security.entity.SysRole;
-import top.wyhao.security.entity.SysRoleDept;
-import top.wyhao.security.entity.SysRoleMenu;
-import top.wyhao.security.entity.SysUserRole;
-import top.wyhao.security.mapper.SysMenuMapper;
-import top.wyhao.security.mapper.SysRoleDeptMapper;
-import top.wyhao.security.mapper.SysRoleMapper;
-import top.wyhao.security.mapper.SysRoleMenuMapper;
-import top.wyhao.security.mapper.SysUserRoleMapper;
+import top.wyhao.organization.domain.gateway.DeptRepository;
+import top.wyhao.security.domain.gateway.MenuRepository;
+import top.wyhao.security.domain.gateway.RoleDeptRepository;
+import top.wyhao.security.domain.gateway.RoleMenuRepository;
+import top.wyhao.security.domain.gateway.RoleRepository;
+import top.wyhao.security.domain.gateway.UserRoleRepository;
 import top.wyhao.tenant.mapper.SysTenantMapper;
 import top.wyhao.tenant.mapper.TenantPackageMapper;
 import top.wyhao.tenant.mapper.TenantPackageMenuMapper;
@@ -57,19 +50,19 @@ import java.util.function.BooleanSupplier;
 @RequiredArgsConstructor
 public class DemoEnvironmentJob implements JobTask {
 
-    private final SysOptionMapper dictMapper;
+    private final OptionRepository optionRepository;
     private final SysNoticeMapper noticeMapper;
     private final SysNoticeLogMapper noticeLogMapper;
     private final SysMessageMapper messageMapper;
     private final SysMessageLogMapper messageLogMapper;
     private final UserRepository userRepository;
-    private final SysUserRoleMapper userRoleMapper;
+    private final UserRoleRepository userRoleRepository;
     private final UserSocialRepository userSocialRepository;
-    private final SysRoleMapper roleMapper;
-    private final SysRoleDeptMapper roleDeptMapper;
-    private final SysRoleMenuMapper roleMenuMapper;
-    private final SysMenuMapper menuMapper;
-    private final SysDeptMapper deptMapper;
+    private final RoleRepository roleRepository;
+    private final RoleDeptRepository roleDeptRepository;
+    private final RoleMenuRepository roleMenuRepository;
+    private final MenuRepository menuRepository;
+    private final DeptRepository deptRepository;
     private final SysAppMapper appMapper;
     private final SysTenantMapper tenantMapper;
     private final TenantPackageMapper packageMapper;
@@ -92,7 +85,7 @@ public class DemoEnvironmentJob implements JobTask {
             log.info("定时任务 [重置演示环境数据] 开始执行。");
             // 检测待清理数据
             log.info("开始检测演示环境待清理数据项，请稍候...");
-            Long dictCount = dictMapper.lambdaQuery().gt(SysOption::getId, DELETE_FLAG).count();
+            Long dictCount = optionRepository.countIdGreaterThan(DELETE_FLAG);
             this.log(dictCount, "字典");
             Long noticeCount = noticeMapper.lambdaQuery().gt(SysNotice::getId, DELETE_FLAG).count();
             this.log(noticeCount, "公告");
@@ -100,11 +93,11 @@ public class DemoEnvironmentJob implements JobTask {
             this.log(messageCount, "通知");
             Long userCount = userRepository.countExcluding(USER_FLAG);
             this.log(userCount, "用户");
-            Long roleCount = roleMapper.lambdaQuery().notIn(SysRole::getId, ROLE_FLAG).count();
+            Long roleCount = roleRepository.countExcluding(ROLE_FLAG);
             this.log(roleCount, "角色");
-            Long menuCount = menuMapper.lambdaQuery().gt(SysMenu::getId, DELETE_FLAG).count();
+            Long menuCount = menuRepository.countIdGreaterThan(DELETE_FLAG);
             this.log(menuCount, "菜单");
-            Long deptCount = deptMapper.lambdaQuery().gt(SysDept::getId, DEPT_FLAG).count();
+            Long deptCount = deptRepository.countIdGreaterThan(DEPT_FLAG);
             this.log(deptCount, "部门");
             Long appCount = appMapper.lambdaQuery().gt(SysApp::getId, DELETE_FLAG).count();
             this.log(appCount, "应用");
@@ -117,16 +110,15 @@ public class DemoEnvironmentJob implements JobTask {
             // 清理关联数据
             noticeLogMapper.lambdaUpdate().gt(SysNoticeLog::getNoticeId, DELETE_FLAG).remove();
             messageLogMapper.lambdaUpdate().gt(SysMessageLog::getMessageId, MESSAGE_FLAG).remove();
-            userRoleMapper.lambdaUpdate().notIn(SysUserRole::getRoleId, ROLE_FLAG).remove();
-            userRoleMapper.lambdaUpdate().notIn(SysUserRole::getUserId, USER_FLAG).remove();
-            roleDeptMapper.lambdaUpdate().notIn(SysRoleDept::getRoleId, ROLE_FLAG).remove();
-            roleMenuMapper.lambdaUpdate().notIn(SysRoleMenu::getRoleId, ROLE_FLAG).remove();
+            userRoleRepository.deleteByRoleIdNotIn(ROLE_FLAG);
+            userRoleRepository.deleteByUserIdNotIn(USER_FLAG);
+            roleDeptRepository.deleteByRoleIdNotIn(ROLE_FLAG);
+            roleMenuRepository.deleteByRoleIdNotIn(ROLE_FLAG);
             userSocialRepository.deleteExcludingUserIds(USER_FLAG);
             packageMenuMapper.lambdaUpdate().remove();
             // 清理具体数据
-            this.clean(dictCount, "选项", CacheConstants.OPTION_KEY_PREFIX, () -> dictMapper.lambdaUpdate()
-                .gt(SysOption::getId, DELETE_FLAG)
-                .remove());
+            this.clean(dictCount, "选项", CacheConstants.OPTION_KEY_PREFIX,
+                () -> optionRepository.deleteIdGreaterThan(DELETE_FLAG));
             this.clean(noticeCount, "公告", null, () -> noticeMapper.lambdaUpdate()
                 .gt(SysNotice::getId, DELETE_FLAG)
                 .remove());
@@ -134,11 +126,9 @@ public class DemoEnvironmentJob implements JobTask {
                 .gt(SysMessage::getId, MESSAGE_FLAG)
                 .remove());
             this.clean(userCount, "用户", null, () -> userRepository.deleteExcluding(USER_FLAG));
-            this.clean(roleCount, "角色", null, () -> roleMapper.lambdaUpdate().notIn(SysRole::getId, ROLE_FLAG).remove());
-            this.clean(menuCount, "菜单", CacheConstants.ROLE_MENU_KEY_PREFIX, () -> menuMapper.lambdaUpdate()
-                .gt(SysMenu::getId, DELETE_FLAG)
-                .remove());
-            this.clean(deptCount, "部门", null, () -> deptMapper.lambdaUpdate().gt(SysDept::getId, DEPT_FLAG).remove());
+            this.clean(roleCount, "角色", null, () -> roleRepository.deleteExcluding(ROLE_FLAG));
+            this.clean(menuCount, "菜单", CacheConstants.ROLE_MENU_KEY_PREFIX, () -> menuRepository.deleteIdGreaterThan(DELETE_FLAG));
+            this.clean(deptCount, "部门", null, () -> deptRepository.deleteIdGreaterThan(DEPT_FLAG));
             this.clean(appCount, "应用", null, () -> appMapper.lambdaUpdate().gt(SysApp::getId, DEPT_FLAG).remove());
             this.clean(tenantCount, "租户", null, () -> tenantMapper.lambdaUpdate().remove());
             this.clean(packageCount, "套餐", null, () -> packageMapper.lambdaUpdate().remove());

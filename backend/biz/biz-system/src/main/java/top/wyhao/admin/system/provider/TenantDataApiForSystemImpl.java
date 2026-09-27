@@ -9,7 +9,8 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.organization.entity.SysDept;
+import top.wyhao.organization.domain.gateway.DeptRepository;
+import top.wyhao.organization.domain.model.SysDept;
 import top.wyhao.security.domain.model.SysRole;
 import top.wyhao.identity.domain.exception.UserException;
 import top.wyhao.identity.domain.gateway.PasswordHistoryRepository;
@@ -19,7 +20,6 @@ import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
 import top.wyhao.audit.mapper.SysOperationLogMapper;
-import top.wyhao.organization.mapper.SysDeptMapper;
 import top.wyhao.security.domain.gateway.RoleDeptRepository;
 import top.wyhao.security.domain.gateway.RoleMenuRepository;
 import top.wyhao.security.domain.gateway.RoleRepository;
@@ -54,7 +54,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private final PackageMenuApi packageMenuApi;
     private final TenantApi tenantApi;
     private final RoleMenuService roleMenuService;
-    private final SysDeptMapper deptMapper;
+    private final DeptRepository deptRepository;
     private final RoleRepository roleRepository;
     private final RoleMenuRepository roleMenuRepository;
     private final SysOperationLogMapper operationLogMapper;
@@ -99,7 +99,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         }
         Wrapper queryWrapper = Wrappers.query().eq("1", 1);
         // 部门清除
-        deptMapper.delete(queryWrapper);
+        deptRepository.deleteAll();
 //        // 文件清除
 //        List<Long> fileIds = CollUtils.mapToList(fileService.list(), FileDO::getId);
 //        if (!fileIds.isEmpty()) {
@@ -140,7 +140,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         dept.setSort(1);
         dept.setStatus(StatusEnum.ENABLE.getValue());
         dept.setIsBuiltin(true);
-        deptMapper.insert(dept);
+        deptRepository.insert(dept);
         return dept.getId();
     }
 

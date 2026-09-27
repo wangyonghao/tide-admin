@@ -13,40 +13,29 @@
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>系统管理模块（仪表盘等；配置/字典/审计/身份/授权/组织/通知已拆至 platform）</description>
+  <description>系统管理模块（仪表盘等；平台能力由 platform-* 提供）</description>
 
   <dependencies>
-
-    <!-- 平台域模块 -->
     <dependency>
       <groupId>top.wyhao</groupId>
-      <artifactId>tenant-client</artifactId>
+      <artifactId>platform-spi</artifactId>
     </dependency>
     <dependency>
       <groupId>top.wyhao</groupId>
-      <artifactId>identity</artifactId>
+      <artifactId>platform-iam</artifactId>
     </dependency>
     <dependency>
       <groupId>top.wyhao</groupId>
-      <artifactId>security</artifactId>
+      <artifactId>platform-ops</artifactId>
     </dependency>
     <dependency>
       <groupId>top.wyhao</groupId>
-      <artifactId>organization</artifactId>
+      <artifactId>platform-file</artifactId>
     </dependency>
     <dependency>
       <groupId>top.wyhao</groupId>
-      <artifactId>notification</artifactId>
+      <artifactId>platform-tenant</artifactId>
     </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>settings</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>audit</artifactId>
-    </dependency>
-    <!-- Tide Starter 认证模块 - SaToken -->
     <dependency>
       <groupId>top.wyhao</groupId>
       <artifactId>cmn-security</artifactId>
@@ -57,65 +46,33 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <!-- JustAuth -->
     <dependency>
       <groupId>top.wyhao</groupId>
-      <artifactId>cmn-justauth</artifactId>
+      <artifactId>cmn-core</artifactId>
     </dependency>
-    <!-- Tide Starter 验证码模块 - 图形验证码 -->
     <dependency>
       <groupId>top.wyhao</groupId>
-      <artifactId>cmn-captcha-graphic</artifactId>
+      <artifactId>cmn-messaging</artifactId>
     </dependency>
-
-    <!-- SMS4J（短信聚合框架，轻松集成多家短信服务，解决接入多个短信 SDK 的繁琐流程） -->
-    <dependency>
-      <groupId>org.dromara.sms4j</groupId>
-      <artifactId>sms4j-spring-boot-starter</artifactId>
-    </dependency>
-
-    <!-- SpEL Validator -->
-    <dependency>
-      <groupId>cn.sticki</groupId>
-      <artifactId>spel-validator-jakarta</artifactId>
-    </dependency>
-    <!-- Excel 模块 -->
     <dependency>
       <groupId>top.wyhao</groupId>
       <artifactId>cmn-fastexcel</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.security</groupId>
-      <artifactId>spring-security-crypto</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>cmn-web</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>cmn-websocket</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>file-api</artifactId>
     </dependency>
     <dependency>
       <groupId>top.wyhao</groupId>
       <artifactId>cmn-storage-local</artifactId>
     </dependency>
     <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>cmn-mail</artifactId>
+      <groupId>org.dromara.sms4j</groupId>
+      <artifactId>sms4j-spring-boot-starter</artifactId>
     </dependency>
     <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>cmn-sms</artifactId>
+      <groupId>cn.sticki</groupId>
+      <artifactId>spel-validator-jakarta</artifactId>
     </dependency>
     <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>tenant</artifactId>
+      <groupId>org.springframework.security</groupId>
+      <artifactId>spring-security-crypto</artifactId>
     </dependency>
-
   </dependencies>
 </project>

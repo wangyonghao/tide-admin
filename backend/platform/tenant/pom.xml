@@ -2,39 +2,31 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-  <modelVersion>4.0.0</modelVersion>
+    <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>top.wyhao</groupId>
         <artifactId>platform</artifactId>
         <version>${revision}</version>
     </parent>
 
-  <artifactId>tenant</artifactId>
-  <packaging>jar</packaging>
+    <artifactId>platform-tenant</artifactId>
+    <packaging>jar</packaging>
+    <name>${project.artifactId}</name>
+    <description>租户：租户、套餐与套餐菜单</description>
 
-  <name>${project.artifactId}</name>
-  <description>租户模块 - 租户、套餐与套餐菜单</description>
+    <dependencies>
 
-  <dependencies>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>tenant-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>security-client</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>cmn-security</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>top.wyhao</groupId>
-      <artifactId>cmn-db</artifactId>
-    </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-web</artifactId>
+            <artifactId>platform-spi</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-security</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>top.wyhao</groupId>
+            <artifactId>cmn-core</artifactId>
         </dependency>
         <dependency>
             <groupId>com.alibaba</groupId>
@@ -44,5 +36,6 @@
             <groupId>com.baomidou</groupId>
             <artifactId>mybatis-plus-jsqlparser</artifactId>
         </dependency>
-  </dependencies>
+
+    </dependencies>
 </project>

@@ -16,7 +16,6 @@
   <modules>
     <module>tide-bootstrap</module>
     <module>biz</module>
-    <module>cmn</module>
     <module>platform</module>
     <module>interfaces</module>
   </modules>
@@ -451,136 +450,79 @@
       </dependency>
 
 
-      <!-- 定时任务（Quartz） -->
+      <!-- 平台模块 -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-quartz</artifactId>
+        <artifactId>platform-spi</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>job-api</artifactId>
+        <artifactId>platform-iam</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>platform-ops</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>platform-file</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>platform-job</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>platform-tenant</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>platform-coder</artifactId>
         <version>${revision}</version>
       </dependency>
 
-      <!-- 代码生成器插件（后续会改造为独立插件） -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>biz-coding</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- Tide Starter 依赖管理 -->
-      <!-- 核心模块 -->
+      <!-- 平台基础设施 -->
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-base</artifactId>
         <version>${revision}</version>
       </dependency>
-
-      <!-- API 文档模块 -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-apidoc</artifactId>
+        <artifactId>cmn-core</artifactId>
         <version>${revision}</version>
       </dependency>
-
-
-      <!-- Web 模块 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-web</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 缓存模块 - Redisson -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-cache</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <!-- 认证模块 - SaToken -->
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-security</artifactId>
         <version>${revision}</version>
       </dependency>
-      <!-- 认证模块 - JustAuth -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-justauth</artifactId>
+        <artifactId>cmn-messaging</artifactId>
         <version>${revision}</version>
       </dependency>
-
-      <!-- 数据访问模块 - MyBatis Plus -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-db</artifactId>
+        <artifactId>cmn-crypto</artifactId>
         <version>${revision}</version>
       </dependency>
-
-      <!-- 加密模块 - API 加密 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-encrypt-api</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <!-- 加密模块 - 核心模块 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-encrypt-core</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 链路追踪模块 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-trace</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 验证码模块 - 图形验证码 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-captcha-graphic</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 消息模块 - 邮件 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-mail</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 消息模块 - 短信 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-sms</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 消息模块 - WebSocket -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-websocket</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- Excel 文件处理模块 - FastExcel -->
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-fastexcel</artifactId>
         <version>${revision}</version>
       </dependency>
-      <!-- Excel 文件处理模块 - POI -->
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-poi</artifactId>
         <version>${revision}</version>
       </dependency>
-
-      <!-- 对象存储基础设施（cmn-storage） -->
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-storage-core</artifactId>
@@ -606,129 +548,19 @@
         <artifactId>cmn-storage-cos</artifactId>
         <version>${revision}</version>
       </dependency>
-
-      <!-- 文件服务模块（平台基础能力） -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>file-service</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>file-api</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>identity-client</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>identity</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>security-client</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>organization-client</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>notification-client</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>settings-client</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>tenant-client</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>security</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>organization</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>notification</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>settings</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>audit</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>tenant</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 加密工具模块 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>crypto-util</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- License 模块 - 生成器 -->
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-license-generator</artifactId>
         <version>${revision}</version>
       </dependency>
-      <!-- License 模块 - 校验器 -->
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-license-verifier</artifactId>
         <version>${revision}</version>
       </dependency>
-      <!-- License 模块 - 核心模块 -->
       <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-license-core</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 新增的 wyhao-commons 模块 -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-encrypt</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-excel</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-license</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-messaging</artifactId>
         <version>${revision}</version>
       </dependency>
     </dependencies>

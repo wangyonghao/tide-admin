@@ -21,7 +21,7 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.web.multipart.MultipartException;
 import org.springframework.web.servlet.NoHandlerFoundException;
-import top.wyhao.identity.domain.otp.OtpException;
+import top.wyhao.security.domain.exception.OtpException;
 import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.cmn.core.exception.BizException;
 import top.wyhao.cmn.core.model.Result;
