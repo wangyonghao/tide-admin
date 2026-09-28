@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Select;
 import top.wyhao.identity.adapter.web.vo.UserDetail;
 import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.domain.model.SysUser;
-import top.wyhao.cmn.db.datapermission.annotation.DataPermission;
+import top.wyhao.cmn.db.datapermission.annotation.DataScope;
 import top.wyhao.cmn.db.datapermission.mapper.DataPermissionMapper;
 
 import java.util.List;
@@ -31,7 +31,7 @@ public interface SysUserMapper extends DataPermissionMapper<SysUser> {
      * @param queryWrapper 查询条件
      * @return 分页列表信息
      */
-    @DataPermission(tableAlias = "t1")
+    @DataScope(userAlias = "t1")
     IPage<UserResult> selectUserPage(@Param("page") IPage<SysUser> page,
                                            @Param(Constants.WRAPPER) Wrapper<SysUser> queryWrapper);
 
@@ -41,7 +41,7 @@ public interface SysUserMapper extends DataPermissionMapper<SysUser> {
      * @param queryWrapper 查询条件
      * @return 列表信息
      */
-    @DataPermission(tableAlias = "t1")
+    @DataScope(userAlias = "t1")
     List<UserDetail> selectUserList(@Param(Constants.WRAPPER) Wrapper<SysUser> queryWrapper);
 
     /**

@@ -1,7 +1,7 @@
 
 package top.wyhao.tenant.client;
 
-import top.wyhao.cmn.core.model.TenantBO;
+import top.wyhao.tenant.client.TenantBO;
 
 /**
  * 租户数据 API

@@ -11,7 +11,7 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import top.wyhao.cmn.core.model.MailConfig;
+import top.wyhao.settings.client.MailConfig;
 import top.wyhao.settings.client.MailConfigProvider;
 
 import java.io.File;

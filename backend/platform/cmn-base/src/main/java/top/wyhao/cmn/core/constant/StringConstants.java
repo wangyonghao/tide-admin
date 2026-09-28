@@ -37,33 +37,18 @@ public class StringConstants {
      */
     public static final String DOT = ".";
 
-    /**
-     * 双点 {@code ".."}
-     * <p>
-     * 作为指向上级文件夹的路径，如：{@code "../path"}
-     * </p>
-     */
-    public static final String DOUBLE_DOT = "..";
 
     /**
      * 逗号 {@code ","}
      */
     public static final String COMMA = ",";
 
-    /**
-     * 中文逗号 {@code "，"}
-     */
-    public static final String CHINESE_COMMA = "，";
 
     /**
      * 冒号 {@code ":"}
      */
     public static final String COLON = ":";
 
-    /**
-     * 分号 {@code ";"}
-     */
-    public static final String SEMICOLON = ";";
 
     /**
      * 问号 {@code "?"}
@@ -75,10 +60,7 @@ public class StringConstants {
      */
     public static final String UNDERLINE = "_";
 
-    /**
-     * 减号（连接符） {@code "-"}
-     */
-    public static final String DASHED = "-";
+
 
     /**
      * 加号 {@code "+"}
@@ -125,55 +107,6 @@ public class StringConstants {
      */
     public static final String AMP = "&";
 
-    /**
-     * 花括号（左） <code>"{"</code>
-     */
-    public static final String DELIM_START = "{";
-
-    /**
-     * 花括号（右） <code>"}"</code>
-     */
-    public static final String DELIM_END = "}";
-
-    /**
-     * 中括号（左） {@code "["}
-     */
-    public static final String BRACKET_START = "[";
-
-    /**
-     * 中括号（右） {@code "]"}
-     */
-    public static final String BRACKET_END = "]";
-
-    /**
-     * 圆括号（左） {@code "("}
-     */
-    public static final String ROUND_BRACKET_START = "(";
-
-    /**
-     * 圆括号（右） {@code ")"}
-     */
-    public static final String ROUND_BRACKET_END = ")";
-
-    /**
-     * 双引号 {@code "\""}
-     */
-    public static final String DOUBLE_QUOTES = "\"";
-
-    /**
-     * 单引号 {@code "'"}
-     */
-    public static final String SINGLE_QUOTE = "'";
-
-    /**
-     * 回车符 {@code "\r"}
-     */
-    public static final String CR = "\r";
-
-    /**
-     * 换行符 {@code "\n"}
-     */
-    public static final String LF = "\n";
 
     /**
      * 路径模式 {@code "/**"}

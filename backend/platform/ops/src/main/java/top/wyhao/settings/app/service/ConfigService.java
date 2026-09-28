@@ -1,7 +1,7 @@
 package top.wyhao.settings.app.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import top.wyhao.cmn.core.model.MailConfig;
+import top.wyhao.settings.client.MailConfig;
 import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.settings.adapter.web.dto.ConfigQuery;
 import top.wyhao.settings.adapter.web.dto.ConfigRequest;

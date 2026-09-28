@@ -1,7 +1,7 @@
 
 package top.wyhao.settings.client;
 
-import top.wyhao.cmn.core.model.MailConfig;
+import top.wyhao.settings.client.MailConfig;
 
 /**
  * 邮件配置器

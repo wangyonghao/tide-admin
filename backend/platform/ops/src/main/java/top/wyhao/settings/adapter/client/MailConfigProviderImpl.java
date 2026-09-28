@@ -2,7 +2,7 @@ package top.wyhao.settings.adapter.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.cmn.core.model.MailConfig;
+import top.wyhao.settings.client.MailConfig;
 import top.wyhao.settings.client.ConfigKeys;
 import top.wyhao.settings.client.ConfigStoreApi;
 import top.wyhao.settings.client.MailConfigProvider;

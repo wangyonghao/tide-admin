@@ -1,6 +1,6 @@
 package top.wyhao.settings.client;
 
-import top.wyhao.cmn.core.model.OSSConfig;
+import top.wyhao.settings.client.OSSConfig;
 
 public interface OSSConfigProvider {
     OSSConfig getOSSConfig(String key);
