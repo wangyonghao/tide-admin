@@ -1,0 +1,16 @@
+---
+description: 前端 Vue3/TS/Naive 单应用约定
+globs: frontend/**/*.{vue,ts,tsx}
+alwaysApply: false
+---
+
+# Frontend Vue
+
+- 业务代码：`frontend/src` + Naive UI。
+- 慎改 `vendor/@core`；壳层在 `src/vben`（`@vben/*` alias）；工程配置在根目录配置文件。
+- `<script setup lang="ts">` + Composition API；避免 `any`。
+- 组件 PascalCase；文件名 kebab-case；Tailwind 优先。
+- API 按 `api/modules` 组织，类型与后端对齐。
+- 新依赖进 `pnpm-workspace.yaml` catalog。
+
+细节：`docs/agent/frontend-conventions.md`；栈：`specs/tech-stack.md`。

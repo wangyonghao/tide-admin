@@ -1,0 +1,44 @@
+---
+description: 业务异常：一功能一 XxxException + 静态工厂（platform / biz）
+globs: backend/**/{exception,service,handler,controller,app,adapter,domain}/**/*.java
+alwaysApply: false
+---
+
+# 业务异常规范
+
+## 原则
+
+- 每个业务功能一个异常类：`XxxException extends BizException`
+- 错误码与文案集中在该类的**静态工厂方法**中
+- 禁止业务代码直接 `throw new BizException(...)` / `BadRequestException(...)` 表达领域错误
+
+## 包位置
+
+- 认证 / 用户等：随域放在 `platform/iam` 或历史 `admin` 包下的 `exception`
+- 功能子域：可放在子包 `.../otp/exception` 等
+- 参考现有：`AuthException`、`UserException`、`DeptException`、`MenuException`、`OtpException`
+
+## 类结构
+
+必须提供：
+
+1. `XxxException(String message)` / `XxxException(String code, String message)`
+2. `of(String message)` / `of(String code, String message)`
+3. 语义化工厂：`notFound()`、`nameExist(String)` 等
+
+错误码：`大写下划线`，建议带业务前缀（`USER_NOT_FOUND`）。
+
+## 用法
+
+```java
+// ✅
+throw UserException.notFound();
+throw AuthException.platformNotSupport(source);
+
+// ❌
+throw new BizException("USER_NOT_FOUND", "用户不存在");
+```
+
+`Check` / `ValidationUtils` 已废弃，禁止新增调用；业务规则失败一律 `if (...) throw XxxException.xxx()`；入参格式优先 Bean Validation。
+
+细节：`docs/agent/backend-conventions.md`。

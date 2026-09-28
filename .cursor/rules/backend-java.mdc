@@ -1,0 +1,18 @@
+---
+description: 后端 Java 分层、API、DB、事务与依赖约定
+globs: backend/**/*.java
+alwaysApply: false
+---
+
+# Backend Java
+
+- 依赖方向：`tide-bootstrap` → `interfaces`/`biz-*` → `platform` 域 → `cmn-*`；禁止反向依赖。
+- platform 域优先 COLA（`adapter`/`app`/`domain`/`infrastructure`）；简单模块可用经典分层。
+- Controller：方法级完整路径；组装 Result/VO；逻辑在 service/app。
+- Service 命名：`detail`/`list`/`page`/`create`/`update`/`delete` 等。
+- 领域错误：`XxxException` 静态工厂；禁止 `new BizException` / `BadRequestException`；禁止新增 `Check`/`ValidationUtils`。
+- DB 变更走 Liquibase（`postgresql` changelog）；表字段 `snake_case`。
+- `@Transactional` 仅 service/app 层；事务内不做远程/长耗时。
+- 新依赖先登记根 `pom.xml` `dependencyManagement`。
+
+细节：`docs/agent/backend-conventions.md`；异常：同目录 `biz-exception.mdc`；栈：`specs/tech-stack.md`。
