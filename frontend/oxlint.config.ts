@@ -1,5 +1,26 @@
-import { oxlintConfig } from '@vben/oxlint-config';
-
 import { defineConfig } from 'oxlint';
 
-export default defineConfig(oxlintConfig);
+export default defineConfig({
+  categories: {
+    correctness: 'error',
+    suspicious: 'warn',
+  },
+  env: {
+    browser: true,
+    es2021: true,
+    node: true,
+  },
+  ignorePatterns: [
+    '**/dist/**',
+    '**/node_modules/**',
+    'docs/**',
+    '**/*.json',
+    '**/*.md',
+  ],
+  plugins: ['typescript', 'unicorn', 'vue'],
+  rules: {
+    'eslint/no-unused-vars': 'warn',
+    'typescript/no-explicit-any': 'off',
+    'vue/prefer-import-from-vue': 'error',
+  },
+});

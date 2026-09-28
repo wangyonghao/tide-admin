@@ -173,8 +173,8 @@ profile/
 ## 国际化支持
 
 所有文本内容均支持中英文切换，国际化文件位置：
-- 中文：`frontend/apps/web-naive/src/locales/langs/zh-CN/page.json`
-- 英文：`frontend/apps/web-naive/src/locales/langs/en-US/page.json`
+- 中文：`frontend/src/locales/langs/zh-CN/page.json`
+- 英文：`frontend/src/locales/langs/en-US/page.json`
 
 ## API 接口
 

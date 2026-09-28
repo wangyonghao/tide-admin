@@ -3,10 +3,18 @@ import type { HeadConfig } from 'vitepress';
 
 import { resolve } from 'node:path';
 
-import {
-  viteArchiverPlugin,
-  viteVxeTableImportsPlugin,
-} from '@vben/vite-config';
+import { lazyImport, VxeResolver } from 'vite-plugin-lazy-import';
+
+async function viteVxeTableImportsPlugin() {
+  return [
+    lazyImport({
+      resolvers: [
+        VxeResolver({ libraryName: 'vxe-table' }),
+        VxeResolver({ libraryName: 'vxe-pc-ui' }),
+      ],
+    }),
+  ];
+}
 
 import {
   GitChangelog,
@@ -19,6 +27,7 @@ import {
   groupIconVitePlugin,
 } from 'vitepress-plugin-group-icons';
 
+import { createVbenAliases } from '../../../vben.aliases.mts';
 import { demoPreviewPlugin } from './plugins/demo-preview';
 import { search as zhSearch } from './zh.mts';
 
@@ -89,10 +98,14 @@ export const shared = defineConfig({
         repoURL: () => 'https://github.com/vbenjs/vue-vben-admin',
       }),
       GitChangelogMarkdownSection(),
-      viteArchiverPlugin({ outputDir: '.vitepress' }),
       groupIconVitePlugin(),
       await viteVxeTableImportsPlugin(),
     ],
+    resolve: {
+      alias: {
+        ...createVbenAliases(),
+      },
+    },
     server: {
       fs: {
         allow: ['../..'],

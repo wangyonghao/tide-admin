@@ -1,10 +1,5 @@
-// eslint-disable-next-line no-restricted-imports
-import { defineConfig } from '@vben/vite-config';
+import { defineConfig } from 'vite';
 
-export default defineConfig(async () => {
-  return {
-    vite: {
-      publicDir: 'src/scss-bem',
-    },
-  };
+export default defineConfig({
+  publicDir: 'src/scss-bem',
 });

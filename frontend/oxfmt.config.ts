@@ -1,6 +1,12 @@
-import { defineConfig } from '@vben/oxfmt-config';
+import { defineConfig as defineOxfmtConfig } from 'oxfmt';
 
-export default defineConfig({
+export default defineOxfmtConfig({
+  printWidth: 80,
+  proseWrap: 'never',
+  semi: true,
+  singleQuote: true,
+  sortPackageJson: false,
+  trailingComma: 'all',
   ignorePatterns: [
     'dist',
     'dev-dist',
@@ -22,5 +28,22 @@ export default defineConfig({
     '.npmrc',
     '*-lock.yaml',
     'skills-lock.json',
+  ],
+  overrides: [
+    {
+      files: [
+        '*.json',
+        '*.json5',
+        '*.jsonc',
+        '*.code-workspace',
+        '**/*.json',
+        '**/*.json5',
+        '**/*.jsonc',
+        '**/*.code-workspace',
+      ],
+      options: {
+        trailingComma: 'none',
+      },
+    },
   ],
 });
