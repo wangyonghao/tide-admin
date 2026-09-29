@@ -26,6 +26,6 @@ jobs:
           cache: "maven"
       - name: Compile
         run: |
-          sed -i.bak '/<repositories>/,/<\/repositories>/d' pom.xml
-          sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' pom.xml
-          mvn -B compile --file pom.xml
+          sed -i.bak '/<repositories>/,/<\/repositories>/d' ./backend/pom.xml
+          sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' ./backend/pom.xml
+          mvn -B compile --file ./backend/pom.xml

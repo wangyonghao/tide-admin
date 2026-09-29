@@ -46,9 +46,9 @@ jobs:
           restore-keys: ${{ runner.os }}-m2
       - name: Analyze
         run: |
-          sed -i.bak '/<repositories>/,/<\/repositories>/d' pom.xml
-          sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' pom.xml
-          mvn -B verify -Psonar
+          sed -i.bak '/<repositories>/,/<\/repositories>/d' ./backend/pom.xml
+          sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' ./backend/pom.xml
+          mvn -B verify -Psonar --file ./backend/pom.xml
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }} # Needed to get PR information, if any
           SONAR_TOKEN: ${{ secrets.SONAR_TOKEN }}
