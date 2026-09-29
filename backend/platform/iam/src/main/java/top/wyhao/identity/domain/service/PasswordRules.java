@@ -41,7 +41,7 @@ public class PasswordRules {
     }
 
     private void assertSymbolsIfRequired(String rawPassword, PasswordPolicy policy) {
-        if (policy.requireSymbols() && !ReUtil.isMatch(RegexConstants.SPECIAL_CHARACTER, rawPassword)) {
+        if (policy.requireSymbols() && !ReUtil.contains(RegexConstants.SPECIAL_CHARACTER, rawPassword)) {
             throw UserException.passwordPolicyViolated("密码必须包含特殊字符");
         }
     }

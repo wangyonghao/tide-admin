@@ -174,13 +174,11 @@ class RsaUtilTest {
 
     @Test
     void testRsaVerifyInvalidSignature() {
-        // 测试无效签名
-        String signature = RsaUtil.sign(TEST_PLAINTEXT, privateKeyBase64);
-        
-        // 验证错误的签名
-        assertFalse(RsaUtil.verify(TEST_PLAINTEXT, "invalidsignature", publicKeyBase64));
-        
-        // 验证 null 签名
+        // 非法 Base64 / 损坏签名：实现抛 CryptoException，而非静默 false
+        assertThrows(CryptoException.class,
+                () -> RsaUtil.verify(TEST_PLAINTEXT, "invalidsignature", publicKeyBase64));
+
+        // null / 空签名视为不通过
         assertFalse(RsaUtil.verify(TEST_PLAINTEXT, null, publicKeyBase64));
         assertFalse(RsaUtil.verify(TEST_PLAINTEXT, "", publicKeyBase64));
     }

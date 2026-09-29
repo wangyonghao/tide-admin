@@ -48,3 +48,10 @@
 ## Dependencies
 
 - 版本只在后端根 `pom.xml` 的 `properties` / `dependencyManagement` 登记后再引用。
+
+## Testing
+
+- 工具：JUnit 5 + Mockito + AssertJ（`platform` 父 POM 已统一 `test` 依赖）；默认执行 Surefire（`-DskipUnitTests=true` 可临时跳过）。
+- 命名：`XxxTest`（单元）；`XxxIT` / `*ApplicationTests` 不进单元套件（Surefire exclude）。
+- **覆盖目标（脚手架）**：`domain` / 纯规则类（策略、解析器、校验器、工具）高覆盖；`adapter`（Controller/DTO 组装）不纳入强制；Repository/Mapper 偏集成测试。
+- 优先测无 Spring 的规则与可 Mock Gateway 的 App Service；示范见 `CronComposerTest`、`PasswordRulesTest`。

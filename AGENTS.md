@@ -28,6 +28,8 @@ Cursor 同步加载 [`.cursor/skills/`](.cursor/skills/) 同名技能；编码�
 ```bash
 # 后端
 cd backend && mvn -pl tide-bootstrap -am spring-boot:run
+# 单元测试（默认开启；临时跳过 -DskipUnitTests=true）
+cd backend && mvn -pl platform/job,platform/iam -am test
 
 # 前端主应用
 cd frontend && pnpm install && pnpm dev
@@ -70,3 +72,4 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 - 向用户说明变更时，与正文分离，用独立 Changelog 要点（仓库变更日志走 `changelog` skill）。
 - 默认中文回复；未要求不 commit / 不 push。
 - 需求不清先问；重要结论尽量用仓库内多源交叉验证。
+- **后端单测**：`domain`/规则类高覆盖；`adapter` 不强制。细则见 [`docs/agent/backend-conventions.md`](docs/agent/backend-conventions.md#testing)。
