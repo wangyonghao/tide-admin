@@ -35,19 +35,9 @@ jobs:
           port: ${{ secrets.SSH_PORT }}
           username: ${{ secrets.SSH_USER }}
           key: ${{ secrets.SSH_KEY }}
-          source: ./tide-admin-server/target/app/*
+          source: ./tide-bootstrap/target/app/*
           target: /opt/wyh-admin/apiserver/app
           strip_components: 3
-      - name: Copy jobserver
-        uses: appleboy/scp-action@v1
-        with:
-          host: ${{ secrets.SSH_HOST }}
-          port: ${{ secrets.SSH_PORT }}
-          username: ${{ secrets.SSH_USER }}
-          key: ${{ secrets.SSH_KEY }}
-          source: ./continew-schedule-server/target/*.jar
-          target: /opt/wyh-admin/jobserver/app
-          strip_components: 2
       - name: Copy scripts
         uses: appleboy/scp-action@v1
         with:
