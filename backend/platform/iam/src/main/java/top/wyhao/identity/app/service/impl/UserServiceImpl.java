@@ -32,7 +32,7 @@ import top.wyhao.cmn.core.util.ExceptionUtils;
 import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.common.security.util.LoginUtil;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.file.domain.model.File;
 import top.wyhao.file.app.service.FileService;
 import top.wyhao.identity.adapter.web.dto.*;

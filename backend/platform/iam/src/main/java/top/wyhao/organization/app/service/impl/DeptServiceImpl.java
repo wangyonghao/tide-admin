@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.cmn.core.util.TreeUtils;
-import top.wyhao.identity.client.UserApi;
+import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.organization.adapter.web.dto.DeptQuery;
 import top.wyhao.organization.adapter.web.dto.DeptRequest;
 import top.wyhao.organization.adapter.web.vo.DeptResult;
@@ -17,7 +17,7 @@ import top.wyhao.organization.app.service.DeptService;
 import top.wyhao.organization.domain.exception.DeptException;
 import top.wyhao.organization.domain.gateway.DeptRepository;
 import top.wyhao.organization.domain.model.SysDept;
-import top.wyhao.security.client.RoleDeptApi;
+import top.wyhao.security.domain.gateway.RoleDeptRepository;
 import top.wyhao.starter.excel.util.ExcelUtils;
 
 import java.util.List;
@@ -33,8 +33,8 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class DeptServiceImpl implements DeptService {
 
-    private final RoleDeptApi roleDeptApi;
-    private final UserApi userApi;
+    private final RoleDeptRepository roleDeptRepository;
+    private final UserRepository userRepository;
     private final DeptRepository deptRepository;
     private final DeptAssembler deptAssembler;
 
@@ -128,7 +128,7 @@ public class DeptServiceImpl implements DeptService {
 
     public void checkCanUpdate(DeptRequest req, Long id) {
         // 检查名称是否重复
-        if (Objects.nonNull(req.getParentId())){
+        if (Objects.nonNull(req.getParentId())) {
             this.checkNameExist(req.getName(), req.getParentId(), id);
         }
 
@@ -170,11 +170,11 @@ public class DeptServiceImpl implements DeptService {
         if (deptRepository.countChildren(ids) > 0) {
             throw DeptException.hasChildren();
         }
-        if (userApi.countByDeptIds(ids) > 0) {
+        if (userRepository.countByDeptIds(ids) > 0) {
             throw DeptException.hasUsers();
         }
         // 删除角色和部门关联
-        roleDeptApi.deleteByDeptIds(ids);
+        roleDeptRepository.deleteByDeptIds(ids);
         deptRepository.deleteByIds(ids);
     }
 

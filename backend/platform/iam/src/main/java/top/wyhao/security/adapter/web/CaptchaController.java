@@ -18,12 +18,12 @@ import top.wyhao.security.adapter.web.vo.CaptchaImageResult;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.admin.cmn.sms.SmsClient;
 import top.wyhao.security.infrastructure.config.CaptchaProperties;
-import top.wyhao.security.client.AuthenticationConfigApi;
-import top.wyhao.security.client.config.AuthenticationConfigVO;
+import top.wyhao.security.client.LoginConfigApi;
+import top.wyhao.security.client.config.LoginConfigVO;
 import top.wyhao.settings.client.SiteConfigApi;
 import top.wyhao.settings.client.SiteConfigVO;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
-import top.wyhao.starter.captcha.graphic.core.ImageCaptchaService;
+import top.wyhao.common.graphic.core.ImageCaptchaService;
 import top.wyhao.cmn.core.autoconfigure.application.ApplicationProperties;
 import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.cmn.core.model.Result;
@@ -53,7 +53,7 @@ public class CaptchaController {
     private final ApplicationProperties applicationProperties;
     private final CaptchaProperties captchaProperties;
     private final ImageCaptchaService imageCaptchaService;
-    private final AuthenticationConfigApi authenticationConfigApi;
+    private final LoginConfigApi loginConfigApi;
     private final SiteConfigApi siteConfigApi;
 
     private final MailClient mailClient;
@@ -62,7 +62,7 @@ public class CaptchaController {
     @Operation(summary = "获取图片验证码", description = "获取图片验证码（Base64编码，带图片格式：data:image/gif;base64）")
     @GetMapping("/captcha/image")
     public CaptchaImageResult getImageCaptcha() {
-        AuthenticationConfigVO loginConfigVO = authenticationConfigApi.get();
+        LoginConfigVO loginConfigVO = loginConfigApi.get();
         boolean loginCaptchaEnabled = loginConfigVO != null && Boolean.TRUE.equals(loginConfigVO.getCaptchaEnabled());
         if (!loginCaptchaEnabled) {
             return new CaptchaImageResult(null, null, null, false);

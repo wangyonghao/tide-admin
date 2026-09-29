@@ -491,12 +491,12 @@
       <!-- 平台基础设施 -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-base</artifactId>
+        <artifactId>cmn-core</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-core</artifactId>
+        <artifactId>cmn-boot</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>

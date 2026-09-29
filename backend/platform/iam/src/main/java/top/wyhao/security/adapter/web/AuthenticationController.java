@@ -31,8 +31,8 @@ import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.identity.client.UserApi;
 import top.wyhao.security.app.service.AuthenticationLogService;
 import top.wyhao.security.client.MenuApi;
-import top.wyhao.security.client.PermissionProvider;
-import top.wyhao.common.security.util.LoginUtil;
+import top.wyhao.security.client.PermissionApi;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.starter.web.core.model.PageQuery;
@@ -59,7 +59,7 @@ public class AuthenticationController {
     private final AuthenticationLogService authenticationLogService;
     private final AuthenticationService authenticationService;
     private final PasswordApi passwordApi;
-    private final PermissionProvider permissionProvider;
+    private final PermissionApi permissionProvider;
 
     @SaIgnore
     @Operation(summary = "登录", description = "用户统一登录入口")

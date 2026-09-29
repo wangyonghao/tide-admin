@@ -1,11 +1,2 @@
-top.wyhao.starter.web.config.UndertowConfig
-top.wyhao.starter.web.config.WebMvcConfig
-top.wyhao.starter.web.config.JacksonAutoConfiguration
-top.wyhao.starter.web.config.CorsConfig
-top.wyhao.starter.web.config.SensitiveWordsConfig
-top.wyhao.starter.web.config.RateLimiterConfig
-top.wyhao.cmn.db.autoconfigure.MybatisPlusAutoConfiguration
-top.wyhao.starter.cache.redisson.autoconfigure.RedissonAutoConfiguration
-top.wyhao.starter.cache.redisson.autoconfigure.JetCacheAutoConfiguration
-top.wyhao.starter.apidoc.autoconfigure.SpringDocAutoConfiguration
-top.wyhao.starter.trace.autoconfigure.TraceAutoConfiguration
+top.wyhao.cmn.core.autoconfigure.application.ApplicationAutoConfiguration
+top.wyhao.cmn.core.autoconfigure.threadpool.ThreadPoolAutoConfiguration

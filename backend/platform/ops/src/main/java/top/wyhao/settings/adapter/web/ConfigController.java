@@ -16,9 +16,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.identity.client.LoginUser;
-import top.wyhao.settings.client.MailConfig;
-import top.wyhao.identity.client.UserApi;
-import top.wyhao.identity.client.UserContextHolder;
+import top.wyhao.settings.client.MailConfigVO;
+import top.wyhao.identity.client.UserProfileApi;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.identity.client.UserProfile;
 import top.wyhao.settings.client.SiteConfigApi;
 import top.wyhao.settings.client.SiteConfigVO;
@@ -43,7 +43,7 @@ public class ConfigController {
     private final ConfigService configService;
     private final SiteConfigApi siteConfigApi;
     private final MailClient mailService;
-    private final UserApi userApi;
+    private final UserProfileApi userProfileApi;
 
     @Operation(summary = "获取站点配置")
     @GetMapping("/system/config/site")
@@ -74,28 +74,28 @@ public class ConfigController {
     @Operation(summary = "获取邮件配置")
     @SaCheckPermission("system:config:mail")
     @GetMapping("/system/config/mail")
-    public MailConfig getMailConfig() {
+    public MailConfigVO getMailConfig() {
         return configService.getMailConfig();
     }
 
     @Operation(summary = "更新邮件配置")
     @SaCheckPermission("system:config:edit")
     @PutMapping("/system/config/mail")
-    public void updateMailConfig(@RequestBody @Valid MailConfig config) {
+    public void updateMailConfig(@RequestBody @Valid MailConfigVO config) {
         configService.updateMailConfig(config);
     }
 
     @Operation(summary = "发送测试邮件")
     @SaCheckPermission("system:config:edit")
     @PostMapping("/system/config/mail/test")
-    public void sendTestMail(MailConfig mailConfig) {
-        LoginUser loginUser = UserContextHolder.getCurrentUser();
+    public void sendTestMail(MailConfigVO mailConfig) {
+        LoginUser loginUser = LoginUtil.getLoginUser();
         if (loginUser == null) {
             throw ConfigException.mailTestUserNotLoggedIn();
         }
 
-        Long userId = UserContextHolder.getUserId();
-        UserProfile profile = userApi.profile(userId);
+        Long userId = LoginUtil.getUserId();
+        UserProfile profile = userProfileApi.profile(userId);
         if (profile == null) {
             throw ConfigException.mailTestUserNotFound();
         }

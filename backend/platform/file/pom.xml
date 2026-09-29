@@ -22,7 +22,7 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-core</artifactId>
+            <artifactId>cmn-boot</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>

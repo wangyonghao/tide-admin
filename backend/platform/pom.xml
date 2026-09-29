@@ -16,9 +16,9 @@
 
     <modules>
         <!-- 基础层 -->
-        <module>cmn-base</module>
-        <module>spi</module>
         <module>cmn-core</module>
+        <module>spi</module>
+        <module>cmn-boot</module>
         <module>cmn-security</module>
         <module>cmn-messaging</module>
         <module>cmn-crypto</module>

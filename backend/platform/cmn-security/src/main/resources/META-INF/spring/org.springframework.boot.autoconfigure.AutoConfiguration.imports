@@ -1,4 +1,4 @@
-top.wyhao.common.security.config.SaTokenConfig
-top.wyhao.starter.auth.justauth.autoconfigure.JustAuthAutoConfiguration
+top.wyhao.common.satoken.config.SaTokenConfig
+top.wyhao.common.autoconfigure.justauth.JustAuthAutoConfiguration
 com.xkcoding.justauth.autoconfigure.JustAuthAutoConfiguration
-top.wyhao.starter.captcha.graphic.autoconfigure.GraphicCaptchaAutoConfiguration
+top.wyhao.common.autoconfigure.graphic.GraphicCaptchaAutoConfiguration

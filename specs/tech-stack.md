@@ -71,7 +71,7 @@ interfaces/*            # tide-web、open-api 等接口层
 biz/*                   # 业务插件（如 biz-system）
   ↓
 platform/*              # 平台能力
-  ├── cmn-*             # 基础设施（base、core、security、storage…）
+  ├── cmn-*             # 基础设施（core、boot、security、storage…）
   ├── iam / tenant / file / job / ops / coder
   └── spi
 ```

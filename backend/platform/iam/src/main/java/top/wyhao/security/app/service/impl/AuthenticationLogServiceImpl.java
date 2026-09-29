@@ -8,10 +8,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import top.wyhao.common.security.util.LoginUtil;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.security.app.assembler.AuthenticationLogAssembler;
 import top.wyhao.security.app.service.AuthenticationLogService;
-import top.wyhao.identity.client.UserContextHolder;
 import top.wyhao.security.domain.gateway.AuthenticationLogRepository;
 import top.wyhao.security.domain.model.AuthenticationDevice;
 import top.wyhao.security.domain.model.AuthenticationLogCriteria;
@@ -115,7 +114,7 @@ public class AuthenticationLogServiceImpl implements AuthenticationLogService {
         }
         criteria.setLoginTimeStart(query.getLoginTimeStart());
         criteria.setLoginTimeEnd(query.getLoginTimeEnd());
-        if (!UserContextHolder.isSuperadmin()) {
+        if (!LoginUtil.isSuperadmin()) {
             criteria.setTenantRestricted(true);
             criteria.setTenantId(LoginUtil.getTenantId());
         } else if (query.getTenantId() != null) {

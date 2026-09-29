@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.security.client.AuthenticationConfigApi;
-import top.wyhao.security.client.config.AuthenticationConfigVO;
+import top.wyhao.security.client.LoginConfigApi;
+import top.wyhao.security.client.config.LoginConfigVO;
 
 /**
  * 登录配置 API（路径保持不变）。
@@ -20,18 +20,18 @@ import top.wyhao.security.client.config.AuthenticationConfigVO;
 @RequiredArgsConstructor
 public class AuthenticationConfigController {
 
-    private final AuthenticationConfigApi authenticationConfigApi;
+    private final LoginConfigApi loginConfigApi;
 
     @Operation(summary = "获取登录配置")
     @GetMapping("/system/config/login")
-    public AuthenticationConfigVO getAuthenticationConfig() {
-        return authenticationConfigApi.get();
+    public LoginConfigVO getAuthenticationConfig() {
+        return loginConfigApi.get();
     }
 
     @Operation(summary = "更新登录配置")
     @SaCheckPermission("system:config:edit")
     @PutMapping("/system/config/login")
-    public void updateAuthenticationConfig(@RequestBody @Valid AuthenticationConfigVO config) {
-        authenticationConfigApi.update(config);
+    public void updateAuthenticationConfig(@RequestBody @Valid LoginConfigVO config) {
+        loginConfigApi.update(config);
     }
 }

@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.settings.client.MailConfig;
+import top.wyhao.settings.client.MailConfigVO;
 import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.settings.adapter.web.dto.ConfigQuery;
 import top.wyhao.settings.adapter.web.dto.ConfigRequest;
@@ -75,17 +75,17 @@ public class ConfigServiceImpl implements ConfigService {
     }
 
     @Override
-    public MailConfig getMailConfig() {
-        return configStoreApi.get(ConfigKeys.MAIL, MailConfig.class);
+    public MailConfigVO getMailConfig() {
+        return configStoreApi.get(ConfigKeys.MAIL, MailConfigVO.class);
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void updateMailConfig(MailConfig config) {
+    public void updateMailConfig(MailConfigVO config) {
         configStoreApi.put(ConfigKeys.MAIL, config);
     }
 
-    public void checkMailConfig(MailConfig mailConfig) {
+    public void checkMailConfig(MailConfigVO mailConfig) {
         if (mailConfig == null) {
             throw ConfigException.mailConfigNotFound();
         }

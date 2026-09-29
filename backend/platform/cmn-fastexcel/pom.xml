@@ -27,7 +27,7 @@
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-base</artifactId>
+            <artifactId>cmn-core</artifactId>
         </dependency>
     </dependencies>
 </project>

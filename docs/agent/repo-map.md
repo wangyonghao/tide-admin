@@ -39,7 +39,9 @@ tide-bootstrap
 | `platform/job` | Quartz 任务管理 |
 | `platform/ops` | audit、notification、settings |
 | `platform/coder` | 代码生成 |
-| `platform/cmn-*` | 安全、缓存、存储、消息、加解密等 |
+| `platform/cmn-core` | 共享内核：枚举、异常、常量、工具 |
+| `platform/cmn-boot` | 运行时聚合：Web / DB / Cache / API 文档 |
+| `platform/cmn-*` | 其余：security、messaging、crypto、storage 等 |
 
 平台域代码常见 COLA 分包：`adapter` / `app` / `domain` / `infrastructure`。
 

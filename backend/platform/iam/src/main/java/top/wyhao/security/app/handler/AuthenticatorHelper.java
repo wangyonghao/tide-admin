@@ -14,7 +14,7 @@ import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.organization.client.DeptApi;
 import top.wyhao.security.app.service.AuthenticationLogService;
-import top.wyhao.common.security.util.LoginUtil;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.identity.client.LoginUser;
 import top.wyhao.cmn.core.util.ExceptionUtils;

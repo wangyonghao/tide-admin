@@ -18,7 +18,7 @@
         <!-- 核心模块 -->
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-base</artifactId>
+            <artifactId>cmn-core</artifactId>
         </dependency>
 
         <!-- TrueLicense (一个开源的证书管理引擎)-->

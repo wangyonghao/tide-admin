@@ -21,14 +21,6 @@ public interface RoleMenuApi {
     Set<Long> listRoleIdByNotInMenuIds(List<Long> menuIds);
 
     /**
-     * 根据角色 ID 列表查询菜单 ID 列表
-     *
-     * @param roleIds 角色 ID 列表
-     * @return 菜单 ID 列表
-     */
-    List<Long> listMenuIdByRoleIds(List<Long> roleIds);
-
-    /**
      * 根据菜单 ID 列表删除
      *
      * @param menuIds 菜单 ID 列表（Not In）

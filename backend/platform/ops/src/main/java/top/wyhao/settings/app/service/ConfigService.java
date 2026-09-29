@@ -1,7 +1,7 @@
 package top.wyhao.settings.app.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import top.wyhao.settings.client.MailConfig;
+import top.wyhao.settings.client.MailConfigVO;
 import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.settings.adapter.web.dto.ConfigQuery;
 import top.wyhao.settings.adapter.web.dto.ConfigRequest;
@@ -29,9 +29,9 @@ public interface ConfigService {
 
     void updateRegisterConfig(RegisterConfigVO config);
 
-    MailConfig getMailConfig();
+    MailConfigVO getMailConfig();
 
-    void updateMailConfig(MailConfig config);
+    void updateMailConfig(MailConfigVO config);
 
     StorageConfigVO getStorageConfig();
 

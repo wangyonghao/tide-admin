@@ -12,13 +12,13 @@
     <artifactId>platform-spi</artifactId>
     <packaging>jar</packaging>
     <name>${project.artifactId}</name>
-    <description>平台跨域 SPI 契约</description>
+    <description>平台跨域 SPI 契约（IAM 域内契约见 platform-iam 同名 client 包）</description>
 
     <dependencies>
 
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-base</artifactId>
+            <artifactId>cmn-core</artifactId>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>

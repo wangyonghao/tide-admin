@@ -1,3 +1,0 @@
-application.autoconfigure.top.wyhao.cmn.core.ApplicationAutoConfiguration
-threadpool.autoconfigure.top.wyhao.cmn.core.ThreadPoolAutoConfiguration
-autoconfigure.top.wyhao.cmn.core.ValidationAutoConfiguration

@@ -10,6 +10,7 @@ import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.SocialLink;
 import top.wyhao.identity.client.UserApi;
 import top.wyhao.identity.client.UserProfile;
+import top.wyhao.identity.client.UserProfileApi;
 import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.identity.domain.model.SysUserSocial;
@@ -23,7 +24,7 @@ import java.util.List;
  */
 @Service
 @RequiredArgsConstructor
-public class UserApiImpl implements UserApi {
+public class UserApiImpl implements UserApi, UserProfileApi {
 
     private final UserService userService;
     private final UserRepository userRepository;

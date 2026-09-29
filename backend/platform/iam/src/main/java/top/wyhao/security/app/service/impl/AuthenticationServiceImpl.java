@@ -9,7 +9,7 @@ import top.wyhao.security.app.handler.AuthenticatorFactory;
 import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
 import top.wyhao.security.app.service.AuthenticationService;
-import top.wyhao.common.security.util.LoginUtil;
+import top.wyhao.common.satoken.util.LoginUtil;
 
 @Service
 @RequiredArgsConstructor

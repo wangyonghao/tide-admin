@@ -11,8 +11,8 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
-import top.wyhao.settings.client.MailConfig;
-import top.wyhao.settings.client.MailConfigProvider;
+import top.wyhao.settings.client.MailConfigVO;
+import top.wyhao.settings.client.MailConfigApi;
 
 import java.io.File;
 import java.util.*;
@@ -27,9 +27,9 @@ import java.util.*;
 @RequiredArgsConstructor
 public class MailClient {
 
-    private final MailConfigProvider mailConfigProvider;
+    private final MailConfigApi mailConfigApi;
 
-    private volatile MailConfig mailConfig;
+    private volatile MailConfigVO mailConfig;
     private volatile JavaMailSender javaMailSender;
 
     /**
@@ -117,7 +117,7 @@ public class MailClient {
         send(tos, ccs, bccs, subject, content, true, files);
     }
 
-    public void sendTestMail(MailConfig mailConfig, String to, String subject, String content) {
+    public void sendTestMail(MailConfigVO mailConfig, String to, String subject, String content) {
         JavaMailSender tempMailSender = createMailSender(mailConfig);
         SimpleMailMessage simpleMailMessage = new SimpleMailMessage();
         simpleMailMessage.setFrom(getFromAddress(mailConfig));
@@ -154,7 +154,7 @@ public class MailClient {
             MimeMessageHelper messageHelper = new MimeMessageHelper(mimeMessage, true, "UTF-8");
 
             // 发信人
-            MailConfig mailAccount = this.getMailConfig();
+            MailConfigVO mailAccount = this.getMailConfig();
             String fromAddress = getFromAddress(mailAccount);
             messageHelper.setFrom(fromAddress);
             // 收信人
@@ -208,7 +208,7 @@ public class MailClient {
     /**
      * 获取发件人地址
      */
-    private String getFromAddress(MailConfig mailConfig) {
+    private String getFromAddress(MailConfigVO mailConfig) {
         String fromName = mailConfig.getFrom();
         String username = mailConfig.getUsername();
 
@@ -222,7 +222,7 @@ public class MailClient {
     /**
      * 动态创建 JavaMailSender
      */
-    public JavaMailSender createMailSender(MailConfig mailConfig) {
+    public JavaMailSender createMailSender(MailConfigVO mailConfig) {
         JavaMailSenderImpl mailSender = new JavaMailSenderImpl();
 
         // 从配置中获取邮件服务器信息
@@ -256,7 +256,7 @@ public class MailClient {
      * 读取最新配置，创建邮件发送器
      */
     public synchronized void reloadConfig() {
-        this.mailConfig = mailConfigProvider.getMailConfig();
+        this.mailConfig = mailConfigApi.getMailConfig();
         this.javaMailSender = createMailSender(mailConfig);
     }
 
@@ -273,7 +273,7 @@ public class MailClient {
     /**
      * 获取当前邮件账户
      */
-    public MailConfig getMailConfig() {
+    public MailConfigVO getMailConfig() {
         if (mailConfig == null) {
             reloadConfig();
         }

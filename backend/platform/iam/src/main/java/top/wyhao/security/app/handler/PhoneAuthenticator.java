@@ -7,7 +7,7 @@ import org.springframework.stereotype.Component;
 import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.UserApi;
-import top.wyhao.identity.client.UserContextHolder;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
 import top.wyhao.security.adapter.web.dto.PhoneAuthenticationRequest;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
@@ -55,7 +55,7 @@ public class PhoneAuthenticator implements Authenticator {
         String userAgent = httpServletRequest != null ? httpServletRequest.getHeader("User-Agent") : null;
         AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
-        return new AuthenticationResult("200", UserContextHolder.getToken(), null);
+        return new AuthenticationResult("200", LoginUtil.getTokenValue(), null);
     }
 
     public void preLogin(PhoneAuthenticationRequest req) {

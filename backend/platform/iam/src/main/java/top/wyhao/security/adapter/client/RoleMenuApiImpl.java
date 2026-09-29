@@ -25,11 +25,6 @@ public class RoleMenuApiImpl implements RoleMenuApi {
     }
 
     @Override
-    public List<Long> listMenuIdByRoleIds(List<Long> roleIds) {
-        return roleMenuRepository.listMenuIdsByRoleIds(roleIds);
-    }
-
-    @Override
     public void deleteByNotInMenuIds(List<Long> menuIds) {
         roleMenuRepository.deleteMenuIdNotIn(menuIds);
     }

@@ -55,7 +55,7 @@
         <!-- 平台基础设施（web/db/cache/trace/messaging） -->
         <dependency>
             <groupId>top.wyhao</groupId>
-            <artifactId>cmn-core</artifactId>
+            <artifactId>cmn-boot</artifactId>
         </dependency>
         <dependency>
             <groupId>top.wyhao</groupId>

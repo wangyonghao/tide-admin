@@ -26,10 +26,9 @@ import top.wyhao.identity.domain.model.SocialSource;
 import top.wyhao.identity.adapter.web.vo.UserSocialBindResp;
 import top.wyhao.identity.app.service.UserService;
 import top.wyhao.identity.app.service.UserSocialService;
-import top.wyhao.identity.client.UserContextHolder;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.security.client.ContactCaptchaApi;
-import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.cmn.core.util.RsaUtils;
 
@@ -65,14 +64,14 @@ public class UserProfileController {
         if (avatarFile.isEmpty()) {
             throw UserException.avatarEmpty();
         }
-        Long newAvatar = userService.updateAvatar(avatarFile, UserContextHolder.getUserId());
+        Long newAvatar = userService.updateAvatar(avatarFile, LoginUtil.getUserId());
         return new ProfileAvatarResult(newAvatar);
     }
 
     @Operation(summary = "修改基础信息", description = "修改用户基础信息")
     @PatchMapping("/user/profile/basic/info")
     public void updateBasicInfo(@RequestBody @Valid UserBasicInfoUpdateReq req) {
-        userService.updateBasicInfo(req, UserContextHolder.getUserId());
+        userService.updateBasicInfo(req, LoginUtil.getUserId());
     }
 
     @Operation(summary = "修改密码", description = "修改用户登录密码")
@@ -80,7 +79,7 @@ public class UserProfileController {
     public void updatePassword(@RequestBody @Valid ProfilePasswordUpdateRequest updateReq) {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
         String newPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getNewPassword(), "新密码解密失败");
-        passwordService.changePassword(UserContextHolder.getUserId(), oldPassword, newPassword);
+        passwordService.changePassword(LoginUtil.getUserId(), oldPassword, newPassword);
     }
 
     @Operation(summary = "修改手机号", description = "修改手机号")
@@ -88,7 +87,7 @@ public class UserProfileController {
     public void updatePhone(@RequestBody @Valid ProfilePhoneUpdateRequest updateReq) {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
         contactCaptchaApi.verifyPhone(updateReq.getPhone(), updateReq.getCaptcha());
-        userService.updatePhone(updateReq.getPhone(), oldPassword, UserContextHolder.getUserId());
+        userService.updatePhone(updateReq.getPhone(), oldPassword, LoginUtil.getUserId());
     }
 
     @Operation(summary = "修改邮箱", description = "修改用户邮箱")
@@ -96,13 +95,13 @@ public class UserProfileController {
     public void updateEmail(@RequestBody @Valid ProfileEmailUpdateRequest request) {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(request.getOldPassword(), DECRYPT_FAILED);
         contactCaptchaApi.verifyEmail(request.getEmail(), request.getCaptcha());
-        userService.updateEmail(request.getEmail(), oldPassword, UserContextHolder.getUserId());
+        userService.updateEmail(request.getEmail(), oldPassword, LoginUtil.getUserId());
     }
 
     @Operation(summary = "查询绑定的三方账号", description = "查询绑定的三方账号")
     @GetMapping("/user/profile/social")
     public List<UserSocialBindResp> listSocialBind() {
-        List<SysUserSocial> userSocialList = userSocialService.listByUserId(UserContextHolder.getUserId());
+        List<SysUserSocial> userSocialList = userSocialService.listByUserId(LoginUtil.getUserId());
         return CollUtils.mapToList(userSocialList, userSocial -> {
             String source = userSocial.getSource();
             UserSocialBindResp userSocialBind = new UserSocialBindResp();
@@ -122,14 +121,14 @@ public class UserProfileController {
             throw AuthenticationException.socialAuthFailed(response.getMsg());
         }
         AuthUser authUser = response.getData();
-        userSocialService.bind(authUser, UserContextHolder.getUserId());
+        userSocialService.bind(authUser, LoginUtil.getUserId());
     }
 
     @Operation(summary = "解绑三方账号", description = "解绑三方账号")
     @Parameter(name = "source", description = "来源", example = "gitee", in = ParameterIn.PATH)
     @DeleteMapping("/user/profile/social/{source}")
     public void unbindSocial(@PathVariable String source) {
-        userSocialService.deleteBySourceAndUserId(source, UserContextHolder.getUserId());
+        userSocialService.deleteBySourceAndUserId(source, LoginUtil.getUserId());
     }
 
     private AuthRequest getAuthRequest(String source) {

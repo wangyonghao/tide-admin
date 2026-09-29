@@ -17,11 +17,11 @@ import top.wyhao.security.domain.model.GrantType;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
 import top.wyhao.security.app.assembler.LoginUserAssembler;
 import top.wyhao.identity.client.CredentialUser;
-import top.wyhao.security.client.AuthenticationConfigApi;
-import top.wyhao.security.client.config.AuthenticationConfigVO;
+import top.wyhao.security.client.LoginConfigApi;
+import top.wyhao.security.client.config.LoginConfigVO;
 import top.wyhao.identity.client.UserApi;
 import top.wyhao.starter.cache.redisson.util.RedisUtils;
-import top.wyhao.identity.client.UserContextHolder;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.constant.RegexConstants;
 import top.wyhao.cmn.core.exception.BizException;
 import top.wyhao.cmn.core.util.ExceptionUtils;
@@ -46,7 +46,7 @@ public class AccountAuthenticator implements Authenticator {
 
     private final PasswordEncoder passwordEncoder;
     private final UserApi userApi;
-    private final AuthenticationConfigApi authenticationConfigApi;
+    private final LoginConfigApi loginConfigApi;
     private final LoginUserAssembler loginUserAssembler;
 
     @Override
@@ -97,7 +97,7 @@ public class AccountAuthenticator implements Authenticator {
             // 9. 记录登录成功日志
             AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
-            return new AuthenticationResult("200", UserContextHolder.getToken(), null);
+            return new AuthenticationResult("200", LoginUtil.getTokenValue(), null);
         } catch (BizException e) {
             // 如果是业务异常且还没记录日志，记录失败日志
             if (!"USERNAME_PASSWORD_ERROR".equals(e.getCode())) {
@@ -149,13 +149,13 @@ public class AccountAuthenticator implements Authenticator {
     }
 
     private boolean exceedRetryLimit(String retryKey) {
-        AuthenticationConfigVO config = authenticationConfigApi.get();
+        LoginConfigVO config = loginConfigApi.get();
         int remain = config.getMaxRetry() - getRetryCount(retryKey);
         return remain <= 0;
     }
 
     private String buildRetryMessage(String retryKey) {
-        AuthenticationConfigVO config = authenticationConfigApi.get();
+        LoginConfigVO config = loginConfigApi.get();
         int remain = config.getMaxRetry() - getRetryCount(retryKey);
         return remain > 0
                 ? "用户名或密码错误，还剩" + remain + "次机会"
@@ -185,7 +185,7 @@ public class AccountAuthenticator implements Authenticator {
 
     private void validateCaptcha(String captchaUUID, String captchaValue) {
         // 校验验证码
-        AuthenticationConfigVO configVO = authenticationConfigApi.get();
+        LoginConfigVO configVO = loginConfigApi.get();
         boolean loginCaptchaEnabled = configVO.getCaptchaEnabled();
         if (!loginCaptchaEnabled) {
             return;
@@ -204,7 +204,7 @@ public class AccountAuthenticator implements Authenticator {
 
     private void incrementRetry(String retryKey) {
         RedisUtils.incr(retryKey);
-        AuthenticationConfigVO configVO = authenticationConfigApi.get();
+        LoginConfigVO configVO = loginConfigApi.get();
         RedisUtils.expire(retryKey, Duration.ofMinutes(configVO.getLockTime()));
     }
 
@@ -229,7 +229,7 @@ public class AccountAuthenticator implements Authenticator {
      */
     private void checkRetryLimit(String retryKey) {
         int retryCount = getRetryCount(retryKey);
-        AuthenticationConfigVO loginConfig = authenticationConfigApi.get();
+        LoginConfigVO loginConfig = loginConfigApi.get();
         int maxRetry = loginConfig.getMaxRetry();
         if (retryCount >= maxRetry) {
             long ttl = RedisUtils.getTimeToLive(retryKey);

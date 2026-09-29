@@ -15,7 +15,7 @@ import top.wyhao.file.api.adapter.web.vo.FileResponse;
 import top.wyhao.file.api.adapter.web.vo.FileUploadResponse;
 import top.wyhao.file.domain.model.File;
 import top.wyhao.file.app.service.FileService;
-import top.wyhao.identity.client.UserContextHolder;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.starter.web.core.model.IdsRequest;
 import top.wyhao.starter.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
@@ -105,7 +105,7 @@ public class FileController {
     }
 
     private Long currentUserId() {
-        Long userId = UserContextHolder.getUserId();
+        Long userId = LoginUtil.getUserId();
         return userId != null ? userId : 0L;
     }
 }
