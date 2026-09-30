@@ -1,14 +1,13 @@
-package top.wyhao.file.api.adapter.exception;
+package top.wyhao.file.adapter.exception;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.annotation.Order;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.ResponseStatus;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import top.wyhao.file.domain.exception.FileException;
-import top.wyhao.file.domain.exception.FileNotFoundException;
-import top.wyhao.file.domain.exception.FileTypeNotAllowedException;
 import top.wyhao.storage.api.StorageException;
 
 import java.util.HashMap;
@@ -22,63 +21,27 @@ import java.util.Map;
  */
 @Slf4j
 @Order(50)
-@RestControllerAdvice(basePackages = "top.wyhao.file.api.adapter")
+@RestControllerAdvice(basePackages = "top.wyhao.file.adapter")
 public class FileApiExceptionHandler {
 
-    /**
-     * 处理文件未找到异常
-     *
-     * @param e 文件未找到异常
-     * @return 错误响应
-     */
-    @ExceptionHandler(FileNotFoundException.class)
-    @ResponseStatus(HttpStatus.NOT_FOUND)
-    public Map<String, Object> handleFileNotFoundException(FileNotFoundException e) {
-        log.warn("文件未找到: {}", e.getMessage());
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", e.getCode());
-        result.put("msg", e.getMessage());
-        return result;
-    }
-
-    /**
-     * 处理文件类型不允许异常
-     *
-     * @param e 文件类型不允许异常
-     * @return 错误响应
-     */
-    @ExceptionHandler(FileTypeNotAllowedException.class)
-    @ResponseStatus(HttpStatus.BAD_REQUEST)
-    public Map<String, Object> handleFileTypeNotAllowedException(FileTypeNotAllowedException e) {
-        log.warn("文件类型不允许: {}", e.getMessage());
-        Map<String, Object> result = new HashMap<>();
-        result.put("code", e.getCode());
-        result.put("msg", e.getMessage());
-        return result;
-    }
-
-    /**
-     * 处理文件异常
-     *
-     * @param e 文件异常
-     * @return 错误响应
-     */
     @ExceptionHandler(FileException.class)
-    @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
-    public Map<String, Object> handleFileException(FileException e) {
-        log.error("文件操作异常: {}", e.getMessage(), e);
+    public ResponseEntity<Map<String, Object>> handleFileException(FileException e) {
+        HttpStatus status = switch (e.getCode()) {
+            case FileException.CODE_NOT_FOUND -> HttpStatus.NOT_FOUND;
+            case FileException.CODE_TYPE_NOT_ALLOWED -> HttpStatus.BAD_REQUEST;
+            default -> HttpStatus.INTERNAL_SERVER_ERROR;
+        };
+        if (status.is5xxServerError()) {
+            log.error("文件操作异常: {}", e.getMessage(), e);
+        } else {
+            log.warn("文件操作异常: code={}, msg={}", e.getCode(), e.getMessage());
+        }
         Map<String, Object> result = new HashMap<>();
         result.put("code", e.getCode());
         result.put("msg", e.getMessage());
-        return result;
+        return ResponseEntity.status(status).body(result);
     }
 
-    /**
-     * 处理存储异常
-     *
-     * @param e 存储异常
-     * @return 错误响应
-     */
     @ExceptionHandler(StorageException.class)
     @ResponseStatus(HttpStatus.INTERNAL_SERVER_ERROR)
     public Map<String, Object> handleStorageException(StorageException e) {

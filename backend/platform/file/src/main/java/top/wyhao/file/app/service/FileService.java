@@ -94,9 +94,9 @@ public interface FileService {
      * 批量逻辑删除
      *
      * @param fileIds    文件 ID 列表
-     * @param operatorId 操作人 ID
+     * @param operator 操作人 ID
      */
-    void delete(List<Long> fileIds, Long operatorId);
+    void delete(List<Long> fileIds, Long operator);
 
     /**
      * 计算文件的 SHA-256 哈希值

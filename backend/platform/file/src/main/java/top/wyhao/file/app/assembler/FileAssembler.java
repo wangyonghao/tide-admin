@@ -1,9 +1,9 @@
-package top.wyhao.file.api.app.assembler;
+package top.wyhao.file.app.assembler;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import top.wyhao.file.api.adapter.web.vo.FileResponse;
-import top.wyhao.file.api.adapter.web.vo.FileUploadResponse;
+import top.wyhao.file.adapter.web.vo.FileResponse;
+import top.wyhao.file.adapter.web.vo.FileUploadResponse;
 import top.wyhao.file.domain.model.File;
 import top.wyhao.web.convert.MapStructConfig;
 

@@ -16,8 +16,6 @@ import top.wyhao.file.app.service.FileService;
 import top.wyhao.file.domain.enums.FileCategory;
 import top.wyhao.file.domain.enums.FileStatus;
 import top.wyhao.file.domain.exception.FileException;
-import top.wyhao.file.domain.exception.FileNotFoundException;
-import top.wyhao.file.domain.exception.FileTypeNotAllowedException;
 import top.wyhao.file.domain.gateway.FileRepository;
 import top.wyhao.file.domain.model.File;
 import top.wyhao.file.infrastructure.config.FileCoreProperties;
@@ -143,7 +141,7 @@ public class FileServiceImpl implements FileService {
     public File get(Long fileId) {
         File file = fileRepository.findById(fileId);
         if (file == null) {
-            throw new FileNotFoundException(fileId);
+            throw FileException.notFound(fileId);
         }
         return file;
     }
@@ -153,12 +151,12 @@ public class FileServiceImpl implements FileService {
         File file = get(fileId);
 
         if (!file.isAccessible()) {
-            throw new FileNotFoundException(fileId);
+            throw FileException.notFound(fileId);
         }
 
         StorageObject storageObject = storageManager.get(file.getStorageType()).get(file.getStorageKey());
         if (storageObject == null) {
-            throw new FileNotFoundException(file.getStorageKey());
+            throw FileException.notFound(file.getStorageKey());
         }
 
         return storageObject.getInputStream();
@@ -199,12 +197,12 @@ public class FileServiceImpl implements FileService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public void delete(List<Long> fileIds, Long operatorId) {
+    public void delete(List<Long> fileIds, Long operator) {
         if (fileIds == null || fileIds.isEmpty()) {
             return;
         }
         for (Long fileId : fileIds) {
-            delete(fileId, operatorId);
+            delete(fileId, operator);
         }
     }
 
@@ -213,7 +211,7 @@ public class FileServiceImpl implements FileService {
         try {
             return DigestUtil.sha256Hex(inputStream);
         } catch (Exception e) {
-            throw new FileException("计算文件哈希值失败", e);
+            throw FileException.hashFailed(e);
         } finally {
             IoUtil.close(inputStream);
         }
@@ -228,7 +226,7 @@ public class FileServiceImpl implements FileService {
     private String checkExtensionAllowed(String fileName) {
         String extension = StrUtil.nullToEmpty(FileUtil.extName(fileName)).toLowerCase(Locale.ROOT);
         if (extension.isEmpty() || !properties.getUpload().getAllowedExtensions().contains(extension)) {
-            throw FileTypeNotAllowedException.extensionNotAllowed(extension);
+            throw FileException.extensionNotAllowed(extension);
         }
         return extension;
     }
@@ -246,7 +244,7 @@ public class FileServiceImpl implements FileService {
         }
         String actualType = FileTypeUtil.getType(new ByteArrayInputStream(data));
         if (!expectedType.equals(actualType)) {
-            throw FileTypeNotAllowedException.contentMismatch(extension);
+            throw FileException.contentMismatch(extension);
         }
     }
 

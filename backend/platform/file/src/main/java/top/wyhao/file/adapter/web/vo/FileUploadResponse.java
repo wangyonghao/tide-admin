@@ -1,4 +1,4 @@
-package top.wyhao.file.api.adapter.web.vo;
+package top.wyhao.file.adapter.web.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;

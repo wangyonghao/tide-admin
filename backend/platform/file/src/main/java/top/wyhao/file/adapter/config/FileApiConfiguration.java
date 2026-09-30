@@ -1,4 +1,4 @@
-package top.wyhao.file.api.adapter.config;
+package top.wyhao.file.adapter.config;
 
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;

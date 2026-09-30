@@ -1,4 +1,4 @@
-package top.wyhao.file.api.adapter.web;
+package top.wyhao.file.adapter.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -10,9 +10,9 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
-import top.wyhao.file.api.app.assembler.FileAssembler;
-import top.wyhao.file.api.adapter.web.vo.FileResponse;
-import top.wyhao.file.api.adapter.web.vo.FileUploadResponse;
+import top.wyhao.file.app.assembler.FileAssembler;
+import top.wyhao.file.adapter.web.vo.FileResponse;
+import top.wyhao.file.adapter.web.vo.FileUploadResponse;
 import top.wyhao.file.domain.model.File;
 import top.wyhao.file.app.service.FileService;
 import top.wyhao.common.satoken.util.LoginUtil;
@@ -58,7 +58,7 @@ public class FileController {
     @PostMapping("/api/files")
     public FileUploadResponse upload(
             @RequestPart @NotNull(message = "文件不能为空") MultipartFile file) {
-        File uploadedFile = fileService.upload(file, currentUserId());
+        File uploadedFile = fileService.upload(file, LoginUtil.getUserId());
         return fileAssembler.toUploadResponse(uploadedFile);
     }
 
