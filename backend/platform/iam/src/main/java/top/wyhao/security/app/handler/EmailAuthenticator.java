@@ -13,10 +13,10 @@ import top.wyhao.security.adapter.web.vo.AuthenticationResult;
 import top.wyhao.security.app.assembler.LoginUserAssembler;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.UserApi;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.redisson.util.RedisUtils;
 import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.constant.CacheConstants;
-import top.wyhao.starter.web.http.ServletUtils;
+import top.wyhao.web.http.ServletUtils;
 
 /**
  * 邮箱登录处理器

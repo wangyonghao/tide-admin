@@ -6,8 +6,8 @@ import top.wyhao.identity.adapter.web.vo.UserDetail;
 import top.wyhao.identity.adapter.web.dto.UserRequest;
 import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.identity.client.LoginUser;
-import top.wyhao.starter.web.convert.BaseEnumConverters;
-import top.wyhao.starter.web.convert.MapStructConfig;
+import top.wyhao.web.convert.BaseEnumConverters;
+import top.wyhao.web.convert.MapStructConfig;
 
 /**
  * 用户对象转换

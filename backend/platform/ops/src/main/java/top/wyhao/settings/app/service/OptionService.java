@@ -5,7 +5,7 @@ import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.settings.adapter.web.dto.OptionQuery;
 import top.wyhao.settings.adapter.web.dto.OptionRequest;
 import top.wyhao.settings.adapter.web.vo.OptionResult;
-import top.wyhao.starter.web.core.model.LabelValueResult;
+import top.wyhao.web.core.model.LabelValueResult;
 
 import java.util.List;
 

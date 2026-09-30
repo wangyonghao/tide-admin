@@ -6,7 +6,7 @@ import jakarta.validation.Valid;
 import top.wyhao.security.adapter.web.dto.RolePermissionUpdateRequest;
 import top.wyhao.security.domain.model.SysRole;
 import top.wyhao.security.adapter.web.vo.MenuVO;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;

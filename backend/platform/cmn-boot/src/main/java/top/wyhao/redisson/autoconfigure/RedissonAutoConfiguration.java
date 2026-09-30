@@ -19,8 +19,6 @@ import org.springframework.boot.autoconfigure.data.redis.RedisProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import top.wyhao.redisson.handler.NameMapperHandler;
-import top.wyhao.cmn.core.constant.PropertiesConstants;
-import top.wyhao.cmn.core.constant.StringConstants;
 
 import java.util.List;
 
@@ -32,7 +30,7 @@ import java.util.List;
  * @since 1.0.0
  */
 @AutoConfiguration
-@ConditionalOnProperty(prefix = "spring.data.redisson", name = PropertiesConstants.ENABLED, havingValue = "true", matchIfMissing = true)
+@ConditionalOnProperty(prefix = "spring.data.redisson", name = "enabled", havingValue = "true", matchIfMissing = true)
 @EnableConfigurationProperties(RedissonProperties.class)
 public class RedissonAutoConfiguration {
 
@@ -151,7 +149,7 @@ public class RedissonAutoConfiguration {
         }
         if (CharSequenceUtil.isBlank(singleServerConfig.getAddress())) {
             singleServerConfig.setAddress(protocolPrefix + redisProperties
-                    .getHost() + StringConstants.COLON + redisProperties.getPort());
+                    .getHost() + ":" + redisProperties.getPort());
         }
         // Key 前缀
         if (CharSequenceUtil.isNotBlank(properties.getKeyPrefix())) {

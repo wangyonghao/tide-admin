@@ -11,8 +11,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.organization.app.service.DeptService;
 import top.wyhao.cmn.core.model.Result;
-import top.wyhao.starter.web.core.model.IdResult;
-import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.web.core.model.IdResult;
+import top.wyhao.web.core.model.IdsRequest;
 
 import java.util.List;
 import top.wyhao.organization.adapter.web.dto.DeptQuery;

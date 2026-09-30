@@ -35,7 +35,7 @@ import top.wyhao.security.client.PermissionApi;
 import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.cmn.core.util.RsaUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
 
 import java.time.LocalDateTime;

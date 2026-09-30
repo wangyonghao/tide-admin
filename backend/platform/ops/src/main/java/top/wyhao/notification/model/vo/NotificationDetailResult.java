@@ -11,7 +11,8 @@ import lombok.NoArgsConstructor;
 import top.wyhao.notification.model.enums.NoticeScopes;
 import top.wyhao.notification.model.enums.NoticeStatus;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
-import top.wyhao.starter.web.excel.OptionExcelProperty;
+import top.wyhao.web.excel.OptionExcelProperty;
+import top.wyhao.web.excel.ExcelOptionConverter;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -61,7 +62,7 @@ public class NotificationDetailResult {
     private String title;
 
     @Schema(description = "分类（取值于字典 notice_type）", example = "1")
-    @ExcelProperty(value = "分类", converter = top.wyhao.starter.web.excel.ExcelOptionConverter.class, order = 3)
+    @ExcelProperty(value = "分类", converter = ExcelOptionConverter.class, order = 3)
     @OptionExcelProperty("notice_type")
     private String type;
 

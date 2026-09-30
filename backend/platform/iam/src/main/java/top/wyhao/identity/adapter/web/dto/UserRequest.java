@@ -8,7 +8,7 @@ import org.hibernate.validator.constraints.Length;
 import top.wyhao.cmn.core.constant.RegexConstants;
 import top.wyhao.cmn.core.enums.GenderEnum;
 import top.wyhao.cmn.core.enums.StatusEnum;
-import top.wyhao.starter.web.validation.Mobile;
+import top.wyhao.web.validation.Mobile;
 
 import java.util.List;
 

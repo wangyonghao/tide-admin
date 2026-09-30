@@ -8,7 +8,7 @@ import top.wyhao.settings.adapter.web.dto.ConfigRequest;
 import top.wyhao.settings.adapter.web.vo.config.RegisterConfigVO;
 import top.wyhao.settings.adapter.web.vo.config.StorageConfigVO;
 import top.wyhao.settings.adapter.web.vo.ConfigResult;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 
 import java.util.List;
 

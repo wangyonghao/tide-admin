@@ -17,7 +17,7 @@ import top.wyhao.notification.service.SmsService;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.notification.exception.SmsException;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.LinkedHashMap;

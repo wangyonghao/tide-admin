@@ -4,7 +4,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import org.apache.ibatis.annotations.Mapper;
 import top.wyhao.cmn.db.model.BaseMapper;
 import top.wyhao.settings.domain.model.SysConfig;
-import top.wyhao.starter.web.json.util.JSONUtils;
+import top.wyhao.web.json.util.JSONUtils;
 
 /**
  * 系统配置 Mapper

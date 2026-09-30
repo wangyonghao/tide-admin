@@ -13,7 +13,7 @@ import org.springframework.web.bind.annotation.*;
 import top.wyhao.security.adapter.web.vo.MenuTreeVO;
 import top.wyhao.security.adapter.web.vo.MenuVO;
 import top.wyhao.security.app.service.MenuService;
-import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.web.core.model.IdResult;
 
 import java.util.List;
 import top.wyhao.security.adapter.web.dto.MenuQuery;

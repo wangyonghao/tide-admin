@@ -1,5 +1,5 @@
 
-package top.wyhao.cmn.core.autoconfigure.threadpool;
+package top.wyhao.threadpool.autoconfigure;
 
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;

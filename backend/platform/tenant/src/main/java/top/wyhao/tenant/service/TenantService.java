@@ -7,9 +7,9 @@ import top.wyhao.tenant.model.query.TenantQuery;
 import top.wyhao.tenant.model.req.TenantRequest;
 import top.wyhao.tenant.model.resp.TenantDetailResp;
 import top.wyhao.tenant.model.resp.TenantResp;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.starter.web.core.model.LabelValueResult;
+import top.wyhao.web.core.model.LabelValueResult;
 
 import java.util.List;
 

@@ -1,5 +1,5 @@
 
-package top.wyhao.cmn.core.autoconfigure.application;
+package top.wyhao.application.autoconfigure;
 
 import org.springframework.boot.context.properties.ConfigurationProperties;
 

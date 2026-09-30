@@ -25,9 +25,9 @@ import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.identity.domain.exception.UserException;
 import top.wyhao.cmn.core.model.Result;
-import top.wyhao.starter.web.core.model.IdResult;
-import top.wyhao.starter.web.core.model.IdsRequest;
-import top.wyhao.starter.web.util.HttpUtil;
+import top.wyhao.web.core.model.IdResult;
+import top.wyhao.web.core.model.IdsRequest;
+import top.wyhao.web.util.HttpUtil;
 
 import java.io.IOException;
 import java.util.List;

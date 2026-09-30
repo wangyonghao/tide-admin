@@ -1,5 +1,5 @@
 
-package top.wyhao.web.sensitive.serializer;
+package top.wyhao.web.sensitive;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import com.fasterxml.jackson.core.JsonGenerator;
@@ -9,8 +9,6 @@ import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 import com.fasterxml.jackson.databind.ser.ContextualSerializer;
 import top.wyhao.cmn.core.constant.StringConstants;
-import top.wyhao.web.sensitive.annotation.Sensitive;
-import top.wyhao.web.sensitive.enums.SensitiveMethod;
 
 import java.io.IOException;
 

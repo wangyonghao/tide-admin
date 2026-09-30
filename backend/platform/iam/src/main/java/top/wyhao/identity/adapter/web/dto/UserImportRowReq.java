@@ -8,7 +8,7 @@ import jakarta.validation.constraints.Pattern;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import top.wyhao.cmn.core.constant.RegexConstants;
-import top.wyhao.starter.web.validation.Mobile;
+import top.wyhao.web.validation.Mobile;
 
 /**
  * 用户导入行数据请求参数

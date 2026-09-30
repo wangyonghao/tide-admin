@@ -1,8 +1,9 @@
 
-package top.wyhao.web.sensitive.annotation;
+package top.wyhao.web.sensitive;
 
 import com.fasterxml.jackson.annotation.JacksonAnnotationsInside;
-import com.fasterxml.jackson.databind.annotation.JsonSerialize;import top.wyhao.web.sensitive.enums.SensitiveMethod;import top.wyhao.web.sensitive.serializer.SensitiveSerializer;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;

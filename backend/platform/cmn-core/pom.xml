@@ -12,20 +12,13 @@
   <packaging>jar</packaging>
 
   <name>${project.artifactId}</name>
-  <description>平台共享内核：枚举、异常、常量、工具与基础自动配置</description>
+  <description>平台共享内核：枚举、异常、常量、工具</description>
 
   <dependencies>
-    <!-- Spring Boot Starter（自动配置相关依赖） -->
+    <!-- Spring Boot Starter（工具与配置绑定） -->
     <dependency>
       <groupId>org.springframework.boot</groupId>
       <artifactId>spring-boot-starter</artifactId>
-    </dependency>
-
-    <!-- Hibernate Validator -->
-    <dependency>
-      <groupId>org.hibernate.validator</groupId>
-      <artifactId>hibernate-validator</artifactId>
-      <optional>true</optional>
     </dependency>
 
     <!-- 第三方封装 Ip2region（离线 IP 数据管理框架和定位库，支持亿级别的数据段，10 微秒级别的查询性能，提供了许多主流编程语言的 xdb 数据管理引擎的实现） -->

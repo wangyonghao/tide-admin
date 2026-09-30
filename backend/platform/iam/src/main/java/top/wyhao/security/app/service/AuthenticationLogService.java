@@ -1,7 +1,7 @@
 package top.wyhao.security.app.service;
 
 import jakarta.servlet.http.HttpServletResponse;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.security.adapter.web.dto.AuthenticationLogQuery;
 import top.wyhao.security.adapter.web.vo.AuthenticationLogResult;

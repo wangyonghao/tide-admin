@@ -20,13 +20,13 @@ import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.security.client.LoginConfigApi;
 import top.wyhao.security.client.config.LoginConfigVO;
 import top.wyhao.identity.client.UserApi;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.redisson.util.RedisUtils;
 import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.constant.RegexConstants;
 import top.wyhao.cmn.core.exception.BizException;
 import top.wyhao.cmn.core.util.ExceptionUtils;
 import top.wyhao.cmn.core.util.RsaUtils;
-import top.wyhao.starter.web.http.ServletUtils;
+import top.wyhao.web.http.ServletUtils;
 
 import java.time.Duration;
 import java.time.LocalDate;

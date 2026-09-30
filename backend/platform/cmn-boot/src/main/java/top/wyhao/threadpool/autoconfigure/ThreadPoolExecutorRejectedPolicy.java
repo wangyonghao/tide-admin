@@ -1,5 +1,5 @@
 
-package top.wyhao.cmn.core.autoconfigure.threadpool;
+package top.wyhao.threadpool.autoconfigure;
 
 import java.util.concurrent.RejectedExecutionHandler;
 import java.util.concurrent.ThreadPoolExecutor;

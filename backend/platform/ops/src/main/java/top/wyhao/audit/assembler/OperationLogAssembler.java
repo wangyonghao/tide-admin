@@ -2,8 +2,8 @@ package top.wyhao.audit.assembler;
 
 import org.mapstruct.Mapper;
 import top.wyhao.audit.entity.SysOperationLog;
-import top.wyhao.starter.web.convert.MapStructConfig;
-import top.wyhao.starter.web.log.OperationLog;
+import top.wyhao.web.convert.MapStructConfig;
+import top.wyhao.web.log.OperationLog;
 
 import java.util.List;
 import top.wyhao.audit.model.vo.OperationLogDetailResult;

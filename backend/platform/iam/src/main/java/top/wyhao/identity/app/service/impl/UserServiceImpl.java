@@ -55,7 +55,7 @@ import top.wyhao.organization.client.DeptApi;
 import top.wyhao.security.client.RoleApi;
 import top.wyhao.identity.client.PasswordPolicyConfig;
 import top.wyhao.identity.client.PasswordPolicyConfigApi;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.redisson.util.RedisUtils;
 import top.wyhao.starter.excel.util.ExcelUtils;
 
 import java.time.Duration;

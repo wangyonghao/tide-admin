@@ -15,7 +15,7 @@ import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.identity.domain.model.PasswordPolicy;
 import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.identity.domain.service.PasswordRules;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.redisson.util.RedisUtils;
 
 import java.time.LocalDateTime;
 import java.util.List;

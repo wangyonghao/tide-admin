@@ -2,7 +2,7 @@ package top.wyhao.notification.assembler;
 
 import org.mapstruct.Mapper;
 import top.wyhao.notification.entity.SysSmsLog;
-import top.wyhao.starter.web.convert.MapStructConfig;
+import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
 import top.wyhao.notification.model.dto.SmsLogRequest;

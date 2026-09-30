@@ -9,10 +9,10 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.notification.service.NoticeService;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.starter.web.core.model.IdsRequest;
-import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.web.core.model.IdsRequest;
+import top.wyhao.web.core.model.IdResult;
 
 import java.util.List;
 import top.wyhao.notification.model.vo.NotificationDetailResult;

@@ -14,8 +14,8 @@ import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.service.AppService;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.starter.web.core.model.IdResult;
-import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.web.core.model.IdResult;
+import top.wyhao.web.core.model.IdsRequest;
 
 import java.util.List;
 

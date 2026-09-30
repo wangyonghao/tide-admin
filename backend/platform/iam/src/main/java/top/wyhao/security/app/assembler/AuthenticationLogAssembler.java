@@ -2,7 +2,7 @@ package top.wyhao.security.app.assembler;
 
 import org.mapstruct.Mapper;
 import top.wyhao.security.domain.model.SysAuthenticationLog;
-import top.wyhao.starter.web.convert.MapStructConfig;
+import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
 import top.wyhao.security.adapter.web.vo.AuthenticationLogExcelResult;

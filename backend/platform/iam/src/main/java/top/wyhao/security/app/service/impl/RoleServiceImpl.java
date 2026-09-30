@@ -31,7 +31,7 @@ import top.wyhao.security.domain.model.SysMenu;
 import top.wyhao.security.domain.model.SysRole;
 import top.wyhao.security.domain.model.SysUserRole;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 
 import java.time.LocalDateTime;
 import java.util.Collections;

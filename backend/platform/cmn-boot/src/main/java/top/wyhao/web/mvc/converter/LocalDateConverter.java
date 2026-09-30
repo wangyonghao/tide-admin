@@ -1,5 +1,5 @@
 
-package top.wyhao.web.mvc.converter.time;
+package top.wyhao.web.mvc.converter;
 
 import cn.hutool.core.date.DateUtil;
 import org.jspecify.annotations.NonNull;

@@ -2,7 +2,7 @@ package top.wyhao.job.adapter.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 
 @Data
 @Schema(description = "任务查询")

@@ -1,5 +1,5 @@
 
-package top.wyhao.cmn.core.autoconfigure.threadpool;
+package top.wyhao.threadpool.autoconfigure;
 
 import cn.hutool.core.util.ArrayUtil;
 import jakarta.annotation.PostConstruct;

@@ -6,7 +6,7 @@ import org.mapstruct.MappingTarget;
 import top.wyhao.security.domain.model.SysMenu;
 import top.wyhao.security.adapter.web.vo.MenuTreeVO;
 import top.wyhao.security.adapter.web.vo.MenuVO;
-import top.wyhao.starter.web.convert.MapStructConfig;
+import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
 import top.wyhao.security.adapter.web.dto.MenuRequest;

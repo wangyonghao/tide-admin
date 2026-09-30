@@ -15,9 +15,9 @@ import top.wyhao.security.adapter.web.vo.MenuTreeVO;
 import top.wyhao.security.app.service.MenuService;
 import top.wyhao.security.app.service.RoleService;
 import top.wyhao.cmn.core.model.Result;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.web.core.model.IdResult;
 
 import java.util.List;
 import top.wyhao.security.adapter.web.vo.RoleDetailResult;

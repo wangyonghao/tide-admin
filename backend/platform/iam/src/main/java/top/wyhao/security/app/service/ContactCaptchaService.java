@@ -6,7 +6,7 @@ import org.springframework.stereotype.Service;
 import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.security.client.ContactCaptchaApi;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.redisson.util.RedisUtils;
 
 /**
  * 校验发到手机或邮箱的验证码。

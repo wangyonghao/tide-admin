@@ -14,10 +14,10 @@ import top.wyhao.tenant.model.req.PackageRequest;
 import top.wyhao.tenant.model.resp.PackageDetailResp;
 import top.wyhao.tenant.model.resp.PackageResp;
 import top.wyhao.tenant.service.PackageService;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.starter.web.core.model.IdsRequest;
-import top.wyhao.starter.web.core.model.IdResult;
+import top.wyhao.web.core.model.IdsRequest;
+import top.wyhao.web.core.model.IdResult;
 
 import java.util.List;
 

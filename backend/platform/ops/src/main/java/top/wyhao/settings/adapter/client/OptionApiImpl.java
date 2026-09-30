@@ -3,8 +3,8 @@ package top.wyhao.settings.adapter.client;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.settings.app.service.OptionService;
-import top.wyhao.starter.web.core.model.LabelValueResult;
-import top.wyhao.starter.web.excel.OptionApi;
+import top.wyhao.web.core.model.LabelValueResult;
+import top.wyhao.web.excel.OptionApi;
 
 import java.util.List;
 

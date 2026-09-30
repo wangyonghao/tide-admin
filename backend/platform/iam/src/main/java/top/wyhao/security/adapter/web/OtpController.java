@@ -13,9 +13,9 @@ import top.wyhao.security.adapter.web.dto.OtpVerifyRequest;
 import top.wyhao.security.adapter.web.vo.OtpSendResult;
 import top.wyhao.security.adapter.web.vo.OtpVerifyResult;
 import top.wyhao.security.app.service.OtpService;
-import top.wyhao.starter.web.ratelimit.LimitType;
-import top.wyhao.starter.web.ratelimit.RateLimiter;
-import top.wyhao.starter.web.ratelimit.RateLimiters;
+import top.wyhao.web.ratelimit.LimitType;
+import top.wyhao.web.ratelimit.RateLimiter;
+import top.wyhao.web.ratelimit.RateLimiters;
 
 import java.util.concurrent.TimeUnit;
 

@@ -13,9 +13,6 @@ import java.util.function.Function;
 
 /**
  * 异常工具类
- *
-
- * @since 1.0.0
  */
 public class ExceptionUtils {
     private static final Logger log = LoggerFactory.getLogger(ExceptionUtils.class);

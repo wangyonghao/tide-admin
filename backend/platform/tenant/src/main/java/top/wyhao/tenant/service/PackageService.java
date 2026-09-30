@@ -8,7 +8,7 @@ import top.wyhao.tenant.model.query.PackageQuery;
 import top.wyhao.tenant.model.req.PackageRequest;
 import top.wyhao.tenant.model.resp.PackageDetailResp;
 import top.wyhao.tenant.model.resp.PackageResp;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;

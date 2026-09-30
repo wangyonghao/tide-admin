@@ -29,12 +29,12 @@ import top.wyhao.cmn.core.constant.SystemConstants;
 import top.wyhao.notification.client.MessageNotifyApi;
 import top.wyhao.security.client.RoleApi;
 import top.wyhao.common.satoken.util.LoginUtil;
-import top.wyhao.cmn.core.autoconfigure.application.ApplicationProperties;
+import top.wyhao.application.autoconfigure.ApplicationProperties;
 import top.wyhao.cmn.core.constant.RegexConstants;
 import top.wyhao.cmn.core.enums.GenderEnum;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
 import top.wyhao.security.client.AuthenticationException;
-import top.wyhao.starter.web.http.ServletUtils;
+import top.wyhao.web.http.ServletUtils;
 
 import java.util.Collections;
 

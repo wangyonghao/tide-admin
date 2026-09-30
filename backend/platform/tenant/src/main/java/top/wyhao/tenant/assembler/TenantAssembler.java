@@ -4,8 +4,8 @@ import org.mapstruct.Mapper;
 import top.wyhao.tenant.model.entity.Tenant;
 import top.wyhao.tenant.model.req.TenantRequest;
 import top.wyhao.tenant.client.TenantBO;
-import top.wyhao.starter.web.convert.BaseEnumConverters;
-import top.wyhao.starter.web.convert.MapStructConfig;
+import top.wyhao.web.convert.BaseEnumConverters;
+import top.wyhao.web.convert.MapStructConfig;
 
 /**
  * 租户对象转换

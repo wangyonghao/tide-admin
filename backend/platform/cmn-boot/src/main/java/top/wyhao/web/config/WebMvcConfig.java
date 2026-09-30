@@ -14,10 +14,10 @@ import org.springframework.web.servlet.config.annotation.EnableWebMvc;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 import top.wyhao.web.norepeat.NoRepeatSubmitAspect;
 import top.wyhao.web.mvc.converter.BaseEnumConverterFactory;
-import top.wyhao.web.mvc.converter.time.DateConverter;
-import top.wyhao.web.mvc.converter.time.LocalDateConverter;
-import top.wyhao.web.mvc.converter.time.LocalDateTimeConverter;
-import top.wyhao.web.mvc.converter.time.LocalTimeConverter;
+import top.wyhao.web.mvc.converter.DateConverter;
+import top.wyhao.web.mvc.converter.LocalDateConverter;
+import top.wyhao.web.mvc.converter.LocalDateTimeConverter;
+import top.wyhao.web.mvc.converter.LocalTimeConverter;
 
 import java.util.List;
 import java.util.Objects;

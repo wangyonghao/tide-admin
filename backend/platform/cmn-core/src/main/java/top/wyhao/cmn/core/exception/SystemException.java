@@ -1,5 +1,8 @@
 package top.wyhao.cmn.core.exception;
 
+/**
+ * 系统异常基类
+ */
 public class SystemException extends RuntimeException{
 
     public SystemException(String message) {

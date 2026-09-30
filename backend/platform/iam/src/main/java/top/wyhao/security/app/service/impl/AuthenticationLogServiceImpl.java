@@ -17,7 +17,7 @@ import top.wyhao.security.domain.model.AuthenticationLogCriteria;
 import top.wyhao.security.domain.model.SysAuthenticationLog;
 import top.wyhao.cmn.core.util.IpUtils;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
 
 import java.time.LocalDateTime;

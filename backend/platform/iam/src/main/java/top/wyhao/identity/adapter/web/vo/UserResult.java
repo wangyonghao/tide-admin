@@ -4,8 +4,8 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import top.wyhao.cmn.core.enums.GenderEnum;
-import top.wyhao.starter.web.sensitive.annotation.Sensitive;
-import top.wyhao.starter.web.sensitive.enums.SensitiveMethod;
+import top.wyhao.web.sensitive.Sensitive;
+import top.wyhao.web.sensitive.SensitiveMethod;
 
 import java.util.List;
 

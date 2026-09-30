@@ -45,8 +45,8 @@ public class CorsConfig {
         // 设置跨域允许时间(秒）
         config.setMaxAge(1800L);
         // 配置允许跨域的域名
-        if (properties.getAllowedOrigins().contains(StringConstants.ASTERISK)) {
-            config.addAllowedOriginPattern(StringConstants.ASTERISK);
+        if (properties.getAllowedOrigins().contains("*")) {
+            config.addAllowedOriginPattern("*");
         } else {
             // 配置为 true 后则必须配置允许跨域的域名，且不允许配置为 *
             config.setAllowCredentials(true);
@@ -60,7 +60,7 @@ public class CorsConfig {
         properties.getExposedHeaders().forEach(config::addExposedHeader);
         // 添加映射路径，拦截一切请求
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration(StringConstants.PATH_PATTERN, config);
+        source.registerCorsConfiguration("/**", config);
         CorsFilter corsFilter = new CorsFilter(source);
         log.debug("[cmn-web] - 'Web-CorsFilter' configured.");
         return corsFilter;

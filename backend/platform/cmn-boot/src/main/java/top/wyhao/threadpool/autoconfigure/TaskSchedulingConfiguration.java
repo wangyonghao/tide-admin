@@ -1,5 +1,5 @@
 
-package top.wyhao.cmn.core.autoconfigure.threadpool;
+package top.wyhao.threadpool.autoconfigure;
 
 import jakarta.annotation.PostConstruct;
 import org.slf4j.Logger;

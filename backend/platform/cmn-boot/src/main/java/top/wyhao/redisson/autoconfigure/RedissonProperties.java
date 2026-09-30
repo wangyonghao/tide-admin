@@ -10,8 +10,6 @@ import org.springframework.boot.context.properties.NestedConfigurationProperty;
 /**
  * Redisson 配置属性
  *
-
-
  * @since 1.0.0
  */
 @ConfigurationProperties("spring.data.redisson")

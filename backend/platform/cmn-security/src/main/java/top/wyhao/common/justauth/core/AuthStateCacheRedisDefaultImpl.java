@@ -2,7 +2,7 @@
 package top.wyhao.common.justauth.core;
 
 import me.zhyd.oauth.cache.AuthStateCache;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.redisson.util.RedisUtils;
 
 import java.time.Duration;
 

@@ -17,7 +17,7 @@ import top.wyhao.security.domain.model.MenuType;
 import top.wyhao.security.adapter.web.vo.MenuTreeVO;
 import top.wyhao.security.adapter.web.vo.MenuVO;
 import top.wyhao.security.app.service.MenuService;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.redisson.util.RedisUtils;
 import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;

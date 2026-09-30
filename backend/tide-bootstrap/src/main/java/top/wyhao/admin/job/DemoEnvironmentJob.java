@@ -29,7 +29,7 @@ import top.wyhao.security.domain.gateway.UserRoleRepository;
 import top.wyhao.tenant.mapper.SysTenantMapper;
 import top.wyhao.tenant.mapper.TenantPackageMapper;
 import top.wyhao.tenant.mapper.TenantPackageMenuMapper;
-import top.wyhao.starter.cache.redisson.util.RedisUtils;
+import top.wyhao.redisson.util.RedisUtils;
 import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.starter.quartz.annotation.JobHandler;

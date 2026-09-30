@@ -7,7 +7,6 @@ import cn.hutool.core.util.ReUtil;
 import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import top.wyhao.cmn.core.constant.RegexConstants;
-import top.wyhao.cmn.core.exception.BadRequestException;
 import top.wyhao.cmn.core.exception.SystemException;
 
 /**
@@ -93,10 +92,10 @@ public class RsaUtils {
                                                         boolean isVerifyPattern) {
         String rawPassword = ExceptionUtils.exToNull(() -> decryptByRsaPrivateKey(encryptedPasswordByRsaPublicKey));
         if (CharSequenceUtil.isBlank(rawPassword)) {
-            throw new BadRequestException("PASSWORD_DECRYPT_FAILED", errorMsg);
+            throw new SystemException(errorMsg);
         }
         if (isVerifyPattern && !ReUtil.isMatch(RegexConstants.PASSWORD, rawPassword)) {
-            throw new BadRequestException("PASSWORD_FORMAT_INVALID", "密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
+            throw new SystemException("密码长度为 8-32 个字符，支持大小写字母、数字、特殊字符，至少包含字母和数字");
         }
         return rawPassword;
     }

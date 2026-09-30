@@ -7,9 +7,10 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.starter.excel.converter.ExcelBaseEnumConverter;
-import top.wyhao.starter.web.sensitive.annotation.Sensitive;
-import top.wyhao.starter.web.sensitive.enums.SensitiveMethod;
-import top.wyhao.starter.web.excel.OptionExcelProperty;
+import top.wyhao.web.excel.ExcelOptionConverter;
+import top.wyhao.web.sensitive.Sensitive;
+import top.wyhao.web.sensitive.SensitiveMethod;
+import top.wyhao.web.excel.OptionExcelProperty;
 
 /**
  * 短信配置响应参数
@@ -49,7 +50,7 @@ public class SmsConfigResult {
              * @see org.dromara.sms4j.comm.constant.SupplierConstant
              */
             @Schema(description = "厂商", example = "cloopen")
-            @ExcelProperty(value = "厂商", converter = top.wyhao.starter.web.excel.ExcelOptionConverter.class)
+            @ExcelProperty(value = "厂商", converter = ExcelOptionConverter.class)
             @OptionExcelProperty("sms_supplier")
             String supplier,
 

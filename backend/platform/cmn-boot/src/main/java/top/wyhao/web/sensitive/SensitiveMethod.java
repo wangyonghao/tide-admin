@@ -1,5 +1,5 @@
 
-package top.wyhao.web.sensitive.enums;
+package top.wyhao.web.sensitive;
 
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.DesensitizedUtil;

@@ -23,7 +23,7 @@ import top.wyhao.settings.domain.exception.ConfigException;
 import top.wyhao.settings.domain.gateway.ConfigRepository;
 import top.wyhao.settings.domain.model.SysConfig;
 import top.wyhao.starter.excel.util.ExcelUtils;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 
 import java.util.List;
 

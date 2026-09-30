@@ -15,8 +15,8 @@ import top.wyhao.notification.model.enums.NoticeScopes;
 import top.wyhao.notification.service.MessageService;
 import top.wyhao.notification.service.NoticeService;
 import top.wyhao.common.satoken.util.LoginUtil;
-import top.wyhao.starter.web.core.model.PageQuery;
-import top.wyhao.starter.web.core.model.IdsRequest;
+import top.wyhao.web.core.model.PageQuery;
+import top.wyhao.web.core.model.IdsRequest;
 import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.Collections;

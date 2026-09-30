@@ -2,7 +2,7 @@ package top.wyhao.organization.app.assembler;
 
 import org.mapstruct.Mapper;
 import top.wyhao.organization.domain.model.SysDept;
-import top.wyhao.starter.web.convert.MapStructConfig;
+import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
 import top.wyhao.organization.adapter.web.vo.DeptResult;

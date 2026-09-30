@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import top.wyhao.settings.adapter.web.dto.ConfigRequest;
 import top.wyhao.settings.adapter.web.vo.ConfigResult;
 import top.wyhao.settings.domain.model.SysConfig;
-import top.wyhao.starter.web.convert.MapStructConfig;
+import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
 

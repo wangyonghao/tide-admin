@@ -1,7 +1,7 @@
 
 package top.wyhao.notification.service;
 
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;

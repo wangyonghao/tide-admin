@@ -8,9 +8,6 @@ import lombok.NoArgsConstructor;
 
 /**
  * 响应信息
- *
-
- * @since 1.0.0
  */
 @Data
 @NoArgsConstructor

@@ -12,8 +12,8 @@ import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.identity.client.LoginUser;
 import top.wyhao.cmn.core.model.Result;
 import top.wyhao.tenant.context.TenantContextHolder;
-import top.wyhao.starter.web.http.ServletUtils;
-import top.wyhao.starter.web.json.util.JSONUtils;
+import top.wyhao.web.http.ServletUtils;
+import top.wyhao.web.json.util.JSONUtils;
 
 /**
  * Sa-Token 扩展拦截器
