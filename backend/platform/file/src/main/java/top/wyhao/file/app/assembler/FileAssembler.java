@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import top.wyhao.file.api.adapter.web.vo.FileResponse;
 import top.wyhao.file.api.adapter.web.vo.FileUploadResponse;
 import top.wyhao.file.domain.model.File;
-import top.wyhao.starter.web.convert.MapStructConfig;
+import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
 

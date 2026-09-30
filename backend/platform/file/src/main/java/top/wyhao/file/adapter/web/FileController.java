@@ -16,10 +16,10 @@ import top.wyhao.file.api.adapter.web.vo.FileUploadResponse;
 import top.wyhao.file.domain.model.File;
 import top.wyhao.file.app.service.FileService;
 import top.wyhao.common.satoken.util.LoginUtil;
-import top.wyhao.starter.web.core.model.IdsRequest;
-import top.wyhao.starter.web.core.model.PageQuery;
+import top.wyhao.web.core.model.IdsRequest;
+import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.starter.web.util.HttpUtil;
+import top.wyhao.web.util.HttpUtil;
 
 import java.io.InputStream;
 import java.util.List;
@@ -91,7 +91,7 @@ public class FileController {
     @Parameter(name = "fileId", description = "文件 ID", example = "1", in = ParameterIn.PATH)
     @DeleteMapping("/api/files/{fileId}")
     public void delete(@PathVariable Long fileId) {
-        fileService.delete(fileId, currentUserId());
+        fileService.delete(fileId, LoginUtil.getUserId());
     }
 
     @Operation(summary = "批量删除文件")
@@ -101,11 +101,6 @@ public class FileController {
         if (ids == null || ids.isEmpty()) {
             return;
         }
-        fileService.delete(ids, currentUserId());
-    }
-
-    private Long currentUserId() {
-        Long userId = LoginUtil.getUserId();
-        return userId != null ? userId : 0L;
+        fileService.delete(ids, LoginUtil.getUserId());
     }
 }
