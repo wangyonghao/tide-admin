@@ -46,12 +46,6 @@
             <artifactId>platform-job</artifactId>
         </dependency>
 
-        <!-- 代码生成器 -->
-        <dependency>
-            <groupId>top.wyhao</groupId>
-            <artifactId>platform-coder</artifactId>
-        </dependency>
-
         <!-- 平台基础设施（web/db/cache/trace/messaging） -->
         <dependency>
             <groupId>top.wyhao</groupId>

@@ -59,7 +59,6 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 | 文件 | `backend/platform/file` |
 | 任务 | `backend/platform/job` |
 | 审计 / 通知 / 设置 | `backend/platform/ops` |
-| 代码生成 | `backend/platform/coder` |
 | 开放 API | `backend/interfaces/open-api` |
 | 系统壳 / 仪表盘等 | `backend/biz/biz-system` |
 | 前端页面 / API | `frontend/src/views`、`frontend/src/api` |

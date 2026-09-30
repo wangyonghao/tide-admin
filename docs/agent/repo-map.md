@@ -24,7 +24,7 @@ wyh-admin/
 ```
 tide-bootstrap
   → interfaces/* , biz/*
-    → platform/{iam,tenant,file,job,ops,coder,spi}
+    → platform/{iam,tenant,file,job,ops,spi}
       → platform/cmn-*
 ```
 
@@ -38,7 +38,6 @@ tide-bootstrap
 | `platform/file` | 文件领域与存储适配 |
 | `platform/job` | Quartz 任务管理 |
 | `platform/ops` | audit、notification、settings |
-| `platform/coder` | 代码生成 |
 | `platform/cmn-core` | 共享内核：枚举、异常、常量、工具 |
 | `platform/cmn-boot` | 运行时聚合：Web / DB / Cache / API 文档 |
 | `platform/cmn-*` | 其余：security、messaging、crypto、storage 等 |
@@ -63,7 +62,6 @@ tide-bootstrap
 | 通知 / 公告 | `backend/platform/ops/.../notification/` |
 | 字典 / 配置 | `backend/platform/ops/.../settings/` |
 | 操作日志 | `backend/platform/ops/.../audit/` |
-| 代码生成 | `backend/platform/coder/` |
 
 本地启动：`cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
 

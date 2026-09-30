@@ -34,7 +34,6 @@
         <module>tenant</module>
         <module>iam</module>
         <module>ops</module>
-        <module>coder</module>
     </modules>
 
     <!-- 平台子模块统一测试依赖（版本由 Spring Boot BOM 管理） -->
