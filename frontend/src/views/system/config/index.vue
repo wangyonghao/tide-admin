@@ -102,7 +102,7 @@ const siteForm = ref<SiteConfig>({
 });
 
 const loginForm = ref<LoginConfig>({
-  captchaEnabled: true,
+  captchaErrorThreshold: 2,
   captchaType: 'graphic',
   maxRetry: 5,
   lockTime: 30,
@@ -185,7 +185,12 @@ async function loadConfig(configKey: string) {
       }
       case 'login': {
         const data = await configApi.getLoginConfig();
-        loginForm.value = data;
+        loginForm.value = {
+          ...data,
+          captchaErrorThreshold:
+            data.captchaErrorThreshold ??
+            (data.captchaEnabled === false ? -1 : 2),
+        };
         break;
       }
       case 'register': {
@@ -466,8 +471,19 @@ async function handleVerifyCode() {
               label-placement="left"
               label-width="120"
             >
-              <NFormItem label="启用验证码" path="captchaEnabled">
-                <NCheckbox v-model:checked="loginForm.captchaEnabled">启用</NCheckbox>
+              <NFormItem label="验证码开启阈值" path="captchaErrorThreshold">
+                <div class="w-full">
+                  <NInputNumber
+                    v-model:value="loginForm.captchaErrorThreshold"
+                    :min="-1"
+                    :max="5"
+                    placeholder="-1 不开启；0 始终开启；1~5 为错误次数阈值"
+                    class="w-full"
+                  />
+                  <div class="text-xs text-gray-500 mt-1">
+                    -1 不开启；0 始终开启；1~5 表示密码错误达到该次数后开启（须小于最大重试次数）
+                  </div>
+                </div>
               </NFormItem>
               <NFormItem label="验证码类型" path="captchaType">
                 <NSelect

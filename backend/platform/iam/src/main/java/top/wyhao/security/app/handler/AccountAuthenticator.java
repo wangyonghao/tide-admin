@@ -134,8 +134,8 @@ public class AccountAuthenticator implements Authenticator {
     }
 
     public boolean needCaptcha(String retryKey) {
-        int count = getRetryCount(retryKey);
-        return count >= 2;
+        LoginConfigVO config = loginConfigApi.get();
+        return config.needCaptcha(getRetryCount(retryKey));
     }
 
     private AuthenticationException handlePasswordError(String retryKey) {
@@ -184,10 +184,8 @@ public class AccountAuthenticator implements Authenticator {
     }
 
     private void validateCaptcha(String captchaUUID, String captchaValue) {
-        // 校验验证码
         LoginConfigVO configVO = loginConfigApi.get();
-        boolean loginCaptchaEnabled = configVO.getCaptchaEnabled();
-        if (!loginCaptchaEnabled) {
+        if (!configVO.isCaptchaFeatureEnabled()) {
             return;
         }
         if (StrUtil.isBlank(captchaValue)) {
@@ -199,6 +197,9 @@ public class AccountAuthenticator implements Authenticator {
         String cachedCaptcha = RedisUtils.getAndDelete(CAPTCHA_KEY + captchaUUID);
         if (StrUtil.isBlank(cachedCaptcha)) {
             throw AuthenticationException.captchaExpired();
+        }
+        if (!StrUtil.equalsIgnoreCase(cachedCaptcha, captchaValue)) {
+            throw AuthenticationException.captchaIncorrect();
         }
     }
 

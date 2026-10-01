@@ -12,7 +12,10 @@ export interface SiteConfig {
 
 /** 登录配置 */
 export interface LoginConfig {
-  captchaEnabled: boolean;
+  /** @deprecated 由 captchaErrorThreshold 派生，兼容旧数据 */
+  captchaEnabled?: boolean;
+  /** -1 不开启；0 始终开启；1~5 错误达到该次数后开启 */
+  captchaErrorThreshold: number;
   captchaType: string;
   maxRetry: number;
   lockTime: number;

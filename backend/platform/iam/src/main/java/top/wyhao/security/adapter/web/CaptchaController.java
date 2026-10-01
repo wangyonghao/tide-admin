@@ -63,19 +63,20 @@ public class CaptchaController {
     @GetMapping("/captcha/image")
     public CaptchaImageResult getImageCaptcha() {
         LoginConfigVO loginConfigVO = loginConfigApi.get();
-        boolean loginCaptchaEnabled = loginConfigVO != null && Boolean.TRUE.equals(loginConfigVO.getCaptchaEnabled());
-        if (!loginCaptchaEnabled) {
+        if (loginConfigVO == null || !loginConfigVO.isCaptchaFeatureEnabled()) {
             return new CaptchaImageResult(null, null, null, false);
         }
         Captcha captcha = imageCaptchaService.createCaptchaImage();
         long expireTime = LocalDateTimeUtil.toEpochMilli(LocalDateTime.now().plusSeconds(captchaProperties.getExpirationInSeconds()));
 
         String uuid = IdUtil.fastUUID();
+        // isEnabled=true 表示登录页应默认展示（阈值为 0）；阈值 >0 时由前端在 NEED_CAPTCHA 后强制展示
+        boolean alwaysRequired = loginConfigVO.isCaptchaAlwaysRequired();
         CaptchaImageResult vo = new CaptchaImageResult(
                 uuid,
                 captcha.toBase64(),
                 expireTime,
-                true
+                alwaysRequired
         );
 
         RedisUtils.set(CAPTCHA_KEY + vo.getUuid(), captcha.text(), Duration.ofSeconds(captchaProperties.getExpirationInSeconds()));

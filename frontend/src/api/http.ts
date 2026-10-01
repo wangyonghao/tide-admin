@@ -90,7 +90,9 @@ class HttpService {
           if (code === this.successCode) return data;
           const errMsg = message || '请求业务异常';
           this._showError(errMsg);
-          return Promise.reject(new Error(errMsg));
+          const err = new Error(errMsg) as Error & { code?: string };
+          err.code = String(code);
+          return Promise.reject(err);
         }
         return resData;
       },
@@ -124,6 +126,10 @@ class HttpService {
         message = statusMap[status] || message;
         const backendMsg = error.response?.data?.msg || error.response?.data?.message;
         if (backendMsg) message = backendMsg;
+        const backendCode = error.response?.data?.code;
+        if (backendCode != null) {
+          error.code = String(backendCode);
+        }
 
         this._showError(message || $t('ui.fallback.http.internalServerError'));
         return Promise.reject(error);

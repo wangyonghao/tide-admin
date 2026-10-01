@@ -18,11 +18,19 @@ public class LoginConfigApiImpl implements LoginConfigApi {
 
     @Override
     public LoginConfigVO get() {
-        return configStoreApi.get(ConfigKeys.LOGIN, LoginConfigVO.class);
+        LoginConfigVO config = configStoreApi.get(ConfigKeys.LOGIN, LoginConfigVO.class);
+        if (config == null) {
+            config = new LoginConfigVO();
+        }
+        return config.normalizeForRead();
     }
 
     @Override
     public void update(LoginConfigVO config) {
+        if (config == null) {
+            config = new LoginConfigVO();
+        }
+        config.normalizeAndValidateForWrite();
         configStoreApi.put(ConfigKeys.LOGIN, config);
     }
 }

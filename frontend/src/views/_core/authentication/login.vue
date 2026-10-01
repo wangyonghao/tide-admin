@@ -33,11 +33,17 @@ const captchaInfo = ref<ImageCaptchaResp>({
   expireTime: 0,
   isEnabled: false,
 });
+/** 密码错误达到阈值后由 NEED_CAPTCHA 强制展示验证码 */
+const forceShowCaptcha = ref(false);
 const username = ref('');
 const password = ref('');
 const captcha = ref('');
 const rememberMe = ref(false);
 const loginLoading = ref(false);
+
+const showCaptcha = computed(
+  () => captchaInfo.value.isEnabled || forceShowCaptcha.value,
+);
 
 // Password expired state
 const passwordExpired = ref(false);
@@ -70,7 +76,7 @@ const validateField = (field: string, value: string) => {
       loginSchema.shape.username.parse(value);
     } else if (field === 'password') {
       loginSchema.shape.password.parse(value);
-    } else if (field === 'captcha' && captchaInfo.value.isEnabled) {
+    } else if (field === 'captcha' && showCaptcha.value) {
       z.string().min(1, $t('authentication.verifyRequiredTip')).parse(value);
     }
     validationErrors.value[field] = '';
@@ -94,7 +100,7 @@ const validateForm = () => {
     loginSchema.parse(formData);
 
     // Validate captcha if enabled
-    if (captchaInfo.value.isEnabled) {
+    if (showCaptcha.value) {
       z.string()
         .min(1, $t('authentication.verifyRequiredTip'))
         .parse(captcha.value);
@@ -121,8 +127,17 @@ const getCaptcha = async () => {
   try {
     const res = await captchaApi.getImage();
     const { uuid, img, expireTime, isEnabled } = res;
-    captchaInfo.value = { uuid, img, expireTime, isEnabled };
+    captchaInfo.value = {
+      uuid: uuid || '',
+      img: img || '',
+      expireTime: expireTime || 0,
+      isEnabled: !!isEnabled,
+    };
     captcha.value = '';
+    // 始终开启时同步强制展示标志，避免后续逻辑不一致
+    if (isEnabled) {
+      forceShowCaptcha.value = true;
+    }
   } catch (error) {
     console.error('Failed to get captcha:', error);
   }
@@ -159,10 +174,15 @@ const handleSubmit = async (event?: Event) => {
       expiredUserId.value = result.userId ? String(result.userId) : '';
       expiredTempToken.value = result.tempToken || '';
     }
-  } catch (error) {
+  } catch (error: any) {
     console.error('Login failed:', error);
+    if (error?.code === 'NEED_CAPTCHA') {
+      forceShowCaptcha.value = true;
+      await getCaptcha();
+      return;
+    }
     // Reset captcha on failure
-    if (captchaInfo.value.isEnabled) {
+    if (showCaptcha.value) {
       getCaptcha();
     }
   } finally {
@@ -193,7 +213,7 @@ const handlePasswordChangeCancel = () => {
   // Reset form
   password.value = '';
   captcha.value = '';
-  if (captchaInfo.value.isEnabled) {
+  if (showCaptcha.value) {
     getCaptcha();
   }
 };
@@ -258,7 +278,7 @@ onMounted(() => {
         </div>
 
         <!-- Captcha Field (conditional) -->
-        <div v-if="captchaInfo.isEnabled" class="mb-4">
+        <div v-if="showCaptcha" class="mb-4">
           <VbenInputCaptcha
             v-model="captcha"
             :captcha="captchaInfo.img"
