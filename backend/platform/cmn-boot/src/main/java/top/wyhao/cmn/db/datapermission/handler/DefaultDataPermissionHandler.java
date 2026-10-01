@@ -37,16 +37,16 @@ public class DefaultDataPermissionHandler implements MultiDataPermissionHandler 
 
     @Override
     public Expression getSqlSegment(final Table table, final Expression where, final String mappedStatementId) {
+        DataScope dataPermission = getAnnotation(mappedStatementId);
+        if (dataPermission == null) {
+            return null; // 该方法没标注解,不做数据权限过滤
+        }
         LoginUser user = LoginUtil.getLoginUser();
         // 未登录或超管:不加任何限制
         if (user == null || LoginUtil.isSuperadmin()) {
             return null;
         }
 
-        DataScope dataPermission = getAnnotation(mappedStatementId);
-        if (dataPermission == null) {
-            return null; // 该方法没标注解,不做数据权限过滤
-        }
 
         List<Expression> orConditions = new ArrayList<>();
         for (RoleDataScope role : user.getRoleDataScopes()) {

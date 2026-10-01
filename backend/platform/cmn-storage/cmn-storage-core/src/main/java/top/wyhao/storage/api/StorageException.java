@@ -1,11 +1,14 @@
 package top.wyhao.storage.api;
 
+import lombok.Getter;
+
 /**
  * 存储异常
  *
  * @author wyh
  * @since 2026/09/16
  */
+@Getter
 public class StorageException extends RuntimeException {
 
     private final String code;
@@ -30,7 +33,4 @@ public class StorageException extends RuntimeException {
         this.code = "STORAGE_ERROR";
     }
 
-    public String getCode() {
-        return code;
-    }
 }

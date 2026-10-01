@@ -1,5 +1,7 @@
 package top.wyhao.common.satoken.util;
 
+import cn.dev33.satoken.SaManager;
+import cn.dev33.satoken.context.SaTokenContext;
 import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -7,10 +9,14 @@ import top.wyhao.cmn.core.enums.RoleCodeEnum;
 import top.wyhao.identity.client.LoginUser;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 /**
  * 封装 Sa-Token：当前登录用户与会话操作。
+ *
+ * <p>在非 Web 请求线程（定时任务、启动初始化、MyBatis 元数据填充等）调用时，
+ * 查询类方法返回 null / false，避免 SaTokenContext 未初始化导致整条 SQL 失败。
  */
 public final class LoginUtil {
 
@@ -20,28 +26,50 @@ public final class LoginUtil {
     }
 
     /**
-     * 当前登录用户 ID
+     * 当前请求是否具备可用的 Sa-Token 上下文
+     */
+    private static boolean isContextReady() {
+        SaTokenContext context = SaManager.getSaTokenContext();
+        return context == null || !context.isValid();
+    }
+
+    /**
+     * 当前登录用户 ID（需已登录）
      */
     public static Long getUserId() {
         return StpUtil.getLoginIdAsLong();
     }
 
     public static String getUsername() {
-        return getLoginUser().getUsername();
+        LoginUser loginUser = getLoginUser();
+        if (loginUser == null) {
+            StpUtil.checkLogin();
+            return null;
+        }
+        return loginUser.getUsername();
     }
 
     /**
-     * 当前登录用户
+     * 当前登录用户；未登录或无请求上下文时返回 null
      */
     public static LoginUser getLoginUser() {
+        if (!isLogin()) {
+            return null;
+        }
         SaSession session = StpUtil.getTokenSession();
+        if (session == null) {
+            return null;
+        }
         return (LoginUser) session.get(LOGIN_USER_KEY);
     }
 
     /**
-     * 是否超级管理员
+     * 是否超级管理员；无登录上下文时返回 false
      */
     public static boolean isSuperadmin() {
+        if (!isLogin()) {
+            return false;
+        }
         return StpUtil.hasRole(RoleCodeEnum.SUPER_ADMIN.getCode());
     }
 
@@ -57,6 +85,9 @@ public final class LoginUtil {
      * 判断当前会话是否已经登录
      */
     public static boolean isLogin() {
+        if (isContextReady()) {
+            return false;
+        }
         return StpUtil.isLogin();
     }
 
@@ -90,6 +121,9 @@ public final class LoginUtil {
     }
 
     public static List<String> getPermissions() {
+        if (!isLogin()) {
+            return Collections.emptyList();
+        }
         return StpUtil.getPermissionList();
     }
 
@@ -98,10 +132,16 @@ public final class LoginUtil {
     }
 
     public static boolean hasPermission(String permission) {
+        if (!isLogin()) {
+            return false;
+        }
         return StpUtil.hasPermission(permission);
     }
 
     public static boolean hasRole(String role) {
+        if (!isLogin()) {
+            return false;
+        }
         return StpUtil.hasRole(role);
     }
 
@@ -114,16 +154,12 @@ public final class LoginUtil {
      * @return 登录用户信息
      */
     public static List<LoginUser> pageUser(String keyword, int page, int pageSize, boolean ascend) {
-        // 1. 计算起始索引
         int start = (page - 1) * pageSize;
-        // 2. 分页查询会话id
         List<String> sessionIdList = StpUtil.searchTokenSessionId(keyword, start, pageSize, ascend);
-        // 3. 根据会话ID 获取用户信息
         List<LoginUser> users = new ArrayList<>();
         for (String sessionId : sessionIdList) {
             SaSession session = StpUtil.getSessionBySessionId(sessionId);
             if (session != null) {
-                StpUtil.getStpLogic().getTokenLastActiveTime();
                 users.add((LoginUser) session.get(LOGIN_USER_KEY));
             }
         }
@@ -131,12 +167,18 @@ public final class LoginUtil {
     }
 
     public static String getTokenValue() {
+        if (isContextReady()) {
+            return null;
+        }
         return StpUtil.getTokenValue();
     }
 
     public static Long getTenantId() {
+        LoginUser loginUser = getLoginUser();
+        if (loginUser == null) {
+            return null;
+        }
         SaSession session = StpUtil.getTokenSession();
-        return session.getLong("tenantId");
+        return session == null ? null : session.getLong("tenantId");
     }
-
 }

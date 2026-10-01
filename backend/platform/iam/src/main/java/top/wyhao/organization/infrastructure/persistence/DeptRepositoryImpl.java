@@ -4,14 +4,11 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import top.wyhao.cmn.db.dialect.DatabaseType;
 import top.wyhao.cmn.db.query.QueryWrapperBuilder;
-import top.wyhao.cmn.db.util.DBMetaUtils;
 import top.wyhao.organization.domain.gateway.DeptRepository;
 import top.wyhao.organization.domain.model.SysDept;
 import top.wyhao.organization.infrastructure.persistence.mapper.SysDeptMapper;
 
-import javax.sql.DataSource;
 import java.util.List;
 
 /**
@@ -22,7 +19,6 @@ import java.util.List;
 public class DeptRepositoryImpl implements DeptRepository {
 
     private final SysDeptMapper deptMapper;
-    private final DataSource dataSource;
 
     @Override
     public SysDept findById(Long id) {
@@ -83,9 +79,10 @@ public class DeptRepositoryImpl implements DeptRepository {
         if (CollUtil.isEmpty(ids)) {
             return 0L;
         }
-        DatabaseType databaseType = DBMetaUtils.getDatabaseTypeOrDefault(dataSource, DatabaseType.MYSQL);
         return ids.stream()
-                .mapToLong(id -> deptMapper.lambdaQuery().apply(databaseType.findInSet(id, "ancestors")).count())
+                .mapToLong(id -> deptMapper.lambdaQuery()
+                        .apply("(select position(',{0},' in ','||ancestors||',')) <> 0", id)
+                        .count())
                 .sum();
     }
 

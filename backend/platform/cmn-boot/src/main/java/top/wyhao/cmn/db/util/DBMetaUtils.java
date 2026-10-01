@@ -9,7 +9,6 @@ import cn.hutool.db.meta.Column;
 import cn.hutool.db.meta.MetaUtil;
 import cn.hutool.db.meta.Table;
 import cn.hutool.db.meta.TableType;
-import top.wyhao.cmn.db.dialect.DatabaseType;
 
 import javax.sql.DataSource;
 import java.sql.Connection;
@@ -26,36 +25,6 @@ import java.util.List;
 public class DBMetaUtils {
 
     private DBMetaUtils() {
-    }
-
-    /**
-     * 获取数据库类型（如果获取不到数据库类型，则返回默认数据库类型）
-     *
-     * @param dataSource   数据源
-     * @param defaultValue 默认数据库类型
-     * @return 数据库类型
-     * @since 1.4.1
-     */
-    public static DatabaseType getDatabaseTypeOrDefault(DataSource dataSource, DatabaseType defaultValue) {
-        DatabaseType databaseType = getDatabaseType(dataSource);
-        return databaseType == null ? defaultValue : databaseType;
-    }
-
-    /**
-     * 获取数据库类型
-     *
-     * @param dataSource 数据源
-     * @return 数据库类型
-     * @since 1.4.1
-     */
-    public static DatabaseType getDatabaseType(DataSource dataSource) {
-        try (Connection conn = dataSource.getConnection()) {
-            DatabaseMetaData metaData = conn.getMetaData();
-            String databaseProductName = metaData.getDatabaseProductName();
-            return DatabaseType.get(databaseProductName);
-        } catch (SQLException e) {
-            throw new RuntimeException(e);
-        }
     }
 
     /**
