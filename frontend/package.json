@@ -57,7 +57,7 @@
     "@vueuse/integrations": "catalog:",
     "@vueuse/motion": "catalog:",
     "axios": "catalog:",
-    "cron-parser": "^5.5.0",
+    "cron-parser": "^5.10.1",
     "crypto-js": "^4.2.0",
     "echarts": "catalog:",
     "jsencrypt": "^3.5.4",

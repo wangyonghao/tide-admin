@@ -501,7 +501,6 @@ const getDrawerTitle = computed(() => {
         </Grid>
       </div>
     </div>
-    {{ fieldOptions }}
   </Drawer>
 </template>
 <style lang="css" scoped></style>
