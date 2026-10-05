@@ -92,14 +92,14 @@ public class AuthenticationController {
     @SaIgnore
     @Operation(summary = "三方账号登录授权", description = "三方账号登录授权")
     @Parameter(name = "source", description = "来源", example = "gitee", in = ParameterIn.PATH)
-    @GetMapping("/auth/{source}")
-    public SocialAuthorizeUrlResult bind(@PathVariable String source) {
+    @GetMapping("/oauth/{source}")
+    public SocialAuthorizeUrlResult authorize(@PathVariable String source) {
         AuthRequest authRequest = this.getAuthRequest(source);
         return new SocialAuthorizeUrlResult(authRequest.authorize(AuthStateUtils.createState()));
     }
 
     @Operation(summary = "获取认证信息", description = "获取认证信息")
-    @GetMapping("/auth/info")
+    @GetMapping("/auth/user")
     public AuthenticationInfoResult getAuthenticationInfo() {
         Long userId = LoginUtil.getUserId();
         return new AuthenticationInfoResult(

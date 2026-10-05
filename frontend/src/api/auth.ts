@@ -25,7 +25,7 @@ export const authApi = {
   },
   /** 三方账号登录授权 */
   socialAuth(source: string) {
-    return http.get<SocialAuthAuthorizeResp>(`/auth/${source}`);
+    return http.get<SocialAuthAuthorizeResp>(`/oauth/${source}`);
   },
   /** 退出登录 */
   logout() {
@@ -33,7 +33,7 @@ export const authApi = {
   },
   /** 获取用户简介、菜单、权限信息 */
   getAuthInfo() {
-    return http.get<AuthInfo>('/auth/info');
+    return http.get<AuthInfo>('/auth/user');
   },
   /** 强制修改密码（密码过期时使用） */
   forceChangePassword(req: ForceChangePasswordReq) {
