@@ -67,7 +67,7 @@ export const roleApi = {
 export interface RoleUserResp {
   id: string;
   username: string;
-  nickname: string;
+  displayName: string;
   gender: number;
   description: string;
   status: 1 | 2;

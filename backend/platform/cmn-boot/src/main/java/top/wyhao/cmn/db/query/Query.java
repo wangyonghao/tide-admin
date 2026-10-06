@@ -15,7 +15,7 @@ public @interface   Query {
     /**
      * 对应的实体属性名，默认与 DTO 字段同名。
      * 支持逗号分隔多个属性，此时会组装成一组 OR 条件（常用于关键字搜索）。
-     * 例：@Query(type = LIKE, field = "username,nickname,phone")
+     * 例：@Query(type = LIKE, field = "username,displayName,phone")
      */
     String field() default "";
 

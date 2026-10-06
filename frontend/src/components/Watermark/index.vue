@@ -14,11 +14,11 @@ const visible = computed(() => siteStore.watermarkEnabled && userStore.isLogin);
 // 获取水印文本
 const watermarkText = computed(() => {
   const type = siteStore.watermarkType;
-  // 优先使用 nickname，其次使用 username
+  // 优先使用 displayName，其次使用 username
   const username =
-    userStore.user?.nickname ||
+    userStore.user?.displayName ||
     userStore.user?.username ||
-    userStore.nickname ||
+    userStore.displayName ||
     '用户';
 
   switch (type) {

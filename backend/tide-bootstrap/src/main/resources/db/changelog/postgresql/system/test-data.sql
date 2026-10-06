@@ -108,7 +108,7 @@ VALUES (547887852587843590,'A01', 'Xxx（天津）科技有限公司', 1,1, '/1/
 
 -- 初始化默认用户：admin/admin123；test/test123
 INSERT INTO "sys_user"
-("id", "username", "nickname", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "dept_id", "create_user", "create_time")
+("id", "username", "display_name", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "dept_id", "create_user", "create_time")
 VALUES
     (801822, 'test', '测试员', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 2, NULL, NULL, NULL,
      NULL, 1, FALSE, NOW(), 547887852587843593, 1, NOW()),

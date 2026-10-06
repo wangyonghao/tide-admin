@@ -4,7 +4,8 @@ import cn.hutool.core.bean.BeanUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.cmn.core.enums.StatusEnum;
-import top.wyhao.identity.app.service.UserService;
+import top.wyhao.identity.app.service.UserAdminService;
+import top.wyhao.identity.app.service.UserProfileService;
 import top.wyhao.identity.app.service.UserSocialService;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.SocialLink;
@@ -26,13 +27,14 @@ import java.util.List;
 @RequiredArgsConstructor
 public class UserApiImpl implements UserApi, UserProfileApi {
 
-    private final UserService userService;
+    private final UserAdminService userAdminService;
+    private final UserProfileService userProfileService;
     private final UserRepository userRepository;
     private final UserSocialService userSocialService;
 
     @Override
     public long countByDeptIds(Collection<Long> deptIds) {
-        return userService.countByDeptIds(List.copyOf(deptIds));
+        return userAdminService.countByDeptIds(List.copyOf(deptIds));
     }
 
     @Override
@@ -42,29 +44,34 @@ public class UserApiImpl implements UserApi, UserProfileApi {
 
     @Override
     public CredentialUser findByUsername(String username) {
-        return toCredential(userService.getByUsername(username));
+        return toCredential(userAdminService.getByUsername(username));
     }
 
     @Override
     public CredentialUser findByPhone(String phone) {
-        return toCredential(userService.getByPhone(phone));
+        return toCredential(userAdminService.getByPhone(phone));
     }
 
     @Override
     public CredentialUser findByEmail(String email) {
-        return toCredential(userService.getByEmail(email));
+        return toCredential(userAdminService.getByEmail(email));
     }
 
     @Override
-    public CredentialUser registerSocialUser(String username, String nickname, Integer gender, Long deptId) {
+    public CredentialUser registerSocialUser(String username, String displayName, Integer gender, Long deptId) {
         SysUser user = new SysUser();
         user.setUsername(username);
-        user.setNickname(nickname);
+        user.setDisplayName(displayName);
         user.setGender(gender);
         user.setDeptId(deptId);
         user.setStatus(StatusEnum.ENABLE.getValue());
-        userService.save(user);
+        userAdminService.save(user);
         return toCredential(user);
+    }
+
+    @Override
+    public CredentialUser registerLocalUser(String username, String rawPassword, Long deptId, java.util.List<Long> roleIds) {
+        return toCredential(userProfileService.registerLocal(username, rawPassword, deptId, roleIds));
     }
 
     @Override
@@ -93,7 +100,7 @@ public class UserApiImpl implements UserApi, UserProfileApi {
     @Override
     public UserProfile profile(Long id) {
         UserProfile profile = new UserProfile();
-        BeanUtil.copyProperties(userService.detail(id), profile);
+        BeanUtil.copyProperties(userAdminService.detail(id), profile);
         return profile;
     }
 
@@ -104,7 +111,7 @@ public class UserApiImpl implements UserApi, UserProfileApi {
         return new CredentialUser(
                 user.getId(),
                 user.getUsername(),
-                user.getNickname(),
+                user.getDisplayName(),
                 user.getPassword(),
                 user.getStatus(),
                 user.getGender(),

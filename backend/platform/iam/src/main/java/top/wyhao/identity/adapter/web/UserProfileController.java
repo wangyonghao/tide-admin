@@ -24,7 +24,7 @@ import top.wyhao.identity.domain.exception.UserException;
 import top.wyhao.identity.adapter.web.dto.UserBasicInfoUpdateReq;
 import top.wyhao.identity.domain.model.SocialSource;
 import top.wyhao.identity.adapter.web.vo.UserSocialBindResp;
-import top.wyhao.identity.app.service.UserService;
+import top.wyhao.identity.app.service.UserProfileService;
 import top.wyhao.identity.app.service.UserSocialService;
 import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.security.client.AuthenticationException;
@@ -52,7 +52,7 @@ import top.wyhao.identity.adapter.web.dto.ProfilePhoneUpdateRequest;
 public class UserProfileController {
 
     private static final String DECRYPT_FAILED = "当前密码解密失败";
-    private final UserService userService;
+    private final UserProfileService userProfileService;
     private final UserSocialService userSocialService;
     private final JustAuthProperties authProperties;
     private final PasswordService passwordService;
@@ -64,14 +64,14 @@ public class UserProfileController {
         if (avatarFile.isEmpty()) {
             throw UserException.avatarEmpty();
         }
-        Long newAvatar = userService.updateAvatar(avatarFile, LoginUtil.getUserId());
+        Long newAvatar = userProfileService.updateAvatar(avatarFile, LoginUtil.getUserId());
         return new ProfileAvatarResult(newAvatar);
     }
 
     @Operation(summary = "修改基础信息", description = "修改用户基础信息")
     @PatchMapping("/user/profile/basic/info")
     public void updateBasicInfo(@RequestBody @Valid UserBasicInfoUpdateReq req) {
-        userService.updateBasicInfo(req, LoginUtil.getUserId());
+        userProfileService.updateBasicInfo(req, LoginUtil.getUserId());
     }
 
     @Operation(summary = "修改密码", description = "修改用户登录密码")
@@ -87,7 +87,7 @@ public class UserProfileController {
     public void updatePhone(@RequestBody @Valid ProfilePhoneUpdateRequest updateReq) {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(updateReq.getOldPassword(), DECRYPT_FAILED);
         contactCaptchaApi.verifyPhone(updateReq.getPhone(), updateReq.getCaptcha());
-        userService.updatePhone(updateReq.getPhone(), oldPassword, LoginUtil.getUserId());
+        userProfileService.updatePhone(updateReq.getPhone(), oldPassword, LoginUtil.getUserId());
     }
 
     @Operation(summary = "修改邮箱", description = "修改用户邮箱")
@@ -95,7 +95,7 @@ public class UserProfileController {
     public void updateEmail(@RequestBody @Valid ProfileEmailUpdateRequest request) {
         String oldPassword = RsaUtils.decryptPasswordByRsaPrivateKey(request.getOldPassword(), DECRYPT_FAILED);
         contactCaptchaApi.verifyEmail(request.getEmail(), request.getCaptcha());
-        userService.updateEmail(request.getEmail(), oldPassword, LoginUtil.getUserId());
+        userProfileService.updateEmail(request.getEmail(), oldPassword, LoginUtil.getUserId());
     }
 
     @Operation(summary = "查询绑定的三方账号", description = "查询绑定的三方账号")

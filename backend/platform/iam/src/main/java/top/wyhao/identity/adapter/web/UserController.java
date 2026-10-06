@@ -19,7 +19,7 @@ import top.wyhao.identity.adapter.web.dto.UserQuery;
 import top.wyhao.identity.adapter.web.dto.UserRequest;
 import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.adapter.web.dto.UserImportRequest;
-import top.wyhao.identity.app.service.UserService;
+import top.wyhao.identity.app.service.UserAdminService;
 import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
@@ -41,7 +41,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/system/user")
 public class UserController {
-    private final UserService userService;
+    private final UserAdminService userAdminService;
     private final PasswordApi passwordApi;
 
     /**
@@ -55,7 +55,7 @@ public class UserController {
     @SaCheckPermission("system:user:list")
     @GetMapping
     public PageResult<UserResult> page(@Valid UserQuery query, @Valid PageParam pageParam) {
-        return userService.page(query, pageParam);
+        return userAdminService.page(query, pageParam);
     }
 
     /**
@@ -67,7 +67,7 @@ public class UserController {
     @SaCheckPermission("system:user:list")
     @GetMapping("/{id}")
     public UserDetail get(@PathVariable Long id) {
-        return userService.detail(id);
+        return userAdminService.detail(id);
     }
 
     /**
@@ -79,7 +79,7 @@ public class UserController {
     @SaCheckPermission("system:user:create")
     @PostMapping
     public IdResult<Long> create(@RequestBody @Validated(UserRequest.Create.class) UserRequest request) {
-        return new IdResult<>(userService.create(request));
+        return new IdResult<>(userAdminService.create(request));
     }
 
     /**
@@ -91,7 +91,7 @@ public class UserController {
     @SaCheckPermission("system:user:edit")
     @PatchMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody @Validated(UserRequest.Update.class) UserRequest request) {
-        userService.update(id, request);
+        userAdminService.update(id, request);
     }
 
     /**
@@ -102,7 +102,7 @@ public class UserController {
     @SaCheckPermission("system:user:delete")
     @DeleteMapping("/{id}")
     public void delete(@PathVariable Long id) {
-        userService.delete(List.of(id));
+        userAdminService.delete(List.of(id));
     }
 
     /**
@@ -113,7 +113,7 @@ public class UserController {
     @SaCheckPermission("system:user:delete")
     @DeleteMapping
     public void batchDelete(@RequestBody @Valid IdsRequest req) {
-        userService.delete(req.getIds());
+        userAdminService.delete(req.getIds());
     }
 
     /**
@@ -122,7 +122,7 @@ public class UserController {
     @SaCheckPermission("system:user:import")
     @GetMapping("/import")
     public void importUsers(@Valid UserImportRequest userImportRequest) {
-        userService.importUser(userImportRequest);
+        userAdminService.importUser(userImportRequest);
     }
     /**
      * 导出
@@ -133,7 +133,7 @@ public class UserController {
     @SaCheckPermission("system:user:export")
     @GetMapping("/export")
     public void export(@Valid UserQuery query, HttpServletResponse response) {
-        userService.export(query, response);
+        userAdminService.export(query, response);
     }
 
     @SaCheckPermission("system:user:export")

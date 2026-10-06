@@ -22,14 +22,14 @@ const showModal = ref(false);
 
 const formData = ref<Partial<ProfileInfo>>({
   username: '',
-  nickname: '',
+  displayName: '',
   email: '',
   mobile: '',
   avatar: '',
 });
 
 const rules: FormRules = {
-  nickname: [{ required: true, message: '请输入昵称', trigger: 'blur' }],
+  displayName: [{ required: true, message: '请输入显示名称', trigger: 'blur' }],
   email: [{ type: 'email', message: '请输入正确的邮箱格式', trigger: 'blur' }],
   mobile: [
     {
@@ -59,7 +59,7 @@ async function loadProfile() {
     const data = await authApi.getProfile();
     formData.value = {
       username: data.username,
-      nickname: data.nickname,
+      displayName: data.displayName,
       email: data.email || '',
       mobile: data.mobile || '',
       avatar: data.avatar || '',
@@ -78,7 +78,7 @@ async function handleSubmit() {
     await formRef.value?.validate();
     loading.value = true;
     await authApi.updateProfile({
-      nickname: formData.value.nickname,
+      displayName: formData.value.displayName,
       email: formData.value.email,
       mobile: formData.value.mobile,
       avatar: formData.value.avatar,
@@ -116,8 +116,8 @@ async function handleSubmit() {
       <n-form-item label="用户名">
         <n-input v-model:value="formData.username" disabled />
       </n-form-item>
-      <n-form-item label="昵称" path="nickname">
-        <n-input v-model:value="formData.nickname" placeholder="请输入昵称" />
+      <n-form-item label="显示名称" path="displayName">
+        <n-input v-model:value="formData.displayName" placeholder="请输入显示名称" />
       </n-form-item>
       <n-form-item label="邮箱" path="email">
         <n-input v-model:value="formData.email" placeholder="请输入邮箱" />

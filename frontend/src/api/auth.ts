@@ -78,7 +78,7 @@ export interface AuthInfo {
 export interface UserProfile {
   userId: string;
   username: string;
-  nickname: string;
+  displayName: string;
   gender: 0 | 1 | 2;
   email: string;
   phone: string;

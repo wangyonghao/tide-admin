@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 public record CredentialUser(
         Long id,
         String username,
-        String nickname,
+        String displayName,
         String password,
         Integer status,
         Integer gender,

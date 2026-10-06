@@ -40,9 +40,9 @@ public interface UserRepository {
 
     void updateAvatar(Long id, Long avatarId);
 
-    void updateBasicInfo(Long id, String nickname, Object gender);
+    void updateBasicInfo(Long id, String displayName, Object gender);
 
-    void updatePassword(Long id, String encodedPassword, LocalDateTime pwdUpdateTime);
+    void updatePassword(Long id, String encodedPassword, LocalDateTime pwdUpdateTime, String passwordHistory);
 
     long countByDeptIds(Collection<Long> deptIds);
 

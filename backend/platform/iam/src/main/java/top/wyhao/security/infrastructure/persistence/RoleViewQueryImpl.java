@@ -47,7 +47,7 @@ public class RoleViewQueryImpl implements RoleViewQuery {
         wrapper.eq("role_id", roleId)
                 .and(StrUtil.isNotBlank(query.getKeyword()),
                         w -> w.like("su.username", query.getKeyword())
-                                .or().like("su.nickname", query.getKeyword()));
+                                .or().like("su.display_name", query.getKeyword()));
         IPage<SysUserRole> memberPage = new Page<>(page, pageSize);
         return userRoleMapper.selectUserPage(memberPage, wrapper).getRecords();
     }

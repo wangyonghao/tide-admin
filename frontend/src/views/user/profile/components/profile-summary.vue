@@ -72,14 +72,14 @@ const maskedEmail = computed(() => {
       <!-- 头像 -->
       <VbenAvatar
         :src="resolveFilePreviewUrl(userInfo?.avatar)"
-        :alt="userInfo?.nickname || 'User'"
+        :alt="userInfo?.displayName || 'User'"
         :size="100"
         class="mb-4 mx-auto"
       />
 
-      <!-- 昵称 -->
+      <!-- 显示名称 -->
       <h3 class="text-xl font-semibold mb-2">
-        {{ userInfo?.nickname || '-' }}
+        {{ userInfo?.displayName || '-' }}
       </h3>
 
       <!-- 用户名 -->

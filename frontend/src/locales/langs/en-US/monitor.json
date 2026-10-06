@@ -5,7 +5,7 @@
     "address": "Login Location",
     "browser": "Browser",
     "os": "Terminal System",
-    "nickname": "User Nickname",
+    "displayName": "Display name",
     "loginTime": "Login Time",
     "lastActiveTime": "Last Active Time",
     "kickout": "Kick Out {0}"
@@ -40,7 +40,7 @@
   "operationLog": {
     "title": "Operation Log",
     "account": "User Account",
-    "createUserString": "User Nickname",
+    "createUserString": "Display name",
     "ip": "Login IP",
     "address": "Login Location",
     "browser": "Browser",

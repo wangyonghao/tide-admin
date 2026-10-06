@@ -222,8 +222,8 @@ const userColumns: DataTableColumns<RoleUserResp> = [
       1,
   },
   {
-    title: $t('system.user.nickname'),
-    key: 'nickname',
+    title: $t('system.user.displayName'),
+    key: 'displayName',
     minWidth: 180,
     fixed: 'left',
     render: (row) =>
@@ -234,9 +234,9 @@ const userColumns: DataTableColumns<RoleUserResp> = [
             class:
               'w-8 h-8 rounded-full bg-primary/10 flex items-center justify-center text-sm font-medium',
           },
-          row.nickname?.charAt(0)?.toUpperCase() || 'U',
+          row.displayName?.charAt(0)?.toUpperCase() || 'U',
         ),
-        h('span', row.nickname),
+        h('span', row.displayName),
       ]),
   },
   { title: $t('system.user.username'), key: 'username', minWidth: 100 },
@@ -390,7 +390,7 @@ const showUserDeleteDialog = (row: RoleUserResp) => {
   dialog.error({
     title: '取消分配',
     content: $t('system.role.cancelRoleConfirm', [
-      row.nickname,
+      row.displayName,
       roleDetail.value?.name || '',
     ]),
     positiveText: $t('common.confirm'),

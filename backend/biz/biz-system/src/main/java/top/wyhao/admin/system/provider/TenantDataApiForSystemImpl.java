@@ -17,7 +17,6 @@ import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.cmn.core.util.ExceptionUtils;
 import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.identity.domain.exception.UserException;
-import top.wyhao.identity.domain.gateway.PasswordHistoryRepository;
 import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.identity.domain.gateway.UserSocialRepository;
 import top.wyhao.identity.domain.model.SysUser;
@@ -60,7 +59,6 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private final SysNoticeMapper noticeMapper;
     private final RoleDeptRepository roleDeptRepository;
     private final UserRepository userRepository;
-    private final PasswordHistoryRepository passwordHistoryRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserSocialRepository userSocialRepository;
     private final RoleService roleService;
@@ -115,7 +113,6 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         roleMenuRepository.deleteAll();
         // 用户数据清除
         userRepository.deleteAll();
-        passwordHistoryRepository.deleteAll();
         userRoleRepository.deleteAll();
         userSocialRepository.deleteAll();
     }
@@ -179,7 +176,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         // 初始化用户
         SysUser user = new SysUser();
         user.setUsername(tenant.getAdminUsername());
-        user.setNickname(RoleCodeEnum.TENANT_ADMIN.getDescription());
+        user.setDisplayName(RoleCodeEnum.TENANT_ADMIN.getDescription());
         user.setPassword(rawPassword);
         user.setGender(GenderEnum.UNKNOWN.getValue());
         user.setDescription("系统初始用户");

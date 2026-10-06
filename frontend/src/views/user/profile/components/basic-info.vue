@@ -27,7 +27,7 @@ const isEditing = ref(false);
 
 // 表单数据
 const formData = ref({
-  nickname: '',
+  displayName: '',
   gender: 0 as 0 | 1 | 2,
 });
 
@@ -40,7 +40,7 @@ const uploadingAvatar = ref(false);
 const initFormData = () => {
   if (userStore.user) {
     formData.value = {
-      nickname: userStore.user.nickname,
+      displayName: userStore.user.displayName,
       gender: userStore.user.gender,
     };
   }
@@ -121,7 +121,7 @@ const userInfo = computed(() => userStore.user);
         <!-- 头像 -->
         <VbenAvatar
           :src="resolveFilePreviewUrl(userInfo?.avatar)"
-          :alt="userInfo?.nickname || 'User'"
+          :alt="userInfo?.displayName || 'User'"
           :size="100"
           class="mb-4 mx-auto"
           @click="showAvatarModal = true"
@@ -150,10 +150,10 @@ const userInfo = computed(() => userStore.user);
         <NInput :value="userInfo?.username" disabled />
       </NFormItem>
 
-      <NFormItem :label="$t('page.profile.basic.nickname')">
+      <NFormItem :label="$t('page.profile.basic.displayName')">
         <NInput
-          v-model:value="formData.nickname"
-          :placeholder="$t('page.profile.basic.nickname')"
+          v-model:value="formData.displayName"
+          :placeholder="$t('page.profile.basic.displayName')"
         />
       </NFormItem>
 

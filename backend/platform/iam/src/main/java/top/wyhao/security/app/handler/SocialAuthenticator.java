@@ -81,20 +81,20 @@ public class SocialAuthenticator implements Authenticator {
         CredentialUser user;
         if (userSocial == null) {
             String username = authUser.getUsername();
-            String nickname = authUser.getNickname();
+            String displayName = authUser.getNickname();
             CredentialUser existsUser = userApi.findByUsername(username);
             String randomStr = RandomUtil.randomString(RandomUtil.BASE_CHAR, 5);
             if (existsUser != null || !ReUtil.isMatch(RegexConstants.USERNAME, username)) {
                 username = randomStr + IdUtil.fastSimpleUUID();
             }
-            if (!ReUtil.isMatch(RegexConstants.GENERAL_NAME, nickname)) {
-                nickname = source.toLowerCase() + randomStr;
+            if (!ReUtil.isMatch(RegexConstants.GENERAL_NAME, displayName)) {
+                displayName = source.toLowerCase() + randomStr;
             }
             Integer gender = null;
             if (authUser.getGender() != null) {
                 gender = GenderEnum.getByValue(Integer.parseInt(authUser.getGender().getCode())).getValue();
             }
-            user = userApi.registerSocialUser(username, nickname, gender, SystemConstants.SUPER_DEPT_ID);
+            user = userApi.registerSocialUser(username, displayName, gender, SystemConstants.SUPER_DEPT_ID);
             roleApi.assignRolesToUser(Collections.singletonList(roleApi.getIdByCode(RoleCodeEnum.GENERAL_USER.getCode())), user.id());
             this.sendSecurityMsg(user);
         } else {
@@ -140,7 +140,7 @@ public class SocialAuthenticator implements Authenticator {
      */
     private void sendSecurityMsg(CredentialUser user) {
         String title = "欢迎加入 %s".formatted(applicationProperties.getName());
-        String content = "您好，%s！您已通过第三方账号完成注册。".formatted(user.nickname());
+        String content = "您好，%s！您已通过第三方账号完成注册。".formatted(user.displayName());
         messageNotifyApi.notifyUsers(title, content, "SECURITY", CollUtil.toList(user.id().toString()));
     }
 }

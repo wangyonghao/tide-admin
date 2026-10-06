@@ -74,7 +74,7 @@ public class UserRepositoryImpl implements UserRepository {
     @Override
     public List<SysUser> listBriefByIds(List<Long> ids) {
         return userMapper.lambdaQuery()
-                .select(SysUser::getId, SysUser::getNickname, SysUser::getIsBuiltin)
+                .select(SysUser::getId, SysUser::getDisplayName, SysUser::getIsBuiltin)
                 .in(SysUser::getId, ids)
                 .list();
     }
@@ -97,19 +97,21 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public void updateBasicInfo(Long id, String nickname, Object gender) {
+    public void updateBasicInfo(Long id, String displayName, Object gender) {
         userMapper.lambdaUpdate()
-                .set(SysUser::getNickname, nickname)
+                .set(SysUser::getDisplayName, displayName)
                 .set(SysUser::getGender, gender)
                 .eq(SysUser::getId, id)
                 .update();
     }
 
     @Override
-    public void updatePassword(Long id, String encodedPassword, LocalDateTime pwdUpdateTime) {
+    public void updatePassword(Long id, String encodedPassword, LocalDateTime pwdUpdateTime,
+                               String passwordHistory) {
         userMapper.lambdaUpdate()
                 .set(SysUser::getPassword, encodedPassword)
                 .set(SysUser::getPwdUpdateTime, pwdUpdateTime)
+                .set(SysUser::getPasswordHistory, passwordHistory)
                 .eq(SysUser::getId, id)
                 .update();
     }

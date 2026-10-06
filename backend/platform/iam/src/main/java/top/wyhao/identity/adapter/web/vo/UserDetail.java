@@ -84,11 +84,11 @@ public class UserDetail {
     private String username;
 
     /**
-     * 昵称
+     * 显示名称
      */
-    @Schema(description = "昵称", example = "张三")
-    @ExcelProperty(value = "昵称", order = 3)
-    private String nickname;
+    @Schema(description = "显示名称", example = "张三")
+    @ExcelProperty(value = "显示名称", order = 3)
+    private String displayName;
 
     /**
      * 状态

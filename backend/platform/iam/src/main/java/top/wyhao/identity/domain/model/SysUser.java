@@ -1,7 +1,10 @@
-
 package top.wyhao.identity.domain.model;
 
-import com.baomidou.mybatisplus.annotation.*;
+import com.baomidou.mybatisplus.annotation.FieldFill;
+import com.baomidou.mybatisplus.annotation.FieldStrategy;
+import com.baomidou.mybatisplus.annotation.TableField;
+import com.baomidou.mybatisplus.annotation.TableId;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
 
@@ -11,12 +14,12 @@ import java.time.LocalDateTime;
 /**
  * 用户实体
  *
-
  * @since 2026/4/14
  */
 @Data
 @TableName(value = "sys_user", autoResultMap = true)
 public class SysUser {
+
     @TableId
     private Long id;
     /**
@@ -24,9 +27,9 @@ public class SysUser {
      */
     private String username;
     /**
-     * 昵称
+     * 显示名称
      */
-    private String nickname;
+    private String displayName;
     /**
      * 密码
      */

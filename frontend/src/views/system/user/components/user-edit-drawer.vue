@@ -44,7 +44,7 @@ const isUpdate = ref(false);
 
 const formData = reactive({
   username: '',
-  nickname: '',
+  displayName: '',
   password: '',
   gender: 0,
   email: '',
@@ -63,10 +63,10 @@ const formRules: FormRules = {
       trigger: 'blur',
     },
   ],
-  nickname: [
+  displayName: [
     {
       required: true,
-      message: '请输入昵称',
+      message: '请输入显示名称',
       trigger: 'blur',
     },
   ],
@@ -115,7 +115,7 @@ async function loadUserDetail() {
   try {
     const res = await userApi.detail(props.userId);
     formData.username = res.username ?? '';
-    formData.nickname = res.nickname ?? '';
+    formData.displayName = res.displayName ?? '';
     formData.gender = res.gender ?? 0;
     formData.email = res.email ?? '';
     formData.phone = res.phone ?? '';
@@ -134,7 +134,7 @@ async function loadUserDetail() {
 function resetForm() {
   isUpdate.value = false;
   formData.username = '';
-  formData.nickname = '';
+  formData.displayName = '';
   formData.password = '';
   formData.gender = 0;
   formData.email = '';
@@ -205,8 +205,8 @@ function handleAfterLeave() {
             :disabled="isUpdate"
           />
         </NFormItem>
-        <NFormItem label="昵称" path="nickname">
-          <NInput v-model:value="formData.nickname" placeholder="请输入昵称" />
+        <NFormItem label="显示名称" path="displayName">
+          <NInput v-model:value="formData.displayName" placeholder="请输入显示名称" />
         </NFormItem>
         <NFormItem v-if="!isUpdate" label="密码" path="password">
           <NInput

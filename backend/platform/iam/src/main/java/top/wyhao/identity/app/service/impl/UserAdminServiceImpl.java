@@ -2,7 +2,6 @@ package top.wyhao.identity.app.service.impl;
 
 import cn.hutool.core.bean.BeanUtil;
 import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.io.file.FileNameUtil;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.text.CharSequenceUtil;
 import cn.hutool.core.util.ObjectUtil;
@@ -18,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import me.ahoo.cosid.IdGenerator;
 import me.ahoo.cosid.provider.DefaultIdGeneratorProvider;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -33,18 +31,21 @@ import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.cmn.db.query.PageParam;
 import top.wyhao.cmn.db.query.PageResult;
 import top.wyhao.common.satoken.util.LoginUtil;
-import top.wyhao.file.domain.model.File;
-import top.wyhao.file.app.service.FileService;
-import top.wyhao.identity.adapter.web.dto.*;
+import top.wyhao.identity.adapter.web.dto.UserImportRequest;
+import top.wyhao.identity.adapter.web.dto.UserImportRowReq;
+import top.wyhao.identity.adapter.web.dto.UserQuery;
+import top.wyhao.identity.adapter.web.dto.UserRequest;
+import top.wyhao.identity.adapter.web.dto.UserRoleUpdateReq;
 import top.wyhao.identity.adapter.web.vo.UserDetail;
 import top.wyhao.identity.adapter.web.vo.UserImportParseResp;
 import top.wyhao.identity.adapter.web.vo.UserImportResp;
 import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.app.assembler.UserAssembler;
 import top.wyhao.identity.app.query.UserViewQuery;
-import top.wyhao.identity.app.service.UserService;
+import top.wyhao.identity.app.service.UserAdminService;
 import top.wyhao.identity.app.service.UserSocialService;
-import top.wyhao.identity.client.PasswordApi;
+import top.wyhao.identity.client.PasswordPolicyConfig;
+import top.wyhao.identity.client.PasswordPolicyConfigApi;
 import top.wyhao.identity.domain.exception.UserException;
 import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.identity.domain.model.SysUser;
@@ -52,33 +53,34 @@ import top.wyhao.identity.domain.service.UserImportPolicy;
 import top.wyhao.identity.domain.service.UserLifecycleRules;
 import top.wyhao.identity.domain.service.UserUniquenessChecker;
 import top.wyhao.organization.client.DeptApi;
-import top.wyhao.security.client.RoleApi;
-import top.wyhao.identity.client.PasswordPolicyConfig;
-import top.wyhao.identity.client.PasswordPolicyConfigApi;
 import top.wyhao.redisson.util.RedisUtils;
+import top.wyhao.security.client.RoleApi;
 import top.wyhao.starter.excel.util.ExcelUtils;
 
 import java.time.Duration;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
- * 用户业务实现：编排跨域能力与领域规则。
+ * 管理员对用户的管理操作实现。
  */
 @Slf4j
 @Service
 @RequiredArgsConstructor
-public class UserServiceImpl implements UserService {
+public class UserAdminServiceImpl implements UserAdminService {
 
     private final PasswordEncoder passwordEncoder;
     private final UserSocialService userSocialService;
     private final RoleApi roleApi;
     private final DeptApi deptApi;
-    private final PasswordApi passwordApi;
-    private final FileService fileService;
     private final UserRepository userRepository;
     private final UserViewQuery userViewQuery;
     private final PasswordPolicyConfigApi passwordPolicyConfigApi;
@@ -86,10 +88,6 @@ public class UserServiceImpl implements UserService {
     private final UserUniquenessChecker uniquenessChecker;
     private final UserLifecycleRules lifecycleRules;
     private final UserImportPolicy importPolicy;
-
-    @Value("${avatar.support-suffix}")
-    private String[] avatarSupportSuffix;
-    private static final long avatarMaxSize = 1024 * 1024 * 2;;
 
     @Override
     public UserDetail detail(Long id) {
@@ -101,6 +99,7 @@ public class UserServiceImpl implements UserService {
         return userViewQuery.page(query, pageParam);
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     public Long create(UserRequest request) {
         String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(request.getPassword()));
@@ -133,8 +132,9 @@ public class UserServiceImpl implements UserService {
         return user.getId();
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
-    @CacheUpdate(key = "#userId", value = "#userBO.nickname", name = CacheConstants.USER_KEY_PREFIX)
+    @CacheUpdate(key = "#userId", value = "#userRequest.displayName", name = CacheConstants.USER_KEY_PREFIX)
     public void update(Long userId, UserRequest userRequest) {
         SysUser oldUser = lifecycleRules.requireUser(userId);
         lifecycleRules.assertAdminUpdateAllowed(oldUser, CollUtil.isNotEmpty(userRequest.getRoleIds()));
@@ -155,6 +155,7 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    @Override
     @Transactional(rollbackFor = Exception.class)
     @CacheInvalidate(key = "#ids", name = CacheConstants.USER_KEY_PREFIX, multi = true)
     public void delete(List<Long> ids) {
@@ -162,7 +163,6 @@ public class UserServiceImpl implements UserService {
         lifecycleRules.assertDeletable(ids, LoginUtil.getUserId(), list);
 
         roleApi.deleteUserRolesByUserIds(ids);
-        passwordApi.deleteByUserIds(ids);
         userSocialService.deleteByUserIds(ids);
         userRepository.deleteByIds(ids);
         ids.forEach(LoginUtil::kickout);
@@ -283,7 +283,7 @@ public class UserServiceImpl implements UserService {
             userDO.setGender(GenderEnum.getByValue(Integer.parseInt(row.getGender())).getValue());
             userDO.setDeptId(deptMap.get(row.getDeptName()));
             if (importPolicy.shouldUpdateExistingUser(req.getDuplicateUser(), row.getUsername(), existUsernames)) {
-                userDO. setId(userMap.get(row.getUsername()));
+                userDO.setId(userMap.get(row.getUsername()));
                 updateList.add(userDO);
             } else {
                 userDO.setId(idGenerator.generate());
@@ -307,72 +307,6 @@ public class UserServiceImpl implements UserService {
     public void updateRole(UserRoleUpdateReq updateReq, Long id) {
         lifecycleRules.requireUser(id);
         roleApi.assignRolesToUser(updateReq.getRoleIds(), id);
-    }
-
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public Long updateAvatar(MultipartFile avatarFile, Long userId) {
-        checkAvatar(avatarFile);
-
-        UserDetail user = this.detail(userId);
-        Long oldAvatarFileId = user.getAvatar();
-
-        File uploaded = fileService.upload(avatarFile, userId);
-        userRepository.updateAvatar(userId, uploaded.getId());
-
-        if (oldAvatarFileId != null) {
-            try {
-                fileService.delete(oldAvatarFileId, userId);
-            } catch (Exception e) {
-                log.warn("删除旧头像文件失败: fileId={}", oldAvatarFileId, e);
-            }
-        }
-
-        return uploaded.getId();
-    }
-
-    private void checkAvatar(MultipartFile avatarFile) {
-        String avatarImageType = FileNameUtil.extName(avatarFile.getOriginalFilename());
-        if (!CharSequenceUtil.equalsAnyIgnoreCase(avatarImageType, avatarSupportSuffix)) {
-            throw UserException.avatarFormatNotSupported(String.join(",", avatarSupportSuffix));
-        }
-
-        long avatarSize = avatarFile.getSize();
-        if (avatarSize > avatarMaxSize) {
-            throw UserException.avatarSizeExceeded(avatarMaxSize / 1024 / 1024);
-        }
-    }
-
-    @Override
-    @CacheUpdate(key = "#id", value = "#req.nickname", name = CacheConstants.USER_KEY_PREFIX)
-    public void updateBasicInfo(UserBasicInfoUpdateReq req, Long id) {
-        lifecycleRules.requireUser(id);
-        userRepository.updateBasicInfo(id, req.getNickname(), req.getGender());
-    }
-
-    @Override
-    public void updatePhone(String newPhone, String oldPassword, Long id) {
-        passwordApi.assertMatches(id, oldPassword);
-        SysUser user = lifecycleRules.requireUser(id);
-        lifecycleRules.assertPhoneChanged(user.getPhone(), newPhone);
-        uniquenessChecker.assertPhoneAvailable(newPhone, id);
-        SysUser updateUser = new SysUser();
-        updateUser.setId(id);
-        updateUser.setPhone(newPhone);
-        userRepository.updatePartial(updateUser);
-    }
-
-    @Override
-    public void updateEmail(String newEmail, String oldPassword, Long id) {
-        SysUser user = lifecycleRules.requireUser(id);
-        passwordApi.assertMatches(id, oldPassword);
-        lifecycleRules.assertEmailChanged(user.getEmail(), newEmail);
-        uniquenessChecker.assertEmailAvailable(newEmail, id);
-
-        SysUser updateUser = new SysUser();
-        updateUser.setId(id);
-        updateUser.setEmail(newEmail);
-        userRepository.updatePartial(updateUser);
     }
 
     @Override

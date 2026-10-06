@@ -10,7 +10,7 @@
             t1.update_user,
             t1.update_time,
             t1.username,
-            t1.nickname,
+            t1.display_name,
             t1.password,
             t1.gender,
             t1.email,

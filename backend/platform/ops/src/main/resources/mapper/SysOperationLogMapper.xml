@@ -31,7 +31,7 @@
             t1.error_msg,
             t1.create_user,
             t1.create_time,
-            t2.nickname AS createUserString
+            t2.display_name AS createUserString
         FROM sys_operation_log AS t1
         LEFT JOIN sys_user AS t2 ON t2.id = t1.create_user
         ${ew.customSqlSegment}

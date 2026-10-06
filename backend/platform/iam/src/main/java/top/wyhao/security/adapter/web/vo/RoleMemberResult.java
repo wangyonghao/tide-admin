@@ -26,8 +26,8 @@ public class RoleMemberResult {
     @Schema(description = "用户名", example = "zhangsan")
     private String username;
 
-    @Schema(description = "昵称", example = "张三")
-    private String nickname;
+    @Schema(description = "显示名称", example = "张三")
+    private String displayName;
 
     @Schema(description = "性别", example = "1")
     private GenderEnum gender;

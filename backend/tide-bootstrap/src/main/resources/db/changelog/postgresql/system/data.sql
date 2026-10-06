@@ -93,7 +93,7 @@ VALUES
     (1, '超级管理员', 'super_admin', 1, '系统初始角色', 0, true, 1, NOW());
 
 -- 初始化默认用户：admin/admin123；test/test123
-INSERT INTO "sys_user" ("id", "username", "nickname", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "dept_id", "create_user", "create_time")
+INSERT INTO "sys_user" ("id", "username", "display_name", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "dept_id", "create_user", "create_time")
 VALUES (1, 'admin', '超级管理员', '$2a$10$kAfyANQ23MKgtwxr9aT.TOWPRW88aX4DXrJmX1W6GfGK463oBdmeG', 1, '42190c6c5639d2ca4edb4150a35e058559ccf8270361a23745a2fd285a273c28', '5bda89a4609a65546422ea56bfe5eab4', NULL, '系统初始用户', 1, true, NOW(), 1, 1, NOW());
 -- 初始化默认用户和角色关联数据
 INSERT INTO "sys_user_role" ("id", "user_id", "role_id")

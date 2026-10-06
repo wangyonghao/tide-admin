@@ -72,13 +72,13 @@ public interface SysUserMapper extends DataPermissionMapper<SysUser> {
     SysUser selectByEmail(@Param("email") String email);
 
     /**
-     * 根据 ID 查询昵称
+     * 根据 ID 查询显示名称
      *
      * @param id ID
-     * @return 昵称
+     * @return 显示名称
      */
-    @Select("SELECT nickname FROM sys_user WHERE id = #{id}")
-    String selectNicknameById(@Param("id") Long id);
+    @Select("SELECT display_name FROM sys_user WHERE id = #{id}")
+    String selectDisplayNameById(@Param("id") Long id);
 
 
 }

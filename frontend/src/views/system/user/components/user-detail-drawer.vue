@@ -124,8 +124,8 @@ function handleEdit() {
         <NDescriptionsItem label="用户名">
           {{ detailData.username || '-' }}
         </NDescriptionsItem>
-        <NDescriptionsItem label="昵称">
-          {{ detailData.nickname || '-' }}
+        <NDescriptionsItem label="显示名称">
+          {{ detailData.displayName || '-' }}
         </NDescriptionsItem>
         <NDescriptionsItem label="性别">
           {{ getGenderLabel(detailData.gender) }}

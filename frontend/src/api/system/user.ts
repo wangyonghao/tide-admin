@@ -66,8 +66,8 @@ export interface UserResp extends BaseEntity {
   id: string;
   /** 用户名 */
   username: string;
-  /** 昵称 */
-  nickname: string;
+  /** 显示名称 */
+  displayName: string;
   /** 密码 */
   password: string;
   /** 性别（0：未知；1：男；2：女） */

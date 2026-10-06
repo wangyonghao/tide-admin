@@ -83,9 +83,9 @@ export const useUserStore = defineStore(
           ? await onSuccess?.()
           : await router.push(preferences.app.defaultHomePath);
 
-        if (user.value?.nickname) {
+        if (user.value?.displayName) {
           message.success(
-            `${$t('authentication.loginSuccessDesc')}:${user.value?.nickname}`,
+            `${$t('authentication.loginSuccessDesc')}:${user.value?.displayName}`,
           );
         }
         return { user, passwordExpired: false };

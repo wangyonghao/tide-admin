@@ -107,7 +107,7 @@ const userColumns: DataTableColumns<UserResp> = [
     render: (_row, index) =>
       (userPagination.value.page - 1) * userPagination.value.pageSize + index + 1,
   },
-  { title: '昵称', key: 'nickname', minWidth: 100, fixed: 'left' },
+  { title: '显示名称', key: 'displayName', minWidth: 100, fixed: 'left' },
   { title: '用户名', key: 'username', minWidth: 100 },
   { title: '部门', key: 'deptName', minWidth: 100, render(row) { return row.deptName || '-'; } },
   { title: '角色', key: 'roleNames', width: 120, render(row) { return row.roleNames || '-'; } },
@@ -381,7 +381,7 @@ onMounted(() => {
             <div class="flex items-center gap-2">
               <NInput
                 v-model:value="userSearchForm.description"
-                placeholder="搜索关键字（用户名/昵称）"
+                placeholder="搜索关键字（用户名/显示名称）"
                 clearable
                 class="w-[240px]"
                 @keyup.enter="handleSearch"

@@ -22,7 +22,7 @@ public class UserProfile {
     private String updateUserString;
     private LocalDateTime updateTime;
     private String username;
-    private String nickname;
+    private String displayName;
     private StatusEnum status;
     private GenderEnum gender;
     private Long deptId;

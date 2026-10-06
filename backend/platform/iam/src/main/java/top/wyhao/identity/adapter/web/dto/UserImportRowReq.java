@@ -28,11 +28,11 @@ public class UserImportRowReq {
     private String username;
 
     /**
-     * 昵称
+     * 显示名称
      */
-    @NotBlank(message = "昵称不能为空")
-    @Pattern(regexp = RegexConstants.GENERAL_NAME, message = "昵称长度为 2-30 个字符，支持中文、字母、数字、下划线，短横线")
-    private String nickname;
+    @NotBlank(message = "显示名称不能为空")
+    @Pattern(regexp = RegexConstants.GENERAL_NAME, message = "显示名称长度为 2-30 个字符，支持中文、字母、数字、下划线，短横线")
+    private String displayName;
 
     /**
      * 密码

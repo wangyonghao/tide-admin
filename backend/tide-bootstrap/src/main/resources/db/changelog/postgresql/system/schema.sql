@@ -141,7 +141,7 @@ CREATE TABLE IF NOT EXISTS "sys_user"
 (
     "id"              int8        NOT NULL,
     "username"        varchar(64) NOT NULL,
-    "nickname"        varchar(30) NOT NULL,
+    "display_name"        varchar(30) NOT NULL,
     "password"        varchar(255)         DEFAULT NULL,
     "gender"          int2        NOT NULL DEFAULT 0,
     "email"           varchar(64)          DEFAULT NULL,
@@ -167,7 +167,7 @@ CREATE INDEX "idx_user_create_user" ON "sys_user" ("create_user");
 CREATE INDEX "idx_user_update_user" ON "sys_user" ("update_user");
 COMMENT ON COLUMN "sys_user"."id" IS 'ID';
 COMMENT ON COLUMN "sys_user"."username" IS '用户名';
-COMMENT ON COLUMN "sys_user"."nickname" IS '昵称';
+COMMENT ON COLUMN "sys_user"."display_name" IS '显示名称';
 COMMENT ON COLUMN "sys_user"."password" IS '密码';
 COMMENT ON COLUMN "sys_user"."gender" IS '性别（0：未知；1：男；2：女）';
 COMMENT ON COLUMN "sys_user"."email" IS '邮箱(加密）';

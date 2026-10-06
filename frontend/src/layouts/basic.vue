@@ -186,7 +186,7 @@ watch(
       await updateWatermark({
         content:
           content ||
-          `${userStore.user?.username} - ${userStore.user?.nickname}`,
+          `${userStore.user?.username} - ${userStore.user?.displayName}`,
       });
     } else {
       destroyWatermark();
@@ -204,7 +204,7 @@ watch(
       <UserDropdown
         :avatar
         :menus
-        :text="userStore.user?.nickname"
+        :text="userStore.user?.displayName"
         description="ann.vben@gmail.com"
         tag-text="Pro"
         @logout="handleLogout"

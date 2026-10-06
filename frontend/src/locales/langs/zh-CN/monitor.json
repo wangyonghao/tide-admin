@@ -33,7 +33,7 @@
     "kickout": "强退{0}",
     "lastActiveTime": "最后活跃时间",
     "loginTime": "登录时间",
-    "nickname": "用户昵称",
+    "displayName": "显示名称",
     "os": "终端系统"
   },
   "operationLog": {
@@ -41,7 +41,7 @@
     "address": "登录地点",
     "browser": "浏览器",
     "createTime": "登录时间",
-    "createUserString": "用户昵称",
+    "createUserString": "显示名称",
     "description": "登录行为",
     "ip": "登录 IP",
     "os": "终端系统",

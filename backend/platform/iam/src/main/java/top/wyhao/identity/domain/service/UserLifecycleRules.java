@@ -33,7 +33,7 @@ public class UserLifecycleRules {
     }
 
     /**
-     * 管理端更新前的约束。行为与原先 UserServiceImpl.update 一致。
+     * 管理端更新前的约束。
      */
     public void assertAdminUpdateAllowed(SysUser existing, boolean changingRoles) {
         if (StatusEnum.DISABLE.getValue().equals(existing.getStatus()) && Boolean.TRUE.equals(existing.getIsBuiltin())) {
@@ -55,7 +55,7 @@ public class UserLifecycleRules {
         }
         Optional<SysUser> builtinUser = foundUsers.stream().filter(SysUser::getIsBuiltin).findFirst();
         if (builtinUser.isPresent()) {
-            throw UserException.builtinDeleteNotAllowed(builtinUser.get().getNickname());
+            throw UserException.builtinDeleteNotAllowed(builtinUser.get().getDisplayName());
         }
     }
 

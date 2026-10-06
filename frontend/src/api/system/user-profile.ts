@@ -10,7 +10,7 @@ export const userProfileApi = {
     return http.patch(`/user/profile/avatar`, data);
   },
   /** 修改用户基本信息 */
-  updateBaseInfo: (data: { gender: number; nickname: string }) => {
+  updateBaseInfo: (data: { gender: number; displayName: string }) => {
     return http.patch(`/user/profile/basic/info`, data);
   },
   /** 修改密码 */

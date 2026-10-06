@@ -27,3 +27,5 @@ databaseChangeLog:
       file: db/changelog/postgresql/system/test-data.sql
   - include:
       file: db/changelog/postgresql/system/rename-security-to-password-policy.sql
+  - include:
+      file: db/changelog/postgresql/system/user-display-name.sql

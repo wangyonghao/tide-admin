@@ -22,8 +22,8 @@ import java.util.List;
 public class UserQuery extends SortableQuery {
 
     @Schema(description = "关键词", example = "zhangsan")
-    /** 关键字：一个字段同时 LIKE 三列，自动组装成 (username like ? or nickname like ? or phone like ?) */
-    @Query(type = Query.Type.LIKE, field = "username,nickname,phone")
+    /** 关键字：一个字段同时 LIKE 三列，自动组装成 (username like ? or displayName like ? or phone like ?) */
+    @Query(type = Query.Type.LIKE, field = "username,displayName,phone")
     private String keyword;
 
     @Schema(description = "状态", example = "1")

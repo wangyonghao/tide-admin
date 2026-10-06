@@ -7,9 +7,9 @@ interface BasicUserInfo {
    */
   avatar: number | null;
   /**
-   * 用户昵称
+   * 显示名称
    */
-  nickname: string;
+  displayName: string;
   /**
    * 用户角色
    */

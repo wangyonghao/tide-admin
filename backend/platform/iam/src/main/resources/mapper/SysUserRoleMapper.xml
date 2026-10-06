@@ -4,7 +4,7 @@
 
   <select id="selectUserPage" resultType="top.wyhao.security.adapter.web.vo.RoleMemberResult">
     SELECT su.id,
-           su.nickname,
+           su.display_name,
            su.username,
            su.avatar,
            su.gender,

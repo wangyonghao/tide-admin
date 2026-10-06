@@ -112,8 +112,8 @@ public class UserException extends BizException {
         return of("USER_DELETE_SELF_NOT_ALLOWED", "不允许删除当前用户");
     }
 
-    public static UserException builtinDeleteNotAllowed(String nickname) {
-        return of("USER_BUILTIN_DELETE_NOT_ALLOWED", StrUtil.format("所选用户 [{}] 是系统内置用户，不允许删除", nickname));
+    public static UserException builtinDeleteNotAllowed(String displayName) {
+        return of("USER_BUILTIN_DELETE_NOT_ALLOWED", StrUtil.format("所选用户 [{}] 是系统内置用户，不允许删除", displayName));
     }
 
     public static UserException avatarFormatNotSupported(String supportSuffix) {

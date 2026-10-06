@@ -24,10 +24,10 @@ public class RoleMemberExcelResult {
     @Schema(description = "用户名", example = "zhangsan")
     private String username;
 
-    @ExcelProperty(value = "昵称")
+    @ExcelProperty(value = "显示名称")
     @ColumnWidth(20)
-    @Schema(description = "昵称", example = "张三")
-    private String nickname;
+    @Schema(description = "显示名称", example = "张三")
+    private String displayName;
 
     @ExcelProperty(value = "性别")
     @ColumnWidth(10)
