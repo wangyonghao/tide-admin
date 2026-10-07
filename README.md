@@ -53,7 +53,7 @@ GitHub: [wyh-admin](https://github.com/wangyonghao/wyh-admin)
 
 我们还进行了全局 Lombok 配置，继承场景默认自动应用 `@EqualsAndHashCode(callSuper = true)` 和 `@ToString(callSuper = true)`，无需手动添加。同时主动禁用了部分 Lombok 注解（如 `@Val`、`@Log4j` 等），避免“又菜又爱玩”的 partner 滥用。
 
-**9.全能业务脚手架：** 支持 **SaaS 租户架构**，基于 RBAC 的权限控制与通用数据权限管理。精心设计的 UI 界面与色彩主题，兼具美观与实用性。内置丰富的通用业务解决方案：第三方登录、邮箱/短信服务（含生产级漏洞处理方案）、个人中心、用户管理、角色管理、组织管理、系统配置、系统日志、消息中心、通知公告等，逻辑闭环，开箱即用。
+**9.全能业务脚手架：** 支持 **SaaS 租户架构**，基于 RBAC 的权限控制与通用数据权限管理。精心设计的 UI 界面与色彩主题，兼具美观与实用性。内置丰富的通用业务解决方案：第三方登录、邮箱/短信服务（含生产级漏洞处理方案）、个人中心、用户管理、角色管理、部门管理、系统配置、系统日志、消息中心、通知公告等，逻辑闭环，开箱即用。
 
 > 优秀的中后台框架不仅提供组件集成与配置，封装好用的工具，更应提供通用基础业务设计及解决方案，为初创团队减负。
 
@@ -145,8 +145,10 @@ git clone https://github.com/wangyonghao/wyh-admin.git
 
 # 2.在 IDE（IntelliJ IDEA/Eclipse）中打开本项目
 
-# 3.修改 tide-bootstrap/src/main/resources/config 配置文件中的数据源配置信息、Redis 配置信息、邮件配置信息等
-# [3.也可以在 IntelliJ IDEA 中直接配置程序启动环境变量（DB_HOST、DB_PORT、DB_USER、DB_PWD、DB_NAME；REDIS_HOST、REDIS_PORT、REDIS_PWD、REDIS_DB）]
+# 3.配置环境变量（示例见 backend/scripts/env.example.sh）
+# cp backend/scripts/env.example.sh backend/scripts/env.sh  # 按需改值
+# set -a && source backend/scripts/env.sh && set +a
+# 或在 IntelliJ IDEA Run Configuration 中配置同名环境变量
 
 # 4.启动程序（任选其一）
 # IDE：运行 top.wyhao.admin.AdminApplication

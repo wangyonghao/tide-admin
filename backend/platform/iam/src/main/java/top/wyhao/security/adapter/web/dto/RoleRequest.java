@@ -40,8 +40,8 @@ public class RoleRequest {
     private DataScopeEnum dataScope;
 
     @Schema(description = "权限范围：部门 ID 列表", example = "5")
-    private List<Long> deptIds;
+    private List<Long> departmentIds;
 
     @Schema(description = "部门选择是否父子节点关联", example = "false")
-    private Boolean deptCheckStrictly;
+    private Boolean departmentCheckStrictly;
 }

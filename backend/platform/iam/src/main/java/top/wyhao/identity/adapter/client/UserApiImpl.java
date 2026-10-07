@@ -33,8 +33,8 @@ public class UserApiImpl implements UserApi, UserProfileApi {
     private final UserSocialService userSocialService;
 
     @Override
-    public long countByDeptIds(Collection<Long> deptIds) {
-        return userAdminService.countByDeptIds(List.copyOf(deptIds));
+    public long countByDepartmentIds(Collection<Long> departmentIds) {
+        return userAdminService.countByDepartmentIds(List.copyOf(departmentIds));
     }
 
     @Override
@@ -58,20 +58,20 @@ public class UserApiImpl implements UserApi, UserProfileApi {
     }
 
     @Override
-    public CredentialUser registerSocialUser(String username, String displayName, Integer gender, Long deptId) {
+    public CredentialUser registerSocialUser(String username, String displayName, Integer gender, Long departmentId) {
         SysUser user = new SysUser();
         user.setUsername(username);
         user.setDisplayName(displayName);
         user.setGender(gender);
-        user.setDeptId(deptId);
+        user.setDepartmentId(departmentId);
         user.setStatus(StatusEnum.ENABLE.getValue());
         userAdminService.save(user);
         return toCredential(user);
     }
 
     @Override
-    public CredentialUser registerLocalUser(String username, String rawPassword, Long deptId, java.util.List<Long> roleIds) {
-        return toCredential(userProfileService.registerLocal(username, rawPassword, deptId, roleIds));
+    public CredentialUser registerLocalUser(String username, String rawPassword, Long departmentId, java.util.List<Long> roleIds) {
+        return toCredential(userProfileService.registerLocal(username, rawPassword, departmentId, roleIds));
     }
 
     @Override
@@ -115,7 +115,7 @@ public class UserApiImpl implements UserApi, UserProfileApi {
                 user.getPassword(),
                 user.getStatus(),
                 user.getGender(),
-                user.getDeptId(),
+                user.getDepartmentId(),
                 user.getPwdUpdateTime(),
                 user.getPwdExpireDate()
         );

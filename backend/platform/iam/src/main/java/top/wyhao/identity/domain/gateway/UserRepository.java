@@ -44,7 +44,7 @@ public interface UserRepository {
 
     void updatePassword(Long id, String encodedPassword, LocalDateTime pwdUpdateTime, String passwordHistory);
 
-    long countByDeptIds(Collection<Long> deptIds);
+    long countByDepartmentIds(Collection<Long> departmentIds);
 
     boolean existsUsername(String username);
 

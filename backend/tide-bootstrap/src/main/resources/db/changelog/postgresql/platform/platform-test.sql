@@ -1,3 +1,5 @@
+-- liquibase formatted sql
+-- changeset wangyonghao:1
 -- comment 初始化系统配置数据
 INSERT INTO "sys_config" ("config_key", "config_value", "description")
 VALUES
@@ -164,7 +166,7 @@ VALUES
     (13, 801833, 547888897925840928),
     (14, 801834, 547888897925840928);
 
--- 测试用户成员关系（与 department_id / user_role 对齐；admin 已在 data.sql）
+-- 测试用户成员关系（与 department_id / user_role 对齐；admin 已在 platform-data.sql）
 INSERT INTO "sys_membership" ("id", "user_id", "scope_type", "scope_id", "is_primary", "status", "joined_at", "create_user", "create_time", "update_time", "deleted")
 SELECT 10000 + row_number() OVER (ORDER BY u.id),
        u.id,

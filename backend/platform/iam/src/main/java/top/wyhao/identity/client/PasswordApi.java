@@ -1,7 +1,5 @@
 package top.wyhao.identity.client;
 
-import java.util.List;
-
 /**
  * 用户密码凭证管理（由 identity 实现）。
  */
@@ -14,6 +12,4 @@ public interface PasswordApi {
     void changePassword(Long userId, String oldPassword, String newPassword);
 
     void assertMatches(Long userId, String rawPassword);
-
-    void deleteByUserIds(List<Long> userIds);
 }

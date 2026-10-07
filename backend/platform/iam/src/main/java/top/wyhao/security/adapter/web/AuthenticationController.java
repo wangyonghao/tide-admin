@@ -22,6 +22,7 @@ import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
+import top.wyhao.security.adapter.web.dto.RegisterRequest;
 import top.wyhao.security.adapter.web.vo.AuthenticationInfoResult;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
 import top.wyhao.security.adapter.web.vo.OnlineUserResult;
@@ -66,6 +67,13 @@ public class AuthenticationController {
     @PostMapping("/auth/login")
     public AuthenticationResult authenticate(@RequestBody @Valid AuthenticationRequest authenticationRequest) {
         return authenticationService.authenticate(authenticationRequest);
+    }
+
+    @SaIgnore
+    @Operation(summary = "注册", description = "用户自助注册并直接登录")
+    @PostMapping("/auth/register")
+    public AuthenticationResult register(@RequestBody @Valid RegisterRequest request) {
+        return authenticationService.register(request);
     }
 
     @Operation(summary = "登出", description = "注销用户的当前登录")

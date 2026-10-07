@@ -21,7 +21,7 @@ export const roleApi = {
       ...result,
       id: toId(result.id),
       menuIds: (result.menuIds ?? []).map(toId),
-      deptIds: (result.deptIds ?? []).map(toId),
+      departmentIds: (result.departmentIds ?? []).map(toId),
     };
   },
   /** 新增角色 */
@@ -72,8 +72,8 @@ export interface RoleUserResp {
   description: string;
   status: 1 | 2;
   isBuiltin?: boolean;
-  deptId: string;
-  deptName: string;
+  departmentId: string;
+  departmentName: string;
   roleIds: string[];
   roleNames: Array<string>;
   disabled: boolean;
@@ -97,7 +97,7 @@ export interface RoleResp extends BaseEntity {
   /** 菜单选择是否父子节点关联 */
   menuCheckStrictly: string;
   /** 部门选择是否父子节点关联 */
-  deptCheckStrictly: string;
+  departmentCheckStrictly: string;
 }
 
 export interface RoleDetailResp extends BaseEntity {
@@ -109,9 +109,9 @@ export interface RoleDetailResp extends BaseEntity {
   sort: string;
   isBuiltin: string;
   menuCheckStrictly: boolean;
-  deptCheckStrictly: boolean;
+  departmentCheckStrictly: boolean;
   menuIds: string[];
-  deptIds: string[];
+  departmentIds: string[];
 }
 
 export interface RoleQuery {

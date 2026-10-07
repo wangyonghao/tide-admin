@@ -55,8 +55,8 @@ public class DefaultDataPermissionHandler implements MultiDataPermissionHandler 
                     return null; // 不加任何限制
                 case SELF:
                     orConditions.add(buildEqExpression(dataPermission.userAlias(), dataPermission.userIdColumn(), user.getUserId()));
-                case DEPT_AND_CHILD, DEPT, CUSTOM_DEPT:
-                    orConditions.add(buildInExpression(dataPermission.deptAlias(), dataPermission.deptIdColumn(), role.getVisibleDeptIds()));
+                case DEPARTMENT_AND_CHILD, DEPARTMENT, CUSTOM_DEPARTMENT:
+                    orConditions.add(buildInExpression(dataPermission.departmentAlias(), dataPermission.departmentIdColumn(), role.getVisibleDepartmentIds()));
                 default:
                     break;
             } ;

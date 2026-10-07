@@ -54,9 +54,10 @@ const emit = defineEmits<{
 const [Form, formApi] = useVbenForm(
   reactive({
     commonConfig: {
-      hideLabel: true,
+      hideLabel: false,
       hideRequiredMark: true,
     },
+    layout: 'vertical',
     schema: computed(() => props.formSchema),
     showDefaultActions: false,
   }),
@@ -108,9 +109,12 @@ defineExpose({
           {{ submitButtonText || $t('authentication.sendResetLink') }}
         </slot>
       </VbenButton>
-      <VbenButton class="mt-4 w-full" variant="outline" @click="goToLogin()">
-        {{ $t('common.back') }}
-      </VbenButton>
+      <div class="mt-4 text-center text-sm">
+        {{ $t('authentication.alreadyHaveAccount') }}
+        <span class="vben-link text-sm font-normal" @click="goToLogin()">
+          {{ $t('authentication.goToLogin') }}
+        </span>
+      </div>
     </div>
   </div>
 </template>

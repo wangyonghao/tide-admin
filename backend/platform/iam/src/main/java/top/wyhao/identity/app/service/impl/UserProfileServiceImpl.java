@@ -16,6 +16,7 @@ import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.file.app.service.FileService;
 import top.wyhao.file.domain.model.File;
 import top.wyhao.identity.adapter.web.dto.UserBasicInfoUpdateReq;
+import top.wyhao.identity.app.service.MembershipService;
 import top.wyhao.identity.app.service.UserProfileService;
 import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.identity.client.PasswordPolicyConfig;
@@ -41,6 +42,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     private final PasswordEncoder passwordEncoder;
     private final RoleApi roleApi;
+    private final MembershipService membershipService;
     private final PasswordApi passwordApi;
     private final FileService fileService;
     private final UserRepository userRepository;
@@ -119,7 +121,7 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     @Override
     @Transactional(rollbackFor = Exception.class)
-    public SysUser registerLocal(String username, String rawPassword, Long deptId, List<Long> roleIds) {
+    public SysUser registerLocal(String username, String rawPassword, Long departmentId, List<Long> roleIds) {
         uniquenessChecker.assertUsernameAvailable(username);
         if (CollUtil.isEmpty(roleIds)) {
             throw UserException.of("REGISTER_ROLE_REQUIRED", "未配置注册默认角色");
@@ -129,7 +131,7 @@ public class UserProfileServiceImpl implements UserProfileService {
         user.setDisplayName(username);
         user.setPassword(passwordEncoder.encode(rawPassword));
         user.setGender(GenderEnum.UNKNOWN.getValue());
-        user.setDeptId(deptId);
+        user.setDepartmentId(departmentId);
         user.setStatus(StatusEnum.ENABLE.getValue());
         user.setIsBuiltin(false);
         user.setPwdUpdateTime(LocalDateTime.now());
@@ -139,6 +141,7 @@ public class UserProfileServiceImpl implements UserProfileService {
                 : 90;
         user.setPwdExpireDate(LocalDate.now().plusDays(expireDays));
         userRepository.insert(user);
+        membershipService.replacePrimaryDepartment(user.getId(), departmentId);
         roleApi.assignRolesToUser(roleIds, user.getId());
         return user;
     }

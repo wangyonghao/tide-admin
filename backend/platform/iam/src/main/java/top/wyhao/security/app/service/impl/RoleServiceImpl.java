@@ -22,6 +22,7 @@ import top.wyhao.security.adapter.web.vo.MenuVO;
 import top.wyhao.security.adapter.web.vo.RoleDetailResult;
 import top.wyhao.security.adapter.web.vo.RoleMemberResult;
 import top.wyhao.security.adapter.web.vo.RoleResult;
+import top.wyhao.identity.app.service.MembershipService;
 import top.wyhao.security.app.assembler.MenuAssembler;
 import top.wyhao.security.app.query.RoleViewQuery;
 import top.wyhao.security.app.service.RoleService;
@@ -50,12 +51,13 @@ public class RoleServiceImpl implements RoleService {
     public static final Long SUPERADMIN_ROLE_ID = 1L;
 
     private final RoleMenuRepository roleMenuRepository;
-    private final RoleDeptRepository roleDeptRepository;
+    private final RoleDepartmentRepository roleDepartmentRepository;
     private final UserRoleRepository userRoleRepository;
     private final MenuRepository menuRepository;
     private final RoleRepository roleRepository;
     private final RoleViewQuery roleViewQuery;
     private final MenuAssembler menuAssembler;
+    private final MembershipService membershipService;
 
     @Override
     public PageResult<RoleResult> page(RoleQuery query, PageQuery pageQuery) {
@@ -78,7 +80,7 @@ public class RoleServiceImpl implements RoleService {
         }
         RoleDetailResult detail = convertToRoleDetailResp(entity);
         detail.setMenuIds(roleMenuRepository.listMenuIdsByRoleIds(List.of(detail.getId())));
-        detail.setDeptIds(roleDeptRepository.listDeptIdsByRoleId(detail.getId()));
+        detail.setDepartmentIds(roleDepartmentRepository.listDepartmentIdsByRoleId(detail.getId()));
         return detail;
     }
 
@@ -98,7 +100,7 @@ public class RoleServiceImpl implements RoleService {
             throw RoleException.createFailed();
         }
         // 保存角色和部门关联
-        roleDeptRepository.replaceByRoleId(entity.getId(), req.getDeptIds());
+        roleDepartmentRepository.replaceByRoleId(entity.getId(), req.getDepartmentIds());
         return entity.getId();
     }
 
@@ -124,9 +126,9 @@ public class RoleServiceImpl implements RoleService {
             return;
         }
         // 保存角色和部门关联
-        boolean isSaveDeptSuccess = roleDeptRepository.replaceByRoleId(id, req.getDeptIds());
+        boolean isSaveDepartmentSuccess = roleDepartmentRepository.replaceByRoleId(id, req.getDepartmentIds());
         // 如果数据权限有变更，则更新在线用户权限信息
-        if (isSaveDeptSuccess || ObjectUtil.notEqual(req.getDataScope(), oldDataScope)) {
+        if (isSaveDepartmentSuccess || ObjectUtil.notEqual(req.getDataScope(), oldDataScope)) {
             this.updateUserContext(id);
         }
     }
@@ -158,7 +160,7 @@ public class RoleServiceImpl implements RoleService {
         // 删除角色和菜单关联
         roleMenuRepository.deleteByRoleId(id);
         // 删除角色和部门关联
-        roleDeptRepository.deleteByRoleId(id);
+        roleDepartmentRepository.deleteByRoleId(id);
         // 删除角色
         roleRepository.deleteById(id);
     }
@@ -200,6 +202,7 @@ public class RoleServiceImpl implements RoleService {
     private void assignRoleToUsers(Long roleId, List<Long> userIds) {
         List<SysUserRole> userRoleList = CollUtils.mapToList(userIds, userId -> new SysUserRole(userId, roleId));
         userRoleRepository.insertBatch(userRoleList);
+        membershipService.addRoleMembers(roleId, userIds);
     }
 
     @Override
@@ -250,6 +253,7 @@ public class RoleServiceImpl implements RoleService {
             return false;
         }
         userRoleRepository.deleteByUserId(userId);
+        membershipService.replaceRoles(userId, roleIds);
         if (CollUtil.isEmpty(roleIds)) {
             return true;
         }
@@ -293,6 +297,7 @@ public class RoleServiceImpl implements RoleService {
             throw RoleException.notFound();
         }
         userRoleRepository.deleteByRoleIdAndUserIds(roleId, userIds);
+        membershipService.removeRoleMembers(roleId, userIds);
     }
 
     @Override
@@ -301,6 +306,7 @@ public class RoleServiceImpl implements RoleService {
             return;
         }
         userRoleRepository.deleteByUserIds(userIds);
+        membershipService.removeAllRolesByUserIds(userIds);
     }
 
     private RoleResult convertToRoleResp(SysRole entity) {
@@ -338,10 +344,10 @@ public class RoleServiceImpl implements RoleService {
                 entity.getSort(),
                 entity.getIsBuiltin(),
                 entity.getMenuCheckStrictly(),
-                entity.getDeptCheckStrictly(),
+                entity.getDepartmentCheckStrictly(),
                 entity.getDescription(),
                 null, // menuIds
-                null  // deptIds
+                null  // departmentIds
         );
     }
 

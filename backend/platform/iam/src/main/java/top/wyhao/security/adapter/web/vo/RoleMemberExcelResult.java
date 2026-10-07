@@ -52,7 +52,7 @@ public class RoleMemberExcelResult {
     @ExcelProperty(value = "所属部门")
     @ColumnWidth(30)
     @Schema(description = "所属部门", example = "测试部")
-    private String deptName;
+    private String departmentName;
 
     @ExcelProperty(value = "角色")
     @ColumnWidth(30)

@@ -7,6 +7,10 @@ export const authApi = {
   login(params: AuthReq) {
     return http.post<LoginResult>('/auth/login', params);
   },
+  /** 自助注册（成功后返回登录 token） */
+  register(req: RegisterReq) {
+    return http.post<LoginResult>('/auth/register', req);
+  },
   /** 账号登录 */
   accountLogin(req: AccountLoginReq) {
     return http.post<LoginResult>('/auth/login', req);
@@ -87,7 +91,7 @@ export interface UserProfile {
   pwdExpireDate: string;
   pwdExpired: boolean;
   registrationDate: string;
-  deptName: string;
+  departmentName: string;
   homePath: string;
 }
 
@@ -121,6 +125,13 @@ export interface RouteItem {
 export interface AuthReq {
   clientId?: string;
   grantType?: 'ACCOUNT' | 'EMAIL' | 'PHONE' | 'SOCIAL';
+}
+
+/** 自助注册请求 */
+export interface RegisterReq {
+  username: string;
+  password: string;
+  confirmPassword: string;
 }
 
 /** 账号登录请求参数 */

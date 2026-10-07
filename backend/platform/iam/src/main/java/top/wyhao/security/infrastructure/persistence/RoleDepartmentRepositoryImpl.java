@@ -5,9 +5,9 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
 import top.wyhao.cmn.core.util.CollUtils;
-import top.wyhao.security.domain.gateway.RoleDeptRepository;
-import top.wyhao.security.domain.model.SysRoleDept;
-import top.wyhao.security.infrastructure.persistence.mapper.SysRoleDeptMapper;
+import top.wyhao.security.domain.gateway.RoleDepartmentRepository;
+import top.wyhao.security.domain.model.SysRoleDepartment;
+import top.wyhao.security.infrastructure.persistence.mapper.SysRoleDepartmentMapper;
 
 import java.util.Collection;
 import java.util.List;
@@ -17,37 +17,37 @@ import java.util.List;
  */
 @Repository
 @RequiredArgsConstructor
-public class RoleDeptRepositoryImpl implements RoleDeptRepository {
+public class RoleDepartmentRepositoryImpl implements RoleDepartmentRepository {
 
-    private final SysRoleDeptMapper roleDeptMapper;
+    private final SysRoleDepartmentMapper roleDepartmentMapper;
 
     @Override
-    public List<Long> listDeptIdsByRoleId(Long roleId) {
-        return roleDeptMapper.selectDeptIdByRoleId(roleId);
+    public List<Long> listDepartmentIdsByRoleId(Long roleId) {
+        return roleDepartmentMapper.selectDepartmentIdByRoleId(roleId);
     }
 
     @Override
     public void deleteByRoleId(Long roleId) {
-        roleDeptMapper.lambdaUpdate().eq(SysRoleDept::getRoleId, roleId).remove();
+        roleDepartmentMapper.lambdaUpdate().eq(SysRoleDepartment::getRoleId, roleId).remove();
     }
 
     @Override
-    public void deleteByDeptIds(List<Long> deptIds) {
-        if (CollUtil.isEmpty(deptIds)) {
+    public void deleteByDepartmentIds(List<Long> departmentIds) {
+        if (CollUtil.isEmpty(departmentIds)) {
             return;
         }
-        roleDeptMapper.lambdaUpdate().in(SysRoleDept::getDeptId, deptIds).remove();
+        roleDepartmentMapper.lambdaUpdate().in(SysRoleDepartment::getDepartmentId, departmentIds).remove();
     }
 
     @Override
-    public boolean insertBatch(List<SysRoleDept> roleDepts) {
-        return roleDeptMapper.insertBatch(roleDepts);
+    public boolean insertBatch(List<SysRoleDepartment> roleDepartments) {
+        return roleDepartmentMapper.insertBatch(roleDepartments);
     }
 
     @Override
-    public boolean replaceByRoleId(Long roleId, List<Long> deptIds) {
-        List<Long> ids = CollUtil.emptyIfNull(deptIds);
-        List<Long> oldIds = listDeptIdsByRoleId(roleId);
+    public boolean replaceByRoleId(Long roleId, List<Long> departmentIds) {
+        List<Long> ids = CollUtil.emptyIfNull(departmentIds);
+        List<Long> oldIds = listDepartmentIdsByRoleId(roleId);
         if (CollUtil.isEmpty(CollUtil.disjunction(ids, oldIds))) {
             return false;
         }
@@ -55,17 +55,17 @@ public class RoleDeptRepositoryImpl implements RoleDeptRepository {
         if (CollUtil.isEmpty(ids)) {
             return true;
         }
-        List<SysRoleDept> roleDepts = CollUtils.mapToList(ids, deptId -> new SysRoleDept(roleId, deptId));
-        return insertBatch(roleDepts);
+        List<SysRoleDepartment> roleDepartments = CollUtils.mapToList(ids, departmentId -> new SysRoleDepartment(roleId, departmentId));
+        return insertBatch(roleDepartments);
     }
 
     @Override
     public void deleteAll() {
-        roleDeptMapper.delete(Wrappers.<SysRoleDept>query().eq("1", 1));
+        roleDepartmentMapper.delete(Wrappers.<SysRoleDepartment>query().eq("1", 1));
     }
 
     @Override
     public boolean deleteByRoleIdNotIn(Collection<Long> keepRoleIds) {
-        return roleDeptMapper.lambdaUpdate().notIn(SysRoleDept::getRoleId, keepRoleIds).remove();
+        return roleDepartmentMapper.lambdaUpdate().notIn(SysRoleDepartment::getRoleId, keepRoleIds).remove();
     }
 }

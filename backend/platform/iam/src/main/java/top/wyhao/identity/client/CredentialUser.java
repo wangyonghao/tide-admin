@@ -13,7 +13,7 @@ public record CredentialUser(
         String password,
         Integer status,
         Integer gender,
-        Long deptId,
+        Long departmentId,
         LocalDateTime pwdUpdateTime,
         LocalDate pwdExpireDate
 ) {

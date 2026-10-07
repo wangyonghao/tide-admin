@@ -91,7 +91,7 @@ spring.quartz:
   overwrite-existing-jobs: true
   wait-for-jobs-to-complete-on-shutdown: true
   properties:
-    '[org.quartz.scheduler.instanceName]': WyhScheduler
+    '[org.quartz.scheduler.instanceName]': wyh-scheduler
     '[org.quartz.scheduler.instanceId]': AUTO
     '[org.quartz.jobStore.isClustered]': false
     '[org.quartz.jobStore.clusterCheckinInterval]': 5000

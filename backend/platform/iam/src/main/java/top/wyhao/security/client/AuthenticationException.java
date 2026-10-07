@@ -100,7 +100,19 @@ public class AuthenticationException extends BizException {
         return of("AUTH_ACCOUNT_DISABLED", "此账号已被禁用，如有疑问，请联系管理员");
     }
 
-    public static AuthenticationException accountDeptDisabled() {
-        return of("AUTH_ACCOUNT_DEPT_DISABLED", "此账号所属部门已被禁用，如有疑问，请联系管理员");
+    public static AuthenticationException accountDepartmentDisabled() {
+        return of("AUTH_ACCOUNT_DEPARTMENT_DISABLED", "此账号所属部门已被禁用，如有疑问，请联系管理员");
+    }
+
+    public static AuthenticationException registrationDisabled() {
+        return of("REGISTRATION_DISABLED", "系统未开放注册");
+    }
+
+    public static AuthenticationException passwordMismatch() {
+        return of("PASSWORD_MISMATCH", "两次输入的密码不一致");
+    }
+
+    public static AuthenticationException registerRoleMissing() {
+        return of("REGISTER_ROLE_REQUIRED", "未配置注册默认角色，请联系管理员");
     }
 }

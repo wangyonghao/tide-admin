@@ -22,10 +22,10 @@ import top.wyhao.identity.domain.gateway.UserSocialRepository;
 import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
-import top.wyhao.organization.domain.gateway.DeptRepository;
-import top.wyhao.organization.domain.model.SysDept;
+import top.wyhao.department.domain.gateway.DepartmentRepository;
+import top.wyhao.department.domain.model.SysDepartment;
 import top.wyhao.security.app.service.RoleService;
-import top.wyhao.security.domain.gateway.RoleDeptRepository;
+import top.wyhao.security.domain.gateway.RoleDepartmentRepository;
 import top.wyhao.security.domain.gateway.RoleMenuRepository;
 import top.wyhao.security.domain.gateway.RoleRepository;
 import top.wyhao.security.domain.gateway.UserRoleRepository;
@@ -50,14 +50,14 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
 
     private final PackageMenuApi packageMenuApi;
     private final TenantApi tenantApi;
-    private final DeptRepository deptRepository;
+    private final DepartmentRepository departmentRepository;
     private final RoleRepository roleRepository;
     private final RoleMenuRepository roleMenuRepository;
     private final SysOperationLogMapper operationLogMapper;
     private final SysMessageMapper messageMapper;
     private final SysMessageMapper messageUserMapper;
     private final SysNoticeMapper noticeMapper;
-    private final RoleDeptRepository roleDeptRepository;
+    private final RoleDepartmentRepository roleDepartmentRepository;
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserSocialRepository userSocialRepository;
@@ -69,14 +69,14 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         Long tenantId = tenant.getId();
         TenantUtils.execute(tenantId, () -> {
             // 初始化部门
-            Long deptId = this.initDeptData(tenant);
+            Long departmentId = this.initDepartmentData(tenant);
             // 初始化角色
             Long roleId = this.initRoleData(tenant);
             // 角色绑定菜单
             List<Long> menuIds = packageMenuApi.listMenuIdsByPackageId(tenant.getPackageId());
             roleMenuRepository.replaceByRoleId(roleId, menuIds);
             // 初始化管理用户
-            Long userId = this.initUserData(tenant, deptId);
+            Long userId = this.initUserData(tenant, departmentId);
             // 用户绑定角色
             roleService.assignToUsers(roleId, ListUtil.of(userId));
             // 租户绑定用户
@@ -94,7 +94,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         }
         Wrapper queryWrapper = Wrappers.query().eq("1", 1);
         // 部门清除
-        deptRepository.deleteAll();
+        departmentRepository.deleteAll();
 //        // 文件清除
 //        List<Long> fileIds = CollUtils.mapToList(fileService.list(), FileDO::getId);
 //        if (!fileIds.isEmpty()) {
@@ -109,7 +109,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         noticeMapper.delete(queryWrapper);
         // 角色相关数据清除
         roleRepository.deleteAll();
-        roleDeptRepository.deleteAll();
+        roleDepartmentRepository.deleteAll();
         roleMenuRepository.deleteAll();
         // 用户数据清除
         userRepository.deleteAll();
@@ -124,19 +124,19 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
      * @param tenant 租户信息
      * @return 部门 ID
      */
-    private Long initDeptData(TenantBO tenant) {
-        SysDept dept = new SysDept();
-        dept.setName(tenant.getName());
-        dept.setCode("000000"); // todo
-        dept.setType(1); // todo
-        dept.setParentId(ROOT_PARENT_ID);
-        dept.setAncestors(ROOT_PARENT_ID.toString());
-        dept.setDescription("系统初始部门");
-        dept.setSort(1);
-        dept.setStatus(StatusEnum.ENABLE.getValue());
-        dept.setIsBuiltin(true);
-        deptRepository.insert(dept);
-        return dept.getId();
+    private Long initDepartmentData(TenantBO tenant) {
+        SysDepartment department = new SysDepartment();
+        department.setName(tenant.getName());
+        department.setCode("000000"); // todo
+        department.setType(1); // todo
+        department.setParentId(ROOT_PARENT_ID);
+        department.setAncestors(ROOT_PARENT_ID.toString());
+        department.setDescription("系统初始部门");
+        department.setSort(1);
+        department.setStatus(StatusEnum.ENABLE.getValue());
+        department.setIsBuiltin(true);
+        departmentRepository.insert(department);
+        return department.getId();
     }
 
     /**
@@ -155,7 +155,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         role.setSort(1);
         role.setIsBuiltin(true);
         role.setMenuCheckStrictly(true);
-        role.setDeptCheckStrictly(true);
+        role.setDepartmentCheckStrictly(true);
         roleRepository.insert(role);
         return role.getId();
     }
@@ -164,10 +164,10 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
      * 初始化用户数据
      *
      * @param tenant 租户信息
-     * @param deptId 部门 ID
+     * @param departmentId 部门 ID
      * @return 用户 ID
      */
-    private Long initUserData(TenantBO tenant, Long deptId) {
+    private Long initUserData(TenantBO tenant, Long departmentId) {
         // 解密密码
         String rawPassword = ExceptionUtils.exToNull(() -> RsaUtils.decryptByRsaPrivateKey(tenant.getAdminPassword()));
         if (CharSequenceUtil.isBlank(rawPassword)) {
@@ -183,7 +183,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         user.setStatus(StatusEnum.ENABLE.getValue());
         user.setIsBuiltin(true);
         user.setPwdUpdateTime(LocalDateTime.now());
-        user.setDeptId(deptId);
+        user.setDepartmentId(departmentId);
         userRepository.insert(user);
         return user.getId();
     }

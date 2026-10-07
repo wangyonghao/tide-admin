@@ -34,7 +34,7 @@ public interface UserAdminService {
 
     SysUser getByEmail(String email);
 
-    Long countByDeptIds(List<Long> deptIds);
+    Long countByDepartmentIds(List<Long> departmentIds);
 
     UserDetail detail(Long id);
 

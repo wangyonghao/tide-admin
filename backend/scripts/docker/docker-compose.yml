@@ -46,6 +46,17 @@ services:
       - ./redis/data/:/data/
       - ./redis/logs/:/logs/
     command: 'redis-server /usr/local/redis/config/redis.conf --appendonly yes --requirepass redis12#'
+  # 本地邮件黑洞：SMTP 收信，不外发；Web UI 查看验证码等测试邮件
+  mail:
+    image: inbucket/inbucket:3.0.3
+    restart: unless-stopped
+    container_name: tide-mail
+    ports:
+      - '2500:2500' # SMTP
+      - '9000:9000' # Web UI
+      - '1100:1100' # POP3
+    environment:
+      TZ: Asia/Shanghai
   web:
     image: nginx:1.30-alpine
     restart: always

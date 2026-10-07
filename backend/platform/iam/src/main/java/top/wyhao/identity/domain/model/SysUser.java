@@ -74,9 +74,13 @@ public class SysUser {
      */
     private LocalDate pwdExpireDate;
     /**
+     * 曾用密码哈希（{@code |} 拼接，最多 {@link PasswordHistory#MAX_SIZE} 个，新在前）
+     */
+    private String passwordHistory;
+    /**
      * 部门 ID
      */
-    private Long deptId;
+    private Long departmentId;
     /**
      * 创建人
      */

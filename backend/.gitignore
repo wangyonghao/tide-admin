@@ -44,3 +44,6 @@ build/
 *.diff
 *.patch
 *.tmp
+
+### Local env (from scripts/env.example.sh) ###
+scripts/env.sh

@@ -55,10 +55,10 @@ public class UserResult {
     private String description;
 
     @Schema(description = "部门 ID", example = "5")
-    private Long deptId;
+    private Long departmentId;
 
     @Schema(description = "所属部门", example = "测试部")
-    private String deptName;
+    private String departmentName;
 
     @Schema(description = "角色名称列表", example = "测试人员")
     private List<String> roleNames;

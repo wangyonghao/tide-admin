@@ -388,10 +388,14 @@ onUnmounted(() => {
           </Button>
         </template>
       </FormLabel>
-      <div class="flex-auto overflow-hidden p-px">
+      <div class="flex-auto overflow-hidden">
         <VbenCollapsible :show-trigger="false" v-model:open="collapseOpen">
           <template #collapsibleContent>
-            <div :class="cn('relative flex w-full items-center', wrapperClass)">
+            <div
+              :class="
+                cn('relative flex w-full items-center p-0.5', wrapperClass)
+              "
+            >
               <FormControl :class="cn(controlClass)">
                 <slot
                   v-bind="{
@@ -405,7 +409,7 @@ onUnmounted(() => {
                     :is="FieldComponent"
                     ref="fieldComponentRef"
                     :class="{
-                      'border-destructive hover:border-destructive/80 focus:border-destructive focus:shadow-[0_0_0_2px_rgba(255,38,5,0.06)]':
+                      'border-destructive hover:border-destructive/80 focus:border-destructive focus-visible:ring-destructive/30 focus-visible:ring-2 focus:shadow-none':
                         isInValid,
                     }"
                     v-bind="createComponentProps(slotProps)"

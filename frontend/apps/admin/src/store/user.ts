@@ -16,7 +16,7 @@ import {
 
 import { defineStore } from 'pinia';
 
-import { toast } from '#/ui-patterns/toast';
+import { message } from '#/adapter/naive';
 import { AuthTypeConstants } from '#/api';
 import { authApi } from '#/api/auth';
 import { $t } from '#/locales';
@@ -72,25 +72,51 @@ export const useUserStore = defineStore(
           };
         }
 
-        token.value = loginResult.token;
-        // 将 accessToken 存储到 accessStore 中
-        accessStore.setAccessToken(loginResult.token);
-        accessStore.setLoginExpired(false);
-
-        // 获取用户信息（包含菜单、权限等）
-        await fetchAuthInfo();
-        onSuccess
-          ? await onSuccess?.()
-          : await router.push(preferences.app.defaultHomePath);
-
-        if (user.value?.displayName) {
-          toast.success(
-            `${$t('authentication.loginSuccessDesc')}:${user.value?.displayName}`,
-          );
-        }
+        await completeLogin(loginResult.token, onSuccess);
         return { user, passwordExpired: false };
       } finally {
         loginLoading.value = false;
+      }
+    }
+
+    /**
+     * 自助注册并直接进入系统
+     */
+    async function register(
+      params: { username: string; password: string; confirmPassword: string },
+      onSuccess?: () => Promise<void> | void,
+    ) {
+      try {
+        loginLoading.value = true;
+        const result = await authApi.register({
+          username: params.username,
+          password: encryptByRsa(params.password) || '',
+          confirmPassword: encryptByRsa(params.confirmPassword) || '',
+        });
+        await completeLogin(result.token, onSuccess);
+        return { user };
+      } finally {
+        loginLoading.value = false;
+      }
+    }
+
+    async function completeLogin(
+      accessToken: string,
+      onSuccess?: () => Promise<void> | void,
+    ) {
+      token.value = accessToken;
+      accessStore.setAccessToken(accessToken);
+      accessStore.setLoginExpired(false);
+
+      await fetchAuthInfo();
+      onSuccess
+        ? await onSuccess?.()
+        : await router.push(preferences.app.defaultHomePath);
+
+      if (user.value?.displayName) {
+        message.success(
+          `${$t('authentication.loginSuccessDesc')}:${user.value?.displayName}`,
+        );
       }
     }
 
@@ -160,6 +186,7 @@ export const useUserStore = defineStore(
       isRouteAdded,
       $reset,
       login,
+      register,
       fetchAuthInfo,
       loginLoading,
       logout,

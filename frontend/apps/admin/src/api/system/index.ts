@@ -1,4 +1,4 @@
-export * from './dept';
+export * from './department';
 export * from './option';
 export * from './menu';
 export * from './role';

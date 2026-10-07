@@ -94,7 +94,7 @@ public class SocialAuthenticator implements Authenticator {
             if (authUser.getGender() != null) {
                 gender = GenderEnum.getByValue(Integer.parseInt(authUser.getGender().getCode())).getValue();
             }
-            user = userApi.registerSocialUser(username, displayName, gender, SystemConstants.SUPER_DEPT_ID);
+            user = userApi.registerSocialUser(username, displayName, gender, SystemConstants.SUPER_DEPARTMENT_ID);
             roleApi.assignRolesToUser(Collections.singletonList(roleApi.getIdByCode(RoleCodeEnum.GENERAL_USER.getCode())), user.id());
             this.sendSecurityMsg(user);
         } else {

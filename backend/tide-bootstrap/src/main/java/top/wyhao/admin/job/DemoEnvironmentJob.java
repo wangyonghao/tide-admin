@@ -20,9 +20,9 @@ import top.wyhao.notification.mapper.SysNoticeLogMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
 import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.identity.domain.gateway.UserSocialRepository;
-import top.wyhao.organization.domain.gateway.DeptRepository;
+import top.wyhao.department.domain.gateway.DepartmentRepository;
 import top.wyhao.security.domain.gateway.MenuRepository;
-import top.wyhao.security.domain.gateway.RoleDeptRepository;
+import top.wyhao.security.domain.gateway.RoleDepartmentRepository;
 import top.wyhao.security.domain.gateway.RoleMenuRepository;
 import top.wyhao.security.domain.gateway.RoleRepository;
 import top.wyhao.security.domain.gateway.UserRoleRepository;
@@ -59,10 +59,10 @@ public class DemoEnvironmentJob implements JobTask {
     private final UserRoleRepository userRoleRepository;
     private final UserSocialRepository userSocialRepository;
     private final RoleRepository roleRepository;
-    private final RoleDeptRepository roleDeptRepository;
+    private final RoleDepartmentRepository roleDepartmentRepository;
     private final RoleMenuRepository roleMenuRepository;
     private final MenuRepository menuRepository;
-    private final DeptRepository deptRepository;
+    private final DepartmentRepository departmentRepository;
     private final SysAppMapper appMapper;
     private final SysTenantMapper tenantMapper;
     private final TenantPackageMapper packageMapper;
@@ -73,7 +73,7 @@ public class DemoEnvironmentJob implements JobTask {
     private static final List<Long> USER_FLAG = List
             .of(1L, 801822L, 801823L, 801824L, 801825L, 801826L, 801827L, 801828L, 801829L, 801830L, 801831L, 801832L, 801833L, 801834L);
     private static final List<Long> ROLE_FLAG = List.of(1L, 2L, 3L, 547888897925840927L, 547888897925840928L);
-    private static final Long DEPT_FLAG = 547887852587843611L;
+    private static final Long DEPARTMENT_FLAG = 547887852587843611L;
 
     /**
      * 重置演示环境数据
@@ -97,8 +97,8 @@ public class DemoEnvironmentJob implements JobTask {
             this.log(roleCount, "角色");
             Long menuCount = menuRepository.countIdGreaterThan(DELETE_FLAG);
             this.log(menuCount, "菜单");
-            Long deptCount = deptRepository.countIdGreaterThan(DEPT_FLAG);
-            this.log(deptCount, "部门");
+            Long departmentCount = departmentRepository.countIdGreaterThan(DEPARTMENT_FLAG);
+            this.log(departmentCount, "部门");
             Long appCount = appMapper.lambdaQuery().gt(SysApp::getId, DELETE_FLAG).count();
             this.log(appCount, "应用");
             Long tenantCount = tenantMapper.lambdaQuery().count();
@@ -112,7 +112,7 @@ public class DemoEnvironmentJob implements JobTask {
             messageLogMapper.lambdaUpdate().gt(SysMessageLog::getMessageId, MESSAGE_FLAG).remove();
             userRoleRepository.deleteByRoleIdNotIn(ROLE_FLAG);
             userRoleRepository.deleteByUserIdNotIn(USER_FLAG);
-            roleDeptRepository.deleteByRoleIdNotIn(ROLE_FLAG);
+            roleDepartmentRepository.deleteByRoleIdNotIn(ROLE_FLAG);
             roleMenuRepository.deleteByRoleIdNotIn(ROLE_FLAG);
             userSocialRepository.deleteExcludingUserIds(USER_FLAG);
             packageMenuMapper.lambdaUpdate().remove();
@@ -128,8 +128,8 @@ public class DemoEnvironmentJob implements JobTask {
             this.clean(userCount, "用户", null, () -> userRepository.deleteExcluding(USER_FLAG));
             this.clean(roleCount, "角色", null, () -> roleRepository.deleteExcluding(ROLE_FLAG));
             this.clean(menuCount, "菜单", CacheConstants.ROLE_MENU_KEY_PREFIX, () -> menuRepository.deleteIdGreaterThan(DELETE_FLAG));
-            this.clean(deptCount, "部门", null, () -> deptRepository.deleteIdGreaterThan(DEPT_FLAG));
-            this.clean(appCount, "应用", null, () -> appMapper.lambdaUpdate().gt(SysApp::getId, DEPT_FLAG).remove());
+            this.clean(departmentCount, "部门", null, () -> departmentRepository.deleteIdGreaterThan(DEPARTMENT_FLAG));
+            this.clean(appCount, "应用", null, () -> appMapper.lambdaUpdate().gt(SysApp::getId, DEPARTMENT_FLAG).remove());
             this.clean(tenantCount, "租户", null, () -> tenantMapper.lambdaUpdate().remove());
             this.clean(packageCount, "套餐", null, () -> packageMapper.lambdaUpdate().remove());
             log.info("演示环境数据已清理完成。");

@@ -117,8 +117,8 @@ public class UserRepositoryImpl implements UserRepository {
     }
 
     @Override
-    public long countByDeptIds(Collection<Long> deptIds) {
-        return userMapper.lambdaQuery().in(SysUser::getDeptId, deptIds).count();
+    public long countByDepartmentIds(Collection<Long> departmentIds) {
+        return userMapper.lambdaQuery().in(SysUser::getDepartmentId, departmentIds).count();
     }
 
     @Override

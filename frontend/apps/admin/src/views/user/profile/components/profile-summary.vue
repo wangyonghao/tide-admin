@@ -111,8 +111,8 @@ const maskedEmail = computed(() => {
       </div>
 
       <div class="info-item">
-        <span class="info-label">{{ $t('page.profile.basic.dept') }}</span>
-        <span class="info-value">{{ userInfo?.deptName || '-' }}</span>
+        <span class="info-label">{{ $t('page.profile.basic.department') }}</span>
+        <span class="info-value">{{ userInfo?.departmentName || '-' }}</span>
       </div>
 
       <div class="info-item">

@@ -34,7 +34,7 @@ public class UserQuery extends SortableQuery {
     private List<LocalDateTime> createTime;
 
     @Schema(description = "部门 ID", example = "1")
-    private Long deptId;
+    private Long departmentId;
 
     @Schema(description = "用户 ID 列表", example = "[1,2,3]")
     private List<Long> userIds;

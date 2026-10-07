@@ -2,14 +2,16 @@
 import type { VbenFormSchema } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 
-import { computed, h, ref } from 'vue';
+import { computed, h } from 'vue';
 
 import { AuthenticationRegister, z } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
+import { useUserStore } from '#/store';
+
 defineOptions({ name: 'Register' });
 
-const loading = ref(false);
+const userStore = useUserStore();
 
 const formSchema = computed((): VbenFormSchema[] => {
   return [
@@ -20,7 +22,12 @@ const formSchema = computed((): VbenFormSchema[] => {
       },
       fieldName: 'username',
       label: $t('authentication.username'),
-      rules: z.string().min(1, { message: $t('authentication.usernameTip') }),
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.usernameTip') })
+        .regex(/^[a-zA-Z][a-zA-Z0-9_]{3,63}$/, {
+          message: '用户名 4-64 位，以字母开头，仅支持字母、数字、下划线',
+        }),
     },
     {
       component: 'VbenInputPassword',
@@ -35,7 +42,12 @@ const formSchema = computed((): VbenFormSchema[] => {
           strengthText: () => $t('authentication.passwordStrength'),
         };
       },
-      rules: z.string().min(1, { message: $t('authentication.passwordTip') }),
+      rules: z
+        .string()
+        .min(1, { message: $t('authentication.passwordTip') })
+        .regex(/^(?=.*\d)(?=.*[a-z]).{8,32}$/, {
+          message: '密码 8-32 位，至少包含字母和数字',
+        }),
     },
     {
       component: 'VbenInputPassword',
@@ -81,15 +93,19 @@ const formSchema = computed((): VbenFormSchema[] => {
   ];
 });
 
-function handleSubmit(value: Recordable<any>) {
-  void value;
+async function handleSubmit(value: Recordable<any>) {
+  await userStore.register({
+    username: value.username,
+    password: value.password,
+    confirmPassword: value.confirmPassword,
+  });
 }
 </script>
 
 <template>
   <AuthenticationRegister
     :form-schema="formSchema"
-    :loading="loading"
+    :loading="userStore.loginLoading"
     @submit="handleSubmit"
   />
 </template>

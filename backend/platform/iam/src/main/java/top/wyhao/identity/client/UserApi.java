@@ -11,7 +11,7 @@ public interface UserApi {
     /**
      * 统计部门下的用户数
      */
-    long countByDeptIds(Collection<Long> deptIds);
+    long countByDepartmentIds(Collection<Long> departmentIds);
 
     CredentialUser findById(Long id);
 
@@ -24,17 +24,17 @@ public interface UserApi {
     /**
      * 第三方登录首次进入时注册用户，状态为启用。
      */
-    CredentialUser registerSocialUser(String username, String displayName, Integer gender, Long deptId);
+    CredentialUser registerSocialUser(String username, String displayName, Integer gender, Long departmentId);
 
     /**
      * 本地账号自助注册：写入密码、过期日、角色，状态为启用。
      *
      * @param username    用户名
      * @param rawPassword 明文密码（已解密、已校验策略）
-     * @param deptId      所属部门
+     * @param departmentId      所属部门
      * @param roleIds     初始角色
      */
-    CredentialUser registerLocalUser(String username, String rawPassword, Long deptId, java.util.List<Long> roleIds);
+    CredentialUser registerLocalUser(String username, String rawPassword, Long departmentId, java.util.List<Long> roleIds);
 
     SocialLink findSocial(String source, String openId);
 

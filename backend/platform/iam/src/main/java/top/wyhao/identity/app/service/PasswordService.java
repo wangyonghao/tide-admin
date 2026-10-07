@@ -6,19 +6,19 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.identity.client.PasswordPolicyConfig;
 import top.wyhao.identity.client.PasswordPolicyConfigApi;
 import top.wyhao.identity.domain.exception.UserException;
-import top.wyhao.identity.domain.gateway.PasswordHistoryRepository;
 import top.wyhao.identity.domain.gateway.UserRepository;
+import top.wyhao.identity.domain.model.PasswordHistory;
 import top.wyhao.identity.domain.model.PasswordPolicy;
 import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.identity.domain.service.PasswordRules;
 import top.wyhao.redisson.util.RedisUtils;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 /**
  * 密码重置、修改与策略校验。
@@ -29,7 +29,6 @@ public class PasswordService implements PasswordApi {
 
     private final PasswordEncoder passwordEncoder;
     private final UserRepository userRepository;
-    private final PasswordHistoryRepository passwordHistoryRepository;
     private final PasswordPolicyConfigApi passwordPolicyConfigApi;
     private final PasswordRules passwordRules;
 
@@ -37,7 +36,7 @@ public class PasswordService implements PasswordApi {
     public void resetPassword(Long userId, String rawPassword) {
         PasswordPolicy policy = toPolicy(passwordPolicyConfigApi.get());
         userRepository.updatePasswordAndExpire(userId, passwordEncoder.encode(rawPassword), LocalDateTime.now()
-            .plusDays(policy.expireDays()));
+                .plusDays(policy.expireDays()));
     }
 
     @Override
@@ -46,7 +45,7 @@ public class PasswordService implements PasswordApi {
         if (user == null) {
             throw UserException.notFound();
         }
-        String newPassword = generateSecurePassword(12);
+        String newPassword = generateSecurePassword();
         resetPassword(userId, newPassword);
         RedisUtils.deleteByPattern("login:retry:" + user.getUsername() + ":*");
         return newPassword;
@@ -63,14 +62,19 @@ public class PasswordService implements PasswordApi {
             throw UserException.passwordIncorrect();
         }
         if (CharSequenceUtil.isNotBlank(oldUser.getPassword())
-            && !passwordEncoder.matches(oldPassword, oldUser.getPassword())) {
+                && !passwordEncoder.matches(oldPassword, oldUser.getPassword())) {
             throw UserException.passwordIncorrect();
         }
         PasswordPolicy policy = toPolicy(passwordPolicyConfigApi.get());
-        passwordRules.assertCompliant(newPassword, policy, oldUser.getId(), oldUser.getUsername());
-        userRepository.updatePassword(userId, passwordEncoder.encode(newPassword), LocalDateTime.now());
-        passwordHistoryRepository.add(userId, oldUser.getPassword(), policy.historyRepetitionTimes());
-        cn.dev33.satoken.stp.StpUtil.logout();
+        PasswordHistory history = PasswordHistory.parse(oldUser.getPasswordHistory());
+        passwordRules.assertCompliant(newPassword, policy, oldUser.getUsername(), history);
+        userRepository.updatePassword(
+                userId,
+                passwordEncoder.encode(newPassword),
+                LocalDateTime.now(),
+                history.push(oldUser.getPassword()).serialize()
+        );
+        LoginUtil.logout();
     }
 
     @Override
@@ -81,36 +85,28 @@ public class PasswordService implements PasswordApi {
         }
     }
 
-    @Override
-    public void deleteByUserIds(List<Long> userIds) {
-        if (userIds == null || userIds.isEmpty()) {
-            return;
-        }
-        passwordHistoryRepository.deleteByUserIds(userIds);
-    }
-
     private PasswordPolicy toPolicy(PasswordPolicyConfig config) {
         if (config == null) {
             return new PasswordPolicy(
-                PasswordPolicy.MIN_LENGTH_LOWER,
-                PasswordPolicy.DEFAULT_MAX_LENGTH,
-                false,
-                false,
-                PasswordPolicy.REPETITION_TIMES_LOWER,
-                90
+                    PasswordPolicy.MIN_LENGTH_LOWER,
+                    PasswordPolicy.DEFAULT_MAX_LENGTH,
+                    false,
+                    false,
+                    PasswordPolicy.REPETITION_TIMES_LOWER,
+                    90
             );
         }
         return new PasswordPolicy(
-            ObjectUtil.defaultIfNull(config.getPasswordMinLength(), PasswordPolicy.MIN_LENGTH_LOWER),
-            PasswordPolicy.DEFAULT_MAX_LENGTH,
-            Boolean.TRUE.equals(config.getPasswordRequireSpecial()),
-            Boolean.TRUE.equals(config.getPasswordAllowContainUsername()),
-            ObjectUtil.defaultIfNull(config.getPasswordRepetitionTimes(), PasswordPolicy.REPETITION_TIMES_LOWER),
-            ObjectUtil.defaultIfNull(config.getPasswordExpireDays(), 90)
+                ObjectUtil.defaultIfNull(config.getPasswordMinLength(), PasswordPolicy.MIN_LENGTH_LOWER),
+                PasswordPolicy.DEFAULT_MAX_LENGTH,
+                Boolean.TRUE.equals(config.getPasswordRequireSpecial()),
+                Boolean.TRUE.equals(config.getPasswordAllowContainUsername()),
+                ObjectUtil.defaultIfNull(config.getPasswordRepetitionTimes(), PasswordPolicy.REPETITION_TIMES_LOWER),
+                ObjectUtil.defaultIfNull(config.getPasswordExpireDays(), 90)
         );
     }
 
-    private String generateSecurePassword(int length) {
+    private String generateSecurePassword() {
         String upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
         String lowerCase = "abcdefghijklmnopqrstuvwxyz";
         String digits = "0123456789";
@@ -118,12 +114,12 @@ public class PasswordService implements PasswordApi {
         String allChars = upperCase + lowerCase + digits + specialChars;
 
         java.security.SecureRandom random = new java.security.SecureRandom();
-        StringBuilder password = new StringBuilder(length);
+        StringBuilder password = new StringBuilder(12);
         password.append(upperCase.charAt(random.nextInt(upperCase.length())));
         password.append(lowerCase.charAt(random.nextInt(lowerCase.length())));
         password.append(digits.charAt(random.nextInt(digits.length())));
         password.append(specialChars.charAt(random.nextInt(specialChars.length())));
-        for (int i = 4; i < length; i++) {
+        for (int i = 4; i < 12; i++) {
             password.append(allChars.charAt(random.nextInt(allChars.length())));
         }
         char[] passwordArray = password.toString().toCharArray();

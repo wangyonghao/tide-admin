@@ -13,7 +13,7 @@ public final class SystemConstants {
     /**
      * 顶级部门 ID
      */
-    public static final Long SUPER_DEPT_ID = 1L;
+    public static final Long SUPER_DEPARTMENT_ID = 1L;
 
     private SystemConstants() {
     }

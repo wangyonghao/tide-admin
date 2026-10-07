@@ -44,7 +44,7 @@ public class UserImportRowReq {
      * 部门名称
      */
     @NotBlank(message = "所属部门不能为空")
-    private String deptName;
+    private String departmentName;
 
     /**
      * 角色

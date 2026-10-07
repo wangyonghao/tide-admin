@@ -1,40 +1,40 @@
 import http from '#/api/http';
 
 /* ==================== API 定义 ==================== */
-export const deptApi = {
+export const departmentApi = {
   /** 查询部门列表 */
-  tree: (query: DeptQuery) => {
-    return http.get<DeptResult[]>(`/system/dept/tree`, { params: query });
+  tree: (query: DepartmentQuery) => {
+    return http.get<DepartmentResult[]>(`/system/department/tree`, { params: query });
   },
   /** 查询部门详情 */
   get: (id: string) => {
-    return http.get<DeptResult>(`/system/dept/${id}`);
+    return http.get<DepartmentResult>(`/system/department/${id}`);
   },
   /** 新增部门 */
   create: (data: any) => {
-    return http.post<boolean>(`/system/dept`, data);
+    return http.post<boolean>(`/system/department`, data);
   },
   /** 修改部门 */
   update: (data: any, id: string) => {
-    return http.patch(`/system/dept/${id}`, data);
+    return http.patch(`/system/department/${id}`, data);
   },
   /** 删除部门 */
   delete: (id: string) => {
-    return http.delete(`/system/dept`, { data: { ids: [id] } });
+    return http.delete(`/system/department`, { data: { ids: [id] } });
   },
   /** 导出部门 */
-  export: (query: DeptQuery) => {
-    return http.download(`/system/dept/export`, { params: query });
+  export: (query: DepartmentQuery) => {
+    return http.download(`/system/department/export`, { params: query });
   },
   /** 查询部门字典树 */
   option: (query: { keyword: string | unknown }) => {
-    return http.get<DeptResult[]>(`/system/dept/dict/tree`, { params: query });
+    return http.get<DepartmentResult[]>(`/system/department/dict/tree`, { params: query });
   },
 };
 
 /* ==================== Schema 定义 ==================== */
 /** 部门类型 */
-export interface DeptResult {
+export interface DepartmentResult {
   id: string;
   parentId: string;
   name: string;
@@ -48,9 +48,9 @@ export interface DeptResult {
   createTime: string;
   updateUserString: string;
   updateTime: string;
-  children: DeptResult[];
+  children: DepartmentResult[];
 }
-export interface DeptQuery {
+export interface DepartmentQuery {
   keyword?: string;
   status?: number;
 }

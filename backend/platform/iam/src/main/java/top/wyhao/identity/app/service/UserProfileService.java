@@ -22,5 +22,5 @@ public interface UserProfileService {
     /**
      * 自助注册：写入已校验的明文密码与角色。
      */
-    SysUser registerLocal(String username, String rawPassword, Long deptId, List<Long> roleIds);
+    SysUser registerLocal(String username, String rawPassword, Long departmentId, List<Long> roleIds);
 }

@@ -4,7 +4,7 @@ package top.wyhao.security.infrastructure.persistence.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
-import top.wyhao.security.domain.model.SysRoleDept;
+import top.wyhao.security.domain.model.SysRoleDepartment;
 import top.wyhao.cmn.db.model.BaseMapper;
 
 import java.util.List;
@@ -16,7 +16,7 @@ import java.util.List;
  * @since 2023/2/18 21:57
  */
 @Mapper
-public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
+public interface SysRoleDepartmentMapper extends BaseMapper<SysRoleDepartment> {
 
     /**
      * 根据角色 ID 查询
@@ -24,6 +24,6 @@ public interface SysRoleDeptMapper extends BaseMapper<SysRoleDept> {
      * @param roleId 角色 ID
      * @return 部门 ID 列表
      */
-    @Select("SELECT dept_id FROM sys_role_dept WHERE role_id = #{roleId}")
-    List<Long> selectDeptIdByRoleId(@Param("roleId") Long roleId);
+    @Select("SELECT department_id FROM sys_role_department WHERE role_id = #{roleId}")
+    List<Long> selectDepartmentIdByRoleId(@Param("roleId") Long roleId);
 }

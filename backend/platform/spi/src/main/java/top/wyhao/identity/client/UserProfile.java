@@ -25,8 +25,8 @@ public class UserProfile {
     private String displayName;
     private StatusEnum status;
     private GenderEnum gender;
-    private Long deptId;
-    private String deptName;
+    private Long departmentId;
+    private String departmentName;
     private List<Long> roleIds;
     private List<String> roleNames;
     private String phone;

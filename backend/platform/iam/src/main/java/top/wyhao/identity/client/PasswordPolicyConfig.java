@@ -31,6 +31,6 @@ public class PasswordPolicyConfig {
     @Schema(description = "是否允许密码包含用户名", example = "false")
     private Boolean passwordAllowContainUsername = false;
 
-    @Schema(description = "历史密码重复校验次数", example = "3")
+    @Schema(description = "历史密码重复校验次数（3~10）", example = "3")
     private Integer passwordRepetitionTimes = 3;
 }

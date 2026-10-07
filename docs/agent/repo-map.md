@@ -33,7 +33,7 @@ tide-bootstrap
 | `tide-bootstrap` | 启动、配置、Liquibase、装配 |
 | `interfaces/open-api` | 开放 API / 签名 |
 | `biz/biz-system` | 系统壳、仪表盘等残留/编排 |
-| `platform/iam` | identity、organization、security |
+| `platform/iam` | identity、department、security |
 | `platform/tenant` | 租户、套餐 |
 | `platform/file` | 文件领域与存储适配 |
 | `platform/job` | Quartz 任务管理 |
@@ -55,7 +55,7 @@ tide-bootstrap
 | Liquibase | `backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/` |
 | 用户 / 认证 | `backend/platform/iam/.../identity/` |
 | 角色 / 菜单 | `backend/platform/iam/.../security/` |
-| 部门 | `backend/platform/iam/.../organization/` |
+| 部门 | `backend/platform/iam/.../department/` |
 | 租户 | `backend/platform/tenant/` |
 | 文件 | `backend/platform/file/` |
 | 任务 | `backend/platform/job/` |

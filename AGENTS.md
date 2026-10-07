@@ -38,7 +38,7 @@ cd frontend && pnpm dev:docs
 cd frontend && pnpm dev:ds
 ```
 
-配置：`backend/tide-bootstrap/src/main/resources/config/application-dev.yml`  
+配置：`backend/tide-bootstrap/src/main/resources/config/`；环境变量示例：`backend/scripts/env.example.sh`  
 DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 
 ## Hard boundaries
@@ -57,7 +57,7 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 | 意图 | 位置 |
 |------|------|
 | 启动 / 打包 | `backend/tide-bootstrap` |
-| 身份 / 组织 / 授权 | `backend/platform/iam`（`identity` / `organization` / `security`） |
+| 身份 / 组织 / 授权 | `backend/platform/iam`（`identity` / `department` / `security`） |
 | 租户 | `backend/platform/tenant` |
 | 文件 | `backend/platform/file` |
 | 任务 | `backend/platform/job` |
@@ -72,6 +72,8 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 完整表见 [`docs/agent/repo-map.md`](docs/agent/repo-map.md)。
 
 ## Delivery
+
+细则见 [`.cursor/rules/delivery.mdc`](.cursor/rules/delivery.mdc)。摘要：
 
 - 交付态干净：无「已修正此处」类痕迹；注释只解释非显而易见的 why。
 - 向用户说明变更时，与正文分离，用独立 Changelog 要点（仓库变更日志走 `changelog` skill）。

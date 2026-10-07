@@ -78,7 +78,7 @@ public class RoleDetailResult {
     private Boolean menuCheckStrictly;
 
     @Schema(description = "部门选择是否父子节点关联", example = "false")
-    private Boolean deptCheckStrictly;
+    private Boolean departmentCheckStrictly;
 
     @Schema(description = "描述", example = "测试人员描述信息")
     @ExcelProperty(value = "描述")
@@ -88,5 +88,5 @@ public class RoleDetailResult {
     private List<Long> menuIds;
 
     @Schema(description = "权限范围：部门 ID 列表", example = "5")
-    private List<Long> deptIds;
+    private List<Long> departmentIds;
 }

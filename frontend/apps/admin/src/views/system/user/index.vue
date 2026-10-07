@@ -1,101 +1,71 @@
 <script setup lang="ts">
-import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { DeptResult } from '#/api/system/dept';
+import type { DataTableColumns } from 'naive-ui';
+
+import type { DepartmentResult } from '#/api/system/department';
 import type { UserResp } from '#/api/system/user';
 import type { Option } from '#/types/global';
 
-import { computed, onMounted, ref } from 'vue';
+import { h, onMounted, ref } from 'vue';
 
-import { ColPage, useVbenModal } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import { filterRawTree } from '#/adapter/component/tree-select-value';
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deptApi, roleApi, userApi } from '#/api/system';
-import { Badge } from '#/ui/badge';
-import { badgeVariantForTag } from '#/ui/badge/variant';
-import { Button } from '#/ui/button';
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from '#/ui/dropdown-menu';
-import { Input } from '#/ui/input';
-import { VbenTree } from '#/ui/tree';
-import {
-  ConfirmAction,
-  type ConfirmActionExpose,
-} from '#/ui-patterns/confirm-action';
-import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
+import { SearchOutline } from '@vicons/ionicons5';
+import { Page } from '@vben/common-ui'
+import { NButton, NDataTable, NDropdown, NIcon, NInput, NModal, NSpace, NSplit, NTag, NTree, useDialog, useMessage, } from 'naive-ui';
 
-import { toast } from '#/ui-patterns/toast';
+import { departmentApi,roleApi,userApi } from '#/api/system';
 
 import UserDetailDrawer from './components/user-detail-drawer.vue';
 import UserEditDrawer from './components/user-edit-drawer.vue';
-import {
-  displayCell,
-  useUserColumns,
-  useUserSearchSchema,
-  userKeyword,
-  userStatus,
-} from './data';
 
-const confirmAction = ref<ConfirmActionExpose | null>(null);
+const message = useMessage();
+const dialog = useDialog();
 
-const deptSearchKeyword = ref('');
-const deptData = ref<DeptTreeNode[]>([]);
-const selectedDeptId = ref<string | undefined>(undefined);
+// ==================== 部门树逻辑 ====================
+const departmentSearchKeyword = ref('');
+const departmentData = ref<DepartmentResult[]>([]);
+const selectedDepartmentKeys = ref<string[]>([]);
+const selectedDepartmentId = ref<string | undefined>(undefined);
+
+// ==================== 角色数据 ====================
 const roleOptions = ref<Option[]>([]);
 
-interface DeptTreeNode {
-  children?: DeptTreeNode[];
-  id: string;
-  key: string;
-  label: string;
-  name: string;
-  value: string;
-}
+const departmentNodeProps = ({ option }: { option: any }) => {
+  return {
+    onClick() {
+      const id = option.id as string;
+      if (selectedDepartmentId.value === id) {
+        selectedDepartmentId.value = undefined;
+        selectedDepartmentKeys.value = [];
+      } else {
+        selectedDepartmentId.value = id;
+        selectedDepartmentKeys.value = [id];
+      }
+      handlePageChange(1);
+    },
+  };
+};
 
-const visibleDept = computed(() =>
-  filterRawTree(deptData.value, deptSearchKeyword.value, 'name', 'children'),
-);
-
-function treeHasKey(nodes: DeptTreeNode[], key: string | undefined): boolean {
-  if (!key) return false;
-  return nodes.some(
-    (node) => node.key === key || treeHasKey(node.children ?? [], key),
-  );
-}
-
-const treeModel = computed(() =>
-  treeHasKey(visibleDept.value, selectedDeptId.value)
-    ? selectedDeptId.value
-    : undefined,
-);
-
-async function loadDeptData() {
+// 加载部门列表
+async function loadDepartmentData() {
   try {
-    const deptArray = await deptApi.tree({});
-    deptData.value = convertToTreeOptions(deptArray);
+    const departmentArray = await departmentApi.tree({});
+    departmentData.value = convertToTreeOptions(departmentArray);
   } catch (error) {
-    console.error('Failed to load dept options:', error);
+    console.error('Failed to load department options:', error);
   }
 }
 
-function convertToTreeOptions(depts: DeptResult[]): DeptTreeNode[] {
-  return depts.map((dept) => ({
-    id: dept.id,
-    name: dept.name,
-    label: dept.name,
-    key: dept.id,
-    value: dept.id,
-    children: dept.children?.length
-      ? convertToTreeOptions(dept.children)
-      : undefined,
+// 转换为TreeSelect需要的格式
+function convertToTreeOptions(departments: DepartmentResult[]): TreeSelectOption[] {
+  return departments.map((department) => ({
+    name: department.name,
+    key: department.id,
+    value: department.id,
+    children: department.children ? convertToTreeOptions(department.children) : undefined,
   }));
 }
+
 
 async function loadRoleOptions() {
   try {
@@ -111,77 +81,148 @@ async function loadRoleOptions() {
   }
 }
 
-const [Grid, gridApi] = useVbenVxeGrid({
-  formOptions: {
-    schema: useUserSearchSchema(),
-    showCollapseButton: false,
-    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+// ==================== 用户列表逻辑 ====================
+const userSearchForm = ref({ description: '' });
+const userData = ref<UserResp[]>([]);
+const userLoading = ref(false);
+const userPagination = ref({
+  page: 1,
+  pageSize: 10,
+  itemCount: 0,
+  showSizePicker: true,
+  pageSizes: [10, 20, 50],
+  onChange: (page: number) => {
+    userPagination.value.page = page;
+    loadUserData();
   },
-  gridOptions: {
-    columns: useUserColumns(),
-    height: 'auto',
-    keepSource: true,
-    pagerConfig: {
-      pageSize: 10,
-      pageSizes: [10, 20, 50],
-    },
-    proxyConfig: {
-      ajax: {
-        query: async ({ page }, formValues) => {
-          return await userApi.list({
-            page: page.currentPage,
-            pageSize: page.pageSize,
-            deptId: selectedDeptId.value,
-            keyword: userKeyword(formValues?.keyword) || undefined,
-          });
-        },
-      },
-    },
-    rowConfig: {
-      keyField: 'id',
-    },
-    toolbarConfig: {
-      custom: true,
-      export: false,
-      refresh: { code: 'query' },
-      search: true,
-      zoom: true,
-    },
-  } as VxeTableGridOptions<UserResp>,
+  onUpdatePageSize: (pageSize: number) => {
+    userPagination.value.pageSize = pageSize;
+    userPagination.value.page = 1;
+    loadUserData();
+  },
 });
 
-function onDeptSelect(value: unknown) {
-  const next =
-    typeof value === 'string' || typeof value === 'number'
-      ? String(value)
-      : undefined;
-  // 搜索把已选部门滤掉时，树会回写空值。这时不要清掉右侧列表的部门条件。
-  if (
-    next == null &&
-    selectedDeptId.value &&
-    !treeHasKey(visibleDept.value, selectedDeptId.value)
-  ) {
-    return;
-  }
-  if (next === selectedDeptId.value) return;
-  selectedDeptId.value = next;
-  if (typeof gridApi.grid?.commitProxy === 'function') {
-    gridApi.reload();
+const userColumns: DataTableColumns<UserResp> = [
+  { title: '序号', key: 'index', width: 60, fixed: 'left',
+    render: (_row, index) =>
+      (userPagination.value.page - 1) * userPagination.value.pageSize + index + 1,
+  },
+  { title: '显示名称', key: 'displayName', minWidth: 100, fixed: 'left' },
+  { title: '用户名', key: 'username', minWidth: 100 },
+  { title: '部门', key: 'departmentName', minWidth: 100, render(row) { return row.departmentName || '-'; } },
+  { title: '角色', key: 'roleNames', width: 120, render(row) { return row.roleNames || '-'; } },
+  { title: '手机号', key: 'phone', width: 120, render(row) { return row.phone || '-'; } },
+  { title: '状态', key: 'status', width: 80,
+    render(row) {
+      const statusMap: Record<
+        number,
+        { label: string; type: 'error' | 'info' | 'success' | 'warning' }
+      > = {
+        0: { type: 'error', label: '禁用' },
+        1: { type: 'success', label: '启用' },
+        2: { type: 'warning', label: '待审核' },
+        3: { type: 'error', label: '审核拒绝' },
+      };
+      const status = statusMap[row.status] || { type: 'info', label: '未知' };
+      return h(
+        NTag,
+        { type: status.type, size: 'small' },
+        { default: () => status.label },
+      );
+    },
+  },
+  { title: '操作', key: 'action', width: 130, fixed: 'right',
+    render(row) {
+      const dropdownOptions = [
+        { label: '详情', key: 'detail', icon: () => h(IconifyIcon, { icon: 'lucide:eye' }), },
+        { label: '修改', key: 'edit', icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }), },
+        { label: '重置密码', key: 'resetPwd', icon: () => h(IconifyIcon, { icon: 'lucide:key' }), },
+        { type: 'divider', key: 'divider', },
+        { label: '删除', key: 'delete', icon: () => h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }), },
+      ];
+
+      return h(
+        NSpace,
+        { size: 'small' },
+        {
+          default: () => [
+            h(
+              NButton,
+              {
+                size: 'small',
+                type: 'primary',
+                text: true,
+                onClick: () => handleDetail(row),
+              },
+              { default: () => '详情' },
+            ),
+            h(
+              NButton,
+              {
+                size: 'small',
+                type: 'primary',
+                text: true,
+                onClick: () => handleEdit(row),
+              },
+              { default: () => '修改' },
+            ),
+            h(
+              NDropdown,
+              {
+                options: dropdownOptions.slice(2),
+                onSelect: (key: string) => handleDropdownSelect(key, row),
+              },
+              {
+                default: () =>
+                  h(
+                    NButton,
+                    { size: 'small', text: true },
+                    { default: () => '更多' },
+                  ),
+              },
+            ),
+          ],
+        },
+      );
+    },
+  },
+];
+
+async function loadUserData() {
+  userLoading.value = true;
+  try {
+    const res = await userApi.list({
+      page: userPagination.value.page,
+      pageSize: userPagination.value.pageSize,
+      departmentId: selectedDepartmentId.value,
+      keyword: userSearchForm.value.description || undefined,
+    });
+    userData.value = res.records ?? [];
+    userPagination.value.itemCount = res.total;
+  } catch (error) {
+    console.error('加载用户数据失败:', error);
+  } finally {
+    userLoading.value = false;
   }
 }
 
-async function handleExport() {
-  const values = await gridApi.formApi.getValues();
-  userApi.export({
-    deptId: selectedDeptId.value,
-    keyword: userKeyword(values?.keyword) || undefined,
-  });
+function handleSearch() {
+  handlePageChange(1);
 }
 
 function handleImport() {
   // TODO: 实现导入用户功能
 }
 
+function handleExport() {
+  userApi.export({
+    departmentId: selectedDepartmentId.value,
+    description: userSearchForm.value.description || undefined,
+  });
+}
+
+// ==================== 用户操作逻辑 ====================
+// 详情抽屉
 const detailDrawerVisible = ref(false);
 const detailUserId = ref<string>();
 
@@ -190,6 +231,7 @@ function handleDetail(row: UserResp) {
   detailDrawerVisible.value = true;
 }
 
+// 编辑抽屉
 const editDrawerVisible = ref(false);
 const editUserId = ref<string>();
 
@@ -204,286 +246,228 @@ function handleEdit(row: UserResp) {
 }
 
 function handleEditSuccess() {
-  gridApi.query();
+  loadUserData();
 }
 
+// 重置密码
+const resetPasswordDialogVisible = ref(false);
 const newPassword = ref('');
 
-const [PasswordModal, passwordModalApi] = useVbenModal({
-  centered: true,
-  title: '密码重置成功',
-  showCancelButton: false,
-  confirmText: '确定',
-  onConfirm() {
-    passwordModalApi.close();
-  },
-});
-
-async function handleResetPassword(row: UserResp) {
-  const ok = await confirmAction.value?.ask({
+function handleResetPassword(row: UserResp) {
+  dialog.warning({
     title: '重置密码',
-    description: `确定要重置用户"${row.username}"的密码吗？`,
-    tone: 'destructive',
+    content: `确定要重置用户"${row.username}"的密码吗？`,
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        const password = await userApi.resetPassword(row.id);
+        newPassword.value = password;
+        resetPasswordDialogVisible.value = true;
+      } catch (error) {
+        console.error('重置密码失败:', error);
+        message.error('重置密码失败');
+      }
+    },
   });
-  if (!ok) return;
-  try {
-    const password = await userApi.resetPassword(row.id);
-    newPassword.value = password;
-    passwordModalApi.open();
-  } catch (error) {
-    console.error('重置密码失败:', error);
-    toast.error('重置密码失败');
-  }
 }
 
+// 复制密码
 async function handleCopyPassword() {
   try {
     await navigator.clipboard.writeText(newPassword.value);
-    toast.success('密码已复制到剪贴板');
+    message.success('密码已复制到剪贴板');
   } catch (error) {
     console.error('复制失败:', error);
-    toast.error('复制失败');
+    message.error('复制失败');
   }
 }
 
-async function handleDelete(row: UserResp) {
-  const ok = await confirmAction.value?.ask({
+function handleDelete(row: UserResp) {
+  dialog.warning({
     title: '删除用户',
-    description: `确定要删除用户 "${row.username}" 吗？此操作不可恢复！`,
-    tone: 'destructive',
+    content: `确定要删除用户 "${row.username}" 吗？此操作不可恢复！`,
+    positiveText: '确定',
+    negativeText: '取消',
+    onPositiveClick: async () => {
+      try {
+        await userApi.delete(row.id);
+        message.success('删除成功');
+        loadUserData();
+      } catch (error) {
+        console.error('删除用户失败:', error);
+        message.error('删除失败');
+      }
+    },
   });
-  if (!ok) return;
-  try {
-    await userApi.delete(row.id);
-    toast.success('删除成功');
-    await gridApi.query();
-  } catch (error) {
-    console.error('删除用户失败:', error);
-    toast.error('删除失败');
+}
+
+function handleDropdownSelect(key: string, row: UserResp) {
+  switch (key) {
+    case 'delete': {
+      handleDelete(row);
+      break;
+    }
+    case 'detail': {
+      handleDetail(row);
+      break;
+    }
+    case 'edit': {
+      handleEdit(row);
+      break;
+    }
+    case 'resetPwd': {
+      handleResetPassword(row);
+      break;
+    }
   }
+}
+
+function handlePageChange(page: number) {
+  userPagination.value.page = page;
+  loadUserData();
 }
 
 onMounted(() => {
-  loadDeptData();
+  loadDepartmentData();
   loadRoleOptions();
+  loadUserData();
 });
 </script>
 
 <template>
-  <ColPage
-    auto-content-height
-    :left-width="20"
-    :left-min-width="16"
-    :left-max-width="32"
-    :right-width="80"
-    resizable
-    split-line
-    split-handle
-    content-class="p-0"
-  >
-    <template #left>
-      <div class="flex h-full flex-col bg-background p-4">
-        <div class="relative mb-4">
-          <IconifyIcon
-            icon="lucide:search"
-            class="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2"
-          />
-          <Input
-            v-model="deptSearchKeyword"
+  <Page>
+    <NSplit
+      direction="horizontal"
+      default-size="200px"
+      min="200px"
+      max="320px"
+      :resizable="true"
+      class="h-full p-2"
+    >
+      <template #1>
+        <!-- 左侧部门树 -->
+        <div class="h-full bg-background p-4">
+          <NInput
+            v-model:value="departmentSearchKeyword"
             placeholder="搜索部门"
-            class="pl-8"
-            :class="deptSearchKeyword ? 'pr-8' : undefined"
-          />
-          <button
-            v-if="deptSearchKeyword"
-            type="button"
-            class="text-muted-foreground absolute top-1/2 right-2 -translate-y-1/2 text-sm leading-none"
-            @click="deptSearchKeyword = ''"
+            clearable
+            class="mb-4"
           >
-            ×
-          </button>
-        </div>
-        <div class="min-h-0 flex-1 overflow-auto">
-          <VbenTree
-            v-if="visibleDept.length"
-            :tree-data="visibleDept"
-            :model-value="treeModel"
-            value-field="key"
+            <template #prefix>
+              <NIcon><SearchOutline /></NIcon>
+            </template>
+          </NInput>
+          <NTree
+            :data="departmentData"
+            :show-irrelevant-nodes="false"
+            :pattern="departmentSearchKeyword"
+            :default-expand-all="true"
+            :selected-keys="selectedDepartmentKeys"
+            :node-props="departmentNodeProps"
+            key-field="id"
             label-field="name"
             children-field="children"
-            :default-expanded-level="99"
-            allow-clear
-            :show-icon="false"
-            @update:model-value="onDeptSelect"
+            selectable
+            block-line
           />
-          <p
-            v-else
-            class="text-muted-foreground py-6 text-center text-sm"
-          >
-            无数据
-          </p>
         </div>
-      </div>
-    </template>
-    <template #default>
-      <ConfirmAction ref="confirmAction" />
-      <div class="h-full min-h-0 bg-background">
-        <Grid>
-          <template #toolbar-tools>
-            <ToolbarActions>
-              <Button
-                type="button"
-                @click="handleAdd"
+      </template>
+      <template #2>
+        <!-- 右侧用户列表 -->
+        <div class="h-full bg-background p-4">
+          <!-- 用户搜索和操作栏 -->
+          <div class="flex items-center justify-between mb-4 gap-3">
+            <div class="flex items-center gap-2">
+              <NInput
+                v-model:value="userSearchForm.description"
+                placeholder="搜索关键字（用户名/显示名称）"
+                clearable
+                class="w-[240px]"
+                @keyup.enter="handleSearch"
               >
-                <IconifyIcon
-                  icon="lucide:plus"
-                  class="mr-1 size-4"
-                />
-                新增
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                @click="handleImport"
-              >
-                <IconifyIcon
-                  icon="lucide:upload"
-                  class="mr-1 size-4"
-                />
-                导入
-              </Button>
-              <Button
-                type="button"
-                variant="outline"
-                @click="handleExport"
-              >
-                <IconifyIcon
-                  icon="lucide:download"
-                  class="mr-1 size-4"
-                />
-                导出
-              </Button>
-            </ToolbarActions>
-          </template>
-          <template #deptName="{ row }">
-            {{ displayCell(row.deptName) }}
-          </template>
-          <template #roleNames="{ row }">
-            {{ displayCell(row.roleNames) }}
-          </template>
-          <template #phone="{ row }">
-            {{ displayCell(row.phone) }}
-          </template>
-          <template #status="{ row }">
-            <Badge
-              :variant="
-                badgeVariantForTag(userStatus(row.status).type) ?? 'secondary'
-              "
-            >
-              {{ userStatus(row.status).label }}
-            </Badge>
-          </template>
-          <template #action="{ row }">
-            <div class="inline-flex items-center gap-2">
-              <Button
-                type="button"
-                variant="link"
-                size="sm"
-                class="h-auto px-1"
-                @click="handleDetail(row)"
-              >
-                详情
-              </Button>
-              <Button
-                type="button"
-                variant="link"
-                size="sm"
-                class="h-auto px-1"
-                @click="handleEdit(row)"
-              >
-                修改
-              </Button>
-              <DropdownMenu>
-                <DropdownMenuTrigger as-child>
-                  <Button
-                    type="button"
-                    variant="link"
-                    size="sm"
-                    class="h-auto px-1"
-                  >
-                    更多
-                  </Button>
-                </DropdownMenuTrigger>
-                <DropdownMenuContent align="end">
-                  <DropdownMenuItem @select="handleResetPassword(row)">
-                    <IconifyIcon
-                      icon="lucide:key"
-                      class="mr-2 size-4"
-                    />
-                    重置密码
-                  </DropdownMenuItem>
-                  <DropdownMenuSeparator />
-                  <DropdownMenuItem
-                    class="text-destructive"
-                    @select="handleDelete(row)"
-                  >
-                    <IconifyIcon
-                      icon="lucide:trash-2"
-                      class="mr-2 size-4"
-                    />
-                    删除
-                  </DropdownMenuItem>
-                </DropdownMenuContent>
-              </DropdownMenu>
+                <template #prefix>
+                  <NIcon><SearchOutline /></NIcon>
+                </template>
+              </NInput>
+              <NButton type="primary" @click="handleSearch">
+                <template #icon><IconifyIcon icon="lucide:search" /></template>
+                查询
+              </NButton>
             </div>
-          </template>
-        </Grid>
-      </div>
-
-      <UserDetailDrawer
-        v-model:visible="detailDrawerVisible"
-        :user-id="detailUserId"
-        @edit="handleEdit"
-      />
-
-      <UserEditDrawer
-        v-model:visible="editDrawerVisible"
-        :user-id="editUserId"
-        :dept-data="deptData"
-        :role-options="roleOptions"
-        :default-dept-id="selectedDeptId"
-        @success="handleEditSuccess"
-      />
-
-      <PasswordModal class="w-[420px]">
-        <div class="space-y-4">
-          <div class="flex items-center gap-2 text-orange-500">
-            <IconifyIcon
-              icon="lucide:alert-triangle"
-              class="text-lg"
-            />
-            <span class="font-medium">新密码只显示一次，请妥善保管！</span>
+            <NSpace>
+              <NButton type="primary" @click="handleAdd">
+                <template #icon><IconifyIcon icon="lucide:plus" /></template>
+                新增
+              </NButton>
+              <NButton @click="handleImport">
+                <template #icon><IconifyIcon icon="lucide:upload" /></template>
+                导入
+              </NButton>
+              <NButton @click="handleExport">
+                <template #icon><IconifyIcon icon="lucide:download" /></template>
+                导出
+              </NButton>
+            </NSpace>
           </div>
-          <div
-            class="flex items-center gap-2 rounded bg-gray-100 p-3 dark:bg-gray-800"
-          >
-            <span class="flex-1 font-mono text-lg select-all">{{
-              newPassword
-            }}</span>
-            <Button
-              type="button"
-              size="sm"
-              @click="handleCopyPassword"
-            >
-              <IconifyIcon
-                icon="lucide:copy"
-                class="mr-1 size-4"
-              />
-              复制
-            </Button>
-          </div>
+          <!-- 用户表格 -->
+          <NDataTable
+            :columns="userColumns"
+            :data="userData"
+            :loading="userLoading"
+            :row-key="(row) => row.id"
+            :pagination="userPagination"
+            scroll-x="1000px"
+            remote
+          />
         </div>
-      </PasswordModal>
-    </template>
-  </ColPage>
+      </template>
+    </NSplit>
+
+    <!-- 用户详情抽屉 -->
+    <UserDetailDrawer
+      v-model:visible="detailDrawerVisible"
+      :user-id="detailUserId"
+      @edit="handleEdit"
+    />
+
+    <!-- 用户编辑抽屉 -->
+    <UserEditDrawer
+      v-model:visible="editDrawerVisible"
+      :user-id="editUserId"
+      :department-data="departmentData"
+      :role-options="roleOptions"
+      :default-department-id="selectedDepartmentId"
+      @success="handleEditSuccess"
+    />
+
+    <!-- 重置密码对话框 -->
+    <NModal
+      v-model:show="resetPasswordDialogVisible"
+      preset="dialog"
+      title="密码重置成功"
+      positive-text="确定"
+      @positive-click="resetPasswordDialogVisible = false"
+    >
+      <div class="space-y-4">
+        <div class="text-orange-500 flex items-center gap-2">
+          <IconifyIcon icon="lucide:alert-triangle" class="text-lg" />
+          <span class="font-medium">新密码只显示一次，请妥善保管！</span>
+        </div>
+        <div class="flex items-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded">
+          <span class="flex-1 font-mono text-lg select-all">{{ newPassword }}</span>
+          <NButton
+            type="primary"
+            size="small"
+            @click="handleCopyPassword"
+          >
+            <template #icon>
+              <IconifyIcon icon="lucide:copy" />
+            </template>
+            复制
+          </NButton>
+        </div>
+      </div>
+    </NModal>
+  </Page>
 </template>

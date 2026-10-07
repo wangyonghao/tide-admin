@@ -140,48 +140,48 @@ public class UserException extends BizException {
         return of("USER_IMPORT_ROLE_INVALID", "存在无效角色，请检查数据");
     }
 
-    public static UserException importDeptInvalid() {
-        return of("USER_IMPORT_DEPT_INVALID", "存在无效部门，请检查部门名称或部门层级是否正确");
+    public static UserException importDepartmentInvalid() {
+        return of("USER_IMPORT_DEPARTMENT_INVALID", "存在无效部门，请检查部门名称或部门层级是否正确");
     }
 
-    public static UserException deptNamesEmpty() {
-        return of("USER_DEPT_NAMES_EMPTY", "部门名称集合不能为空");
+    public static UserException departmentNamesEmpty() {
+        return of("USER_DEPARTMENT_NAMES_EMPTY", "部门名称集合不能为空");
     }
 
-    public static UserException deptNameListEmpty() {
-        return of("USER_DEPT_NAMES_EMPTY", "部门名称列表不能为空");
+    public static UserException departmentNameListEmpty() {
+        return of("USER_DEPARTMENT_NAMES_EMPTY", "部门名称列表不能为空");
     }
 
-    public static UserException deptsInvalidOrAmbiguous(String deptNames) {
-        return of("USER_DEPT_INVALID_OR_AMBIGUOUS", StrUtil.format("以下部门无效或存在歧义：{}", deptNames));
+    public static UserException departmentsInvalidOrAmbiguous(String departmentNames) {
+        return of("USER_DEPARTMENT_INVALID_OR_AMBIGUOUS", StrUtil.format("以下部门无效或存在歧义：{}", departmentNames));
     }
 
-    public static UserException deptNotFoundOrAmbiguous(String deptName) {
-        return of("USER_DEPT_INVALID_OR_AMBIGUOUS", StrUtil.format("部门 [{}] 不存在或存在歧义", deptName));
+    public static UserException departmentNotFoundOrAmbiguous(String departmentName) {
+        return of("USER_DEPARTMENT_INVALID_OR_AMBIGUOUS", StrUtil.format("部门 [{}] 不存在或存在歧义", departmentName));
     }
 
-    public static UserException deptPathBlank() {
-        return of("USER_DEPT_PATH_BLANK", "部门路径不能为空");
+    public static UserException departmentPathBlank() {
+        return of("USER_DEPARTMENT_PATH_BLANK", "部门路径不能为空");
     }
 
-    public static UserException deptPathFormatInvalid(String deptPath) {
-        return of("USER_DEPT_PATH_FORMAT_INVALID", StrUtil.format("部门路径格式错误：{}", deptPath));
+    public static UserException departmentPathFormatInvalid(String departmentPath) {
+        return of("USER_DEPARTMENT_PATH_FORMAT_INVALID", StrUtil.format("部门路径格式错误：{}", departmentPath));
     }
 
-    public static UserException deptPathContainsBlank(String deptPath) {
-        return of("USER_DEPT_PATH_FORMAT_INVALID", StrUtil.format("部门路径包含空名称：{}", deptPath));
+    public static UserException departmentPathContainsBlank(String departmentPath) {
+        return of("USER_DEPARTMENT_PATH_FORMAT_INVALID", StrUtil.format("部门路径包含空名称：{}", departmentPath));
     }
 
-    public static UserException deptNotFoundInPath(String deptName, String deptPath) {
-        return of("USER_DEPT_NOT_FOUND", StrUtil.format("找不到部门 [{}] 在路径 [{}] 中", deptName, deptPath));
+    public static UserException departmentNotFoundInPath(String departmentName, String departmentPath) {
+        return of("USER_DEPARTMENT_NOT_FOUND", StrUtil.format("找不到部门 [{}] 在路径 [{}] 中", departmentName, departmentPath));
     }
 
-    public static UserException deptNotFound(String deptName) {
-        return of("USER_DEPT_NOT_FOUND", StrUtil.format("部门 [{}] 不存在", deptName));
+    public static UserException departmentNotFound(String departmentName) {
+        return of("USER_DEPARTMENT_NOT_FOUND", StrUtil.format("部门 [{}] 不存在", departmentName));
     }
 
-    public static UserException deptNameDuplicate(String deptName) {
-        return of("USER_DEPT_NAME_DUPLICATE", StrUtil.format("存在多个同名部门 [{}]，请使用完整层级路径，如：公司名:{}", deptName, deptName));
+    public static UserException departmentNameDuplicate(String departmentName) {
+        return of("USER_DEPARTMENT_NAME_DUPLICATE", StrUtil.format("存在多个同名部门 [{}]，请使用完整层级路径，如：公司名:{}", departmentName, departmentName));
     }
 
     public static UserException socialAlreadyBound(String source) {

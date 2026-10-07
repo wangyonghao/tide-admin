@@ -20,10 +20,10 @@
             t1.status,
             t1.is_builtin,
             t1.pwd_update_time,
-            t1.dept_id,
-            t2.name AS deptName
+            t1.department_id,
+            t2.name AS departmentName
         FROM sys_user AS t1
-        LEFT JOIN sys_dept AS t2 ON t2.id = t1.dept_id
+        LEFT JOIN sys_department AS t2 ON t2.id = t1.department_id
     </sql>
 
     <select id="selectUserPage" resultType="top.wyhao.identity.adapter.web.vo.UserResult">

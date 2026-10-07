@@ -28,5 +28,5 @@ public class RoleDataScope {
      */
     private DataScopeEnum dataScope;
 
-    private List<Long> visibleDeptIds;
+    private List<Long> visibleDepartmentIds;
 }

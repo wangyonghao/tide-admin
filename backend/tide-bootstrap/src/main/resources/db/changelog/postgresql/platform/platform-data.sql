@@ -1,8 +1,7 @@
 -- liquibase formatted sql
 
 -- changeset wangyonghao:1
--- validCheckSum: ANY
--- comment system-初始化表数据
+-- comment 初始化平台库表
 INSERT INTO "sys_menu"
 ("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
 VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide:settings-2', FALSE, FALSE, FALSE, NULL, 1, 1, 1, NOW()),
@@ -136,8 +135,77 @@ VALUES
     ('department_type', '2', '部门', '{"color": "success"}', 2, true, NULL),
     ('department_type', '3', '用户组', '{"color": "warning"}', 3, true, NULL);
 
--- changeset wyhao:system-menu-notice-create-1
 -- comment 补充通知公告新增权限
 INSERT INTO "sys_menu"
 ("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
 VALUES (1095, '新增', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:create', 3, 1, 1, NOW());
+
+-- =============================================================================
+-- Job
+-- =============================================================================
+-- comment 初始化任务调度插件数据表
+INSERT INTO "sys_menu"
+("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden",
+ "permission", "sort", "status", "create_user", "create_time")
+VALUES (8000, '任务调度', 0, 1, '/schedule', 'Layout', '/schedule/job', 'schedule', FALSE, FALSE, FALSE, NULL, 8, 1, 1,
+        NOW()),
+       (8010, '任务管理', 8000, 2, '/schedule/job', 'schedule/job/index', NULL, 'select-all', FALSE, FALSE, FALSE, NULL,
+        1, 1, 1, NOW()),
+       (8011, '列表', 8010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:job:list', 1, 1, 1, NOW()),
+       (8012, '详情', 8010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:job:get', 2, 1, 1, NOW()),
+       (8013, '新增', 8010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:job:create', 3, 1, 1, NOW()),
+       (8014, '修改', 8010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:job:update', 4, 1, 1, NOW()),
+       (8015, '删除', 8010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:job:delete', 5, 1, 1, NOW()),
+       (8016, '执行', 8010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:job:trigger', 6, 1, 1, NOW()),
+       (8020, '任务日志', 8000, 2, '/schedule/log', 'schedule/log/index', NULL, 'find-replace', FALSE, FALSE, FALSE,
+        NULL, 2, 1, 1, NOW()),
+       (8021, '列表', 8020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'schedule:log:list', 1, 1, 1, NOW());
+
+
+-- comment 移除 SnailJob 日志停止/重试菜单
+DELETE FROM "sys_role_menu" WHERE "menu_id" IN (8022, 8023);
+DELETE FROM "sys_menu" WHERE "id" IN (8022, 8023);
+
+-- =============================================================================
+-- openapi
+-- =============================================================================
+-- comment openapi-初始化默认菜单
+INSERT INTO "sys_menu"
+("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden",
+ "permission", "sort", "status", "create_user", "create_time")
+VALUES (7000, '能力开放', 0, 1, '/open', 'Layout', '/open/app', 'expand', FALSE, FALSE, FALSE, NULL, 7, 1, 1, NOW()),
+       (7010, '应用管理', 7000, 2, '/open/app', 'open/app/index', NULL, 'common', FALSE, FALSE, FALSE, NULL, 1, 1, 1,
+        NOW()),
+       (7011, '列表', 7010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'open:app:list', 1, 1, 1, NOW()),
+       (7012, '详情', 7010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'open:app:get', 2, 1, 1, NOW()),
+       (7013, '新增', 7010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'open:app:create', 3, 1, 1, NOW()),
+       (7014, '修改', 7010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'open:app:update', 4, 1, 1, NOW()),
+       (7015, '删除', 7010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'open:app:delete', 5, 1, 1, NOW()),
+       (7016, '导出', 7010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'open:app:export', 6, 1, 1, NOW()),
+       (7017, '查看密钥', 7010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'open:app:secret', 7, 1, 1, NOW()),
+       (7018, '重置密钥', 7010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'open:app:resetSecret', 8, 1, 1, NOW());
+
+-- =============================================================================
+-- tenant
+-- =============================================================================
+-- comment: tenant-初始化默认菜单
+INSERT INTO "sys_menu" ("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external",
+                        "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
+VALUES (3000, '租户管理', 0, 1, '/tenant', 'Layout', '/tenant/management', 'user-group', FALSE, FALSE, FALSE, NULL, 6,
+        1, 1, NOW()),
+       (3010, '租户管理', 3000, 2, '/tenant/management', 'tenant/management/index', NULL, 'user-group', FALSE, FALSE,
+        FALSE, NULL, 1, 1, 1, NOW()),
+       (3011, '列表', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:list', 1, 1, 1, NOW()),
+       (3012, '详情', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:get', 2, 1, 1, NOW()),
+       (3013, '新增', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:create', 3, 1, 1, NOW()),
+       (3014, '修改', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:update', 4, 1, 1, NOW()),
+       (3015, '删除', 3010, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:management:delete', 5, 1, 1, NOW()),
+       (3016, '修改租户管理员密码', 3010, 3, NULL, NULL, NULL, NULL, FALSE, FALSE, FALSE,
+        'tenant:management:updateAdminUserPwd', 6, 1, 1, NOW()),
+       (3020, '套餐管理', 3000, 2, '/tenant/package', 'tenant/package/index', NULL, 'project', FALSE, FALSE, FALSE,
+        NULL, 2, 1, 1, NOW()),
+       (3021, '列表', 3020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:list', 1, 1, 1, NOW()),
+       (3022, '详情', 3020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:get', 2, 1, 1, NOW()),
+       (3023, '新增', 3020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:create', 3, 1, 1, NOW()),
+       (3024, '修改', 3020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:update', 4, 1, 1, NOW()),
+       (3025, '删除', 3020, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'tenant:package:delete', 5, 1, 1, NOW());

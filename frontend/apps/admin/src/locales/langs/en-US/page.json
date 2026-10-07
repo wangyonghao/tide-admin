@@ -30,7 +30,7 @@
       "phone": "Phone",
       "email": "Email",
       "gender": "Gender",
-      "dept": "Department",
+      "department": "Department",
       "position": "Position",
       "registrationDate": "Registration Date",
       "edit": "Edit",

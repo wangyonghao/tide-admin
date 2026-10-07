@@ -87,10 +87,10 @@ export interface UserResp extends BaseEntity {
   /** 最后一次修改密码时间 */
   pwdResetTime: string;
   /** 部门ID */
-  deptId: string;
+  departmentId: string;
   /** 租户ID */
   tenantId: string;
-  deptName: string;
+  departmentName: string;
   roleIds: string[];
   roleNames: Array<string>;
   disabled: boolean;
@@ -114,7 +114,7 @@ export interface UserQuery {
   email?: string;
   phone?: string;
   status?: string;
-  deptId?: string;
+  departmentId?: string;
   sort?: Array<string> | string;
   userIds?: Array<string>;
   roleId?: string;

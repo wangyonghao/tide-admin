@@ -61,7 +61,7 @@ public class SysRole{
     /**
      * 部门选择是否父子节点关联
      */
-    private Boolean deptCheckStrictly;
+    private Boolean departmentCheckStrictly;
 
     /**
      * 创建人

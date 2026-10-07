@@ -22,12 +22,12 @@ public enum DataScopeEnum implements BaseEnum {
     /**
      * 本部门及以下数据权限
      */
-    DEPT_AND_CHILD(2, "本部门及以下数据权限"),
+    DEPARTMENT_AND_CHILD(2, "本部门及以下数据权限"),
 
     /**
      * 本部门数据权限
      */
-    DEPT(3, "本部门数据权限"),
+    DEPARTMENT(3, "本部门数据权限"),
 
     /**
      * 仅本人数据权限
@@ -37,7 +37,7 @@ public enum DataScopeEnum implements BaseEnum {
     /**
      * 自定义数据权限
      */
-    CUSTOM_DEPT(5, "自定义部门数据权限"),;
+    CUSTOM_DEPARTMENT(5, "自定义部门数据权限"),;
 
     private final Integer value;
     private final String description;

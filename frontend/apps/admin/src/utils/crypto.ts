@@ -26,9 +26,9 @@ export function encryptByRsa(txt: string) {
   return encryptor.encrypt(txt); // 对数据进行加密
 }
 
-const defaultKeyWork = 'XwKsGlMcdPMEhR1B';
+const defaultKeyword = 'XwKsGlMcdPMEhR1B';
 
-export function encryptByAes(word: string, keyWord = defaultKeyWork) {
+export function encryptByAes(word: string, keyWord = defaultKeyword) {
   const key = CryptoJS.enc.Utf8.parse(keyWord);
   const arcs = CryptoJS.enc.Utf8.parse(word);
   const encrypted = CryptoJS.AES.encrypt(arcs, key, {

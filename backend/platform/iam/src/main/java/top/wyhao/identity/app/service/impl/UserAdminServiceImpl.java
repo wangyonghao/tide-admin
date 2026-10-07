@@ -42,6 +42,7 @@ import top.wyhao.identity.adapter.web.vo.UserImportResp;
 import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.app.assembler.UserAssembler;
 import top.wyhao.identity.app.query.UserViewQuery;
+import top.wyhao.identity.app.service.MembershipService;
 import top.wyhao.identity.app.service.UserAdminService;
 import top.wyhao.identity.app.service.UserSocialService;
 import top.wyhao.identity.client.PasswordPolicyConfig;
@@ -52,7 +53,7 @@ import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.identity.domain.service.UserImportPolicy;
 import top.wyhao.identity.domain.service.UserLifecycleRules;
 import top.wyhao.identity.domain.service.UserUniquenessChecker;
-import top.wyhao.organization.client.DeptApi;
+import top.wyhao.department.client.DepartmentApi;
 import top.wyhao.redisson.util.RedisUtils;
 import top.wyhao.security.client.RoleApi;
 import top.wyhao.starter.excel.util.ExcelUtils;
@@ -80,7 +81,8 @@ public class UserAdminServiceImpl implements UserAdminService {
     private final PasswordEncoder passwordEncoder;
     private final UserSocialService userSocialService;
     private final RoleApi roleApi;
-    private final DeptApi deptApi;
+    private final DepartmentApi departmentApi;
+    private final MembershipService membershipService;
     private final UserRepository userRepository;
     private final UserViewQuery userViewQuery;
     private final PasswordPolicyConfigApi passwordPolicyConfigApi;
@@ -121,6 +123,7 @@ public class UserAdminServiceImpl implements UserAdminService {
             : 90;
         newUser.setPwdExpireDate(LocalDate.now().plusDays(expireDays));
         userRepository.insert(newUser);
+        membershipService.replacePrimaryDepartment(newUser.getId(), newUser.getDepartmentId());
 
         roleApi.assignRolesToUser(request.getRoleIds(), newUser.getId());
         return newUser.getId();
@@ -129,6 +132,7 @@ public class UserAdminServiceImpl implements UserAdminService {
     @Override
     public Long save(SysUser user) {
         userRepository.insert(user);
+        membershipService.replacePrimaryDepartment(user.getId(), user.getDepartmentId());
         return user.getId();
     }
 
@@ -148,6 +152,7 @@ public class UserAdminServiceImpl implements UserAdminService {
         SysUser updateUser = userAssembler.toEntity(userRequest);
         updateUser.setId(userId);
         userRepository.updateById(updateUser);
+        membershipService.replacePrimaryDepartment(userId, updateUser.getDepartmentId());
         roleApi.assignRolesToUser(userRequest.getRoleIds(), userId);
 
         if (StatusEnum.DISABLE.equals(userRequest.getStatus())) {
@@ -163,6 +168,7 @@ public class UserAdminServiceImpl implements UserAdminService {
         lifecycleRules.assertDeletable(ids, LoginUtil.getUserId(), list);
 
         roleApi.deleteUserRolesByUserIds(ids);
+        membershipService.removeAllByUserIds(ids);
         userSocialService.deleteByUserIds(ids);
         userRepository.deleteByIds(ids);
         ids.forEach(LoginUtil::kickout);
@@ -212,10 +218,10 @@ public class UserAdminServiceImpl implements UserAdminService {
         if (existRoleCount < roleNames.size()) {
             throw UserException.importRoleInvalid();
         }
-        Set<String> deptNames = CollUtils.mapToSet(validRowList, UserImportRowReq::getDeptName);
-        int existDeptCount = deptApi.countValidDeptPaths(deptNames);
-        if (existDeptCount < deptNames.size()) {
-            throw UserException.importDeptInvalid();
+        Set<String> departmentNames = CollUtils.mapToSet(validRowList, UserImportRowReq::getDepartmentName);
+        int existDepartmentCount = departmentApi.countValidDepartmentPaths(departmentNames);
+        if (existDepartmentCount < departmentNames.size()) {
+            throw UserException.importDepartmentInvalid();
         }
 
         userImportResp.setDuplicateUserRows(countByValues(validRowList, UserImportRowReq::getUsername, userRepository::countByUsernames));
@@ -262,8 +268,8 @@ public class UserAdminServiceImpl implements UserAdminService {
                 .map(UserImportRowReq::getRoleName)
                 .distinct()
                 .toList());
-        Map<String, Long> deptMap = deptApi.resolveDeptIdsByPaths(importUserList.stream()
-                .map(UserImportRowReq::getDeptName)
+        Map<String, Long> departmentMap = departmentApi.resolveDepartmentIdsByPaths(importUserList.stream()
+                .map(UserImportRowReq::getDepartmentName)
                 .distinct()
                 .toList());
 
@@ -281,7 +287,7 @@ public class UserAdminServiceImpl implements UserAdminService {
             userDO.setStatus(req.getDefaultStatus().getValue());
             userDO.setPwdUpdateTime(LocalDateTime.now());
             userDO.setGender(GenderEnum.getByValue(Integer.parseInt(row.getGender())).getValue());
-            userDO.setDeptId(deptMap.get(row.getDeptName()));
+            userDO.setDepartmentId(departmentMap.get(row.getDepartmentName()));
             if (importPolicy.shouldUpdateExistingUser(req.getDuplicateUser(), row.getUsername(), existUsernames)) {
                 userDO.setId(userMap.get(row.getUsername()));
                 updateList.add(userDO);
@@ -325,11 +331,11 @@ public class UserAdminServiceImpl implements UserAdminService {
     }
 
     @Override
-    public Long countByDeptIds(List<Long> deptIds) {
-        if (CollUtil.isEmpty(deptIds)) {
+    public Long countByDepartmentIds(List<Long> departmentIds) {
+        if (CollUtil.isEmpty(departmentIds)) {
             return 0L;
         }
-        return userRepository.countByDeptIds(deptIds);
+        return userRepository.countByDepartmentIds(departmentIds);
     }
 
     private void doImportUser(List<SysUser> insertList, List<SysUser> updateList, List<long[]> userRolePairs) {
@@ -340,6 +346,18 @@ public class UserAdminServiceImpl implements UserAdminService {
             userRepository.updateBatch(updateList);
             roleApi.deleteUserRolesByUserIds(CollUtils.mapToList(updateList, SysUser::getId));
         }
+        List<long[]> departmentPairs = new ArrayList<>();
+        for (SysUser user : CollUtil.emptyIfNull(insertList)) {
+            if (user.getDepartmentId() != null) {
+                departmentPairs.add(new long[]{user.getId(), user.getDepartmentId()});
+            }
+        }
+        for (SysUser user : CollUtil.emptyIfNull(updateList)) {
+            if (user.getDepartmentId() != null) {
+                departmentPairs.add(new long[]{user.getId(), user.getDepartmentId()});
+            }
+        }
+        membershipService.replacePrimaryDepartments(departmentPairs);
         if (CollUtil.isNotEmpty(userRolePairs)) {
             for (long[] pair : userRolePairs) {
                 roleApi.assignRolesToUser(List.of(pair[1]), pair[0]);

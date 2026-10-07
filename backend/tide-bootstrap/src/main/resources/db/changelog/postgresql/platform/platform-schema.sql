@@ -1,7 +1,6 @@
 -- liquibase formatted sql
 
--- changeset wyhao:1
--- validCheckSum: ANY
+-- changeset wangyonghao:1
 -- comment system-初始化表结构
 CREATE TABLE IF NOT EXISTS "sys_config"
 (
@@ -256,15 +255,7 @@ CREATE TABLE IF NOT EXISTS "sys_membership"
     "update_user" int8                 DEFAULT NULL,
     "update_time" timestamp            DEFAULT NULL,
     "deleted"     int2        NOT NULL DEFAULT 0,
-    PRIMARY KEY ("id"),
-    CONSTRAINT "ck_membership_scope_type"
-        CHECK ("scope_type" IN ('DEPARTMENT', 'ROLE', 'TENANT')),
-    CONSTRAINT "ck_membership_status"
-        CHECK ("status" IN (0, 1, 2)),
-    CONSTRAINT "ck_membership_deleted"
-        CHECK ("deleted" IN (0, 1)),
-    CONSTRAINT "ck_membership_primary_only_department"
-        CHECK (("scope_type" = 'DEPARTMENT') OR ("is_primary" = FALSE))
+    PRIMARY KEY ("id")
 );
 COMMENT ON TABLE "sys_membership" IS '成员关系（用户-部门 / 用户-角色）';
 COMMENT ON COLUMN "sys_membership"."id" IS 'ID';
@@ -299,7 +290,6 @@ CREATE INDEX "idx_membership_scope_active"
     WHERE "deleted" = 0;
 
 -- 字典选项表
-DROP TABLE IF EXISTS "sys_dict";
 DROP TABLE IF EXISTS "sys_options";
 
 CREATE TABLE IF NOT EXISTS "sys_options"
@@ -557,8 +547,7 @@ COMMENT ON COLUMN "sys_login_log"."user_agent" IS 'User-Agent';
 COMMENT ON COLUMN "sys_login_log"."tenant_id" IS '租户ID';
 COMMENT ON TABLE "sys_login_log" IS '登录日志表';
 
--- changeset wyhao:file-1
--- 文件元数据-初始化表结构
+-- 文件元数据
 CREATE TABLE IF NOT EXISTS "file"
 (
     "id"           BIGSERIAL PRIMARY KEY,
@@ -574,13 +563,11 @@ CREATE TABLE IF NOT EXISTS "file"
     "update_user"  BIGINT,
     "update_time"  TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
 );
-
 -- 创建索引
 CREATE INDEX IF NOT EXISTS "idx_file_sha256" ON "file" ("sha256");
 CREATE INDEX IF NOT EXISTS "idx_file_storage_key" ON "file" ("storage_key");
 CREATE INDEX IF NOT EXISTS "idx_file_status" ON "file" ("status");
 CREATE INDEX IF NOT EXISTS "idx_file_create_time" ON "file" ("create_time");
-
 -- 添加注释
 COMMENT ON TABLE "file" IS '文件表（物理文件元数据）';
 COMMENT ON COLUMN "file"."id" IS '文件 ID';
@@ -595,3 +582,420 @@ COMMENT ON COLUMN "file"."create_user" IS '创建人';
 COMMENT ON COLUMN "file"."create_time" IS '创建时间';
 COMMENT ON COLUMN "file"."update_user" IS '更新人';
 COMMENT ON COLUMN "file"."update_time" IS '更新时间';
+
+-- =============================================================================
+-- schedule
+-- =============================================================================
+-- comment 定时任务业务表
+CREATE TABLE IF NOT EXISTS "sys_job"
+(
+    "id"                BIGINT       NOT NULL,
+    "name"              VARCHAR(64)  NOT NULL,
+    "handler_code"      VARCHAR(64)  NOT NULL,
+    "cron"              VARCHAR(128) NOT NULL,
+    "schedule_mode"     VARCHAR(32)  NOT NULL,
+    "schedule_payload"  TEXT,
+    "schedule_label"    VARCHAR(255),
+    "params"            TEXT,
+    "status"            INT2         NOT NULL DEFAULT 0,
+    "remark"            VARCHAR(500),
+    "create_user"       BIGINT       NOT NULL,
+    "create_time"       TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "update_user"       BIGINT,
+    "update_time"       TIMESTAMP,
+    PRIMARY KEY ("id")
+);
+
+CREATE INDEX IF NOT EXISTS "idx_sys_job_handler_code" ON "sys_job" ("handler_code");
+CREATE INDEX IF NOT EXISTS "idx_sys_job_status" ON "sys_job" ("status");
+
+COMMENT ON TABLE "sys_job" IS '定时任务';
+COMMENT ON COLUMN "sys_job"."handler_code" IS '已注册任务编码';
+COMMENT ON COLUMN "sys_job"."cron" IS 'Quartz Cron';
+COMMENT ON COLUMN "sys_job"."schedule_mode" IS 'DAILY/WEEKLY/MONTHLY/INTERVAL/CRON';
+COMMENT ON COLUMN "sys_job"."status" IS '0 停止 1 激活';
+
+CREATE TABLE IF NOT EXISTS "sys_job_log"
+(
+    "id"             BIGINT      NOT NULL,
+    "job_id"         BIGINT      NOT NULL,
+    "job_name"       VARCHAR(64),
+    "handler_code"   VARCHAR(64) NOT NULL,
+    "trigger_type"   VARCHAR(16) NOT NULL,
+    "start_time"     TIMESTAMP   NOT NULL,
+    "end_time"       TIMESTAMP,
+    "duration_ms"    BIGINT,
+    "status"         INT2        NOT NULL,
+    "error_message"  VARCHAR(2000),
+    PRIMARY KEY ("id")
+);
+
+CREATE INDEX IF NOT EXISTS "idx_sys_job_log_job_id" ON "sys_job_log" ("job_id");
+CREATE INDEX IF NOT EXISTS "idx_sys_job_log_start_time" ON "sys_job_log" ("start_time");
+
+COMMENT ON TABLE "sys_job_log" IS '定时任务执行日志';
+COMMENT ON COLUMN "sys_job_log"."trigger_type" IS 'CRON / MANUAL';
+COMMENT ON COLUMN "sys_job_log"."status" IS '1 运行中 2 成功 3 失败';
+
+
+-- comment Quartz
+CREATE TABLE IF NOT EXISTS qrtz_job_details
+(
+    sched_name        VARCHAR(120) NOT NULL,
+    job_name          VARCHAR(200) NOT NULL,
+    job_group         VARCHAR(200) NOT NULL,
+    description       VARCHAR(250) NULL,
+    job_class_name    VARCHAR(250) NOT NULL,
+    is_durable        BOOL         NOT NULL,
+    is_nonconcurrent  BOOL         NOT NULL,
+    is_update_data    BOOL         NOT NULL,
+    requests_recovery BOOL         NOT NULL,
+    job_data          BYTEA        NULL,
+    PRIMARY KEY (sched_name, job_name, job_group)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_triggers
+(
+    sched_name     VARCHAR(120) NOT NULL,
+    trigger_name   VARCHAR(200) NOT NULL,
+    trigger_group  VARCHAR(200) NOT NULL,
+    job_name       VARCHAR(200) NOT NULL,
+    job_group      VARCHAR(200) NOT NULL,
+    description    VARCHAR(250) NULL,
+    next_fire_time BIGINT       NULL,
+    prev_fire_time BIGINT       NULL,
+    priority       INTEGER      NULL,
+    trigger_state  VARCHAR(16)  NOT NULL,
+    trigger_type   VARCHAR(8)   NOT NULL,
+    start_time     BIGINT       NOT NULL,
+    end_time       BIGINT       NULL,
+    calendar_name  VARCHAR(200) NULL,
+    misfire_instr  SMALLINT     NULL,
+    job_data       BYTEA        NULL,
+    PRIMARY KEY (sched_name, trigger_name, trigger_group),
+    FOREIGN KEY (sched_name, job_name, job_group)
+        REFERENCES qrtz_job_details (sched_name, job_name, job_group)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_simple_triggers
+(
+    sched_name      VARCHAR(120) NOT NULL,
+    trigger_name    VARCHAR(200) NOT NULL,
+    trigger_group   VARCHAR(200) NOT NULL,
+    repeat_count    BIGINT       NOT NULL,
+    repeat_interval BIGINT       NOT NULL,
+    times_triggered BIGINT       NOT NULL,
+    PRIMARY KEY (sched_name, trigger_name, trigger_group),
+    FOREIGN KEY (sched_name, trigger_name, trigger_group)
+        REFERENCES qrtz_triggers (sched_name, trigger_name, trigger_group)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_cron_triggers
+(
+    sched_name      VARCHAR(120) NOT NULL,
+    trigger_name    VARCHAR(200) NOT NULL,
+    trigger_group   VARCHAR(200) NOT NULL,
+    cron_expression VARCHAR(120) NOT NULL,
+    time_zone_id    VARCHAR(80),
+    PRIMARY KEY (sched_name, trigger_name, trigger_group),
+    FOREIGN KEY (sched_name, trigger_name, trigger_group)
+        REFERENCES qrtz_triggers (sched_name, trigger_name, trigger_group)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_simprop_triggers
+(
+    sched_name    VARCHAR(120)   NOT NULL,
+    trigger_name  VARCHAR(200)   NOT NULL,
+    trigger_group VARCHAR(200)   NOT NULL,
+    str_prop_1    VARCHAR(512)   NULL,
+    str_prop_2    VARCHAR(512)   NULL,
+    str_prop_3    VARCHAR(512)   NULL,
+    int_prop_1    INT            NULL,
+    int_prop_2    INT            NULL,
+    long_prop_1   BIGINT         NULL,
+    long_prop_2   BIGINT         NULL,
+    dec_prop_1    NUMERIC(13, 4) NULL,
+    dec_prop_2    NUMERIC(13, 4) NULL,
+    bool_prop_1   BOOL           NULL,
+    bool_prop_2   BOOL           NULL,
+    PRIMARY KEY (sched_name, trigger_name, trigger_group),
+    FOREIGN KEY (sched_name, trigger_name, trigger_group)
+        REFERENCES qrtz_triggers (sched_name, trigger_name, trigger_group)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_blob_triggers
+(
+    sched_name    VARCHAR(120) NOT NULL,
+    trigger_name  VARCHAR(200) NOT NULL,
+    trigger_group VARCHAR(200) NOT NULL,
+    blob_data     BYTEA        NULL,
+    PRIMARY KEY (sched_name, trigger_name, trigger_group),
+    FOREIGN KEY (sched_name, trigger_name, trigger_group)
+        REFERENCES qrtz_triggers (sched_name, trigger_name, trigger_group)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_calendars
+(
+    sched_name    VARCHAR(120) NOT NULL,
+    calendar_name VARCHAR(200) NOT NULL,
+    calendar      BYTEA        NOT NULL,
+    PRIMARY KEY (sched_name, calendar_name)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_paused_trigger_grps
+(
+    sched_name    VARCHAR(120) NOT NULL,
+    trigger_group VARCHAR(200) NOT NULL,
+    PRIMARY KEY (sched_name, trigger_group)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_fired_triggers
+(
+    sched_name        VARCHAR(120) NOT NULL,
+    entry_id          VARCHAR(95)  NOT NULL,
+    trigger_name      VARCHAR(200) NOT NULL,
+    trigger_group     VARCHAR(200) NOT NULL,
+    instance_name     VARCHAR(200) NOT NULL,
+    fired_time        BIGINT       NOT NULL,
+    sched_time        BIGINT       NOT NULL,
+    priority          INTEGER      NOT NULL,
+    state             VARCHAR(16)  NOT NULL,
+    job_name          VARCHAR(200) NULL,
+    job_group         VARCHAR(200) NULL,
+    is_nonconcurrent  BOOL         NULL,
+    requests_recovery BOOL         NULL,
+    PRIMARY KEY (sched_name, entry_id)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_scheduler_state
+(
+    sched_name        VARCHAR(120) NOT NULL,
+    instance_name     VARCHAR(200) NOT NULL,
+    last_checkin_time BIGINT       NOT NULL,
+    checkin_interval  BIGINT       NOT NULL,
+    PRIMARY KEY (sched_name, instance_name)
+);
+
+CREATE TABLE IF NOT EXISTS qrtz_locks
+(
+    sched_name VARCHAR(120) NOT NULL,
+    lock_name  VARCHAR(40)  NOT NULL,
+    PRIMARY KEY (sched_name, lock_name)
+);
+
+CREATE INDEX IF NOT EXISTS idx_qrtz_j_req_recovery ON qrtz_job_details (sched_name, requests_recovery);
+CREATE INDEX IF NOT EXISTS idx_qrtz_j_grp ON qrtz_job_details (sched_name, job_group);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_j ON qrtz_triggers (sched_name, job_name, job_group);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_jg ON qrtz_triggers (sched_name, job_group);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_c ON qrtz_triggers (sched_name, calendar_name);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_g ON qrtz_triggers (sched_name, trigger_group);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_state ON qrtz_triggers (sched_name, trigger_state);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_n_state ON qrtz_triggers (sched_name, trigger_name, trigger_group, trigger_state);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_n_g_state ON qrtz_triggers (sched_name, trigger_group, trigger_state);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_next_fire_time ON qrtz_triggers (sched_name, next_fire_time);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_nft_st ON qrtz_triggers (sched_name, trigger_state, next_fire_time);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_nft_misfire ON qrtz_triggers (sched_name, misfire_instr, next_fire_time);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_nft_st_misfire ON qrtz_triggers (sched_name, misfire_instr, next_fire_time, trigger_state);
+CREATE INDEX IF NOT EXISTS idx_qrtz_t_nft_st_misfire_grp ON qrtz_triggers (sched_name, misfire_instr, next_fire_time, trigger_group, trigger_state);
+CREATE INDEX IF NOT EXISTS idx_qrtz_ft_trig_inst_name ON qrtz_fired_triggers (sched_name, instance_name);
+CREATE INDEX IF NOT EXISTS idx_qrtz_ft_inst_job_req_rcvry ON qrtz_fired_triggers (sched_name, instance_name, requests_recovery);
+CREATE INDEX IF NOT EXISTS idx_qrtz_ft_j_g ON qrtz_fired_triggers (sched_name, job_name, job_group);
+CREATE INDEX IF NOT EXISTS idx_qrtz_ft_jg ON qrtz_fired_triggers (sched_name, job_group);
+CREATE INDEX IF NOT EXISTS idx_qrtz_ft_t_g ON qrtz_fired_triggers (sched_name, trigger_name, trigger_group);
+CREATE INDEX IF NOT EXISTS idx_qrtz_ft_tg ON qrtz_fired_triggers (sched_name, trigger_group);
+
+-- =============================================================================
+-- openapi
+-- =============================================================================
+-- comment openapi-初始化能力开放插件数据表
+-- 初始化表结构
+CREATE TABLE IF NOT EXISTS "sys_app" (
+    "id"          int8         NOT NULL,
+    "name"        varchar(100) NOT NULL,
+    "access_key"  varchar(255) NOT NULL,
+    "secret_key"  varchar(255) NOT NULL,
+    "expire_time" timestamp    DEFAULT NULL,
+    "description" varchar(200) DEFAULT NULL,
+    "status"      int2         NOT NULL DEFAULT 1,
+    "create_user" int8         NOT NULL,
+    "create_time" timestamp    NOT NULL,
+    "update_user" int8         DEFAULT NULL,
+    "update_time" timestamp    DEFAULT NULL,
+    PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "uk_app_access_key" ON "sys_app" ("access_key");
+CREATE INDEX "idx_app_create_user" ON "sys_app" ("create_user");
+CREATE INDEX "idx_app_update_user" ON "sys_app" ("update_user");
+COMMENT ON COLUMN "sys_app"."id"              IS 'ID';
+COMMENT ON COLUMN "sys_app"."name"            IS '名称';
+COMMENT ON COLUMN "sys_app"."access_key"      IS 'Access Key（访问密钥）';
+COMMENT ON COLUMN "sys_app"."secret_key"      IS 'Secret Key（私有密钥）';
+COMMENT ON COLUMN "sys_app"."expire_time"     IS '失效时间';
+COMMENT ON COLUMN "sys_app"."description"     IS '描述';
+COMMENT ON COLUMN "sys_app"."status"          IS '状态（1：启用；2：禁用）';
+COMMENT ON COLUMN "sys_app"."create_user"     IS '创建人';
+COMMENT ON COLUMN "sys_app"."create_time"     IS '创建时间';
+COMMENT ON COLUMN "sys_app"."update_user"     IS '修改人';
+COMMENT ON COLUMN "sys_app"."update_time"     IS '修改时间';
+COMMENT ON TABLE  "sys_app"                   IS '应用表';
+
+-- =============================================================================
+-- tenant 租户
+-- =============================================================================
+-- comment tenant-初始化租户插件数据表
+CREATE TABLE IF NOT EXISTS "tenant" (
+    "id"             int8         NOT NULL,
+    "name"           varchar(30)  NOT NULL,
+    "code"           varchar(30)  NOT NULL,
+    "domain"         varchar(255) DEFAULT NULL,
+    "expire_time"    timestamp    DEFAULT NULL,
+    "description"    varchar(200) DEFAULT NULL,
+    "status"         int2         NOT NULL DEFAULT 1,
+    "admin_user"     int8         DEFAULT NULL,
+    "admin_username" varchar(64)  DEFAULT NULL,
+    "package_id"     int8         NOT NULL,
+    "create_user"    int8         NOT NULL,
+    "create_time"    timestamp    NOT NULL,
+    "update_user"    int8         DEFAULT NULL,
+    "update_time"    timestamp    DEFAULT NULL,
+    PRIMARY KEY ("id")
+);
+CREATE UNIQUE INDEX "uk_tenant_code" ON "tenant" ("code");
+CREATE INDEX "idx_tenant_admin_user" ON "tenant" ("admin_user");
+CREATE INDEX "idx_tenant_package_id" ON "tenant" ("package_id");
+CREATE INDEX "idx_tenant_create_user" ON "tenant" ("create_user");
+CREATE INDEX "idx_tenant_update_user" ON "tenant" ("update_user");
+COMMENT ON COLUMN "tenant"."id" IS 'ID';
+COMMENT ON COLUMN "tenant"."name" IS '名称';
+COMMENT ON COLUMN "tenant"."code" IS '编码';
+COMMENT ON COLUMN "tenant"."domain" IS '域名';
+COMMENT ON COLUMN "tenant"."expire_time" IS '过期时间';
+COMMENT ON COLUMN "tenant"."description" IS '描述';
+COMMENT ON COLUMN "tenant"."status" IS '状态（1：启用；2：禁用）';
+COMMENT ON COLUMN "tenant"."package_id" IS '套餐ID';
+COMMENT ON COLUMN "tenant"."admin_user" IS '管理员用户';
+COMMENT ON COLUMN "tenant"."admin_username" IS '管理员用户名';
+COMMENT ON COLUMN "tenant"."create_user" IS '创建人';
+COMMENT ON COLUMN "tenant"."create_time" IS '创建时间';
+COMMENT ON COLUMN "tenant"."update_user" IS '修改人';
+COMMENT ON COLUMN "tenant"."update_time" IS '修改时间';
+COMMENT ON TABLE "tenant" IS '租户表';
+
+CREATE TABLE IF NOT EXISTS "tenant_package" (
+    "id"                  int8         NOT NULL, 
+    "name"                varchar(30)  NOT NULL, 
+    "sort"                int4         NOT NULL DEFAULT 999, 
+    "menu_check_strictly" bool         DEFAULT true, 
+    "description"         varchar(200) DEFAULT NULL, 
+    "status"              int2         NOT NULL DEFAULT 1, 
+    "create_user"         int8         NOT NULL, 
+    "create_time"         timestamp    NOT NULL, 
+    "update_user"         int8         DEFAULT NULL, 
+    "update_time"         timestamp    DEFAULT NULL, 
+    PRIMARY KEY ("id")
+);
+CREATE INDEX "idx_tenant_package_create_user" ON "tenant_package" ("create_user");
+CREATE INDEX "idx_tenant_package_update_user" ON "tenant_package" ("update_user");
+COMMENT ON COLUMN "tenant_package"."id" IS 'ID';
+COMMENT ON COLUMN "tenant_package"."name" IS '名称';
+COMMENT ON COLUMN "tenant_package"."sort" IS '排序';
+COMMENT ON COLUMN "tenant_package"."menu_check_strictly" IS '菜单选择是否父子节点关联';
+COMMENT ON COLUMN "tenant_package"."description" IS '描述';
+COMMENT ON COLUMN "tenant_package"."status" IS '状态（1：启用；2：禁用）';
+COMMENT ON COLUMN "tenant_package"."create_user" IS '创建人';
+COMMENT ON COLUMN "tenant_package"."create_time" IS '创建时间';
+COMMENT ON COLUMN "tenant_package"."update_user" IS '修改人';
+COMMENT ON COLUMN "tenant_package"."update_time" IS '修改时间';
+COMMENT ON TABLE "tenant_package" IS '租户套餐表';
+
+CREATE TABLE IF NOT EXISTS "tenant_package_menu" (
+    "package_id" int8 NOT NULL, 
+    "menu_id"    int8 NOT NULL, 
+    PRIMARY KEY ("package_id", "menu_id")
+);
+COMMENT ON COLUMN "tenant_package_menu"."package_id" IS '套餐ID';
+COMMENT ON COLUMN "tenant_package_menu"."menu_id" IS '菜单ID';
+COMMENT ON TABLE "tenant_package_menu" IS '租户套餐和菜单关联表';
+
+-- 为已有表增加租户字段
+ALTER TABLE "sys_department" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_department"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_department_tenant_id" ON "sys_department" ("tenant_id");
+
+ALTER TABLE "sys_role" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_role"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_role_tenant_id" ON "sys_role" ("tenant_id");
+
+ALTER TABLE "sys_user" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_user"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_user_tenant_id" ON "sys_user" ("tenant_id");
+
+ALTER TABLE "sys_user_social" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_user_social"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_user_source_tenant_id" ON "sys_user_social" ("tenant_id");
+
+ALTER TABLE "sys_role_menu" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_role_menu"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_role_menu_tenant_id" ON "sys_role_menu" ("tenant_id");
+
+ALTER TABLE "sys_role_department" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_role_department"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_role_department_tenant_id" ON "sys_role_department" ("tenant_id");
+
+ALTER TABLE "sys_membership" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_membership"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_membership_tenant_id" ON "sys_membership" ("tenant_id");
+DROP INDEX IF EXISTS "uk_membership_active";
+CREATE UNIQUE INDEX "uk_membership_active"
+    ON "sys_membership" ("tenant_id", "user_id", "scope_type", "scope_id")
+    WHERE "deleted" = 0;
+DROP INDEX IF EXISTS "uk_membership_primary_department";
+CREATE UNIQUE INDEX "uk_membership_primary_department"
+    ON "sys_membership" ("tenant_id", "user_id")
+    WHERE "deleted" = 0
+      AND "scope_type" = 'DEPARTMENT'
+      AND "is_primary" = TRUE;
+
+ALTER TABLE "sys_operation_log" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_operation_log"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_log_tenant_id" ON "sys_operation_log" ("tenant_id");
+
+ALTER TABLE "sys_message" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_message"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_message_tenant_id" ON "sys_message" ("tenant_id");
+
+ALTER TABLE "sys_message_log" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_message_log"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_message_log_tenant_id" ON "sys_message_log" ("tenant_id");
+
+ALTER TABLE "sys_notice" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_notice"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_notice_tenant_id" ON "sys_notice" ("tenant_id");
+
+ALTER TABLE "sys_notice_log" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_notice_log"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_notice_log_tenant_id" ON "sys_notice_log" ("tenant_id");
+
+ALTER TABLE "file" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "file"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_file_tenant_id" ON "file" ("tenant_id");
+
+ALTER TABLE "sys_app" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_app"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_app_tenant_id" ON "sys_app" ("tenant_id");
+
+-- 调整唯一索引
+DROP INDEX IF EXISTS "uk_department_name_parent_id";
+CREATE UNIQUE INDEX "uk_department_name_parent_id" ON "sys_department" ("name", "parent_id", "tenant_id");
+
+DROP INDEX IF EXISTS "uk_role_name", "uk_role_code";
+CREATE UNIQUE INDEX "uk_role_name" ON "sys_role" ("name", "tenant_id");
+CREATE UNIQUE INDEX "uk_role_code" ON "sys_role" ("code", "tenant_id");
+
+DROP INDEX IF EXISTS "uk_user_username", "uk_user_email", "uk_user_phone";
+CREATE UNIQUE INDEX "uk_user_username" ON "sys_user" ("username", "tenant_id");
+CREATE UNIQUE INDEX "uk_user_email" ON "sys_user" ("email", "tenant_id");
+CREATE UNIQUE INDEX "uk_user_phone" ON "sys_user" ("phone", "tenant_id");
+
+DROP INDEX IF EXISTS "uk_app_access_key";
+CREATE UNIQUE INDEX "uk_app_access_key" ON "sys_app" ("access_key", "tenant_id");

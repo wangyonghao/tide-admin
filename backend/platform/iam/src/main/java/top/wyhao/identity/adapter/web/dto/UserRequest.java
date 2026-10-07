@@ -50,7 +50,7 @@ public class UserRequest {
      */
     @Schema(description = "所属部门", example = "5")
     @NotNull(message = "所属部门不能为空", groups = Create.class)
-    private Long deptId;
+    private Long departmentId;
 
     /**
      * 所属角色

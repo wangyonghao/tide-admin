@@ -7,8 +7,8 @@ import top.wyhao.cmn.core.enums.DataScopeEnum;
 import top.wyhao.cmn.core.model.RoleDataScope;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.LoginUser;
-import top.wyhao.organization.client.DeptApi;
-import top.wyhao.security.domain.gateway.RoleDeptRepository;
+import top.wyhao.department.client.DepartmentApi;
+import top.wyhao.security.domain.gateway.RoleDepartmentRepository;
 import top.wyhao.security.domain.gateway.RoleRepository;
 import top.wyhao.security.domain.model.SysRole;
 
@@ -24,8 +24,8 @@ import java.util.List;
 public class LoginUserAssembler {
 
     private final RoleRepository roleRepository;
-    private final RoleDeptRepository roleDeptRepository;
-    private final DeptApi deptApi;
+    private final RoleDepartmentRepository roleDepartmentRepository;
+    private final DepartmentApi departmentApi;
 
     public LoginUser assemble(CredentialUser user) {
         return assemble(user, null);
@@ -35,7 +35,7 @@ public class LoginUserAssembler {
         LoginUser loginUser = new LoginUser();
         loginUser.setUserId(user.id());
         loginUser.setUsername(user.username());
-        loginUser.setDeptId(user.deptId());
+        loginUser.setDepartmentId(user.departmentId());
         loginUser.setPwdResetTime(user.pwdUpdateTime());
         loginUser.setDeviceType(deviceType);
         loginUser.setRoleDataScopes(buildRoleDataScopes(user));
@@ -47,37 +47,37 @@ public class LoginUserAssembler {
         if (CollUtil.isEmpty(roles)) {
             return Collections.emptyList();
         }
-        Long deptId = user.deptId();
-        List<Long> deptAndDescendants = null;
+        Long departmentId = user.departmentId();
+        List<Long> departmentAndDescendants = null;
         List<RoleDataScope> scopes = new ArrayList<>(roles.size());
         for (SysRole role : roles) {
             DataScopeEnum dataScope = role.getDataScope();
-            if (DataScopeEnum.DEPT_AND_CHILD.equals(dataScope) && deptAndDescendants == null) {
-                deptAndDescendants = deptId == null
+            if (DataScopeEnum.DEPARTMENT_AND_CHILD.equals(dataScope) && departmentAndDescendants == null) {
+                departmentAndDescendants = departmentId == null
                         ? Collections.emptyList()
-                        : deptApi.listSelfAndDescendantIds(deptId);
+                        : departmentApi.listSelfAndDescendantIds(departmentId);
             }
             RoleDataScope scope = new RoleDataScope();
             scope.setId(role.getId());
             scope.setCode(role.getCode());
             scope.setDataScope(dataScope);
-            scope.setVisibleDeptIds(resolveVisibleDeptIds(dataScope, role.getId(), deptId, deptAndDescendants));
+            scope.setVisibleDepartmentIds(resolveVisibleDepartmentIds(dataScope, role.getId(), departmentId, departmentAndDescendants));
             scopes.add(scope);
         }
         return scopes;
     }
 
-    private List<Long> resolveVisibleDeptIds(DataScopeEnum dataScope,
+    private List<Long> resolveVisibleDepartmentIds(DataScopeEnum dataScope,
                                              Long roleId,
-                                             Long userDeptId,
-                                             List<Long> deptAndDescendants) {
+                                             Long userDepartmentId,
+                                             List<Long> departmentAndDescendants) {
         if (dataScope == null) {
             return null;
         }
         return switch (dataScope) {
-            case DEPT_AND_CHILD -> CollUtil.emptyIfNull(deptAndDescendants);
-            case DEPT -> userDeptId == null ? Collections.emptyList() : List.of(userDeptId);
-            case CUSTOM_DEPT -> roleDeptRepository.listDeptIdsByRoleId(roleId);
+            case DEPARTMENT_AND_CHILD -> CollUtil.emptyIfNull(departmentAndDescendants);
+            case DEPARTMENT -> userDepartmentId == null ? Collections.emptyList() : List.of(userDepartmentId);
+            case CUSTOM_DEPARTMENT -> roleDepartmentRepository.listDepartmentIdsByRoleId(roleId);
             case ALL, SELF -> null;
         };
     }

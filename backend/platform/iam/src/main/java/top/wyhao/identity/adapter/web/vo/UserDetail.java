@@ -109,14 +109,14 @@ public class UserDetail {
      */
     @Schema(description = "部门 ID", example = "5")
     @ExcelProperty(value = "部门 ID", order = 6)
-    private Long deptId;
+    private Long departmentId;
 
     /**
      * 所属部门
      */
     @Schema(description = "所属部门", example = "测试部")
     @ExcelProperty(value = "所属部门", order = 7)
-    private String deptName;
+    private String departmentName;
 
     /**
      * 角色 ID 列表

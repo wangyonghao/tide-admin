@@ -235,7 +235,10 @@ public class MailClient {
         // 配置邮件属性
         Properties props = mailSender.getJavaMailProperties();
         props.put("mail.transport.protocol", "smtp");
-        props.put("mail.smtp.auth", "true");
+        // Inbucket 等本地 SMTP 无需认证；有密码时才启用 AUTH
+        boolean needAuth = StrUtil.isNotBlank(mailConfig.getUsername())
+                && StrUtil.isNotBlank(mailConfig.getPassword());
+        props.put("mail.smtp.auth", String.valueOf(needAuth));
         props.put("mail.smtp.timeout", "10000");
         props.put("mail.smtp.connectiontimeout", "10000");
 
@@ -246,8 +249,9 @@ public class MailClient {
             props.put("mail.smtp.socketFactory.class", "javax.net.ssl.SSLSocketFactory");
             props.put("mail.smtp.socketFactory.port", String.valueOf(mailConfig.getPort()));
         } else {
+            // STARTTLS 可选：服务器不支持时降级为明文（兼容 Inbucket）
             props.put("mail.smtp.starttls.enable", "true");
-            props.put("mail.smtp.starttls.required", "true");
+            props.put("mail.smtp.starttls.required", "false");
         }
         return mailSender;
     }

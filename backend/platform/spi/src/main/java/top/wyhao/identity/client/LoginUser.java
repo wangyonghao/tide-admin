@@ -20,9 +20,9 @@ public class LoginUser {
 
     private Long tenantId;
 
-    private Long deptId;
+    private Long departmentId;
 
-    private String deptName;
+    private String departmentName;
 
     private LocalDateTime pwdResetTime;
 

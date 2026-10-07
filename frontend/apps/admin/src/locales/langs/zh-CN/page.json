@@ -30,7 +30,7 @@
       "phone": "手机号",
       "email": "邮箱",
       "gender": "性别",
-      "dept": "所属部门",
+      "department": "所属部门",
       "position": "职位",
       "registrationDate": "注册时间",
       "edit": "编辑资料",

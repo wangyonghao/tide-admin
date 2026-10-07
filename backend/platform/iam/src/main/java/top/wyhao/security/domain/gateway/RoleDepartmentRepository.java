@@ -1,6 +1,6 @@
 package top.wyhao.security.domain.gateway;
 
-import top.wyhao.security.domain.model.SysRoleDept;
+import top.wyhao.security.domain.model.SysRoleDepartment;
 
 import java.util.Collection;
 import java.util.List;
@@ -8,20 +8,20 @@ import java.util.List;
 /**
  * 角色与部门关联仓储。
  */
-public interface RoleDeptRepository {
+public interface RoleDepartmentRepository {
 
-    List<Long> listDeptIdsByRoleId(Long roleId);
+    List<Long> listDepartmentIdsByRoleId(Long roleId);
 
     void deleteByRoleId(Long roleId);
 
-    void deleteByDeptIds(List<Long> deptIds);
+    void deleteByDepartmentIds(List<Long> departmentIds);
 
-    boolean insertBatch(List<SysRoleDept> roleDepts);
+    boolean insertBatch(List<SysRoleDepartment> roleDepartments);
 
     /**
      * 覆盖式保存角色部门关联；无变更返回 false。
      */
-    boolean replaceByRoleId(Long roleId, List<Long> deptIds);
+    boolean replaceByRoleId(Long roleId, List<Long> departmentIds);
 
     void deleteAll();
 

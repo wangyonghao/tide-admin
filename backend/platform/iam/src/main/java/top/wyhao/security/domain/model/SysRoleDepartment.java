@@ -14,8 +14,8 @@ import lombok.NoArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@TableName("sys_role_dept")
-public class SysRoleDept {
+@TableName("sys_role_department")
+public class SysRoleDepartment {
 
     @TableId
     private Long id;
@@ -28,10 +28,10 @@ public class SysRoleDept {
     /**
      * 部门 ID
      */
-    private Long deptId;
+    private Long departmentId;
 
-    public SysRoleDept(Long roleId, Long deptId) {
+    public SysRoleDepartment(Long roleId, Long departmentId) {
         this.roleId = roleId;
-        this.deptId = deptId;
+        this.departmentId = departmentId;
     }
 }

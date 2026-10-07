@@ -12,7 +12,7 @@ import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.identity.client.CredentialUser;
-import top.wyhao.organization.client.DeptApi;
+import top.wyhao.department.client.DepartmentApi;
 import top.wyhao.security.app.service.AuthenticationLogService;
 import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.enums.StatusEnum;
@@ -69,9 +69,9 @@ public class AuthenticatorHelper {
         if (ObjectUtil.equal(StatusEnum.DISABLE, user.status())) {
             throw AuthenticationException.accountDisabled();
         }
-        DeptApi deptApi = SpringUtil.getBean(DeptApi.class);
-        if (deptApi.isDisabled(user.deptId())) {
-            throw AuthenticationException.accountDeptDisabled();
+        DepartmentApi departmentApi = SpringUtil.getBean(DepartmentApi.class);
+        if (departmentApi.isDisabled(user.departmentId())) {
+            throw AuthenticationException.accountDepartmentDisabled();
         }
     }
 

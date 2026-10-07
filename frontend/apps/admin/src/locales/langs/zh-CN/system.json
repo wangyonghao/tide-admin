@@ -22,7 +22,7 @@
     "treePid": "树父编码",
     "updateTime": "修改时间"
   },
-  "dept": {
+  "department": {
     "code": "编码",
     "createTime": "创建时间",
     "createUserString": "创建人",
@@ -159,7 +159,7 @@
     "createUser": "创建人",
     "dataScope": "数据权限",
     "deleteTitle": "删除角色",
-    "deptCheckStrictly": "部门父子关联",
+    "departmentCheckStrictly": "部门父子关联",
     "description": "描述",
     "id": "ID",
     "isBuiltin": "是否为系统内置数据",
@@ -194,8 +194,8 @@
     "avatar": "头像",
     "createTime": "创建时间",
     "createUser": "创建人",
-    "deptId": "所属部门",
-    "deptTree": "部门树",
+    "departmentId": "所属部门",
+    "departmentTree": "部门树",
     "description": "描述",
     "email": "邮箱",
     "field": {

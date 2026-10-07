@@ -1,31 +1,7 @@
 databaseChangeLog:
   - include:
-      file: db/changelog/postgresql/system/schema.sql
+      file: db/changelog/postgresql/platform/platform-schema.sql
   - include:
-      file: db/changelog/postgresql/system/data.sql
+      file: db/changelog/postgresql/platform/platform-data.sql
   - include:
-      file: db/changelog/postgresql/generator/schema.sql
-  - include:
-      file: db/changelog/postgresql/generator/data.sql
-  - include:
-      file: db/changelog/postgresql/schedule/schema.sql
-  - include:
-      file: db/changelog/postgresql/schedule/data.sql
-  - include:
-      file: db/changelog/postgresql/quartz/schema.sql
-  - include:
-      file: db/changelog/postgresql/openapi/schema.sql
-  - include:
-      file: db/changelog/postgresql/openapi/data.sql
-  - include:
-      file: db/changelog/postgresql/file/schema.sql
-#  - include:
-#      file: db/changelog/postgresql/tenant/schema.sql
-#  - include:
-#      file: db/changelog/postgresql/tenant/data.sql
-  - include:
-      file: db/changelog/postgresql/system/test-data.sql
-  - include:
-      file: db/changelog/postgresql/system/rename-security-to-password-policy.sql
-  - include:
-      file: db/changelog/postgresql/system/user-display-name.sql
+      file: db/changelog/postgresql/platform/platform-test.sql

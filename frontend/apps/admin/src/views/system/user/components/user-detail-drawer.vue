@@ -3,14 +3,20 @@ import type { UserResp } from '#/api/system/user';
 
 import { ref, watch } from 'vue';
 
-import { useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
+import {
+  NButton,
+  NDescriptions,
+  NDescriptionsItem,
+  NDrawer,
+  NDrawerContent,
+  NIcon,
+  NTag,
+  useMessage,
+} from 'naive-ui';
+
 import { userApi } from '#/api/system/user';
-import { Badge } from '#/ui/badge';
-import { badgeVariantForTag } from '#/ui/badge/variant';
-import { Button } from '#/ui/button';
-import { toast } from '#/ui-patterns/toast';
 
 interface Props {
   visible: boolean;
@@ -25,26 +31,16 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
+const message = useMessage();
 
 const detailData = ref<null | UserResp>(null);
 const detailLoading = ref(false);
 
-const [Drawer, drawerApi] = useVbenDrawer({
-  class: 'w-[600px]',
-  title: '用户详情',
-  onOpenChange(isOpen) {
-    if (!isOpen) emit('update:visible', false);
-  },
-});
-
 watch(
   () => props.visible,
-  async (open) => {
-    if (open) {
-      drawerApi.open();
-      if (props.userId) await loadUserDetail();
-    } else {
-      drawerApi.close();
+  async (newVal) => {
+    if (newVal && props.userId) {
+      await loadUserDetail();
     }
   },
 );
@@ -58,7 +54,7 @@ async function loadUserDetail() {
     detailData.value = res;
   } catch (error) {
     console.error('加载用户详情失败:', error);
-    toast.error('加载用户详情失败');
+    message.error('加载用户详情失败');
     handleClose();
   } finally {
     detailLoading.value = false;
@@ -100,7 +96,7 @@ function getStatusType(
 }
 
 function handleClose() {
-  drawerApi.close();
+  emit('update:visible', false);
 }
 
 function handleEdit() {
@@ -112,95 +108,67 @@ function handleEdit() {
 </script>
 
 <template>
-  <Drawer>
-    <div
-      v-if="detailLoading"
-      class="flex items-center justify-center py-20"
-    >
-      <IconifyIcon
-        icon="lucide:loader-2"
-        class="size-10 animate-spin"
-      />
-    </div>
-    <dl
-      v-else-if="detailData"
-      class="grid grid-cols-2 gap-x-6 gap-y-4 text-sm"
-    >
-      <div>
-        <dt class="text-muted-foreground">用户名</dt>
-        <dd class="mt-1">{{ detailData.username || '-' }}</dd>
+  <NDrawer
+    :show="visible"
+    :width="600"
+    placement="right"
+    @update:show="handleClose"
+  >
+    <NDrawerContent title="用户详情" closable>
+      <div v-if="detailLoading" class="flex items-center justify-center py-20">
+        <NIcon size="40" class="animate-spin">
+          <IconifyIcon icon="lucide:loader-2" />
+        </NIcon>
       </div>
-      <div>
-        <dt class="text-muted-foreground">显示名称</dt>
-        <dd class="mt-1">{{ detailData.displayName || '-' }}</dd>
-      </div>
-      <div>
-        <dt class="text-muted-foreground">性别</dt>
-        <dd class="mt-1">{{ getGenderLabel(detailData.gender) }}</dd>
-      </div>
-      <div>
-        <dt class="text-muted-foreground">邮箱</dt>
-        <dd class="mt-1">{{ detailData.email || '-' }}</dd>
-      </div>
-      <div>
-        <dt class="text-muted-foreground">手机号</dt>
-        <dd class="mt-1">{{ detailData.phone || '-' }}</dd>
-      </div>
-      <div>
-        <dt class="text-muted-foreground">部门</dt>
-        <dd class="mt-1">{{ detailData.deptName || '-' }}</dd>
-      </div>
-      <div>
-        <dt class="text-muted-foreground">角色</dt>
-        <dd class="mt-1">{{ detailData.roleNames || '-' }}</dd>
-      </div>
-      <div>
-        <dt class="text-muted-foreground">状态</dt>
-        <dd class="mt-1">
-          <Badge
-            :variant="
-              badgeVariantForTag(getStatusType(detailData.status)) ||
-                'secondary'
-            "
-          >
+      <NDescriptions v-else-if="detailData" :column="2" label-placement="left">
+        <NDescriptionsItem label="用户名">
+          {{ detailData.username || '-' }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="显示名称">
+          {{ detailData.displayName || '-' }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="性别">
+          {{ getGenderLabel(detailData.gender) }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="邮箱">
+          {{ detailData.email || '-' }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="手机号">
+          {{ detailData.phone || '-' }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="部门">
+          {{ detailData.departmentName || '-' }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="角色">
+          {{ detailData.roleNames || '-' }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="状态">
+          <NTag :type="getStatusType(detailData.status)" size="small">
             {{ getStatusLabel(detailData.status) }}
-          </Badge>
-        </dd>
-      </div>
-      <div class="col-span-2">
-        <dt class="text-muted-foreground">描述</dt>
-        <dd class="mt-1">{{ detailData.description || '-' }}</dd>
-      </div>
-      <div>
-        <dt class="text-muted-foreground">创建时间</dt>
-        <dd class="mt-1">{{ detailData.createTime || '-' }}</dd>
-      </div>
-      <div>
-        <dt class="text-muted-foreground">更新时间</dt>
-        <dd class="mt-1">{{ detailData.updateTime || '-' }}</dd>
-      </div>
-    </dl>
+          </NTag>
+        </NDescriptionsItem>
+        <NDescriptionsItem label="描述" :span="2">
+          {{ detailData.description || '-' }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="创建时间">
+          {{ detailData.createTime || '-' }}
+        </NDescriptionsItem>
+        <NDescriptionsItem label="更新时间">
+          {{ detailData.updateTime || '-' }}
+        </NDescriptionsItem>
+      </NDescriptions>
 
-    <template #footer>
-      <div class="flex w-full justify-end gap-2">
-        <Button
-          type="button"
-          variant="outline"
-          @click="handleClose"
-        >
-          关闭
-        </Button>
-        <Button
-          type="button"
-          @click="handleEdit"
-        >
-          <IconifyIcon
-            icon="lucide:pencil"
-            class="mr-1 size-4"
-          />
-          编辑
-        </Button>
-      </div>
-    </template>
-  </Drawer>
+      <template #footer>
+        <div class="flex justify-end gap-2">
+          <NButton @click="handleClose"> 关闭 </NButton>
+          <NButton type="primary" @click="handleEdit">
+            <template #icon>
+              <IconifyIcon icon="lucide:pencil" />
+            </template>
+            编辑
+          </NButton>
+        </div>
+      </template>
+    </NDrawerContent>
+  </NDrawer>
 </template>
