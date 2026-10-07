@@ -172,7 +172,7 @@ import {
 import { NIcon, NInput, NPopover, NScrollbar } from 'naive-ui';
 
 defineOptions({ name: 'IconSelect' });
-const emit = defineEmits<{ (e: 'update:modelValue', value: string): void }>();
+const modelValue = defineModel<string>({ default: '' });
 const searchText = ref('');
 
 // 图标列表
@@ -641,12 +641,12 @@ function getIconComponent(name: string): Component | undefined {
 
 // 选择图标
 function handleSelect(name: string) {
-  emit('update:modelValue', name);
+  modelValue.value = name;
 }
 
 // 清除
 function handleClear() {
-  emit('update:modelValue', '');
+  modelValue.value = '';
 }
 
 // 导出获取图标方法供外部使用

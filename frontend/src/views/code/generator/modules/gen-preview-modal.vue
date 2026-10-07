@@ -27,7 +27,7 @@ const currentPreview = ref<GeneratePreviewResp>();
 const visible = ref(false);
 const previewTableNames = ref<string[]>([]);
 
-const treeData = ref<[]>([]);
+const treeData = ref<TreeSelectOption[]>([]);
 // 合并目录
 const mergeDir = (parent: TreeSelectOption) => {
   // 合并目录
@@ -187,6 +187,8 @@ const treeProps = {
   label: 'title',
   children: 'children',
 };
+
+const height = 600;
 
 // 获取所有节点key
 const allNodeKeys = computed(() => {

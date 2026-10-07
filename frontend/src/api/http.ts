@@ -142,21 +142,21 @@ class HttpService {
     if (typeof this.onError === 'function') this.onError(msg);
   }
 
-  // 标准 HTTP 方法
-  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> { 
-    return this.instance.get(url, config); 
+  // 标准 HTTP 方法（拦截器已解包为业务数据，此处按 Promise<T> 对外）
+  get<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    return this.instance.get(url, config) as Promise<T>;
   }
-  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> { 
-    return this.instance.post(url, data, config); 
+  post<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.instance.post(url, data, config) as Promise<T>;
   }
-  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> { 
-    return this.instance.put(url, data, config); 
+  put<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.instance.put(url, data, config) as Promise<T>;
   }
-  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> { 
-    return this.instance.patch(url, data, config); 
+  patch<T = any>(url: string, data?: any, config?: AxiosRequestConfig): Promise<T> {
+    return this.instance.patch(url, data, config) as Promise<T>;
   }
-  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> { 
-    return this.instance.delete(url, config); 
+  delete<T = any>(url: string, config?: AxiosRequestConfig): Promise<T> {
+    return this.instance.delete(url, config) as Promise<T>;
   }
 
   // 上传
