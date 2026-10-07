@@ -65,7 +65,7 @@ COMMENT ON COLUMN "sys_menu"."update_user" IS '修改人';
 COMMENT ON COLUMN "sys_menu"."update_time" IS '修改时间';
 COMMENT ON TABLE "sys_menu" IS '菜单表';
 
-CREATE TABLE IF NOT EXISTS "sys_dept"
+CREATE TABLE IF NOT EXISTS "sys_department"
 (
     "id"          int8         NOT NULL,
     "code"        varchar(20)  NOT NULL,
@@ -83,23 +83,23 @@ CREATE TABLE IF NOT EXISTS "sys_dept"
     "update_time" timestamp             DEFAULT NULL,
     PRIMARY KEY ("id")
 );
-CREATE INDEX "idx_dept_parent_id" ON "sys_dept" ("parent_id");
-CREATE UNIQUE INDEX "uk_dept_name_parent_id" ON "sys_dept" ("name", "parent_id");
-COMMENT ON COLUMN "sys_dept"."id" IS 'ID';
-COMMENT ON COLUMN "sys_dept"."code" IS '编码';
-COMMENT ON COLUMN "sys_dept"."name" IS '名称';
-COMMENT ON COLUMN "sys_dept"."type" IS '部门类型';
-COMMENT ON COLUMN "sys_dept"."parent_id" IS '上级部门ID';
-COMMENT ON COLUMN "sys_dept"."ancestors" IS '祖级路径';
-COMMENT ON COLUMN "sys_dept"."description" IS '备注';
-COMMENT ON COLUMN "sys_dept"."sort" IS '排序';
-COMMENT ON COLUMN "sys_dept"."status" IS '状态（1：启用；2：禁用）';
-COMMENT ON COLUMN "sys_dept"."is_builtin" IS '是否为系统内置数据';
-COMMENT ON COLUMN "sys_dept"."create_user" IS '创建人';
-COMMENT ON COLUMN "sys_dept"."create_time" IS '创建时间';
-COMMENT ON COLUMN "sys_dept"."update_user" IS '修改人';
-COMMENT ON COLUMN "sys_dept"."update_time" IS '修改时间';
-COMMENT ON TABLE "sys_dept" IS '部门表';
+CREATE INDEX "idx_department_parent_id" ON "sys_department" ("parent_id");
+CREATE UNIQUE INDEX "uk_department_name_parent_id" ON "sys_department" ("name", "parent_id");
+COMMENT ON COLUMN "sys_department"."id" IS 'ID';
+COMMENT ON COLUMN "sys_department"."code" IS '编码';
+COMMENT ON COLUMN "sys_department"."name" IS '名称';
+COMMENT ON COLUMN "sys_department"."type" IS '部门类型';
+COMMENT ON COLUMN "sys_department"."parent_id" IS '上级部门ID';
+COMMENT ON COLUMN "sys_department"."ancestors" IS '祖级路径';
+COMMENT ON COLUMN "sys_department"."description" IS '备注';
+COMMENT ON COLUMN "sys_department"."sort" IS '排序';
+COMMENT ON COLUMN "sys_department"."status" IS '状态（1：启用；2：禁用）';
+COMMENT ON COLUMN "sys_department"."is_builtin" IS '是否为系统内置数据';
+COMMENT ON COLUMN "sys_department"."create_user" IS '创建人';
+COMMENT ON COLUMN "sys_department"."create_time" IS '创建时间';
+COMMENT ON COLUMN "sys_department"."update_user" IS '修改人';
+COMMENT ON COLUMN "sys_department"."update_time" IS '修改时间';
+COMMENT ON TABLE "sys_department" IS '部门表';
 
 CREATE TABLE IF NOT EXISTS "sys_role"
 (
@@ -111,7 +111,7 @@ CREATE TABLE IF NOT EXISTS "sys_role"
     "sort"                int4        NOT NULL DEFAULT 999,
     "is_builtin"          bool        NOT NULL DEFAULT FALSE,
     "menu_check_strictly" bool                 DEFAULT TRUE,
-    "dept_check_strictly" bool                 DEFAULT TRUE,
+    "department_check_strictly" bool                 DEFAULT TRUE,
     "create_user"         int8        NOT NULL,
     "create_time"         timestamp   NOT NULL,
     "update_user"         int8                 DEFAULT NULL,
@@ -130,7 +130,7 @@ COMMENT ON COLUMN "sys_role"."description" IS '描述';
 COMMENT ON COLUMN "sys_role"."sort" IS '排序';
 COMMENT ON COLUMN "sys_role"."is_builtin" IS '是否为系统内置数据';
 COMMENT ON COLUMN "sys_role"."menu_check_strictly" IS '菜单选择是否父子节点关联';
-COMMENT ON COLUMN "sys_role"."dept_check_strictly" IS '部门选择是否父子节点关联';
+COMMENT ON COLUMN "sys_role"."department_check_strictly" IS '部门选择是否父子节点关联';
 COMMENT ON COLUMN "sys_role"."create_user" IS '创建人';
 COMMENT ON COLUMN "sys_role"."create_time" IS '创建时间';
 COMMENT ON COLUMN "sys_role"."update_user" IS '修改人';
@@ -139,30 +139,31 @@ COMMENT ON TABLE "sys_role" IS '角色表';
 
 CREATE TABLE IF NOT EXISTS "sys_user"
 (
-    "id"              int8        NOT NULL,
-    "username"        varchar(64) NOT NULL,
-    "display_name"        varchar(30) NOT NULL,
-    "password"        varchar(255)         DEFAULT NULL,
-    "gender"          int2        NOT NULL DEFAULT 0,
-    "email"           varchar(64)          DEFAULT NULL,
-    "phone"           varchar(64)          DEFAULT NULL,
-    "avatar"          int8                 DEFAULT NULL,
-    "description"     varchar(255)         DEFAULT NULL,
-    "status"          int2        NOT NULL DEFAULT 1,
-    "is_builtin"      bool        NOT NULL DEFAULT FALSE,
-    "pwd_update_time" timestamp            DEFAULT NULL,
-    "pwd_expire_date" date                 DEFAULT NULL,
-    "dept_id"         int8        NOT NULL,
-    "create_user"     int8                 DEFAULT NULL,
-    "create_time"     timestamp   NOT NULL,
-    "update_user"     int8                 DEFAULT NULL,
-    "update_time"     timestamp            DEFAULT NULL,
+    "id"                         int8        NOT NULL,
+    "username"                   varchar(64) NOT NULL,
+    "display_name"                   varchar(30) NOT NULL,
+    "password"                   varchar(255)         DEFAULT NULL,
+    "gender"                     int2        NOT NULL DEFAULT 0,
+    "email"                      varchar(64)          DEFAULT NULL,
+    "phone"                      varchar(64)          DEFAULT NULL,
+    "avatar"                     int8                 DEFAULT NULL,
+    "description"                varchar(255)         DEFAULT NULL,
+    "status"                     int2        NOT NULL DEFAULT 1,
+    "is_builtin"                 bool        NOT NULL DEFAULT FALSE,
+    "pwd_update_time"            timestamp            DEFAULT NULL,
+    "pwd_expire_date"            date                 DEFAULT NULL,
+    "password_history"           text                 DEFAULT NULL,
+    "department_id"                    int8        NOT NULL,
+    "create_user"                int8                 DEFAULT NULL,
+    "create_time"                timestamp   NOT NULL,
+    "update_user"                int8                 DEFAULT NULL,
+    "update_time"                timestamp            DEFAULT NULL,
     PRIMARY KEY ("id")
 );
 CREATE UNIQUE INDEX "uk_user_username" ON "sys_user" ("username");
 CREATE UNIQUE INDEX "uk_user_email" ON "sys_user" ("email");
 CREATE UNIQUE INDEX "uk_user_phone" ON "sys_user" ("phone");
-CREATE INDEX "idx_user_dept_id" ON "sys_user" ("dept_id");
+CREATE INDEX "idx_user_department_id" ON "sys_user" ("department_id");
 CREATE INDEX "idx_user_create_user" ON "sys_user" ("create_user");
 CREATE INDEX "idx_user_update_user" ON "sys_user" ("update_user");
 COMMENT ON COLUMN "sys_user"."id" IS 'ID';
@@ -178,27 +179,13 @@ COMMENT ON COLUMN "sys_user"."status" IS '状态（1：启用；2：禁用）';
 COMMENT ON COLUMN "sys_user"."is_builtin" IS '是否为系统内置数据';
 COMMENT ON COLUMN "sys_user"."pwd_update_time" IS '上次改密时间';
 COMMENT ON COLUMN "sys_user"."pwd_expire_date" IS '密码过期日';
-COMMENT ON COLUMN "sys_user"."dept_id" IS '部门ID';
+COMMENT ON COLUMN "sys_user"."password_history" IS '曾用密码哈希（| 拼接，最多 10 个，新在前）';
+COMMENT ON COLUMN "sys_user"."department_id" IS '部门ID';
 COMMENT ON COLUMN "sys_user"."create_user" IS '创建人';
 COMMENT ON COLUMN "sys_user"."create_time" IS '创建时间';
 COMMENT ON COLUMN "sys_user"."update_user" IS '修改人';
 COMMENT ON COLUMN "sys_user"."update_time" IS '修改时间';
 COMMENT ON TABLE "sys_user" IS '用户表';
---
--- CREATE TABLE IF NOT EXISTS "sys_user_password_history"
--- (
---     "id"          int8         NOT NULL,
---     "user_id"     int8         NOT NULL,
---     "password"    varchar(255) NOT NULL,
---     "create_time" timestamp    NOT NULL,
---     PRIMARY KEY ("id")
--- );
--- CREATE INDEX "idx_uph_user_id" ON "sys_user_password_history" ("user_id");
--- COMMENT ON COLUMN "sys_user_password_history"."id" IS 'ID';
--- COMMENT ON COLUMN "sys_user_password_history"."user_id" IS '用户ID';
--- COMMENT ON COLUMN "sys_user_password_history"."password" IS '密码';
--- COMMENT ON COLUMN "sys_user_password_history"."create_time" IS '创建时间';
--- COMMENT ON TABLE "sys_user_password_history" IS '用户历史密码表';
 
 CREATE TABLE IF NOT EXISTS "sys_user_social"
 (
@@ -244,15 +231,72 @@ COMMENT ON COLUMN "sys_role_menu"."role_id" IS '角色ID';
 COMMENT ON COLUMN "sys_role_menu"."menu_id" IS '菜单ID';
 COMMENT ON TABLE "sys_role_menu" IS '角色和菜单关联表';
 
-CREATE TABLE IF NOT EXISTS "sys_role_dept"
+CREATE TABLE IF NOT EXISTS "sys_role_department"
 (
     "role_id" int8 NOT NULL,
-    "dept_id" int8 NOT NULL,
-    PRIMARY KEY ("role_id", "dept_id")
+    "department_id" int8 NOT NULL,
+    PRIMARY KEY ("role_id", "department_id")
 );
-COMMENT ON COLUMN "sys_role_dept"."role_id" IS '角色ID';
-COMMENT ON COLUMN "sys_role_dept"."dept_id" IS '部门ID';
-COMMENT ON TABLE "sys_role_dept" IS '角色和部门关联表';
+COMMENT ON COLUMN "sys_role_department"."role_id" IS '角色ID';
+COMMENT ON COLUMN "sys_role_department"."department_id" IS '部门ID';
+COMMENT ON TABLE "sys_role_department" IS '角色和部门关联表';
+
+CREATE TABLE IF NOT EXISTS "sys_membership"
+(
+    "id"          int8        NOT NULL,
+    "user_id"     int8        NOT NULL,
+    "scope_type"  varchar(32) NOT NULL,
+    "scope_id"    int8        NOT NULL,
+    "is_primary"  bool        NOT NULL DEFAULT FALSE,
+    "status"      int2        NOT NULL DEFAULT 1,
+    "joined_at"   timestamp            DEFAULT NULL,
+    "expired_at"  timestamp            DEFAULT NULL,
+    "create_user" int8                 DEFAULT NULL,
+    "create_time" timestamp   NOT NULL,
+    "update_user" int8                 DEFAULT NULL,
+    "update_time" timestamp            DEFAULT NULL,
+    "deleted"     int2        NOT NULL DEFAULT 0,
+    PRIMARY KEY ("id"),
+    CONSTRAINT "ck_membership_scope_type"
+        CHECK ("scope_type" IN ('DEPARTMENT', 'ROLE', 'TENANT')),
+    CONSTRAINT "ck_membership_status"
+        CHECK ("status" IN (0, 1, 2)),
+    CONSTRAINT "ck_membership_deleted"
+        CHECK ("deleted" IN (0, 1)),
+    CONSTRAINT "ck_membership_primary_only_department"
+        CHECK (("scope_type" = 'DEPARTMENT') OR ("is_primary" = FALSE))
+);
+COMMENT ON TABLE "sys_membership" IS '成员关系（用户-部门 / 用户-角色）';
+COMMENT ON COLUMN "sys_membership"."id" IS 'ID';
+COMMENT ON COLUMN "sys_membership"."user_id" IS '用户 ID';
+COMMENT ON COLUMN "sys_membership"."scope_type" IS '范围类型：DEPARTMENT / ROLE / TENANT';
+COMMENT ON COLUMN "sys_membership"."scope_id" IS '范围 ID（部门 ID 或角色 ID）';
+COMMENT ON COLUMN "sys_membership"."is_primary" IS '是否主部门（仅 DEPARTMENT）';
+COMMENT ON COLUMN "sys_membership"."status" IS '状态（1：正常；0：停用；2：邀请中）';
+COMMENT ON COLUMN "sys_membership"."joined_at" IS '加入时间';
+COMMENT ON COLUMN "sys_membership"."expired_at" IS '过期时间（空表示长期有效）';
+COMMENT ON COLUMN "sys_membership"."create_user" IS '创建人';
+COMMENT ON COLUMN "sys_membership"."create_time" IS '创建时间';
+COMMENT ON COLUMN "sys_membership"."update_user" IS '修改人';
+COMMENT ON COLUMN "sys_membership"."update_time" IS '修改时间';
+COMMENT ON COLUMN "sys_membership"."deleted" IS '是否删除（0：否；1：是）';
+CREATE UNIQUE INDEX "uk_membership_active"
+    ON "sys_membership" ("user_id", "scope_type", "scope_id")
+    WHERE "deleted" = 0;
+CREATE UNIQUE INDEX "uk_membership_primary_department"
+    ON "sys_membership" ("user_id")
+    WHERE "deleted" = 0
+      AND "scope_type" = 'DEPARTMENT'
+      AND "is_primary" = TRUE;
+CREATE INDEX "idx_membership_scope"
+    ON "sys_membership" ("scope_type", "scope_id")
+    WHERE "deleted" = 0;
+CREATE INDEX "idx_membership_user"
+    ON "sys_membership" ("user_id")
+    WHERE "deleted" = 0;
+CREATE INDEX "idx_membership_scope_active"
+    ON "sys_membership" ("scope_type", "scope_id", "status")
+    WHERE "deleted" = 0;
 
 -- 字典选项表
 DROP TABLE IF EXISTS "sys_dict";
@@ -512,3 +556,42 @@ COMMENT ON COLUMN "sys_login_log"."failure_reason" IS '失败原因';
 COMMENT ON COLUMN "sys_login_log"."user_agent" IS 'User-Agent';
 COMMENT ON COLUMN "sys_login_log"."tenant_id" IS '租户ID';
 COMMENT ON TABLE "sys_login_log" IS '登录日志表';
+
+-- changeset wyhao:file-1
+-- 文件元数据-初始化表结构
+CREATE TABLE IF NOT EXISTS "file"
+(
+    "id"           BIGSERIAL PRIMARY KEY,
+    "file_name"    VARCHAR(255) NOT NULL,
+    "content_type" VARCHAR(100),
+    "file_size"    BIGINT       NOT NULL,
+    "sha256"       VARCHAR(64)  NOT NULL,
+    "storage_type" INT2         NOT NULL DEFAULT 1,
+    "storage_key"  VARCHAR(500) NOT NULL,
+    "status"       INT2         NOT NULL DEFAULT 1,
+    "create_user"  BIGINT       NOT NULL,
+    "create_time"  TIMESTAMP    NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    "update_user"  BIGINT,
+    "update_time"  TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
+);
+
+-- 创建索引
+CREATE INDEX IF NOT EXISTS "idx_file_sha256" ON "file" ("sha256");
+CREATE INDEX IF NOT EXISTS "idx_file_storage_key" ON "file" ("storage_key");
+CREATE INDEX IF NOT EXISTS "idx_file_status" ON "file" ("status");
+CREATE INDEX IF NOT EXISTS "idx_file_create_time" ON "file" ("create_time");
+
+-- 添加注释
+COMMENT ON TABLE "file" IS '文件表（物理文件元数据）';
+COMMENT ON COLUMN "file"."id" IS '文件 ID';
+COMMENT ON COLUMN "file"."file_name" IS '文件名（原始文件名）';
+COMMENT ON COLUMN "file"."content_type" IS '内容类型（MIME Type）';
+COMMENT ON COLUMN "file"."file_size" IS '文件大小（字节）';
+COMMENT ON COLUMN "file"."sha256" IS 'SHA-256 哈希值（用于完整性校验和去重）';
+COMMENT ON COLUMN "file"."storage_type" IS '存储类型（1-本地存储；2-OSS 对象存储）';
+COMMENT ON COLUMN "file"."storage_key" IS '存储键（全局唯一，格式：[{key-prefix}/]{yyyy}/{MM}/{dd}/{uuid}[.ext]）';
+COMMENT ON COLUMN "file"."status" IS '文件状态（1-正常；2-已删除；3-已清除）';
+COMMENT ON COLUMN "file"."create_user" IS '创建人';
+COMMENT ON COLUMN "file"."create_time" IS '创建时间';
+COMMENT ON COLUMN "file"."update_user" IS '更新人';
+COMMENT ON COLUMN "file"."update_time" IS '更新时间';

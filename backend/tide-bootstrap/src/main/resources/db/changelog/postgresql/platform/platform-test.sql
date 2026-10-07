@@ -26,13 +26,14 @@ VALUES
       "sessionTimeout": 30
     }'::jsonb, '登录配置'),
 
-    -- 邮件配置
+    -- 邮件配置（本地 Inbucket：SMTP 127.0.0.1:2500，Web UI http://localhost:9000）
     ('mail', '{
-      "host": "",
-      "port": 465,
-      "username": "",
+      "host": "127.0.0.1",
+      "port": 2500,
+      "username": "noreply@localhost",
       "password": "",
-      "fromName": "WYH Admin"
+      "from": "WYH Admin",
+      "sslEnabled": false
     }'::jsonb, '邮件配置'),
 
     -- 短信配置
@@ -94,7 +95,7 @@ VALUES
 
 
 -- 初始化默认部门
-INSERT INTO "sys_dept" ("id", code, name, type, "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time","update_user","update_time")
+INSERT INTO "sys_department" ("id", code, name, type, "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time","update_user","update_time")
 VALUES (547887852587843590,'A01', 'Xxx（天津）科技有限公司', 1,1, '/1/', NULL, 1, 1, FALSE, 1, NOW(),1, NOW()),
        (547887852587843591, 'A0101','研发部', 2,547887852587843590, '/1/547887852587843590/', NULL, 1, 1, FALSE, 1, NOW(),1, NOW()),
        (547887852587843592, 'A0102','UI部', 2,547887852587843590, '/1/547887852587843590/', NULL, 2, 1, FALSE, 1, NOW(),1, NOW()),
@@ -108,7 +109,7 @@ VALUES (547887852587843590,'A01', 'Xxx（天津）科技有限公司', 1,1, '/1/
 
 -- 初始化默认用户：admin/admin123；test/test123
 INSERT INTO "sys_user"
-("id", "username", "display_name", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "dept_id", "create_user", "create_time")
+("id", "username", "display_name", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "department_id", "create_user", "create_time")
 VALUES
     (801822, 'test', '测试员', '{bcrypt}$2a$10$xAsoeMJ.jc/kSxhviLAg7.j2iFrhi6yYAdniNdjLiIUWU/BRZl2Ti', 2, NULL, NULL, NULL,
      NULL, 1, FALSE, NOW(), 547887852587843593, 1, NOW()),
@@ -163,6 +164,38 @@ VALUES
     (13, 801833, 547888897925840928),
     (14, 801834, 547888897925840928);
 
+-- 测试用户成员关系（与 department_id / user_role 对齐；admin 已在 data.sql）
+INSERT INTO "sys_membership" ("id", "user_id", "scope_type", "scope_id", "is_primary", "status", "joined_at", "create_user", "create_time", "update_time", "deleted")
+SELECT 10000 + row_number() OVER (ORDER BY u.id),
+       u.id,
+       'DEPARTMENT',
+       u.department_id,
+       TRUE,
+       1,
+       NOW(),
+       1,
+       NOW(),
+       NOW(),
+       0
+FROM "sys_user" u
+WHERE u.id >= 801822
+  AND u.department_id IS NOT NULL;
+
+INSERT INTO "sys_membership" ("id", "user_id", "scope_type", "scope_id", "is_primary", "status", "joined_at", "create_user", "create_time", "update_time", "deleted")
+SELECT 20000 + row_number() OVER (ORDER BY ur.id),
+       ur.user_id,
+       'ROLE',
+       ur.role_id,
+       FALSE,
+       1,
+       NOW(),
+       1,
+       NOW(),
+       NOW(),
+       0
+FROM "sys_user_role" ur
+WHERE ur.id >= 2;
+
 -- 初始化默认角色和部门关联数据
-INSERT INTO "sys_role_dept" ("role_id", "dept_id")
+INSERT INTO "sys_role_department" ("role_id", "department_id")
 VALUES (547888897925840927, 547887852587843593);

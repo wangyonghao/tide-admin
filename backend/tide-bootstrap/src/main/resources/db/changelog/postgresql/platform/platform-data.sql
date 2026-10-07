@@ -35,13 +35,13 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (1055, '删除', 1050, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:menu:delete', 5, 1, 1, NOW()),
        (1056, '清除缓存', 1050, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:menu:clearCache', 6, 1, 1, NOW()),
 
-       (1070, '部门管理', 1000, 2, '/system/dept', 'system/dept/index', NULL, 'fluent:organization-48-regular', FALSE, FALSE, FALSE, NULL, 4, 1, 1, NOW()),
-       (1071, '列表', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:list', 1, 1, 1, NOW()),
-       (1072, '详情', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:get', 2, 1, 1, NOW()),
-       (1073, '新增', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:create', 3, 1, 1, NOW()),
-       (1074, '修改', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:update', 4, 1, 1, NOW()),
-       (1075, '删除', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:delete', 5, 1, 1, NOW()),
-       (1076, '导出', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:dept:export', 6, 1, 1, NOW()),
+       (1070, '部门管理', 1000, 2, '/system/department', 'system/department/index', NULL, 'fluent:organization-48-regular', FALSE, FALSE, FALSE, NULL, 4, 1, 1, NOW()),
+       (1071, '列表', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:department:list', 1, 1, 1, NOW()),
+       (1072, '详情', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:department:get', 2, 1, 1, NOW()),
+       (1073, '新增', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:department:create', 3, 1, 1, NOW()),
+       (1074, '修改', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:department:update', 4, 1, 1, NOW()),
+       (1075, '删除', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:department:delete', 5, 1, 1, NOW()),
+       (1076, '导出', 1070, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:department:export', 6, 1, 1, NOW()),
 
        (1090, '通知公告', 1000, 2, '/system/notice', 'system/notice/index', NULL, 'pepicons-pencil:bulletin-notice', FALSE, FALSE, FALSE, NULL, 5, 1, 1, NOW()),
        (1091, '列表', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:list', 1, 1, 1, NOW()),
@@ -83,21 +83,23 @@ VALUES (1000, '系统管理', 0, 1, '/system', 'Layout', '/system/user', 'lucide
        (2033, '导出', 2030, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'monitor:log:export', 3, 1, 1, NOW());
 
 -- 初始化默认部门
-INSERT INTO "sys_dept" ("id", "code", "name","type", "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time", "update_user", "update_time")
+INSERT INTO "sys_department" ("id", "code", "name","type", "parent_id", "ancestors", "description", "sort", "status", "is_builtin", "create_user", "create_time", "update_user", "update_time")
 VALUES (1, 'A00', '总公司', 1,0, '', '系统默认根节点，不可删除', 1, 1, TRUE, 1, NOW(),1, NOW());
 
 -- 初始化默认角色
-INSERT INTO "sys_role"
-    ("id", "name", "code", "data_scope", "description", "sort", "is_builtin", "create_user", "create_time")
-VALUES
-    (1, '超级管理员', 'super_admin', 1, '系统初始角色', 0, true, 1, NOW());
+INSERT INTO "sys_role" ("id", "name", "code", "data_scope", "description", "sort", "is_builtin", "create_user", "create_time")
+VALUES (1, '超级管理员', 'super_admin', 1, '系统初始角色', 0, true, 1, NOW());
 
 -- 初始化默认用户：admin/admin123；test/test123
-INSERT INTO "sys_user" ("id", "username", "display_name", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "dept_id", "create_user", "create_time")
+INSERT INTO "sys_user" ("id", "username", "display_name", "password", "gender", "email", "phone", "avatar", "description", "status", "is_builtin", "pwd_update_time", "department_id", "create_user", "create_time")
 VALUES (1, 'admin', '超级管理员', '$2a$10$kAfyANQ23MKgtwxr9aT.TOWPRW88aX4DXrJmX1W6GfGK463oBdmeG', 1, '42190c6c5639d2ca4edb4150a35e058559ccf8270361a23745a2fd285a273c28', '5bda89a4609a65546422ea56bfe5eab4', NULL, '系统初始用户', 1, true, NOW(), 1, 1, NOW());
 -- 初始化默认用户和角色关联数据
-INSERT INTO "sys_user_role" ("id", "user_id", "role_id")
-VALUES (1, 1, 1);
+INSERT INTO "sys_user_role" ("id", "user_id", "role_id") VALUES (1, 1, 1);
+
+-- 初始化默认成员关系（与 department_id / user_role 对齐）
+INSERT INTO "sys_membership" ("id", "user_id", "scope_type", "scope_id", "is_primary", "status", "joined_at", "create_user", "create_time", "update_time", "deleted")
+VALUES (1, 1, 'DEPARTMENT', 1, TRUE, 1, NOW(), 1, NOW(), NOW(), 0),
+       (2, 1, 'ROLE', 1, FALSE, 1, NOW(), 1, NOW(), NOW(), 0);
 
 -- 初始化默认角色和菜单关联数据
 INSERT INTO "sys_role_menu" ("role_id", "menu_id")
@@ -130,60 +132,12 @@ VALUES
     ('sms_supplier', 'alibaba', '阿里云', '{"color": "warning"}', 1, true, NULL),
     ('sms_supplier', 'tencent', '腾讯云', '{"color": "primary"}', 2, true, NULL),
     ('sms_supplier', 'cloopen', '容联云', '{"color": "success"}', 3, true, NULL),
-    ('dept_type', '1', '分公司', '{"color": "primary"}', 1, true, NULL),
-    ('dept_type', '2', '部门', '{"color": "success"}', 2, true, NULL),
-    ('dept_type', '3', '用户组', '{"color": "warning"}', 3, true, NULL);
+    ('department_type', '1', '分公司', '{"color": "primary"}', 1, true, NULL),
+    ('department_type', '2', '部门', '{"color": "success"}', 2, true, NULL),
+    ('department_type', '3', '用户组', '{"color": "warning"}', 3, true, NULL);
 
 -- changeset wyhao:system-menu-notice-create-1
 -- comment 补充通知公告新增权限
 INSERT INTO "sys_menu"
 ("id", "name", "parent_id", "type", "path", "component", "redirect", "icon", "is_external", "is_cache", "is_hidden", "permission", "sort", "status", "create_user", "create_time")
 VALUES (1095, '新增', 1090, 3, NULL, NULL, NULL, NULL, NULL, NULL, NULL, 'system:notice:create', 3, 1, 1, NOW());
-
--- changeset wyhao:rename-sys-dict-to-sys-options-1
--- comment 已有库将字典表 sys_dict 重命名为 sys_options
-DO $$
-BEGIN
-    IF to_regclass('sys_dict') IS NOT NULL AND to_regclass('sys_options') IS NULL THEN
-        ALTER TABLE "sys_dict" RENAME TO "sys_options";
-        IF to_regclass('idx_dict_type_sort') IS NOT NULL THEN
-            ALTER INDEX "idx_dict_type_sort" RENAME TO "idx_option_type_sort";
-        END IF;
-        IF to_regclass('idx_dict_ext_jsonb') IS NOT NULL THEN
-            ALTER INDEX "idx_dict_ext_jsonb" RENAME TO "idx_option_ext_jsonb";
-        END IF;
-        IF EXISTS (SELECT 1 FROM pg_constraint WHERE conname = 'uk_dict_type_value') THEN
-            ALTER TABLE "sys_options" RENAME CONSTRAINT "uk_dict_type_value" TO "uk_option_type_value";
-        END IF;
-        IF to_regclass('sys_dict_id_seq') IS NOT NULL THEN
-            ALTER SEQUENCE "sys_dict_id_seq" RENAME TO "sys_options_id_seq";
-        END IF;
-        COMMENT ON TABLE "sys_options" IS '字典选项表';
-    END IF;
-END $$;
-
--- changeset wyhao:option-menu-permission-1
--- comment 字典菜单权限改为 system:option
-UPDATE "sys_menu"
-SET permission = REPLACE(permission, 'system:dict:', 'system:option:')
-WHERE permission LIKE 'system:dict:%';
-
--- changeset wyhao:option-type-and-menu-1
--- comment 选项类型字段与管理页路由统一为 option
-DO $$
-BEGIN
-    IF to_regclass('sys_options') IS NOT NULL
-       AND EXISTS (
-           SELECT 1 FROM information_schema.columns
-           WHERE table_name = 'sys_options' AND column_name = 'dict_type'
-       ) THEN
-        ALTER TABLE "sys_options" RENAME COLUMN "dict_type" TO "option_type";
-        COMMENT ON COLUMN "sys_options"."option_type" IS '选项类型';
-    END IF;
-END $$;
-
-UPDATE "sys_menu"
-SET name = '选项管理',
-    path = '/system/option',
-    component = 'system/option/index'
-WHERE id = 1130;
