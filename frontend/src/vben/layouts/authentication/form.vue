@@ -10,7 +10,7 @@ defineProps<{
 
 <template>
   <div
-    class="relative flex-col-center bg-background px-6 py-10 lg:flex-initial lg:px-8 dark:bg-background-deep"
+    class="relative flex-col-center bg-background px-6 py-10 lg:min-w-[32rem] lg:flex-initial lg:px-8 dark:bg-background-deep"
   >
     <slot></slot>
     <!-- Router View with Transition and KeepAlive -->
@@ -20,7 +20,7 @@ defineProps<{
           <component
             :is="Component"
             :key="route.fullPath"
-            class="side-content mt-6 w-full sm:mx-auto md:max-w-md"
+            class="side-content mx-auto mt-6 w-full max-w-md"
             :data-side="dataSide"
           />
         </KeepAlive>

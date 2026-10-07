@@ -139,7 +139,7 @@ const logoSrc = computed(() => {
     <div v-if="authPanelCenter" class="relative flex-center w-full">
       <div class="login-background absolute top-0 left-0 size-full"></div>
       <AuthenticationFormView
-        class="w-full rounded-3xl pb-20 shadow-float shadow-primary/5 md:w-2/3 md:bg-background lg:w-1/2 xl:w-[36%]"
+        class="w-full max-w-[32rem] rounded-3xl pb-20 shadow-float shadow-primary/5 md:bg-background"
         data-side="bottom"
       >
         <template v-if="copyright" #copyright>
