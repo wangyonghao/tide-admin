@@ -67,11 +67,6 @@ public interface PropertiesConstants {
     String CAPTCHA_GRAPHIC = CAPTCHA + StringConstants.DOT + "graphic";
 
     /**
-     * 行为验证码配置
-     */
-    String CAPTCHA_BEHAVIOR = CAPTCHA + StringConstants.DOT + "behavior";
-
-    /**
      * 消息配置
      */
     String MESSAGING = WYHAO_STARTER + StringConstants.DOT + "messaging";
@@ -80,11 +75,6 @@ public interface PropertiesConstants {
      * WebSocket 配置
      */
     String MESSAGING_WEBSOCKET = MESSAGING + StringConstants.DOT + "websocket";
-
-    /**
-     * 日志配置
-     */
-    String LOG = WYHAO_STARTER + StringConstants.DOT + "log";
 
     /**
      * 存储配置

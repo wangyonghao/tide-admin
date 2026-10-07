@@ -6,9 +6,6 @@ import cn.dev33.satoken.jwt.StpLogicJwtForSimple;
 import cn.dev33.satoken.stp.StpInterface;
 import cn.dev33.satoken.stp.StpLogic;
 import org.redisson.api.RedissonClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.context.annotation.Bean;
@@ -21,8 +18,6 @@ import top.wyhao.security.client.PermissionApi;
 @AutoConfiguration
 public class SaTokenConfig {
 
-    private static final Logger log = LoggerFactory.getLogger(SaTokenConfig.class);
-
     /**
      * 权限获取实现类
      */
@@ -30,21 +25,6 @@ public class SaTokenConfig {
     @ConditionalOnMissingBean
     public StpInterface stpInterface(PermissionApi permissionProvider) {
         return new StpInterfaceImpl(permissionProvider);
-    }
-
-    @Autowired
-    public void configSaToken(cn.dev33.satoken.config.SaTokenConfig config) {
-        config.setTokenPrefix("Bearer");
-        config.setIsReadBody(true);
-        config.setIsReadHeader(true);
-        config.setIsReadCookie(false);
-        config.setTimeout(30 * 24 * 60 * 60);
-        config.setActiveTimeout(-1);
-        config.setIsConcurrent(false);
-        config.setIsShare(false);
-        config.setTokenStyle("uuid");
-        config.setIsLog(false);
-        log.debug("[cmn-security] - 'SaToken' configured.");
     }
 
     /**

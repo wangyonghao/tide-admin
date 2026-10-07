@@ -13,8 +13,6 @@ import org.springframework.context.annotation.Bean;
 import io.undertow.Undertow;
 import io.undertow.server.handlers.DisallowedMethodsHandler;
 import io.undertow.util.HttpString;
-import org.springframework.context.annotation.PropertySource;
-import top.wyhao.cmn.core.util.GeneralPropertySourceFactory;
 
 import java.util.Set;
 
@@ -28,7 +26,6 @@ import java.util.Set;
 @AutoConfiguration
 @ConditionalOnWebApplication
 @ConditionalOnClass(Undertow.class)
-@PropertySource(value = "classpath:default-server.yml", factory = GeneralPropertySourceFactory.class)
 public class UndertowConfig {
 
     private static final Logger log = LoggerFactory.getLogger(UndertowConfig.class);

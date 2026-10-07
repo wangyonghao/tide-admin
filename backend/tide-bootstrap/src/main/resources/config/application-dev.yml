@@ -2,8 +2,6 @@
 application:
   # URL（跨域配置默认放行此 URL，第三方登录回调默认使用此 URL 为前缀，请注意更改为你实际的前端 URL）
   url: http://localhost:5173
-  crypto:
-    aes-key: ${AES_KEY:your-16-or-32-byte-key!!}
 
 --- ### 服务器配置
 server:
@@ -109,11 +107,6 @@ wyhao-starter.web.cors:
   exposed-headers: '*'
 
 --- ### 日志配置
-## API 请求/响应日志配置
-wyhao-starter.log:
-  access-log:
-    # 是否打印访问日志（类似于 Nginx access log）
-    enabled: true
 ## 项目日志配置（配置重叠部分，优先级高于 logback-spring.xml 中的配置）
 logging:
   level:
@@ -127,28 +120,12 @@ sa-token.jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
 
 --- ### 加密配置：字段加/解密配置
 wyhao-starter.encrypt.field:
-  enabled: true
-  # 默认算法，即 @FieldEncrypt 默认采用的算法（默认：AES 对称加密算法）
-  algorithm: AES
-  # 对称加密算法密钥
-  password: abcdefghijklmnop
   # 非对称加密算法密钥（在线生成 RSA 密钥对：http://web.chacuo.net/netrsakeypair）
   public-key: MFwwDQYJKoZIhvcNAQEBBQADSwAwSAJBAM51dgYtMyF+tTQt80sfFOpSV27a7t9uaUVeFrdGiVxscuizE7H8SMntYqfn9lp8a5GH5P1/GGehVjUD2gF/4kcCAwEAAQ==
   private-key: MIIBVQIBADANBgkqhkiG9w0BAQEFAASCAT8wggE7AgEAAkEAznV2Bi0zIX61NC3zSx8U6lJXbtru325pRV4Wt0aJXGxy6LMTsfxIye1ip+f2WnxrkYfk/X8YZ6FWNQPaAX/iRwIDAQABAkEAk/VcAusrpIqA5Ac2P5Tj0VX3cOuXmyouaVcXonr7f+6y2YTjLQuAnkcfKKocQI/juIRQBFQIqqW/m1nmz1wGeQIhAO8XaA/KxzOIgU0l/4lm0A2Wne6RokJ9HLs1YpOzIUmVAiEA3Q9DQrpAlIuiT1yWAGSxA9RxcjUM/1kdVLTkv0avXWsCIE0X8woEjK7lOSwzMG6RpEx9YHdopjViOj1zPVH61KTxAiBmv/dlhqkJ4rV46fIXELZur0pj6WC3N7a4brR8a+CLLQIhAMQyerWl2cPNVtE/8tkziHKbwW3ZUiBXU24wFxedT9iV
 
 --- ### 验证码配置
 wyhao-starter.captcha:
-  ## 行为验证码
-  behavior:
-    enabled: true
-    cache-type: REDIS
-    water-mark:
-    # 一分钟内接口请求次数限制开关（默认：0，关闭，开启后下方失败锁定配置才会生效）
-    req-frequency-limit-enable: 0
-    # 一分钟内验证码最多失败次数限制（默认：5次）
-    req-get-lock-limit: 5
-    # 一分钟内验证码最多失败次数限制达标后锁定时间（默认：300秒）
-    req-get-lock-seconds: 300
   ## 图形验证码
   graphic:
     # 类型

@@ -50,8 +50,6 @@ spring:
   profiles:
     # 启用的环境
     active: dev
-    include:
-      - generator
   main:
     # 允许定义重名的 bean 对象覆盖原有的 bean
     allow-bean-definition-overriding: true
@@ -85,7 +83,7 @@ spring.task:
       # 等待时间
       await-termination-period: 30s
 
-### Quartz 集群调度（JDBC JobStore，多实例互斥）
+### Quartz 调度（JDBC JobStore，单机；isClustered 为 false）
 spring.quartz:
   job-store-type: jdbc
   jdbc:
@@ -108,12 +106,6 @@ spring.servlet.multipart:
   max-file-size: 10MB
   # 单次总上传文件大小限制
   max-request-size: 20MB
-### 头像配置
-avatar:
-  # 存储路径
-  path: user/avatar/
-  # 支持的后缀
-  support-suffix: jpg,jpeg,png,gif
 
 ### 接口文档配置
 springdoc:
@@ -152,21 +144,8 @@ wyhao-starter.trace:
 ### 租户配置
 wyhao-starter.tenant:
   enabled: true
-  # 请求头中租户 ID 键名
-  tenant-id-header: X-Tenant-Id
   # 默认租户 ID：超级管理员用户所在租户（默认：0）
   default-tenant-id: 0
-  # 忽略菜单 ID（租户不能使用的菜单）
-  ignore-menus:
-    - 1050 # 菜单管理
-    - 1130 # 字典管理
-    - 1140 # 字典项管理
-    - 1150 # 系统配置
-    - 2050 # 短信日志
-    - 3000 # 租户管理
-    - 7000 # 能力开放
-    - 8000 # 任务调度
-    - 9000 # 开发工具
 
 ### 系统配置
 system:
@@ -185,11 +164,9 @@ wyhao-starter:
 sa-token:
   # Token 名称（同时也是 cookie 名称）
   token-name: Authorization
-  # 是否启用动态 activeTimeout 功能
+  # 为 true 时，active-timeout 的变更对已签发 token 立即生效（Sa-Token 官方开关）
   dynamic-active-timeout: true
-  ## 提示：请通过页面功能 [系统管理/系统配置/客户端配置] 动态调整 timeout、active-timeout 配置项
-  ## 如果不需要动态配置，请将 dynamic-active-timeout 设为 false，并取消下方 timeout 和 active-timeout 配置的注释，最好再移除相关登录处理代码
-  # Token 有效期（单位：秒，默认 30 天，-1 代表永不过期）
+  # Token 有效期（单位：秒，-1 代表永不过期）
   timeout: 86400
   # Token 最低活跃频率 30分钟（单位：秒，默认 -1，代表不限制，永不冻结。如果 token 超过此时间没有访问系统就会被冻结）
   active-timeout: 1800

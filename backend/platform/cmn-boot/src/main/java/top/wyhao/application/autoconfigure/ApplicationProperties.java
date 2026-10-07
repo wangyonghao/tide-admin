@@ -53,11 +53,6 @@ public class ApplicationProperties {
     private License license;
 
     /**
-     * 是否为生产环境
-     */
-    private boolean production = false;
-
-    /**
      * 联系人配置属性
      */
     public static class Contact {
@@ -194,13 +189,5 @@ public class ApplicationProperties {
 
     public void setLicense(License license) {
         this.license = license;
-    }
-
-    public boolean isProduction() {
-        return production;
-    }
-
-    public void setProduction(boolean production) {
-        this.production = production;
     }
 }

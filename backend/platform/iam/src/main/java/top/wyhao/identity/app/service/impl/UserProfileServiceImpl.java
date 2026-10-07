@@ -6,7 +6,6 @@ import cn.hutool.core.text.CharSequenceUtil;
 import com.alicp.jetcache.anno.CacheUpdate;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,8 +48,7 @@ public class UserProfileServiceImpl implements UserProfileService {
     private final UserUniquenessChecker uniquenessChecker;
     private final UserLifecycleRules lifecycleRules;
 
-    @Value("${avatar.support-suffix}")
-    private String[] avatarSupportSuffix;
+    private static final String[] AVATAR_SUPPORT_SUFFIX = {"jpg", "jpeg", "png", "gif"};
     private static final long AVATAR_MAX_SIZE = 1024 * 1024 * 2;
 
     @Override
@@ -77,8 +75,8 @@ public class UserProfileServiceImpl implements UserProfileService {
 
     private void checkAvatar(MultipartFile avatarFile) {
         String avatarImageType = FileNameUtil.extName(avatarFile.getOriginalFilename());
-        if (!CharSequenceUtil.equalsAnyIgnoreCase(avatarImageType, avatarSupportSuffix)) {
-            throw UserException.avatarFormatNotSupported(String.join(",", avatarSupportSuffix));
+        if (!CharSequenceUtil.equalsAnyIgnoreCase(avatarImageType, AVATAR_SUPPORT_SUFFIX)) {
+            throw UserException.avatarFormatNotSupported(String.join(",", AVATAR_SUPPORT_SUFFIX));
         }
 
         long avatarSize = avatarFile.getSize();
