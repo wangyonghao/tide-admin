@@ -1,0 +1,102 @@
+services:
+  db:
+  #    image: mysql:8.0.42
+  #    restart: always
+  #    container_name: mysql
+  #    ports:
+  #      - '3306:3306'
+  #    environment:
+  #      TZ: Asia/Shanghai
+  #      MYSQL_ROOT_PASSWORD: 你的root用户密码
+  #      # 初始化数据库（后续的初始化 SQL 会在这个库执行）
+  #      MYSQL_DATABASE: tide_admin
+  #      #MYSQL_USER: 你的数据库用户名
+  #      #MYSQL_PASSWORD: 你的数据库密码
+  #    volumes:
+  #      - /docker/mysql/conf/:/etc/mysql/conf.d/
+  #      - /docker/mysql/data/:/var/lib/mysql/
+  #    command:
+  #      --default-authentication-plugin=mysql_native_password
+  #      --character-set-server=utf8mb4
+  #      --collation-server=utf8mb4_general_ci
+  #      --explicit_defaults_for_timestamp=true
+  #      --lower_case_table_names=1
+    image: postgres:17.6-alpine
+    restart: always
+    container_name: tide-db
+    ports:
+      - '5432:5432'
+    environment:
+      TZ: Asia/Shanghai
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres@2026
+      POSTGRES_DB: tide_admin
+    volumes:
+      - ./postgresql/data/:/var/lib/postgresql/data/
+  redis:
+    image: redis:8-alpine
+    restart: always
+    container_name: tide-redis
+    ports:
+      - '1379:6379'
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./redis/conf/redis.conf:/usr/local/redis/config/redis.conf
+      - ./redis/data/:/data/
+      - ./redis/logs/:/logs/
+    command: 'redis-server /usr/local/redis/config/redis.conf --appendonly yes --requirepass redis12#'
+  # 本地邮件黑洞：SMTP 收信，不外发；Web UI 查看验证码等测试邮件
+  mail:
+    image: inbucket/inbucket:3.0.3
+    restart: unless-stopped
+    container_name: tide-mail
+    ports:
+      - '2500:2500' # SMTP
+      - '9000:9000' # Web UI
+      - '1100:1100' # POP3
+    environment:
+      TZ: Asia/Shanghai
+  web:
+    image: nginx:1.30-alpine
+    restart: always
+    container_name: tide-web
+    ports:
+      - '3080:80'
+      - '3443:443'
+    environment:
+      TZ: Asia/Shanghai
+    volumes:
+      - ./web/conf/nginx.conf:/etc/nginx/nginx.conf
+      - ./web/logs/:/var/log/nginx/
+      - ./web/html:/usr/share/nginx/html/
+      - /opt/cert/:/etc/nginx/cert/
+  api:
+    build: tide-admin
+    restart: always
+    container_name: tide-admin
+    ports:
+      - '18000:18000'
+    networks:
+      - 1panel-network
+    environment:
+      TZ: Asia/Shanghai
+      DB_HOST: postgresql
+      DB_PORT: 5432
+      DB_USER: tide
+      DB_PWD: AeMW6BafcXQT4pe2
+      DB_NAME: tide
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+      REDIS_PWD: redis_nAaBHh
+      REDIS_DB: 15
+      # 密钥从同目录 .env 文件或宿主机环境变量读取，不要写入仓库
+      WYH_JWT_SECRET: ${WYH_JWT_SECRET:?WYH_JWT_SECRET is required}
+      WYH_RSA_PUBLIC_KEY: ${WYH_RSA_PUBLIC_KEY:?WYH_RSA_PUBLIC_KEY is required}
+      WYH_RSA_PRIVATE_KEY: ${WYH_RSA_PRIVATE_KEY:?WYH_RSA_PRIVATE_KEY is required}
+    volumes:
+      - ./api/data/file/:/app/data/file/
+      - ./api/logs/:/app/logs/
+networks:
+  1panel-network:
+    external: true
