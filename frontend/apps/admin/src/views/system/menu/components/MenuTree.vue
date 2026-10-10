@@ -22,7 +22,8 @@ import {
   TooltipTrigger,
 } from '@vben-core/shadcn-ui';
 
-import { useMessage } from 'naive-ui';
+import { toast } from '#/ui-patterns/toast';
+
 
 import { childrenOf } from '../composables/useMenuTree';
 import { useMenuState } from '../composables/useMenuState';
@@ -31,7 +32,6 @@ import AppTreeNode from './AppTreeNode.vue';
 const props = defineProps<{ coarse: boolean }>();
 const emit = defineEmits<{ open: [] }>();
 
-const message = useMessage();
 const userStore = useUserStore();
 const state = useMenuState();
 const searchOpen = ref(false);
@@ -254,7 +254,7 @@ async function confirmDelete() {
   const ok = await state.removeNode(pendingDelete.value.id);
   if (!ok) return;
   pendingDelete.value = null;
-  message.success($t('appMenu.removed'));
+  toast.success($t('appMenu.removed'));
 }
 
 onMounted(() => {

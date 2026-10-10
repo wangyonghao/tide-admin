@@ -29,7 +29,8 @@ import {
   TooltipTrigger,
 } from '@vben-core/shadcn-ui';
 
-import { useMessage } from 'naive-ui';
+import { toast } from '#/ui-patterns/toast';
+
 import { z } from 'zod';
 
 import { useMenuState } from '../composables/useMenuState';
@@ -38,7 +39,6 @@ import ButtonTemplateDialog from './ButtonTemplateDialog.vue';
 
 const props = defineProps<{ coarse: boolean }>();
 
-const message = useMessage();
 const userStore = useUserStore();
 const state = useMenuState();
 const bodyRef = ref<HTMLElement | null>(null);
@@ -144,7 +144,7 @@ async function commitDraft() {
   const ok = await write([created, ...rows.value]);
   if (!ok) return;
   creating.value = false;
-  message.success($t('appMenu.saved'));
+  toast.success($t('appMenu.saved'));
 }
 
 function patch(id: string, partial: Partial<MenuRecord>) {
@@ -155,7 +155,7 @@ function patch(id: string, partial: Partial<MenuRecord>) {
     target?.permission &&
     permissionTaken(state.nodes.value, target.appId, target.permission, id)
   ) {
-    message.warning($t('appMenu.permissionTaken'));
+    toast.warning($t('appMenu.permissionTaken'));
     return;
   }
   write(next);
@@ -168,7 +168,7 @@ function toggleStatus(row: MenuRecord) {
     patch(row.id, { status: next });
   } catch {
     patch(row.id, { status: prev });
-    message.error($t('appMenu.loadFailed'));
+    toast.error($t('appMenu.loadFailed'));
   }
 }
 
@@ -176,7 +176,7 @@ async function removeIds(ids: string[]) {
   const ok = await write(rows.value.filter((row) => !ids.includes(row.id)));
   if (!ok) return;
   selected.value = selected.value.filter((id) => !ids.includes(id));
-  message.success($t('appMenu.removed'));
+  toast.success($t('appMenu.removed'));
 }
 
 function bulkStatus(status: MenuStatus) {
@@ -217,12 +217,12 @@ async function applyTemplate(actions: string[]) {
   if (created.length === 0) return;
   const ok = await write([...created, ...rows.value]);
   if (!ok) return;
-  message.success($t('appMenu.templateApplied', { count: created.length }));
+  toast.success($t('appMenu.templateApplied', { count: created.length }));
 }
 
 async function copyCode(code: string) {
   await navigator.clipboard.writeText(code);
-  message.success($t('appMenu.copied'));
+  toast.success($t('appMenu.copied'));
 }
 
 function openSheet(row: MenuRecord) {

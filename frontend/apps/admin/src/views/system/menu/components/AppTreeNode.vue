@@ -20,7 +20,8 @@ import {
   TooltipTrigger,
 } from '@vben-core/shadcn-ui';
 
-import { useMessage } from 'naive-ui';
+import { toast } from '#/ui-patterns/toast';
+
 
 import { childrenOf } from '../composables/useMenuTree';
 import { useMenuState } from '../composables/useMenuState';
@@ -34,7 +35,6 @@ const props = defineProps<{
 
 const emit = defineEmits<{ open: []; remove: [id: string] }>();
 
-const message = useMessage();
 const userStore = useUserStore();
 const state = useMenuState();
 const listRef = ref<HTMLElement | null>(null);
@@ -103,14 +103,14 @@ async function copyApp() {
   if (choice === 'cancel') return;
   const created = await state.duplicateApp(props.app.id, $t('appMenu.copySuffix'));
   if (!created) return;
-  message.success($t('appMenu.copied'));
+  toast.success($t('appMenu.copied'));
   emit('open');
 }
 
 async function toggleStatus() {
   const prev = await state.toggleAppStatus(props.app.id);
   if (prev === undefined) return;
-  message.success(
+  toast.success(
     props.app.status === 'enabled' ? $t('appMenu.enabled') : $t('appMenu.disabled'),
   );
 }
@@ -149,7 +149,7 @@ async function mountSortable() {
       void (async () => {
         const result = await state.moveNode(id, parentId, index, appId);
         if (!result.ok) {
-          if (result.reason !== 'persist') message.warning($t('appMenu.dropRejected'));
+          if (result.reason !== 'persist') toast.warning($t('appMenu.dropRejected'));
           return;
         }
         if (result.shouldAsk) {

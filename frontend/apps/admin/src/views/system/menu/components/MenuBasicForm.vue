@@ -7,13 +7,13 @@ import { $t } from '@vben/locales';
 
 import { Input, Switch, Textarea } from '@vben-core/shadcn-ui';
 
-import { useMessage } from 'naive-ui';
+import { toast } from '#/ui-patterns/toast';
+
 import { z } from 'zod';
 
 import { pathTaken } from '../composables/usePermCode';
 import { useMenuState } from '../composables/useMenuState';
 
-const message = useMessage();
 const state = useMenuState();
 const more = ref(false);
 const errors = ref<Record<string, string>>({});
@@ -100,7 +100,7 @@ async function save() {
   if (!ok) return false;
   snapshot.value = JSON.stringify(model);
   state.setDirty(false);
-  message.success($t('appMenu.saved'));
+  toast.success($t('appMenu.saved'));
   return true;
 }
 

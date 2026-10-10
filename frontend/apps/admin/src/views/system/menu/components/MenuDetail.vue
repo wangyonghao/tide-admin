@@ -19,7 +19,8 @@ import {
   TooltipTrigger,
 } from '@vben-core/shadcn-ui';
 
-import { useMessage } from 'naive-ui';
+import { toast } from '#/ui-patterns/toast';
+
 
 import { useMenuState } from '../composables/useMenuState';
 import ButtonPermissionTable from './ButtonPermissionTable.vue';
@@ -27,7 +28,6 @@ import MenuBasicForm from './MenuBasicForm.vue';
 
 defineProps<{ coarse: boolean }>();
 
-const message = useMessage();
 const userStore = useUserStore();
 const state = useMenuState();
 const formRef = ref<InstanceType<typeof MenuBasicForm> | null>(null);
@@ -74,7 +74,7 @@ async function confirmRemove() {
   const ok = await state.removeNode(node.value.id);
   if (!ok) return;
   pending.value = false;
-  message.success($t('appMenu.removed'));
+  toast.success($t('appMenu.removed'));
 }
 </script>
 
