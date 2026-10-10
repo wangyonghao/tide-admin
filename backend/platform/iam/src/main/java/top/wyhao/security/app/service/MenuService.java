@@ -9,6 +9,7 @@ import top.wyhao.security.adapter.web.vo.MenuVO;
 import java.util.List;
 import top.wyhao.security.adapter.web.dto.MenuQuery;
 import top.wyhao.security.adapter.web.dto.MenuRequest;
+import top.wyhao.security.adapter.web.dto.MenuSortRequest;
 
 /**
  * 菜单业务接口
@@ -47,6 +48,10 @@ public interface MenuService {
     List<MenuVO> listByRoleIds(List<Long> roleIds);
 
     List<MenuVO> list(@Valid MenuQuery query);
+
+    List<MenuVO> listAll();
+
+    void sort(@Valid MenuSortRequest req);
 
     void export(@Valid MenuQuery query, HttpServletResponse response);
 

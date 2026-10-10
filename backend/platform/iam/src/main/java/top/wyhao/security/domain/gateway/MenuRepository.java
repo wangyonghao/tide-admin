@@ -9,6 +9,8 @@ import java.util.List;
  */
 public interface MenuRepository {
 
+    List<SysMenu> listAll();
+
     List<SysMenu> listEnabledTree();
 
     List<SysMenu> listEnabledCatalogAndMenu();
@@ -24,6 +26,8 @@ public interface MenuRepository {
     void insert(SysMenu menu);
 
     void updateById(SysMenu menu);
+
+    void updatePlacement(Long id, Long parentId, Integer sort);
 
     void deleteByIds(List<Long> ids);
 

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.security.app.assembler.MenuAssembler;
 import top.wyhao.security.domain.gateway.MenuRepository;
+import top.wyhao.security.domain.gateway.RoleMenuRepository;
 import top.wyhao.security.domain.gateway.UserRoleRepository;
 import top.wyhao.security.domain.model.SysMenu;
 import top.wyhao.security.domain.exception.MenuException;
@@ -22,10 +23,16 @@ import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
 import top.wyhao.cmn.core.util.TreeUtils;
-import java.util.ArrayList;
-import java.util.List;
 import top.wyhao.security.adapter.web.dto.MenuQuery;
 import top.wyhao.security.adapter.web.dto.MenuRequest;
+import top.wyhao.security.adapter.web.dto.MenuSortRequest;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * 菜单 Service
@@ -36,6 +43,7 @@ public class MenuServiceImpl implements MenuService {
 
     private final UserRoleRepository userRoleRepository;
     private final MenuRepository menuRepository;
+    private final RoleMenuRepository roleMenuRepository;
     private final MenuAssembler menuAssembler;
 
     @Override
@@ -97,14 +105,48 @@ public class MenuServiceImpl implements MenuService {
     }
 
     @Override
+    public List<MenuVO> listAll() {
+        return menuAssembler.toVOList(menuRepository.listAll());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void sort(MenuSortRequest req) {
+        Map<Long, SysMenu> byId = new HashMap<>();
+        for (SysMenu menu : menuRepository.listAll()) {
+            byId.put(menu.getId(), menu);
+        }
+        for (MenuSortRequest.Item item : req.getItems()) {
+            SysMenu node = byId.get(item.getId());
+            if (node == null) {
+                throw MenuException.notFound();
+            }
+            long parentId = item.getParentId();
+            assertParent(byId, node, parentId);
+            if (!MenuType.BUTTON.equals(node.getType())
+                    && parentOf(node) != parentId
+                    && menuRepository.nameExists(node.getName(), parentId, node.getId())) {
+                throw MenuException.titleExist(node.getName());
+            }
+        }
+        for (MenuSortRequest.Item item : req.getItems()) {
+            menuRepository.updatePlacement(item.getId(), item.getParentId(), item.getSort());
+        }
+        clearMenuCache();
+    }
+
+    @Override
     public Long create(MenuRequest req) {
+        if (req.getParentId() == null) {
+            req.setParentId(0L);
+        }
         this.checkNameUnique(req.getName(), req.getParentId(), null);
 
         // 目录类型菜单，默认为 Layout
         if (MenuType.DIR.equals(req.getType())) {
             req.setComponent(CharSequenceUtil.blankToDefault(req.getComponent(), "Layout"));
         }
-        RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
+        clearMenuCache();
         SysMenu menuDO = menuAssembler.toEntity(req);
         menuRepository.insert(menuDO);
         return menuDO.getId();
@@ -122,7 +164,7 @@ public class MenuServiceImpl implements MenuService {
         menuAssembler.update(req, entity);
         entity.setId(id);
         menuRepository.updateById(entity);
-        RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
+        clearMenuCache();
     }
 
     /**
@@ -131,18 +173,71 @@ public class MenuServiceImpl implements MenuService {
      * @param id 菜单ID
      */
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(Long id) {
-        List<Long> pendingDeleteIds = this.listDescendantIds(List.of(id));
-        menuRepository.deleteByIds(pendingDeleteIds);
+        removeMenus(List.of(id));
     }
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void delete(List<Long> ids) {
-        // 级联删除菜单（包含子菜单）
-        List<Long> allDeleteIdList = this.listDescendantIds(ids);
-        menuRepository.deleteByIds(allDeleteIdList);
+        removeMenus(ids);
+    }
+
+    private void removeMenus(List<Long> ids) {
+        List<Long> pending = this.listDescendantIds(ids);
+        roleMenuRepository.deleteByMenuIds(pending);
+        menuRepository.deleteByIds(pending);
+        clearMenuCache();
+    }
+
+    private void clearMenuCache() {
         RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
+    }
+
+    private void assertParent(Map<Long, SysMenu> byId, SysMenu node, long parentId) {
+        if (parentId == 0L) {
+            if (!MenuType.DIR.equals(node.getType())) {
+                throw MenuException.of("MENU_PARENT_INVALID", "无法移动到该位置");
+            }
+            return;
+        }
+        if (parentId == node.getId() || isDescendant(byId, node.getId(), parentId)) {
+            throw MenuException.of("MENU_PARENT_INVALID", "无法移动到该位置");
+        }
+        SysMenu parent = byId.get(parentId);
+        if (parent == null) {
+            throw MenuException.of("MENU_PARENT_INVALID", "无法移动到该位置");
+        }
+        if (MenuType.DIR.equals(parent.getType())) {
+            if (MenuType.BUTTON.equals(node.getType())) {
+                throw MenuException.of("MENU_PARENT_INVALID", "无法移动到该位置");
+            }
+            return;
+        }
+        if (MenuType.MENU.equals(parent.getType()) && MenuType.BUTTON.equals(node.getType())) {
+            return;
+        }
+        throw MenuException.of("MENU_PARENT_INVALID", "无法移动到该位置");
+    }
+
+    private boolean isDescendant(Map<Long, SysMenu> byId, Long ancestorId, Long nodeId) {
+        Set<Long> guard = new HashSet<>();
+        SysMenu current = byId.get(nodeId);
+        while (current != null && current.getParentId() != null && current.getParentId() != 0L) {
+            if (!guard.add(current.getId())) {
+                return false;
+            }
+            if (ancestorId.equals(current.getParentId())) {
+                return true;
+            }
+            current = byId.get(current.getParentId());
+        }
+        return false;
+    }
+
+    private long parentOf(SysMenu menu) {
+        return menu.getParentId() == null ? 0L : menu.getParentId();
     }
 
 

@@ -40,6 +40,14 @@ public class RoleMenuRepositoryImpl implements RoleMenuRepository {
     }
 
     @Override
+    public void deleteByMenuIds(Collection<Long> menuIds) {
+        if (CollUtil.isEmpty(menuIds)) {
+            return;
+        }
+        roleMenuMapper.lambdaUpdate().in(SysRoleMenu::getMenuId, menuIds).remove();
+    }
+
+    @Override
     public boolean insertBatch(List<SysRoleMenu> roleMenus) {
         return roleMenuMapper.insertBatch(roleMenus);
     }

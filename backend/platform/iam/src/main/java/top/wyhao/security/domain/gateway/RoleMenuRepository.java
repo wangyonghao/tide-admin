@@ -15,6 +15,8 @@ public interface RoleMenuRepository {
 
     void deleteByRoleId(Long roleId);
 
+    void deleteByMenuIds(Collection<Long> menuIds);
+
     boolean insertBatch(List<SysRoleMenu> roleMenus);
 
     /**

@@ -18,6 +18,7 @@ import top.wyhao.web.core.model.IdResult;
 import java.util.List;
 import top.wyhao.security.adapter.web.dto.MenuQuery;
 import top.wyhao.security.adapter.web.dto.MenuRequest;
+import top.wyhao.security.adapter.web.dto.MenuSortRequest;
 
 /**
  * 菜单管理 API
@@ -41,6 +42,20 @@ public class MenuController {
     @GetMapping("/system/menu")
     public List<MenuTreeVO> tree(@Valid MenuQuery query) {
         return menuService.tree(query);
+    }
+
+    @Operation(summary = "查询全部菜单", description = "管理页使用，包含停用项和按钮")
+    @SaCheckPermission("system:menu:list")
+    @GetMapping("/system/menu/all")
+    public List<MenuVO> all() {
+        return menuService.listAll();
+    }
+
+    @Operation(summary = "保存菜单顺序", description = "按当前同级顺序写入上级和排序")
+    @SaCheckPermission("system:menu:update")
+    @PutMapping("/system/menu/sort")
+    public void sort(@RequestBody @Valid MenuSortRequest req) {
+        menuService.sort(req);
     }
 
     /**

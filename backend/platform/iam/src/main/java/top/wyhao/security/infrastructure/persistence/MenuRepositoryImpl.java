@@ -20,6 +20,13 @@ public class MenuRepositoryImpl implements MenuRepository {
     private final SysMenuMapper menuMapper;
 
     @Override
+    public List<SysMenu> listAll() {
+        return menuMapper.selectList(new LambdaQueryWrapper<SysMenu>()
+                .orderByAsc(SysMenu::getParentId)
+                .orderByAsc(SysMenu::getSort));
+    }
+
+    @Override
     public List<SysMenu> listEnabledTree() {
         return menuMapper.selectList(new LambdaQueryWrapper<SysMenu>()
                 .eq(SysMenu::getStatus, StatusEnum.ENABLE.getValue())
@@ -64,6 +71,15 @@ public class MenuRepositoryImpl implements MenuRepository {
     @Override
     public void updateById(SysMenu menu) {
         menuMapper.updateById(menu);
+    }
+
+    @Override
+    public void updatePlacement(Long id, Long parentId, Integer sort) {
+        menuMapper.lambdaUpdate()
+                .eq(SysMenu::getId, id)
+                .set(SysMenu::getParentId, parentId)
+                .set(SysMenu::getSort, sort)
+                .update();
     }
 
     @Override

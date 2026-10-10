@@ -1,301 +1,215 @@
 <script setup lang="ts">
-import type { VxeTableGridOptions } from '#/adapter/vxe-table';
-import type { Menu } from '#/api/system/menu';
+import { computed, onMounted } from 'vue';
+import { onBeforeRouteUpdate, useRoute, useRouter } from 'vue-router';
 
-import { computed, nextTick, ref } from 'vue';
+import { Page } from '@vben/common-ui';
+import { $t } from '@vben/locales';
 
-import { Page, useVbenModal } from '@vben/common-ui';
-import { IconifyIcon } from '@vben/icons';
+import { useBreakpoints, useMediaQuery } from '@vueuse/core';
 
-import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { menuApi } from '#/api/system/menu';
-import { useUserStore } from '#/store/user';
-import { Badge } from '#/ui/badge';
-import { Button } from '#/ui/button';
-import { toast } from '#/ui-patterns/toast';
 import {
-  ConfirmAction,
-  type ConfirmActionExpose,
-} from '#/ui-patterns/confirm-action';
+  AlertDialog,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogTitle,
+  Button,
+  ResizableHandle,
+  ResizablePanel,
+  ResizablePanelGroup,
+  TooltipProvider,
+} from '@vben-core/shadcn-ui';
 
-import MenuForm from './modules/form.vue';
+import DeleteAppDialog from './components/DeleteAppDialog.vue';
+import DetailPane from './components/DetailPane.vue';
+import MenuTree from './components/MenuTree.vue';
+import { useMenuState } from './composables/useMenuState';
 
-const confirmAction = ref<ConfirmActionExpose | null>(null);
-const userStore = useUserStore();
+const route = useRoute();
+const router = useRouter();
+const state = useMenuState();
 
-const statusOptions = [
-  { label: '启用', value: 1 },
-  { label: '禁用', value: 0 },
-];
+const breakpoints = useBreakpoints({ tablet: 768 });
+const tablet = breakpoints.greaterOrEqual('tablet');
+const coarse = useMediaQuery('(pointer: coarse)');
+const mobileDetail = computed(
+  () => !tablet.value && route.query.view === 'detail',
+);
 
-const typeMap: Record<
-  number,
-  { text: string; variant: 'default' | 'success' | 'warning' }
-> = {
-  1: { text: '目录', variant: 'default' },
-  2: { text: '菜单', variant: 'success' },
-  3: { text: '按钮', variant: 'warning' },
-};
-
-type MenuRow = Menu & { visible?: number };
-
-const tableData = ref<MenuRow[]>([]);
-
-function presentTree(nodes: Menu[]): MenuRow[] {
-  return nodes.map((node) => ({
-    ...node,
-    children: node.children?.length ? presentTree(node.children) : undefined,
-  }));
-}
-
-interface MenuOption {
-  children?: MenuOption[];
-  key: number | string;
-  label: string;
-}
-
-const menuOptions = computed(() => {
-  const options: MenuOption[] = [{ key: '0', label: '顶级菜单' }];
-
-  function convert(menus: Menu[]): MenuOption[] {
-    return menus
-      .filter((menu) => menu.type !== 3)
-      .map((menu) => ({
-        key: menu.id,
-        label: menu.name,
-        children: menu.children ? convert(menu.children) : undefined,
-      }));
-  }
-
-  options.push(...convert(tableData.value));
-  return options;
+onMounted(async () => {
+  await state.load();
+  const appId = typeof route.query.app === 'string' ? route.query.app : '';
+  const nodeId = typeof route.query.node === 'string' ? route.query.node : '';
+  if (nodeId) await state.selectNode(nodeId);
+  else if (appId) await state.selectApp(appId);
 });
 
-const [Grid, gridApi] = useVbenVxeGrid({
-  formOptions: {
-    schema: [
-      {
-        component: 'Input',
-        fieldName: 'name',
-        label: '菜单名称',
-        componentProps: { placeholder: '请输入菜单名称' },
-      },
-      {
-        component: 'Select',
-        fieldName: 'status',
-        label: '状态',
-        componentProps: {
-          options: statusOptions,
-          placeholder: '请选择状态',
-          clearable: true,
-        },
-      },
-    ],
-    showCollapseButton: false,
-    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
-  },
-  gridOptions: {
-    columns: [
-      {
-        field: 'name',
-        title: '菜单名称',
-        treeNode: true,
-        align: 'left',
-        minWidth: 220,
-        slots: { default: 'name' },
-      },
-      {
-        field: 'type',
-        title: '类型',
-        width: 90,
-        slots: { default: 'type' },
-      },
-      { field: 'path', title: '路由地址', minWidth: 140 },
-      { field: 'component', title: '组件路径', minWidth: 140 },
-      { field: 'permission', title: '权限标识', minWidth: 160 },
-      { field: 'sort', title: '排序', width: 80 },
-      {
-        field: 'visible',
-        title: '可见',
-        width: 90,
-        slots: { default: 'visible' },
-      },
-      {
-        field: 'status',
-        title: '状态',
-        width: 90,
-        slots: { default: 'status' },
-      },
-      {
-        field: 'action',
-        title: '操作',
-        width: 180,
-        fixed: 'right',
-        slots: { default: 'action' },
-      },
-    ],
-    height: 'auto',
-    keepSource: true,
-    pagerConfig: { enabled: false },
-    rowConfig: { keyField: 'id' },
-    treeConfig: {
-      childrenField: 'children',
-      expandAll: true,
-      rowField: 'id',
-    },
-    toolbarConfig: {
-      custom: true,
-      refresh: true,
-      zoom: true,
-    },
-    proxyConfig: {
-      ajax: {
-        query: async (_page, formValues) => {
-          const name =
-            typeof formValues?.name === 'string' ? formValues.name.trim() : '';
-          const status =
-            typeof formValues?.status === 'number' ? formValues.status : undefined;
-          const res = await menuApi.tree({
-            title: name || undefined,
-            status,
-          });
-          tableData.value = presentTree(res ?? []);
-          return { records: tableData.value, total: tableData.value.length };
-        },
-        querySuccess: async () => {
-          await nextTick();
-          gridApi.grid?.setAllTreeExpand?.(true);
-        },
-      },
-    },
-  } as VxeTableGridOptions<MenuRow>,
+onBeforeRouteUpdate(async () => {
+  if (!state.dirty.value) return true;
+  const choice = await state.guardDirty();
+  return choice !== 'cancel';
 });
 
-const [MenuModal, menuModalApi] = useVbenModal({
-  connectedComponent: MenuForm,
-  destroyOnClose: true,
-});
-
-function handleAdd(parentId?: string) {
-  menuModalApi
-    .setData({
-      parentId: parentId || '0',
-      menuOptions: menuOptions.value,
-    })
-    .open();
-}
-
-function handleEdit(row: MenuRow) {
-  menuModalApi
-    .setData({
-      record: row,
-      menuOptions: menuOptions.value,
-    })
-    .open();
-}
-
-async function handleDelete(row: MenuRow) {
-  const ok = await confirmAction.value?.ask({
-    title: '提示',
-    description: `确定要删除菜单"${row.name}"吗？`,
-    tone: 'destructive',
+function enterDetail() {
+  if (tablet.value) return;
+  void router.push({
+    query: {
+      ...route.query,
+      app: state.selectedAppId.value ?? undefined,
+      node: state.selectedNodeId.value ?? undefined,
+      view: 'detail',
+    },
   });
-  if (!ok) return;
-  try {
-    await menuApi.delete(row.id);
-    toast.success('删除成功');
-    await gridApi.query();
-  } catch {
-    // 错误已在拦截器处理
-  }
 }
 
-function typeText(row: Menu) {
-  return typeMap[row.type] ?? { text: '-', variant: 'default' as const };
+function backToTree() {
+  void router.push({
+    query: {
+      app: state.selectedAppId.value ?? undefined,
+      node: state.selectedNodeId.value ?? undefined,
+    },
+  });
 }
 </script>
 
 <template>
-  <Page auto-content-height>
-    <ConfirmAction ref="confirmAction" />
-    <Grid>
-      <template #toolbar-tools>
-        <Button
-          v-if="userStore.hasPermission('system:menu:add')"
-          type="button"
-          @click="handleAdd()"
+  <Page
+    auto-content-height
+    content-class="!p-0 overflow-hidden"
+  >
+    <TooltipProvider :delay-duration="300">
+      <div class="flex h-full min-h-0 flex-col">
+        <div
+          v-if="mobileDetail"
+          class="flex items-center border-b border-border px-2"
         >
-          <IconifyIcon
-            icon="lucide:plus"
-            class="mr-1 size-4"
-          />
-          新增菜单
-        </Button>
-      </template>
-      <template #name="{ row }">
-        <span class="inline-flex items-center gap-1.5">
-          <IconifyIcon
-            v-if="row.icon"
-            :icon="row.icon"
-          />
-          {{ row.name }}
-        </span>
-      </template>
-      <template #type="{ row }">
-        <Badge :variant="typeText(row).variant">
-          {{ typeText(row).text }}
-        </Badge>
-      </template>
-      <template #visible="{ row }">
-        <span v-if="row.type === 3">-</span>
-        <Badge
-          v-else
-          :variant="row.visible === 1 ? 'success' : 'secondary'"
-        >
-          {{ row.visible === 1 ? '是' : '否' }}
-        </Badge>
-      </template>
-      <template #status="{ row }">
-        <Badge :variant="row.status === 1 ? 'success' : 'destructive'">
-          {{ row.status === 1 ? '启用' : '禁用' }}
-        </Badge>
-      </template>
-      <template #action="{ row }">
-        <div class="flex items-center justify-center gap-2">
-          <Button
-            v-if="row.type !== 3 && userStore.hasPermission('system:menu:create')"
+          <button
             type="button"
-            variant="link"
-            size="sm"
-            class="h-auto px-1"
-            @click="handleAdd(row.id)"
+            class="px-2 py-3 text-sm text-foreground/80 transition-colors duration-150 hover:text-foreground"
+            @click="backToTree"
           >
-            新增
-          </Button>
-          <Button
-            v-if="userStore.hasPermission('system:menu:edit')"
-            type="button"
-            variant="link"
-            size="sm"
-            class="h-auto px-1"
-            @click="handleEdit(row)"
-          >
-            编辑
-          </Button>
-          <Button
-            v-if="userStore.hasPermission('system:menu:delete')"
-            type="button"
-            variant="link"
-            size="sm"
-            class="text-destructive h-auto px-1"
-            @click="handleDelete(row)"
-          >
-            删除
-          </Button>
+            {{ $t('appMenu.back') }}
+          </button>
         </div>
-      </template>
-    </Grid>
 
-    <MenuModal @success="gridApi.query()" />
+        <ResizablePanelGroup
+          v-if="tablet"
+          class="min-h-0 flex-1"
+          direction="horizontal"
+        >
+          <ResizablePanel
+            :default-size="28"
+            :max-size="42"
+            :min-size="18"
+          >
+            <MenuTree :coarse="coarse" />
+          </ResizablePanel>
+          <ResizableHandle />
+          <ResizablePanel
+            :default-size="72"
+            :min-size="40"
+          >
+            <DetailPane :coarse="coarse" />
+          </ResizablePanel>
+        </ResizablePanelGroup>
+
+        <div
+          v-else
+          class="min-h-0 flex-1"
+        >
+          <MenuTree
+            v-if="!mobileDetail"
+            :coarse="true"
+            @open="enterDetail"
+          />
+          <DetailPane
+            v-else
+            :coarse="true"
+          />
+        </div>
+      </div>
+
+      <AlertDialog
+        :open="state.confirmOpen.value"
+        @update:open="(open) => !open && state.settleDirty('cancel')"
+      >
+        <AlertDialogContent class="shadow-none">
+          <AlertDialogTitle class="text-base font-medium">
+            {{ $t('appMenu.dirtyTitle') }}
+          </AlertDialogTitle>
+          <AlertDialogDescription>{{ $t('appMenu.dirtyBody') }}</AlertDialogDescription>
+          <div class="mt-4 flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              class="shadow-none"
+              @click="state.settleDirty('cancel')"
+            >
+              {{ $t('appMenu.dirtyCancel') }}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              class="shadow-none"
+              @click="state.settleDirty('discard')"
+            >
+              {{ $t('appMenu.dirtyDiscard') }}
+            </Button>
+            <Button
+              type="button"
+              class="shadow-none"
+              @click="state.settleDirty('save')"
+            >
+              {{ $t('appMenu.dirtySave') }}
+            </Button>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        :open="state.prefixOpen.value"
+        @update:open="(open) => !open && state.settlePrefix('abort')"
+      >
+        <AlertDialogContent class="shadow-none">
+          <AlertDialogTitle class="text-base font-medium">
+            {{ $t('appMenu.prefixTitle') }}
+          </AlertDialogTitle>
+          <AlertDialogDescription>
+            {{
+              $t('appMenu.prefixBody', {
+                from: state.prefixPair.value.from,
+                to: state.prefixPair.value.to,
+              })
+            }}
+          </AlertDialogDescription>
+          <div class="mt-4 flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="ghost"
+              class="shadow-none"
+              @click="state.settlePrefix('abort')"
+            >
+              {{ $t('appMenu.cancel') }}
+            </Button>
+            <Button
+              type="button"
+              variant="ghost"
+              class="shadow-none"
+              @click="state.settlePrefix('keep')"
+            >
+              {{ $t('appMenu.prefixKeep') }}
+            </Button>
+            <Button
+              type="button"
+              class="shadow-none"
+              @click="state.settlePrefix('sync')"
+            >
+              {{ $t('appMenu.prefixSync') }}
+            </Button>
+          </div>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <DeleteAppDialog />
+    </TooltipProvider>
   </Page>
 </template>
