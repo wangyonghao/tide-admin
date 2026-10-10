@@ -37,7 +37,20 @@
 - **确认**：`ConfirmAction` 接了部门删除、菜单删除、用户删除与重置密码、选项删除、在线用户强退（单条和批量）、短信日志删除、定时任务删除。都是「布尔确认后再请求」。选项「清除缓存」仍是 `dialog.info`。定时任务「立即执行」仍是 `NPopconfirm`。
 - **数量**：`NButton` 19 → **15**（正文 131 → **96**）。`NSpace` 17 → **11**。`useDialog` 8 → **4**。`NPopconfirm` 7 → **5**。
 
-留给以后：表单适配器、`NSwitch` 的 `1/0`、`NDataTable` / Vxe、`demos/naive`、字典 `NTag`、成组勾选、部门圆点徽标、公告列表和短信日志表格里的渲染函数确认、个人设置里的重置/解绑确认、角色页和「全部已读」、配置页「发送测试邮件」。Naive 包不删。
+留给当时的下一波：表单适配器、`NSwitch` 的 `1/0`、`NDataTable` / Vxe、`demos/naive`、字典 `NTag`、成组勾选、部门圆点徽标、公告列表和短信日志表格里的渲染函数确认、个人设置里的重置/解绑确认、角色页和「全部已读」、配置页「发送测试邮件」。Naive 包不删。这些确认和一部分开关、按钮、表单控件在下面这一波换了。
+
+## 下一波已换
+
+口径和上面一样：`from 'naive-ui'` 的具名导入记文件数。正文 token 含闭合标签，不含 import 行。本波开始时按这个口径复测：`NButton` 15 / 正文 95（Phase 4 记正文 96），`useDialog` 4，`NPopconfirm` 5 / 正文 8，`NSwitch` 具名 6 / 正文 20，`NSpace` 具名 11。
+
+- **确认**：`useDialog` 4 → **0**，`NPopconfirm` 5 → **0**。选项清除缓存、配置测试邮件、消息全部已读、角色删除与取消分配、公告删除、短信日志表格删除、任务立即执行、偏好重置、三方账号解绑，都是 `ConfirmAction` 返回 true 后再请求。
+- **行内按钮**：菜单、部门、用户、文件、公告操作列，公告表单的范围 / 定时 / 置顶，选项行，操作日志「详情」，任务行的执行 / 编辑 / 日志，改为 `#/ui/button`。文字用 `variant="link"`，图标用 `ghost`，删除加上 `text-destructive`。`NButton` 具名 15 → **4**，正文 95 → **59**。剩下 `adapter/vxe-table.ts` 的 `CellLink`、安全设置弹层底栏、`demos/naive`、`demos/form`。
+- **开关**：`#/ui/switch` 在布尔之外接受 `checked-value` / `unchecked-value`（默认 `true` / `false`，用 `===`）。任务状态 `1/0`、菜单外链 / 可见 / 状态 `1/0`、部门状态 `1/2`，以及选项、偏好、通知里的布尔开关已经接上。页面不再具名导入 `NSwitch`。表单适配器里的 `Switch` 仍是 Naive。
+- **表单适配器**：只换了能对上 `value` / `checked` 的切片。`DefaultButton` 与 `PrimaryButton`、单行 `Input`、`Checkbox` 走原子控件。`emptyStateValue` 仍是 `null`。单行输入把 `null` 画成空字符串，用户清空后回写空字符串，避免 zod 的 `string()` 收到 `null`。文本域、`showWordLimit`、密码显隐仍回退 `NInput`，回写保持 Naive 原来的值（可以是 `null`）。
+- **表单里明确没动**：`Select`。套件里的 Select 是 Trigger / Content / Item，页面 schema 用的是 `options`，还带 `clearable`、`multiple`、`filterable`，空值也是 `null`。`CheckboxGroup`、`RadioGroup`、`Switch`、`InputNumber`、日期时间、树选择、上传同样留在 Naive。
+- **未做**：角色权限树里的勾选、部门状态圆点 `NBadge`、`NCheckboxGroup`、`NDataTable` / Vxe、`demos/naive`。安全设置改密 / 改手机 / 改邮箱的弹层按钮仍是 `NButton`。
+
+`NSpace` 具名 11 → **9**。用户操作列和短信日志操作列不再用它包按钮。Naive 包不删。Vxe 仍是表格默认。
 
 ## 目录选择
 
@@ -59,8 +72,8 @@
 
 | Naive | 文件数 | 换成 | 例子 |
 |-------|--------|------|------|
-| `NButton` | 15 | `#/ui/button`（含 `loading`） | 行内文字按钮和剩余 `NPopconfirm`，如 `views/schedule/job/index.vue` 的「执行」 |
-| `NSpace` | 11 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着选择器或整段表单的，如 `views/system/file/index.vue` |
+| `NButton` | 4 | `#/ui/button`（含 `loading`） | `adapter/vxe-table.ts` 的 `CellLink`；安全设置弹层底栏；`demos/naive` |
+| `NSpace` | 9 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着选择器或整段表单的，如 `views/system/file/index.vue` |
 | `NInput` | 23 | `#/ui/input` 或 `FilterInput` | 带前缀的搜索框仍是 Naive，如 `views/system/user/index.vue`。无前缀筛选用 `FilterInput` |
 | `NCard` | 12 | 已有 Card（`#/ui` 尚未再导出，需要时再加路径） | `views/demos/naive/index.vue` |
 | `NDivider` | 0 | `#/ui/separator` | 视图已换完；适配器仍动态加载 |
@@ -69,7 +82,7 @@
 | `NSpin` | 1 | 已有 Spinner | 单页用量 |
 | `NText` | 1 | 排版类（`text-foreground` 等） | 单页用量 |
 
-`NButton` 的 15 仍含 `adapter/vxe-table.ts` 的 `CellLink`。那一处跟 Vxe 渲染绑在一起，跟页面工具栏分开换。
+`NButton` 的 4 里，`adapter/vxe-table.ts` 的 `CellLink` 跟 Vxe 渲染绑在一起，跟页面工具栏分开换。安全设置弹层和 demo 页留着。
 
 ## 后换
 
@@ -82,11 +95,11 @@
 | `NSelect` | 12 | shadcn Select 已有，表单 schema 仍走 Naive | `views/monitor/log/login-log.vue` |
 | `NIcon` | 12 | 可换 Lucide，但图标选择器是一整块 | `components/icon-select.vue` |
 | `NForm` / `NFormItem` | 10 / 10 | 手写表单；目标是 `useVbenForm` 或后续原子表单 | `views/schedule/job/edit-drawer.vue` |
-| `useDialog` | 4 | 删除类确认已改 `ConfirmAction`；剩下清除缓存、测试邮件、全部已读、角色页 | `views/system/option/index.vue`、`views/system/role/index.vue` |
+| `useDialog` | 0 | 页面上的布尔确认已改 `ConfirmAction` | — |
 | `NDrawer` / `NDrawerContent` | 8 / 8 | 新页用 `useVbenDrawer` | `views/monitor/log/operation-log.vue` |
-| `NPopconfirm` | 5 | 简单删除已改 `ConfirmAction`；剩下带自定义内容或渲染函数的确认 | `views/system/notice/index.vue`、`views/schedule/job/index.vue`（立即执行） |
+| `NPopconfirm` | 0 | 页面上的确认已改 `ConfirmAction` | — |
 | `NRadioGroup` / `NRadio` | 7 / 5 | RadioGroup 已在套件内，未做应用路径 | `views/system/menu/index.vue` |
-| `NSwitch` | 6 | 原子只接布尔；`checked-value` / `unchecked-value` 对不上 | `views/schedule/job/index.vue`（1 / 0） |
+| `NSwitch` | 0（适配器仍动态加载） | 页面用 `#/ui/switch` 的 `checked-value` / `unchecked-value`。表单 schema 里的 Switch 还是 Naive，因为注册表仍按 `value` 绑定，而且常带 `1/0` | `adapter/component/index.ts` |
 | `NInputNumber` | 6 | NumberField 已在套件内 | `views/schedule/job/edit-drawer.vue` |
 | `NModal` | 4 | Dialog 已有；存量居中弹层按页迁 | `views/system/menu/index.vue` |
 | `NDropdown` | 3 | DropdownMenu 已在套件内 | `views/system/role/index.vue` |
@@ -101,7 +114,7 @@
 | `NPagination` | 1 | 这页的分页跟手写表在一起，随表格迁 | `views/system/role/index.vue` |
 | `NSteps` / `NList` / `NTimeline` / `NScrollbar` | 各 1–3 | 套件里有的还没做应用路径 | 见对应页面 |
 
-`adapter/component/index.ts` 动态加载的 Button、Checkbox、Divider、Input、InputNumber、Radio、Select、Space、Switch 属于这一类：`useVbenForm` 约定空值是 `null` 不是 `undefined`（`adapter/form.ts`）。整表替换会碰到重置行为。
+`adapter/component/index.ts` 里，提交/重置按钮、单行 Input、单个 Checkbox 已经换成原子控件，空值仍是 `null`（`adapter/form.ts`）。Divider、InputNumber、Radio、Select、Space、Switch，以及文本域 Input，仍动态加载 Naive。整表替换 Select 会碰到 `options` 和重置行为。
 
 ## 暂留
 

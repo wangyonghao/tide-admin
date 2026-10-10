@@ -3,7 +3,6 @@ import { ref } from 'vue';
 import {
   NCard,
   NSpace,
-  NSwitch,
   NCheckboxGroup,
   NCheckbox,
   NRadioGroup,
@@ -12,6 +11,7 @@ import {
 import { $t } from '@vben/locales';
 import { Button } from '#/ui/button';
 import { Separator } from '#/ui/separator';
+import { Switch } from '#/ui/switch';
 import { message } from '#/adapter/naive';
 
 // 通知设置
@@ -86,7 +86,7 @@ const noticeTypeOptions = [
                 {{ $t('page.profile.notification.enableSystemNotice') }}
               </div>
             </div>
-            <NSwitch v-model:value="notificationSettings.systemNotice" />
+            <Switch v-model="notificationSettings.systemNotice" />
           </div>
 
           <Separator class="my-2" />
@@ -100,7 +100,7 @@ const noticeTypeOptions = [
                 {{ $t('page.profile.notification.enableEmailNotice') }}
               </div>
             </div>
-            <NSwitch v-model:value="notificationSettings.emailNotice" />
+            <Switch v-model="notificationSettings.emailNotice" />
           </div>
 
           <Separator class="my-2" />
@@ -114,7 +114,7 @@ const noticeTypeOptions = [
                 {{ $t('page.profile.notification.enableSmsNotice') }}
               </div>
             </div>
-            <NSwitch v-model:value="notificationSettings.smsNotice" />
+            <Switch v-model="notificationSettings.smsNotice" />
           </div>
         </NSpace>
       </NCard>

@@ -8,23 +8,25 @@ import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
 import {
-  NButton,
   NDataTable,
   NIcon,
   NInput,
-  NPopconfirm,
   NSelect,
-  NSpace,
   NTag,
   useMessage,
 } from 'naive-ui';
 
 import { smsLogApi } from '#/api/system/sms-log';
 import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { FilterInput } from '#/ui-patterns/filter-input';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 const message = useMessage();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 // ==================== 搜索表单 ====================
 const searchForm = ref({
@@ -118,31 +120,15 @@ const tableColumns: DataTableColumns<SmsLogResp> = [
     fixed: 'right',
     render(row) {
       return h(
-        NSpace,
-        {},
+        Button,
         {
-          default: () => [
-            h(
-              NPopconfirm,
-              {
-                onPositiveClick: () => handleDelete(row),
-              },
-              {
-                trigger: () =>
-                  h(
-                    NButton,
-                    {
-                      size: 'small',
-                      type: 'error',
-                      text: true,
-                    },
-                    { default: () => '删除' },
-                  ),
-                default: () => `确定删除手机号为 ${row.phone} 的短信日志吗？`,
-              },
-            ),
-          ],
+          type: 'button',
+          variant: 'link',
+          size: 'sm',
+          class: 'text-destructive h-auto px-1',
+          onClick: () => handleDelete(row),
         },
+        { default: () => '删除' },
       );
     },
   },
@@ -189,6 +175,12 @@ function handleReset() {
 
 // ==================== 删除 ====================
 async function handleDelete(row: SmsLogResp) {
+  const ok = await confirmAction.value?.ask({
+    title: '删除确认',
+    description: `确定删除手机号为 ${row.phone} 的短信日志吗？`,
+    tone: 'destructive',
+  });
+  if (!ok) return;
   try {
     await smsLogApi.delete(row.id);
     message.success('删除成功');
@@ -217,6 +209,7 @@ onMounted(() => {
 
 <template>
   <div class="h-full">
+    <ConfirmAction ref="confirmAction" />
     <!-- 搜索和操作栏 -->
     <div class="mb-4">
       <!-- 搜索表单 - 响应式网格布局 -->

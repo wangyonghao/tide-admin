@@ -13,11 +13,15 @@ import {
   NThing,
   NTag,
   NEmpty,
-  NPopconfirm,
 } from 'naive-ui';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
 import { message } from '#/adapter/naive';
+import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import {
   userProfileApi,
   type BindSocialAccountRes,
@@ -26,6 +30,7 @@ import { authApi, type LoginLogResult } from '#/api/auth';
 import { encryptByRsa } from '#/utils/crypto';
 
 const userStore = useUserStore();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 // 修改密码
 const showPasswordModal = ref(false);
@@ -147,6 +152,18 @@ const handleChangeEmail = async () => {
 };
 
 // 解绑三方账号
+const confirmUnbind = async (source: string) => {
+  const ok = await confirmAction.value?.ask({
+    title: $t('common.tips'),
+    description: $t('page.profile.security.unbindConfirm'),
+    confirmText: $t('common.confirm'),
+    cancelText: $t('common.cancel'),
+    tone: 'destructive',
+  });
+  if (!ok) return;
+  await handleUnbindSocial(source);
+};
+
 const handleUnbindSocial = async (source: string) => {
   try {
     await userProfileApi.unbindSocial(source);
@@ -170,6 +187,7 @@ onMounted(() => {
 
 <template>
   <div class="security-settings">
+    <ConfirmAction ref="confirmAction" />
     <h3 class="text-lg font-semibold mb-6">{{ $t('page.profile.tabs.security') }}</h3>
 
     <NSpace vertical :size="24">
@@ -263,18 +281,15 @@ onMounted(() => {
             <NThing>
               <template #header>{{ account.description }}</template>
               <template #header-extra>
-                <NPopconfirm
-                  :positive-text="$t('common.confirm')"
-                  :negative-text="$t('common.cancel')"
-                  @positive-click="handleUnbindSocial(account.source)"
+                <Button
+                  type="button"
+                  variant="link"
+                  size="sm"
+                  class="text-destructive h-auto px-1"
+                  @click="confirmUnbind(account.source)"
                 >
-                  <template #trigger>
-                    <NButton type="error" text size="small">
-                      {{ $t('page.profile.security.unbind') }}
-                    </NButton>
-                  </template>
-                  {{ $t('page.profile.security.unbindConfirm') }}
-                </NPopconfirm>
+                  {{ $t('page.profile.security.unbind') }}
+                </Button>
               </template>
             </NThing>
           </NListItem>

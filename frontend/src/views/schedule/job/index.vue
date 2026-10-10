@@ -7,15 +7,7 @@ import { useRouter } from 'vue-router';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import {
-  NButton,
-  NPopconfirm,
-  NPopover,
-  NSwitch,
-  NTimeline,
-  NTimelineItem,
-  useMessage,
-} from 'naive-ui';
+import { NPopover, NTimeline, NTimelineItem, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
@@ -26,6 +18,7 @@ import {
 } from '#/api/schedule';
 import { useUserStore } from '#/store/user';
 import { Button } from '#/ui/button';
+import { Switch } from '#/ui/switch';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
@@ -109,13 +102,23 @@ function onTrigger(record: JobResp) {
   });
 }
 
-function onUpdateStatus(record: JobResp) {
-  updateJobStatus(record.status, record.id)
+async function confirmTrigger(record: JobResp) {
+  const ok = await confirmAction.value?.ask({
+    title: '立即执行',
+    description: `确定立即执行「${record.name}」一次？`,
+  });
+  if (!ok) return;
+  onTrigger(record);
+}
+
+function onUpdateStatus(record: JobResp, status: number) {
+  record.status = status;
+  updateJobStatus(status, record.id)
     .then(() => {
-      message.success(record.status === 1 ? '已激活' : '已停止');
+      message.success(status === 1 ? '已激活' : '已停止');
     })
     .catch(() => {
-      record.status = record.status === 1 ? 0 : 1;
+      record.status = status === 1 ? 0 : 1;
     });
 }
 
@@ -156,29 +159,48 @@ onMounted(() => {
         </NPopover>
       </template>
       <template #status="{ row }">
-        <NSwitch
-          v-model:value="row.status"
+        <Switch
+          :model-value="row.status"
           :checked-value="1"
           :unchecked-value="0"
           :disabled="!userStore.hasPermission('schedule:job:update')"
-          @update:value="onUpdateStatus(row)"
+          @update:model-value="(value) => onUpdateStatus(row, Number(value))"
         />
       </template>
       <template #action="{ row }">
         <div class="inline-flex items-center gap-2">
           <span v-access:code="['schedule:job:trigger']">
-            <NPopconfirm @positive-click="onTrigger(row)">
-              <template #trigger>
-                <NButton type="primary" text>执行</NButton>
-              </template>
-              确定立即执行「{{ row.name }}」一次？
-            </NPopconfirm>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              class="h-auto px-1"
+              @click="confirmTrigger(row)"
+            >
+              执行
+            </Button>
           </span>
           <span v-access:code="['schedule:job:update']">
-            <NButton type="primary" text @click="handleEdit(row)">编辑</NButton>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              class="h-auto px-1"
+              @click="handleEdit(row)"
+            >
+              编辑
+            </Button>
           </span>
           <span v-access:code="['schedule:log:list']">
-            <NButton type="primary" text @click="onLog(row)">日志</NButton>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              class="h-auto px-1"
+              @click="onLog(row)"
+            >
+              日志
+            </Button>
           </span>
           <span v-access:code="['schedule:job:delete']">
             <Button

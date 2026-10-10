@@ -6,15 +6,7 @@ import { h, onMounted, ref } from 'vue';
 import { SearchOutline } from '@vicons/ionicons5';
 
 import { Page } from '@vben/common-ui';
-import {
-  NButton,
-  NDataTable,
-  NIcon,
-  NInput,
-  NTag,
-  useDialog,
-  useMessage,
-} from 'naive-ui';
+import { NDataTable, NIcon, NInput, NTag, useMessage } from 'naive-ui';
 
 import { optionApi } from '#/api/system';
 import { Button } from '#/ui/button';
@@ -26,7 +18,6 @@ import {
 import OptionEditDrawer from './components/option-edit-drawer.vue';
 
 const message = useMessage();
-const dialog = useDialog();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 const searchForm = ref({
@@ -116,30 +107,34 @@ const columns: DataTableColumns<OptionResult> = [
     render(row) {
       return h('div', { class: 'flex items-center gap-2' }, [
         h(
-          NButton,
+          Button,
           {
-            size: 'small',
-            type: 'primary',
-            text: true,
+            type: 'button',
+            variant: 'link',
+            size: 'sm',
+            class: 'h-auto px-1',
             onClick: () => handleEdit(row),
           },
           { default: () => '编辑' },
         ),
         h(
-          NButton,
+          Button,
           {
-            size: 'small',
-            type: 'error',
-            text: true,
+            type: 'button',
+            variant: 'link',
+            size: 'sm',
+            class: 'text-destructive h-auto px-1',
             onClick: () => handleDelete(row),
           },
           { default: () => '删除' },
         ),
         h(
-          NButton,
+          Button,
           {
-            size: 'small',
-            text: true,
+            type: 'button',
+            variant: 'link',
+            size: 'sm',
+            class: 'h-auto px-1',
             onClick: () => handleClearCache(row),
           },
           { default: () => '清除缓存' },
@@ -207,22 +202,19 @@ async function handleDelete(row: OptionResult) {
   }
 }
 
-function handleClearCache(row: OptionResult) {
-  dialog.info({
+async function handleClearCache(row: OptionResult) {
+  const ok = await confirmAction.value?.ask({
     title: '清除缓存',
-    content: `确定要清除选项类型 "${row.optionType}" 的缓存吗？`,
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      try {
-        await optionApi.clearCache(row.optionType);
-        message.success('缓存清除成功');
-      } catch (error) {
-        console.error('清除缓存失败:', error);
-        message.error('清除缓存失败');
-      }
-    },
+    description: `确定要清除选项类型 "${row.optionType}" 的缓存吗？`,
   });
+  if (!ok) return;
+  try {
+    await optionApi.clearCache(row.optionType);
+    message.success('缓存清除成功');
+  } catch (error) {
+    console.error('清除缓存失败:', error);
+    message.error('清除缓存失败');
+  }
 }
 
 onMounted(() => {

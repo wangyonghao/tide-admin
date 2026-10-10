@@ -1,1 +1,2 @@
-export * from '@vben-core/shadcn-ui/ui/switch';
+export { default as Switch } from './Switch.vue';
+export type { SwitchScalar } from './map';

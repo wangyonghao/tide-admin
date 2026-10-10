@@ -11,12 +11,12 @@ import {
   NFormItem,
   NInput,
   NInputNumber,
-  NSwitch,
   useMessage,
 } from 'naive-ui';
 
 import { optionApi } from '#/api/system';
 import { Button } from '#/ui/button';
+import { Switch } from '#/ui/switch';
 
 interface Props {
   visible: boolean;
@@ -218,10 +218,12 @@ watch(
         </NFormItem>
 
         <NFormItem label="状态" path="enabled">
-          <NSwitch v-model:value="formData.enabled">
-            <template #checked>启用</template>
-            <template #unchecked>禁用</template>
-          </NSwitch>
+          <div class="flex items-center gap-2">
+            <Switch v-model="formData.enabled" />
+            <span class="text-sm text-muted-foreground">
+              {{ formData.enabled ? '启用' : '禁用' }}
+            </span>
+          </div>
         </NFormItem>
 
         <NFormItem label="描述" path="description">

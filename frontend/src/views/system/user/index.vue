@@ -12,13 +12,11 @@ import { IconifyIcon } from '@vben/icons';
 import { SearchOutline } from '@vicons/ionicons5';
 import { Page } from '@vben/common-ui';
 import {
-  NButton,
   NDataTable,
   NDropdown,
   NIcon,
   NInput,
   NModal,
-  NSpace,
   NSplit,
   NTag,
   NTree,
@@ -210,49 +208,50 @@ const userColumns: DataTableColumns<UserResp> = [
         },
       ];
 
-      return h(
-        NSpace,
-        { size: 'small' },
-        {
-          default: () => [
-            h(
-              NButton,
-              {
-                size: 'small',
-                type: 'primary',
-                text: true,
-                onClick: () => handleDetail(row),
-              },
-              { default: () => '详情' },
-            ),
-            h(
-              NButton,
-              {
-                size: 'small',
-                type: 'primary',
-                text: true,
-                onClick: () => handleEdit(row),
-              },
-              { default: () => '修改' },
-            ),
-            h(
-              NDropdown,
-              {
-                options: dropdownOptions.slice(2),
-                onSelect: (key: string) => handleDropdownSelect(key, row),
-              },
-              {
-                default: () =>
-                  h(
-                    NButton,
-                    { size: 'small', text: true },
-                    { default: () => '更多' },
-                  ),
-              },
-            ),
-          ],
-        },
-      );
+      return h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            type: 'button',
+            variant: 'link',
+            size: 'sm',
+            class: 'h-auto px-1',
+            onClick: () => handleDetail(row),
+          },
+          { default: () => '详情' },
+        ),
+        h(
+          Button,
+          {
+            type: 'button',
+            variant: 'link',
+            size: 'sm',
+            class: 'h-auto px-1',
+            onClick: () => handleEdit(row),
+          },
+          { default: () => '修改' },
+        ),
+        h(
+          NDropdown,
+          {
+            options: dropdownOptions.slice(2),
+            onSelect: (key: string) => handleDropdownSelect(key, row),
+          },
+          {
+            default: () =>
+              h(
+                Button,
+                {
+                  type: 'button',
+                  variant: 'link',
+                  size: 'sm',
+                  class: 'h-auto px-1',
+                },
+                { default: () => '更多' },
+              ),
+          },
+        ),
+      ]);
     },
   },
 ];

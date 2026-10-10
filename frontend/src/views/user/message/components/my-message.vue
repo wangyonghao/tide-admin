@@ -4,15 +4,21 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { MessageResp } from '#/api/system/user-message';
 
+import { ref } from 'vue';
+
 import { Page, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NTag, useDialog, useMessage } from 'naive-ui';
+import { NTag, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { userMessageApi } from '#/api/system/user-message';
 import { useDict } from '#/hooks';
 import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import MyMessageDetailModal from './my-message-detail-modal.vue';
@@ -21,7 +27,7 @@ defineOptions({ name: 'UserMyMessage' });
 
 const { message_type_enum } = useDict('message_type_enum');
 const message = useMessage();
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 function useTenantGridSearchFormSchema(): VbenFormSchema[] {
   return [
@@ -174,15 +180,14 @@ const onRead = async () => {
 
 // 全部已读事件
 const onReadAll = async () => {
-  dialog.warning({
+  const ok = await confirmAction.value?.ask({
     title: $t('common.tips'),
-    content: $t('system.msg.tips.markAllReadTips'),
-    positiveText: $t('common.confirm'),
-    negativeText: $t('common.cancel'),
-    onPositiveClick: async () => {
-      await readAll();
-    },
+    description: $t('system.msg.tips.markAllReadTips'),
+    confirmText: $t('common.confirm'),
+    cancelText: $t('common.cancel'),
   });
+  if (!ok) return;
+  await readAll();
 };
 
 // 全部已读
@@ -206,6 +211,7 @@ const onDetailModalClose = () => {
 
 <template>
   <Page auto-content-height>
+    <ConfirmAction ref="confirmAction" />
     <TableGrid>
       <template #toolbar-tools>
         <ToolbarActions>
