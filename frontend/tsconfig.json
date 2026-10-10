@@ -38,7 +38,6 @@
       "#/*": ["./src/*"],
       "@vben/tailwind-config/theme": ["./src/styles/theme.css"],
       "@vben/tailwind-config": ["./src/styles/theme.css"],
-      "@vben/styles/naive": ["./src/vben/styles/naive/index.css"],
       "@vben/styles/global": ["./src/vben/styles/global/index.scss"],
       "@vben/styles": ["./src/vben/styles/index.ts"],
       "@vben/plugins/echarts": ["./src/vben/plugins/echarts/index.ts"],
