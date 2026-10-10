@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { NCard, NText } from 'naive-ui';
 import { Badge } from '#/ui/badge';
 import { badgeVariantForTag } from '#/ui/badge/variant';
 import { Separator } from '#/ui/separator';
@@ -74,7 +73,7 @@ const maskedEmail = computed(() => {
 </script>
 
 <template>
-  <NCard :bordered="false" class="profile-summary-card shadow-sm">
+  <div class="profile-summary-card rounded-xl bg-card p-4 shadow-sm">
     <div class="text-center">
       <!-- 头像 -->
       <VbenAvatar
@@ -90,9 +89,9 @@ const maskedEmail = computed(() => {
       </h3>
 
       <!-- 用户名 -->
-      <NText depth="3" class="text-sm">
+      <p class="text-sm text-muted-foreground">
         @{{ userInfo?.username || '-' }}
-      </NText>
+      </p>
 
       <!-- 账号状态 -->
       <div class="mt-4">
@@ -179,7 +178,7 @@ const maskedEmail = computed(() => {
         </div>
       </div>
     </div>
-  </NCard>
+  </div>
 </template>
 
 <style lang="scss" scoped>

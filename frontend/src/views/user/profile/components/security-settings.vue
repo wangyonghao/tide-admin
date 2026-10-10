@@ -1,68 +1,200 @@
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue';
-import {
-  NCard,
-  NModal,
-  NForm,
-  NFormItem,
-  NInput,
-  NList,
-  NListItem,
-  NThing,
-  NEmpty,
-} from 'naive-ui';
-import { $t } from '#/locales';
-import { useUserStore } from '#/store/user';
-import { toast } from '#/ui-patterns/toast';
-import { Badge } from '#/ui/badge';
-import { Button } from '#/ui/button';
-import {
-  ConfirmAction,
-  type ConfirmActionExpose,
-} from '#/ui-patterns/confirm-action';
+import { h, onMounted, ref } from 'vue';
+
+import { useVbenModal } from '@vben/common-ui';
+
+import { useVbenForm, z } from '#/adapter/form';
+import { authApi, type LoginLogResult } from '#/api/auth';
 import {
   userProfileApi,
   type BindSocialAccountRes,
 } from '#/api/system/user-profile';
-import { authApi, type LoginLogResult } from '#/api/auth';
+import { $t } from '#/locales';
+import { useUserStore } from '#/store/user';
+import { Badge } from '#/ui/badge';
+import { Button } from '#/ui/button';
+import { toast } from '#/ui-patterns/toast';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { encryptByRsa } from '#/utils/crypto';
 
 const userStore = useUserStore();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 
-// 修改密码
-const showPasswordModal = ref(false);
-const passwordForm = ref({
-  oldPassword: '',
-  newPassword: '',
-  confirmPassword: '',
-});
-
-// 修改手机号
-const showPhoneModal = ref(false);
-const phoneForm = ref({
-  phone: '',
-  captcha: '',
-  oldPassword: '',
-});
-
-// 修改邮箱
-const showEmailModal = ref(false);
-const emailForm = ref({
-  email: '',
-  captcha: '',
-  oldPassword: '',
-});
-
-// 登录设备列表
 const loginDevices = ref<LoginLogResult[]>([]);
 const loadingDevices = ref(false);
-
-// 三方账号列表
 const socialAccounts = ref<BindSocialAccountRes[]>([]);
 const loadingSocial = ref(false);
 
-// 获取登录设备列表
+const panelClass = 'rounded-xl bg-card p-4 shadow-sm';
+
+const [PasswordForm, passwordFormApi] = useVbenForm({
+  showDefaultActions: false,
+  layout: 'horizontal',
+  commonConfig: { labelWidth: 100, componentProps: { class: 'w-full' } },
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'oldPassword',
+      label: $t('page.profile.security.oldPassword'),
+      componentProps: {
+        type: 'password',
+        placeholder: $t('page.profile.security.oldPassword'),
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'newPassword',
+      label: $t('page.profile.security.newPassword'),
+      componentProps: {
+        type: 'password',
+        placeholder: $t('page.profile.security.newPassword'),
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'confirmPassword',
+      label: $t('page.profile.security.confirmPassword'),
+      componentProps: {
+        type: 'password',
+        placeholder: $t('page.profile.security.confirmPassword'),
+      },
+      dependencies: {
+        rules(values) {
+          return z
+            .string()
+            .nullish()
+            .refine((value) => (value ?? '') === (values.newPassword ?? ''), {
+              message: '两次输入的密码不一致',
+            });
+        },
+        triggerFields: ['newPassword'],
+      },
+    },
+  ],
+});
+
+const [PhoneForm, phoneFormApi] = useVbenForm({
+  showDefaultActions: false,
+  layout: 'horizontal',
+  commonConfig: { labelWidth: 100, componentProps: { class: 'w-full' } },
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'phone',
+      label: $t('page.profile.basic.phone'),
+      componentProps: { placeholder: $t('page.profile.basic.phone') },
+    },
+    {
+      component: 'Input',
+      fieldName: 'captcha',
+      label: $t('page.profile.security.captcha'),
+      componentProps: { placeholder: $t('page.profile.security.captcha') },
+      suffix: () =>
+        h(
+          Button,
+          { type: 'button', variant: 'outline' },
+          () => $t('page.profile.security.sendCaptcha'),
+        ),
+    },
+    {
+      component: 'Input',
+      fieldName: 'oldPassword',
+      label: $t('page.profile.security.oldPassword'),
+      componentProps: {
+        type: 'password',
+        placeholder: $t('page.profile.security.oldPassword'),
+      },
+    },
+  ],
+});
+
+const [EmailForm, emailFormApi] = useVbenForm({
+  showDefaultActions: false,
+  layout: 'horizontal',
+  commonConfig: { labelWidth: 100, componentProps: { class: 'w-full' } },
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'email',
+      label: $t('page.profile.basic.email'),
+      componentProps: { placeholder: $t('page.profile.basic.email') },
+    },
+    {
+      component: 'Input',
+      fieldName: 'captcha',
+      label: $t('page.profile.security.captcha'),
+      componentProps: { placeholder: $t('page.profile.security.captcha') },
+      suffix: () =>
+        h(
+          Button,
+          { type: 'button', variant: 'outline' },
+          () => $t('page.profile.security.sendCaptcha'),
+        ),
+    },
+    {
+      component: 'Input',
+      fieldName: 'oldPassword',
+      label: $t('page.profile.security.oldPassword'),
+      componentProps: {
+        type: 'password',
+        placeholder: $t('page.profile.security.oldPassword'),
+      },
+    },
+  ],
+});
+
+const [PasswordModal, passwordModalApi] = useVbenModal({
+  class: 'w-[500px]',
+  title: $t('page.profile.security.changePassword'),
+  confirmText: $t('common.confirm'),
+  cancelText: $t('common.cancel'),
+  onConfirm: handleChangePassword,
+});
+
+const [PhoneModal, phoneModalApi] = useVbenModal({
+  class: 'w-[500px]',
+  title: $t('page.profile.security.changePhone'),
+  confirmText: $t('common.confirm'),
+  cancelText: $t('common.cancel'),
+  onConfirm: handleChangePhone,
+});
+
+const [EmailModal, emailModalApi] = useVbenModal({
+  class: 'w-[500px]',
+  title: $t('page.profile.security.changeEmail'),
+  confirmText: $t('common.confirm'),
+  cancelText: $t('common.cancel'),
+  onConfirm: handleChangeEmail,
+});
+
+async function openPassword() {
+  await passwordFormApi.resetForm();
+  passwordModalApi.open();
+}
+
+async function openPhone() {
+  await phoneFormApi.resetForm();
+  phoneModalApi.setState({
+    title: userStore.user?.phone
+      ? $t('page.profile.security.changePhone')
+      : $t('page.profile.security.bindPhone'),
+  });
+  phoneModalApi.open();
+}
+
+async function openEmail() {
+  await emailFormApi.resetForm();
+  emailModalApi.setState({
+    title: userStore.user?.email
+      ? $t('page.profile.security.changeEmail')
+      : $t('page.profile.security.bindEmail'),
+  });
+  emailModalApi.open();
+}
+
 const fetchLoginDevices = async () => {
   try {
     loadingDevices.value = true;
@@ -80,7 +212,6 @@ const fetchLoginDevices = async () => {
   }
 };
 
-// 获取三方账号列表
 const fetchSocialAccounts = async () => {
   try {
     loadingSocial.value = true;
@@ -92,68 +223,57 @@ const fetchSocialAccounts = async () => {
   }
 };
 
-// 修改密码
-const handleChangePassword = async () => {
-  if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    toast.error('两次输入的密码不一致');
-    return;
-  }
-
+async function handleChangePassword() {
+  const { valid } = await passwordFormApi.validate();
+  if (!valid) return;
+  const values = await passwordFormApi.getValues();
   try {
     await userProfileApi.updatePassword({
-      oldPassword: encryptByRsa(passwordForm.value.oldPassword) || '',
-      newPassword: encryptByRsa(passwordForm.value.newPassword) || '',
+      oldPassword: encryptByRsa(String(values.oldPassword ?? '')) || '',
+      newPassword: encryptByRsa(String(values.newPassword ?? '')) || '',
     });
     toast.success($t('page.profile.security.passwordChanged'));
-    showPasswordModal.value = false;
-    passwordForm.value = {
-      oldPassword: '',
-      newPassword: '',
-      confirmPassword: '',
-    };
-
-    // 退出登录
+    passwordModalApi.close();
     setTimeout(() => {
       userStore.logout();
     }, 1500);
   } catch (error) {
     console.error('修改密码失败:', error);
   }
-};
+}
 
-// 修改手机号
-const handleChangePhone = async () => {
+async function handleChangePhone() {
+  const values = await phoneFormApi.getValues();
   try {
     await userProfileApi.updatePhone({
-      ...phoneForm.value,
-      oldPassword: encryptByRsa(phoneForm.value.oldPassword) || '',
+      phone: String(values.phone ?? ''),
+      captcha: String(values.captcha ?? ''),
+      oldPassword: encryptByRsa(String(values.oldPassword ?? '')) || '',
     });
     toast.success($t('page.profile.security.phoneChanged'));
-    showPhoneModal.value = false;
-    phoneForm.value = { phone: '', captcha: '', oldPassword: '' };
+    phoneModalApi.close();
     await userStore.fetchAuthInfo();
   } catch (error) {
     console.error('修改手机号失败:', error);
   }
-};
+}
 
-// 修改邮箱
-const handleChangeEmail = async () => {
+async function handleChangeEmail() {
+  const values = await emailFormApi.getValues();
   try {
     await userProfileApi.updateEmail({
-      ...emailForm.value,
-      oldPassword: encryptByRsa(emailForm.value.oldPassword) || '',
+      email: String(values.email ?? ''),
+      captcha: String(values.captcha ?? ''),
+      oldPassword: encryptByRsa(String(values.oldPassword ?? '')) || '',
     });
     toast.success($t('page.profile.security.emailChanged'));
-    showEmailModal.value = false;
-    emailForm.value = { email: '', captcha: '', oldPassword: '' };
+    emailModalApi.close();
     await userStore.fetchAuthInfo();
   } catch (error) {
     console.error('修改邮箱失败:', error);
   }
-};
+}
 
-// 解绑三方账号
 const confirmUnbind = async (source: string) => {
   const ok = await confirmAction.value?.ask({
     title: $t('common.tips'),
@@ -163,10 +283,6 @@ const confirmUnbind = async (source: string) => {
     tone: 'destructive',
   });
   if (!ok) return;
-  await handleUnbindSocial(source);
-};
-
-const handleUnbindSocial = async (source: string) => {
   try {
     await userProfileApi.unbindSocial(source);
     toast.success('解绑成功');
@@ -176,7 +292,6 @@ const handleUnbindSocial = async (source: string) => {
   }
 };
 
-// 退出所有设备
 const handleLogoutAllDevices = () => {
   toast.info('功能开发中');
 };
@@ -190,37 +305,31 @@ onMounted(() => {
 <template>
   <div class="security-settings">
     <ConfirmAction ref="confirmAction" />
-    <h3 class="text-lg font-semibold mb-6">
+    <h3 class="mb-6 text-lg font-semibold">
       {{ $t('page.profile.tabs.security') }}
     </h3>
 
     <div class="flex flex-col gap-6">
-      <!-- 修改密码 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div :class="panelClass">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-medium mb-1">
+            <h4 class="mb-1 font-medium">
               {{ $t('page.profile.security.changePassword') }}
             </h4>
             <p class="text-sm text-gray-500">
               {{ $t('page.profile.security.passwordRule') }}
             </p>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            @click="showPasswordModal = true"
-          >
+          <Button type="button" variant="outline" @click="openPassword">
             {{ $t('page.profile.security.changePassword') }}
           </Button>
         </div>
-      </NCard>
+      </div>
 
-      <!-- 绑定手机 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div :class="panelClass">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-medium mb-1">
+            <h4 class="mb-1 font-medium">
               {{ $t('page.profile.basic.phone') }}
             </h4>
             <p class="text-sm text-gray-500">
@@ -229,11 +338,7 @@ onMounted(() => {
               }}
             </p>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            @click="showPhoneModal = true"
-          >
+          <Button type="button" variant="outline" @click="openPhone">
             {{
               userStore.user?.phone
                 ? $t('page.profile.security.changePhone')
@@ -241,13 +346,12 @@ onMounted(() => {
             }}
           </Button>
         </div>
-      </NCard>
+      </div>
 
-      <!-- 绑定邮箱 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div :class="panelClass">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-medium mb-1">
+            <h4 class="mb-1 font-medium">
               {{ $t('page.profile.basic.email') }}
             </h4>
             <p class="text-sm text-gray-500">
@@ -256,11 +360,7 @@ onMounted(() => {
               }}
             </p>
           </div>
-          <Button
-            type="button"
-            variant="outline"
-            @click="showEmailModal = true"
-          >
+          <Button type="button" variant="outline" @click="openEmail">
             {{
               userStore.user?.email
                 ? $t('page.profile.security.changeEmail')
@@ -268,11 +368,10 @@ onMounted(() => {
             }}
           </Button>
         </div>
-      </NCard>
+      </div>
 
-      <!-- 登录设备管理 -->
-      <NCard :bordered="false" class="shadow-sm">
-        <div class="flex items-center justify-between mb-4">
+      <div :class="panelClass">
+        <div class="mb-4 flex items-center justify-between">
           <h4 class="font-medium">
             {{ $t('page.profile.security.loginDevices') }}
           </h4>
@@ -285,216 +384,87 @@ onMounted(() => {
             {{ $t('page.profile.security.logoutAllDevices') }}
           </Button>
         </div>
+        <p
+          v-if="loadingDevices"
+          class="text-muted-foreground py-6 text-center text-sm"
+        >
+          加载中
+        </p>
+        <ul v-else-if="loginDevices.length > 0" class="divide-y">
+          <li v-for="device in loginDevices" :key="device.id" class="py-3">
+            <div class="flex items-center gap-2">
+              <span>{{ device.browser }} / {{ device.os }}</span>
+              <Badge
+                v-if="device.id === loginDevices[0]?.id"
+                variant="success"
+              >
+                {{ $t('page.profile.security.currentDevice') }}
+              </Badge>
+            </div>
+            <div class="text-muted-foreground mt-1 flex flex-col gap-1 text-xs">
+              <span>
+                {{ $t('page.profile.security.ipAddress') }}:
+                {{ device.ipAddress }}
+              </span>
+              <span>
+                {{ $t('page.profile.security.location') }}:
+                {{ device.location }}
+              </span>
+              <span>
+                {{ $t('page.profile.security.loginTime') }}:
+                {{ device.loginTime }}
+              </span>
+            </div>
+          </li>
+        </ul>
+        <p v-else class="text-muted-foreground py-6 text-center text-sm">
+          暂无登录记录
+        </p>
+      </div>
 
-        <NList v-if="loginDevices.length > 0" :loading="loadingDevices">
-          <NListItem v-for="device in loginDevices" :key="device.id">
-            <NThing>
-              <template #header>
-                <div class="flex items-center gap-2">
-                  <span>{{ device.browser }} / {{ device.os }}</span>
-                  <Badge
-                    v-if="device.id === loginDevices[0]?.id"
-                    variant="success"
-                  >
-                    {{ $t('page.profile.security.currentDevice') }}
-                  </Badge>
-                </div>
-              </template>
-              <template #description>
-                <div class="flex flex-col gap-1">
-                  <span class="text-xs"
-                    >{{ $t('page.profile.security.ipAddress') }}:
-                    {{ device.ipAddress }}</span
-                  >
-                  <span class="text-xs"
-                    >{{ $t('page.profile.security.location') }}:
-                    {{ device.location }}</span
-                  >
-                  <span class="text-xs"
-                    >{{ $t('page.profile.security.loginTime') }}:
-                    {{ device.loginTime }}</span
-                  >
-                </div>
-              </template>
-            </NThing>
-          </NListItem>
-        </NList>
-        <NEmpty v-else description="暂无登录记录" />
-      </NCard>
-
-      <!-- 三方账号绑定 -->
-      <NCard :bordered="false" class="shadow-sm">
-        <h4 class="font-medium mb-4">
+      <div :class="panelClass">
+        <h4 class="mb-4 font-medium">
           {{ $t('page.profile.security.socialAccount') }}
         </h4>
-
-        <NList v-if="socialAccounts.length > 0" :loading="loadingSocial">
-          <NListItem v-for="account in socialAccounts" :key="account.source">
-            <NThing>
-              <template #header>{{ account.description }}</template>
-              <template #header-extra>
-                <Button
-                  type="button"
-                  variant="link"
-                  size="sm"
-                  class="text-destructive h-auto px-1"
-                  @click="confirmUnbind(account.source)"
-                >
-                  {{ $t('page.profile.security.unbind') }}
-                </Button>
-              </template>
-            </NThing>
-          </NListItem>
-        </NList>
-        <NEmpty v-else description="暂无绑定的三方账号" />
-      </NCard>
+        <p
+          v-if="loadingSocial"
+          class="text-muted-foreground py-6 text-center text-sm"
+        >
+          加载中
+        </p>
+        <ul v-else-if="socialAccounts.length > 0" class="divide-y">
+          <li
+            v-for="account in socialAccounts"
+            :key="account.source"
+            class="flex items-center justify-between py-3"
+          >
+            <span>{{ account.description }}</span>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              class="text-destructive h-auto px-1"
+              @click="confirmUnbind(account.source)"
+            >
+              {{ $t('page.profile.security.unbind') }}
+            </Button>
+          </li>
+        </ul>
+        <p v-else class="text-muted-foreground py-6 text-center text-sm">
+          暂无绑定的三方账号
+        </p>
+      </div>
     </div>
 
-    <!-- 修改密码弹窗 -->
-    <NModal
-      v-model:show="showPasswordModal"
-      preset="card"
-      :title="$t('page.profile.security.changePassword')"
-      style="width: 500px"
-    >
-      <NForm :model="passwordForm" label-placement="left" label-width="100">
-        <NFormItem :label="$t('page.profile.security.oldPassword')">
-          <NInput
-            v-model:value="passwordForm.oldPassword"
-            type="password"
-            show-password-on="click"
-            :placeholder="$t('page.profile.security.oldPassword')"
-          />
-        </NFormItem>
-        <NFormItem :label="$t('page.profile.security.newPassword')">
-          <NInput
-            v-model:value="passwordForm.newPassword"
-            type="password"
-            show-password-on="click"
-            :placeholder="$t('page.profile.security.newPassword')"
-          />
-        </NFormItem>
-        <NFormItem :label="$t('page.profile.security.confirmPassword')">
-          <NInput
-            v-model:value="passwordForm.confirmPassword"
-            type="password"
-            show-password-on="click"
-            :placeholder="$t('page.profile.security.confirmPassword')"
-          />
-        </NFormItem>
-      </NForm>
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            @click="showPasswordModal = false"
-            >{{ $t('common.cancel') }}</Button
-          >
-          <Button type="button" @click="handleChangePassword">{{
-            $t('common.confirm')
-          }}</Button>
-        </div>
-      </template>
-    </NModal>
-
-    <!-- 修改手机号弹窗 -->
-    <NModal
-      v-model:show="showPhoneModal"
-      preset="card"
-      :title="$t('page.profile.security.changePhone')"
-      style="width: 500px"
-    >
-      <NForm :model="phoneForm" label-placement="left" label-width="100">
-        <NFormItem :label="$t('page.profile.basic.phone')">
-          <NInput
-            v-model:value="phoneForm.phone"
-            :placeholder="$t('page.profile.basic.phone')"
-          />
-        </NFormItem>
-        <NFormItem :label="$t('page.profile.security.captcha')">
-          <div class="flex gap-2 w-full">
-            <NInput
-              v-model:value="phoneForm.captcha"
-              :placeholder="$t('page.profile.security.captcha')"
-            />
-            <Button type="button" variant="outline">{{
-              $t('page.profile.security.sendCaptcha')
-            }}</Button>
-          </div>
-        </NFormItem>
-        <NFormItem :label="$t('page.profile.security.oldPassword')">
-          <NInput
-            v-model:value="phoneForm.oldPassword"
-            type="password"
-            show-password-on="click"
-            :placeholder="$t('page.profile.security.oldPassword')"
-          />
-        </NFormItem>
-      </NForm>
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            @click="showPhoneModal = false"
-            >{{ $t('common.cancel') }}</Button
-          >
-          <Button type="button" @click="handleChangePhone">{{
-            $t('common.confirm')
-          }}</Button>
-        </div>
-      </template>
-    </NModal>
-
-    <!-- 修改邮箱弹窗 -->
-    <NModal
-      v-model:show="showEmailModal"
-      preset="card"
-      :title="$t('page.profile.security.changeEmail')"
-      style="width: 500px"
-    >
-      <NForm :model="emailForm" label-placement="left" label-width="100">
-        <NFormItem :label="$t('page.profile.basic.email')">
-          <NInput
-            v-model:value="emailForm.email"
-            :placeholder="$t('page.profile.basic.email')"
-          />
-        </NFormItem>
-        <NFormItem :label="$t('page.profile.security.captcha')">
-          <div class="flex gap-2 w-full">
-            <NInput
-              v-model:value="emailForm.captcha"
-              :placeholder="$t('page.profile.security.captcha')"
-            />
-            <Button type="button" variant="outline">{{
-              $t('page.profile.security.sendCaptcha')
-            }}</Button>
-          </div>
-        </NFormItem>
-        <NFormItem :label="$t('page.profile.security.oldPassword')">
-          <NInput
-            v-model:value="emailForm.oldPassword"
-            type="password"
-            show-password-on="click"
-            :placeholder="$t('page.profile.security.oldPassword')"
-          />
-        </NFormItem>
-      </NForm>
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            @click="showEmailModal = false"
-            >{{ $t('common.cancel') }}</Button
-          >
-          <Button type="button" @click="handleChangeEmail">{{
-            $t('common.confirm')
-          }}</Button>
-        </div>
-      </template>
-    </NModal>
+    <PasswordModal>
+      <PasswordForm />
+    </PasswordModal>
+    <PhoneModal>
+      <PhoneForm />
+    </PhoneModal>
+    <EmailModal>
+      <EmailForm />
+    </EmailModal>
   </div>
 </template>
 

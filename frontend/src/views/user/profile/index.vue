@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue';
-import { NCard, NTabs, NTabPane } from 'naive-ui';
 import { useUserStore } from '#/store/user';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/ui/tabs';
 import { $t } from '#/locales';
 
 import ProfileSummary from './components/profile-summary.vue';
@@ -39,18 +39,23 @@ const tabs = [
 
       <!-- 右侧内容区域 -->
       <div class="profile-content">
-        <NCard :bordered="false" class="shadow-sm">
-          <NTabs
-            v-model:value="activeTab"
-            type="line"
-            animated
-            :tabs-padding="20"
-          >
-            <NTabPane
+        <div class="rounded-xl bg-card p-4 shadow-sm">
+          <Tabs v-model="activeTab">
+            <TabsList class="h-auto w-full justify-start bg-transparent p-0">
+              <TabsTrigger
+                v-for="tab in tabs"
+                :key="tab.key"
+                :value="tab.key"
+              >
+                {{ tab.label }}
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent
               v-for="tab in tabs"
               :key="tab.key"
-              :name="tab.key"
-              :tab="tab.label"
+              :value="tab.key"
+              force-mount
+              class="data-[state=inactive]:hidden"
             >
               <div class="tab-content py-4">
                 <BasicInfo v-if="tab.key === 'basic'" />
@@ -59,9 +64,9 @@ const tabs = [
                 <OperationLogs v-else-if="tab.key === 'logs'" />
                 <PreferencesSettings v-else-if="tab.key === 'preferences'" />
               </div>
-            </NTabPane>
-          </NTabs>
-        </NCard>
+            </TabsContent>
+          </Tabs>
+        </div>
       </div>
     </div>
   </div>

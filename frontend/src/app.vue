@@ -13,9 +13,6 @@ import {
   enUS,
   lightTheme,
   NConfigProvider,
-  NDialogProvider,
-  NMessageProvider,
-  NNotificationProvider,
   zhCN,
 } from 'naive-ui';
 
@@ -51,13 +48,7 @@ const themeOverrides = computed((): GlobalThemeOverrides => {
     :theme-overrides="themeOverrides"
     class="h-full"
   >
-    <NNotificationProvider>
-      <NMessageProvider>
-        <NDialogProvider>
-          <RouterView />
-          <Toaster :theme="theme" position="top-center" />
-        </NDialogProvider>
-      </NMessageProvider>
-    </NNotificationProvider>
+    <RouterView />
+    <Toaster :theme="theme" position="top-center" />
   </NConfigProvider>
 </template>

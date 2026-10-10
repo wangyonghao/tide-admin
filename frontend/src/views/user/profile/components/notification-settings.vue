@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NCard } from 'naive-ui';
 
 import FormRadioGroup from '#/adapter/component/FormRadioGroup.vue';
 import { $t } from '@vben/locales';
@@ -70,7 +69,7 @@ const noticeTypeOptions = [
 
     <div class="flex flex-col gap-6">
       <!-- 通知渠道 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div class="rounded-xl bg-card p-4 shadow-sm">
         <h4 class="font-medium mb-4">通知渠道</h4>
 
         <div class="flex flex-col gap-4">
@@ -114,10 +113,10 @@ const noticeTypeOptions = [
             <Switch v-model="notificationSettings.smsNotice" />
           </div>
         </div>
-      </NCard>
+      </div>
 
       <!-- 通知类型 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div class="rounded-xl bg-card p-4 shadow-sm">
         <h4 class="font-medium mb-4">
           {{ $t('page.profile.notification.noticeTypes') }}
         </h4>
@@ -142,16 +141,16 @@ const noticeTypeOptions = [
             <span>{{ option.label }}</span>
           </label>
         </div>
-      </NCard>
+      </div>
 
       <!-- 告警级别 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div class="rounded-xl bg-card p-4 shadow-sm">
         <h4 class="font-medium mb-4">
           {{ $t('page.profile.notification.alertLevel') }}
         </h4>
 
         <FormRadioGroup v-model:value="alertLevel" :options="alertLevelOptions" />
-      </NCard>
+      </div>
 
       <!-- 保存按钮 -->
       <div class="flex justify-end">
