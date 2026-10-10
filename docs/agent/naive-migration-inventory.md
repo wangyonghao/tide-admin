@@ -259,7 +259,7 @@ Naive 包不删。
 还留着、这次不动：
 
 - `specs/tech-stack.md` 仍把主 UI 写成 Naive UI 2.44.1。改技术栈宪法要单独确认，不在这次清扫里改。
-- `frontend/docs` 是上游 Vben 文档，仍介绍多组件库（含 Naive）。不是本应用的界面基座说明。
+- `frontend/docs` 是上游 Vben 文档，仍介绍多组件库（含 Naive）。不是本应用的界面基座说明。文档站 `site-layout.vue` 里有一行已注释的 `useAntdDesignTokens` 导入，没有执行。
 - `vendor/@core` 里表单 `emptyStateValue` 的注释仍提到 naive-ui 的空值是 `null`。应用适配器继续用 `null`，注释留在厂商代码里。
 - `src/vben/styles` 里还有未引用的 `antd`、`antdv-next`、`ele` 样式，不是这次要删的 `.n-*` 文件。
 - `views/demos/naive/` 目录名还在。页面本身已经是原子按钮和 Sonner，没有挂到路由上。
