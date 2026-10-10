@@ -6,13 +6,9 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import {
-  NButton,
-  NDescriptions,
-  NDescriptionsItem,
-  NTag,
-  useMessage,
-} from 'naive-ui';
+import { NDescriptions, NDescriptionsItem, NTag, useMessage } from 'naive-ui';
+
+import { Button } from '#/ui/button';
 
 const appData = ref<OpenAppApi.AppResp>();
 const message = useMessage();
@@ -57,15 +53,15 @@ const copyToClipboard = async (text: string) => {
         <NDescriptionsItem :label="$t('open.app.accessKey')" :span="2">
           <div class="inline-block">
             <span class="font-mono text-sm">{{ appData?.accessKey }}</span>
-            <NButton
-              class="ml-2"
+            <Button
               v-if="appData?.accessKey"
-              type="primary"
-              size="small"
+              type="button"
+              size="sm"
+              class="ml-2"
               @click="copyToClipboard(appData.accessKey)"
             >
               {{ $t('open.app.copy') }}
-            </NButton>
+            </Button>
           </div>
         </NDescriptionsItem>
         <NDescriptionsItem :label="$t('open.app.status')">

@@ -17,7 +17,6 @@ import { Page } from '@vben/common-ui';
 import {
   NButton,
   NCard,
-  NCheckbox,
   NForm,
   NFormItem,
   NInput,
@@ -29,12 +28,13 @@ import {
   NDrawerContent,
   NAlert,
   NTag,
-  NDivider,
   useDialog,
   useMessage,
 } from 'naive-ui';
 
 import { configApi } from '#/api/system';
+import { Checkbox } from '#/ui/checkbox';
+import { Separator } from '#/ui/separator';
 
 const message = useMessage();
 const dialog = useDialog();
@@ -345,7 +345,7 @@ async function handleSaveEmailConfig() {
     message.warning('请先验证邮箱配置');
     return;
   }
-  
+
   saving.value = true;
   try {
     await configApi.updateEmailConfig(emailForm.value);
@@ -360,7 +360,11 @@ async function handleSaveEmailConfig() {
 
 // ==================== 发送验证码 ====================
 async function handleSendVerificationCode() {
-  if (!emailForm.value.username || !emailForm.value.password || !emailForm.value.host) {
+  if (
+    !emailForm.value.username ||
+    !emailForm.value.password ||
+    !emailForm.value.host
+  ) {
     message.warning('请先完整填写邮件配置信息');
     return;
   }
@@ -396,10 +400,10 @@ async function handleVerifyCode() {
   try {
     // TODO: 调用后端验证验证码接口
     // await configApi.verifyEmailCode(verificationCode.value);
-    
+
     // 模拟验证（实际应该调用后端接口）
-    await new Promise(resolve => setTimeout(resolve, 500));
-    
+    await new Promise((resolve) => setTimeout(resolve, 500));
+
     emailVerified.value = true;
     message.success('验证成功，现在可以保存配置了');
   } catch (error: any) {
@@ -442,7 +446,10 @@ async function handleVerifyCode() {
       <template #2>
         <!-- 右侧配置表单 -->
         <div class="h-full bg-background p-4 overflow-auto">
-          <NCard :title="configList.find((c) => c.key === selectedConfigKey)?.label" :loading="loading">
+          <NCard
+            :title="configList.find((c) => c.key === selectedConfigKey)?.label"
+            :loading="loading"
+          >
             <!-- 站点配置 -->
             <NForm
               v-if="selectedConfigKey === 'site'"
@@ -451,16 +458,28 @@ async function handleVerifyCode() {
               label-width="120"
             >
               <NFormItem label="站点名称" path="siteName">
-                <NInput v-model:value="siteForm.siteName" placeholder="请输入站点名称" />
+                <NInput
+                  v-model:value="siteForm.siteName"
+                  placeholder="请输入站点名称"
+                />
               </NFormItem>
               <NFormItem label="站点Logo" path="siteLogo">
-                <NInput v-model:value="siteForm.siteLogo" placeholder="请输入Logo URL" />
+                <NInput
+                  v-model:value="siteForm.siteLogo"
+                  placeholder="请输入Logo URL"
+                />
               </NFormItem>
               <NFormItem label="版权信息" path="siteCopyright">
-                <NInput v-model:value="siteForm.siteCopyright" placeholder="请输入版权信息" />
+                <NInput
+                  v-model:value="siteForm.siteCopyright"
+                  placeholder="请输入版权信息"
+                />
               </NFormItem>
               <NFormItem label="ICP备案号" path="siteIcp">
-                <NInput v-model:value="siteForm.siteIcp" placeholder="请输入ICP备案号" />
+                <NInput
+                  v-model:value="siteForm.siteIcp"
+                  placeholder="请输入ICP备案号"
+                />
               </NFormItem>
             </NForm>
 
@@ -481,7 +500,8 @@ async function handleVerifyCode() {
                     class="w-full"
                   />
                   <div class="text-xs text-gray-500 mt-1">
-                    -1 不开启；0 始终开启；1~5 表示密码错误达到该次数后开启（须小于最大重试次数）
+                    -1 不开启；0 始终开启；1~5
+                    表示密码错误达到该次数后开启（须小于最大重试次数）
                   </div>
                 </div>
               </NFormItem>
@@ -529,16 +549,28 @@ async function handleVerifyCode() {
               label-width="120"
             >
               <NFormItem label="开启注册" path="enabled">
-                <NCheckbox v-model:checked="registerForm.enabled">启用</NCheckbox>
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <Checkbox v-model="registerForm.enabled" />
+                  启用
+                </label>
               </NFormItem>
               <NFormItem label="邮箱验证" path="verifyEmail">
-                <NCheckbox v-model:checked="registerForm.verifyEmail">需要邮箱验证</NCheckbox>
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <Checkbox v-model="registerForm.verifyEmail" />
+                  需要邮箱验证
+                </label>
               </NFormItem>
               <NFormItem label="手机验证" path="verifyPhone">
-                <NCheckbox v-model:checked="registerForm.verifyPhone">需要手机验证</NCheckbox>
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <Checkbox v-model="registerForm.verifyPhone" />
+                  需要手机验证
+                </label>
               </NFormItem>
               <NFormItem label="默认角色ID" path="defaultRoleId">
-                <NInput v-model:value="registerForm.defaultRoleId" placeholder="请输入默认角色ID" />
+                <NInput
+                  v-model:value="registerForm.defaultRoleId"
+                  placeholder="请输入默认角色ID"
+                />
               </NFormItem>
             </NForm>
 
@@ -549,11 +581,17 @@ async function handleVerifyCode() {
                 <div class="flex-1">
                   <div class="flex items-center gap-2">
                     <span class="text-sm text-muted-foreground">发件人：</span>
-                    <span class="font-medium">{{ emailForm.from || '未设置' }}</span>
+                    <span class="font-medium">{{
+                      emailForm.from || '未设置'
+                    }}</span>
                   </div>
                   <div class="flex items-center gap-2 mt-1">
-                    <span class="text-sm text-muted-foreground">邮箱地址：</span>
-                    <span class="font-medium">{{ emailForm.username || '未配置' }}</span>
+                    <span class="text-sm text-muted-foreground"
+                      >邮箱地址：</span
+                    >
+                    <span class="font-medium">{{
+                      emailForm.username || '未配置'
+                    }}</span>
                     <NTag
                       v-if="emailForm.username"
                       :type="emailVerified ? 'success' : 'warning'"
@@ -600,7 +638,10 @@ async function handleVerifyCode() {
                 />
               </NFormItem>
               <NFormItem label="短信签名" path="signName">
-                <NInput v-model:value="smsForm.signName" placeholder="请输入短信签名" />
+                <NInput
+                  v-model:value="smsForm.signName"
+                  placeholder="请输入短信签名"
+                />
               </NFormItem>
             </NForm>
 
@@ -619,7 +660,10 @@ async function handleVerifyCode() {
                 />
               </NFormItem>
               <NFormItem label="存储端点" path="endpoint">
-                <NInput v-model:value="storageForm.endpoint" placeholder="请输入存储端点" />
+                <NInput
+                  v-model:value="storageForm.endpoint"
+                  placeholder="请输入存储端点"
+                />
               </NFormItem>
               <NFormItem label="AccessKey" path="accessKey">
                 <NInput
@@ -638,7 +682,10 @@ async function handleVerifyCode() {
                 />
               </NFormItem>
               <NFormItem label="存储桶名称" path="bucket">
-                <NInput v-model:value="storageForm.bucket" placeholder="请输入存储桶名称" />
+                <NInput
+                  v-model:value="storageForm.bucket"
+                  placeholder="请输入存储桶名称"
+                />
               </NFormItem>
             </NForm>
 
@@ -659,16 +706,28 @@ async function handleVerifyCode() {
                 />
               </NFormItem>
               <NFormItem label="需要大写字母" path="passwordRequireUppercase">
-                <NCheckbox v-model:checked="securityForm.passwordRequireUppercase">启用</NCheckbox>
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <Checkbox v-model="securityForm.passwordRequireUppercase" />
+                  启用
+                </label>
               </NFormItem>
               <NFormItem label="需要小写字母" path="passwordRequireLowercase">
-                <NCheckbox v-model:checked="securityForm.passwordRequireLowercase">启用</NCheckbox>
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <Checkbox v-model="securityForm.passwordRequireLowercase" />
+                  启用
+                </label>
               </NFormItem>
               <NFormItem label="需要数字" path="passwordRequireNumber">
-                <NCheckbox v-model:checked="securityForm.passwordRequireNumber">启用</NCheckbox>
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <Checkbox v-model="securityForm.passwordRequireNumber" />
+                  启用
+                </label>
               </NFormItem>
               <NFormItem label="需要特殊字符" path="passwordRequireSpecial">
-                <NCheckbox v-model:checked="securityForm.passwordRequireSpecial">启用</NCheckbox>
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <Checkbox v-model="securityForm.passwordRequireSpecial" />
+                  启用
+                </label>
               </NFormItem>
               <NFormItem label="密码过期天数" path="passwordExpireDays">
                 <NInputNumber
@@ -679,10 +738,21 @@ async function handleVerifyCode() {
                   class="w-full"
                 />
               </NFormItem>
-              <NFormItem label="允许包含用户名" path="passwordAllowContainUsername">
-                <NCheckbox v-model:checked="securityForm.passwordAllowContainUsername">允许</NCheckbox>
+              <NFormItem
+                label="允许包含用户名"
+                path="passwordAllowContainUsername"
+              >
+                <label class="inline-flex items-center gap-2 text-sm">
+                  <Checkbox
+                    v-model="securityForm.passwordAllowContainUsername"
+                  />
+                  允许
+                </label>
               </NFormItem>
-              <NFormItem label="历史密码重复次数" path="passwordRepetitionTimes">
+              <NFormItem
+                label="历史密码重复次数"
+                path="passwordRepetitionTimes"
+              >
                 <NInputNumber
                   v-model:value="securityForm.passwordRepetitionTimes"
                   :min="3"
@@ -714,7 +784,9 @@ async function handleVerifyCode() {
           <!-- 第一部分：邮件配置表单 -->
           <div>
             <div class="flex items-center gap-2 mb-4">
-              <div class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm font-bold">
+              <div
+                class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm font-bold"
+              >
                 1
               </div>
               <span class="text-base font-medium">填写发件箱（SMTP）信息</span>
@@ -728,15 +800,15 @@ async function handleVerifyCode() {
               class="compact-form"
             >
               <NFormItem label="发件人名称" path="from">
-                <NInput 
-                  v-model:value="emailForm.from" 
+                <NInput
+                  v-model:value="emailForm.from"
                   placeholder="显示在邮件中的发件人名称"
                   :disabled="emailVerified"
                 />
               </NFormItem>
               <NFormItem label="发件人邮箱" path="username" required>
-                <NInput 
-                  v-model:value="emailForm.username" 
+                <NInput
+                  v-model:value="emailForm.username"
                   placeholder="请输入发件人邮箱地址"
                   :disabled="emailVerified"
                 />
@@ -751,8 +823,8 @@ async function handleVerifyCode() {
                 />
               </NFormItem>
               <NFormItem label="SMTP服务器" path="host" required>
-                <NInput 
-                  v-model:value="emailForm.host" 
+                <NInput
+                  v-model:value="emailForm.host"
                   placeholder="例如：smtp.qq.com"
                   :disabled="emailVerified"
                 />
@@ -778,15 +850,19 @@ async function handleVerifyCode() {
             </NForm>
           </div>
 
-          <NDivider />
+          <Separator />
 
           <!-- 第二部分：验证邮箱 -->
           <div>
             <div class="flex items-center gap-2 mb-4">
-              <div class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm font-bold">
+              <div
+                class="flex items-center justify-center w-6 h-6 rounded-full bg-primary text-white text-sm font-bold"
+              >
                 2
               </div>
-              <span class="text-base font-medium">发送测试邮件以验证配置是否正确</span>
+              <span class="text-base font-medium"
+                >发送测试邮件以验证配置是否正确</span
+              >
             </div>
 
             <div class="space-y-4">
@@ -798,17 +874,24 @@ async function handleVerifyCode() {
                   :maxlength="6"
                   :disabled="emailVerified"
                   @keyup.enter="handleVerifyCode"
-                  style="width: 200px;"
+                  style="width: 200px"
                 />
                 <NButton
                   v-if="countdown === 0"
                   text
                   type="primary"
                   :loading="sendingVerificationCode"
-                  :disabled="!emailForm.username || !emailForm.password || !emailForm.host || emailVerified"
+                  :disabled="
+                    !emailForm.username ||
+                    !emailForm.password ||
+                    !emailForm.host ||
+                    emailVerified
+                  "
                   @click="handleSendVerificationCode"
                 >
-                  {{ verificationCodeSent ? '重新发送验证码' : '给我发送验证码' }}
+                  {{
+                    verificationCodeSent ? '重新发送验证码' : '给我发送验证码'
+                  }}
                 </NButton>
                 <span v-else class="text-sm text-muted-foreground">
                   {{ countdown }}秒后可重新发送
@@ -816,11 +899,7 @@ async function handleVerifyCode() {
               </div>
 
               <!-- 验证成功提示 -->
-              <NAlert
-                v-if="emailVerified"
-                type="success"
-                :show-icon="true"
-              >
+              <NAlert v-if="emailVerified" type="success" :show-icon="true">
                 <template #icon>
                   <IconifyIcon icon="lucide:check-circle" />
                 </template>
@@ -833,9 +912,9 @@ async function handleVerifyCode() {
         <template #footer>
           <NSpace justify="end">
             <NButton @click="showEmailDrawer = false">取消</NButton>
-            <NButton 
-              type="primary" 
-              :loading="saving" 
+            <NButton
+              type="primary"
+              :loading="saving"
               :disabled="!emailVerified"
               @click="handleSaveEmailConfig"
             >

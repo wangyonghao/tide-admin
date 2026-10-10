@@ -8,7 +8,6 @@ import { computed, ref, watch } from 'vue';
 import { $t } from '@vben/locales';
 
 import {
-  NButton,
   NDrawer,
   NDrawerContent,
   NForm,
@@ -16,13 +15,13 @@ import {
   NInput,
   NInputNumber,
   NSelect,
-  NSpace,
   NSwitch,
   NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
 import { deptApi } from '#/api/system/dept';
+import { Button } from '#/ui/button';
 import { useDict } from '#/hooks/app';
 
 interface Props {
@@ -114,7 +113,9 @@ function convertToTreeSelectOptions(depts: DeptResult[]): TreeSelectOption[] {
     label: dept.name,
     key: dept.id,
     value: dept.id,
-    children: dept.children ? convertToTreeSelectOptions(dept.children) : undefined,
+    children: dept.children
+      ? convertToTreeSelectOptions(dept.children)
+      : undefined,
   }));
 }
 
@@ -140,7 +141,10 @@ async function loadDeptDetail(id: string) {
     const res = await deptApi.get(id);
     formModel.value = {
       id: String(res.id),
-      parentId: res.parentId == null || res.parentId === '' ? undefined : String(res.parentId),
+      parentId:
+        res.parentId == null || res.parentId === ''
+          ? undefined
+          : String(res.parentId),
       code: res.code,
       name: res.name,
       type: res.type?.toString(),
@@ -284,14 +288,14 @@ watch(
       </NForm>
 
       <template #footer>
-        <NSpace justify="end">
-          <NButton @click="handleClose">
+        <div class="flex justify-end gap-2">
+          <Button type="button" variant="outline" @click="handleClose">
             {{ $t('common.cancel') }}
-          </NButton>
-          <NButton type="primary" :loading="loading" @click="handleSubmit">
+          </Button>
+          <Button type="button" :loading="loading" @click="handleSubmit">
             {{ $t('common.confirm') }}
-          </NButton>
-        </NSpace>
+          </Button>
+        </div>
       </template>
     </NDrawerContent>
   </NDrawer>

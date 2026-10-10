@@ -526,12 +526,10 @@ onMounted(() => {
           <span class="flex-1 font-mono text-lg select-all">{{
             newPassword
           }}</span>
-          <NButton type="primary" size="small" @click="handleCopyPassword">
-            <template #icon>
-              <IconifyIcon icon="lucide:copy" />
-            </template>
+          <Button type="button" size="sm" @click="handleCopyPassword">
+            <IconifyIcon icon="lucide:copy" class="mr-1 size-4" />
             复制
-          </NButton>
+          </Button>
         </div>
       </div>
     </NModal>

@@ -3,7 +3,7 @@
 统计范围：`frontend/src` 里 `from 'naive-ui'` 的具名导入。一个文件导入一次记 1。共 **50** 个文件。  
 `adapter/component/index.ts` 另有 `naive-ui/es/*` 动态导入，给 `useVbenForm` 供控件，不计入上表，但在下面单独标出。
 
-下面表格是 **Phase 2 之后仍在导入** 的数量。Naive **保持安装**。Vxe / `NDataTable` 与表单适配器未动。
+下面表格是 **Phase 3 之后仍在导入** 的数量。Naive **保持安装**。Vxe / `NDataTable` 与表单适配器未动。
 
 ## Phase 2 已换
 
@@ -12,7 +12,7 @@
 - **工具栏按钮**：列表页里 `#toolbar-tools` 或明显的主/次操作按钮改为 `#/ui/button`。两个及以上按钮用 `ToolbarActions`。只给这些按钮留白的 `NSpace` 去掉。单按钮工具栏直接放 `Button`。
 - **筛选框**：无前缀、字符串、清除后当空的搜索框改为 `FilterInput`（登录日志 IP、操作日志的操作类型与 IP、短信日志手机号）。带 `#prefix`、密码、文本域、写在 `NForm` / `useVbenForm` 里的输入未动。
 - **勾选**：代码生成配置抽屉里四个列表勾选改为 `#/ui/checkbox`，绑定是 `v-model`，不是 Naive 的 `v-model:checked`。
-- **反馈**：只改 `views/open/app/index.vue`。成功/失败从 `useMessage` 换成 `#/ui/sonner` 的 `toast`。`useDialog` 仍留在该页。没有新增确认框模式。
+- **反馈**：只改 `views/open/app/index.vue`。成功/失败从 `useMessage` 换成 `#/ui/sonner` 的 `toast`。当时 `useDialog` 仍留在该页，Phase 3 改成 `ConfirmAction`。
 - **未做 drop-in**：部门/角色上的 `NBadge` 是圆点加自定义颜色，不是 Badge 胶囊。
 
 `NButton` 具名导入 34 → **31**，正文里的 `NButton` 出现次数 265 → **189**。`NSpace` 具名导入 22 → **20**。`useMessage` 27 → **26**。`NCheckbox` 6 → **5**。`NInput` 的文件数仍是 23（换掉的四个框所在文件还留着别的 `NInput`）。
@@ -20,6 +20,16 @@
 彻底不再导入 `NButton` 的页面：`views/code/generator/index.vue`、`views/monitor/log/login-log.vue`、`views/user/profile/components/operation-logs.vue`。不再导入 `NSpace` 的：代码生成列表、`views/user/message/components/my-message.vue`。
 
 仍跳过：表单适配器与 Vxe `CellLink`；带 `:loading` 的抽屉/弹层底栏；`NPopconfirm` 里的行内文字按钮；`demos/naive`；带前缀的搜索框；角色权限树勾选；`NSwitch` 的 `1/0`。
+
+## Phase 3 已换
+
+- **`loading`**：原子 `Button` 增加可选 `loading`（`LoaderCircle` + `disabled`），和壳上的 `VbenButton` 一样。部门、用户、角色三个抽屉底栏，以及角色权限工具栏的「保存」，已经用上。
+- **确认**：`ui-patterns/confirm-action` 包一层 AlertDialog，`ask()` 返回 `Promise<boolean>`。开放应用「重置密钥」改走这条。取消不再弹出失败提示。该页不再导入 `naive-ui`。
+- **按钮**：角色列表工具栏、我的消息/公告标题、应用详情复制、用户详情底栏、个人资料基本信息和通知设置里的普通按钮。`NButton` 具名导入 31 → **19**，正文出现次数 189 → **131**。`NSpace` 20 → **17**。
+- **分割线**：视图里的 `NDivider` 具名导入 5 → **0**，换成 `#/ui/separator`。适配器里的动态导入还在。
+- **勾选 / 徽标**：系统配置里 8 个布尔勾选改为 `Checkbox`（`v-model`）。角色用户性别改为 `Badge`。部门状态圆点 `NBadge` 仍留着。`NCheckbox` 5 → **4**，`NBadge` 2 → **1**。`useDialog` 9 → **8**。
+
+仍跳过：`NPopconfirm` 行、菜单/通知/选项/系统配置里还带加载的底栏、`NCheckboxGroup`、角色权限树里的勾选、`NSwitch` 的 `1/0`、`demos/naive`。
 
 ## 目录选择
 
@@ -29,7 +39,7 @@
 | 层 | 路径 | 导入 |
 |----|------|------|
 | 原子 | `frontend/src/ui/<atom>` | `import { Button } from '#/ui/button'` |
-| 模式 | `frontend/src/ui-patterns/<pattern>` | `ToolbarActions`、`FilterInput` |
+| 模式 | `frontend/src/ui-patterns/<pattern>` | `ToolbarActions`、`FilterInput`、`ConfirmAction` |
 
 包增加子路径 `./ui/*`，新原子（Skeleton、Sonner）**不**进入 `@vben-core/shadcn-ui` 根桶，避免壳层整包把 `vue-sonner` 带进去。
 
@@ -41,17 +51,17 @@
 
 | Naive | 文件数 | 换成 | 例子 |
 |-------|--------|------|------|
-| `NButton` | 31 | `#/ui/button` | 行内文字按钮，如 `views/schedule/job/index.vue`；工具栏大多已换 |
-| `NSpace` | 20 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着选择器或行内操作的，如 `views/system/file/index.vue` |
+| `NButton` | 19 | `#/ui/button`（含 `loading`） | 行内文字按钮和 `NPopconfirm`，如 `views/schedule/job/index.vue` |
+| `NSpace` | 17 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着选择器或行内操作的，如 `views/system/file/index.vue` |
 | `NInput` | 23 | `#/ui/input` 或 `FilterInput` | 带前缀的搜索框仍是 Naive，如 `views/system/user/index.vue`。无前缀筛选用 `FilterInput` |
 | `NCard` | 12 | 已有 Card（`#/ui` 尚未再导出，需要时再加路径） | `views/demos/naive/index.vue` |
-| `NDivider` | 5 | 已有 Separator | `views/system/config/index.vue` |
-| `NCheckbox` | 5 | `#/ui/checkbox` | `views/system/role/components/role-permission.vue`。绑定用 `v-model`（`modelValue`） |
-| `NBadge` | 2 | `#/ui/badge` | `views/system/role/index.vue` |
+| `NDivider` | 0 | `#/ui/separator` | 视图已换完；适配器仍动态加载 |
+| `NCheckbox` | 4 | `#/ui/checkbox` | `views/system/role/components/role-permission.vue`。绑定用 `v-model`（`modelValue`） |
+| `NBadge` | 1 | `#/ui/badge` | `views/system/department/index.vue` 圆点，不是胶囊 |
 | `NSpin` | 1 | 已有 Spinner | 单页用量 |
 | `NText` | 1 | 排版类（`text-foreground` 等） | 单页用量 |
 
-`NButton` 的 31 仍含 `adapter/vxe-table.ts` 的 `CellLink`。那一处跟 Vxe 渲染绑在一起，跟页面工具栏分开换。
+`NButton` 的 19 仍含 `adapter/vxe-table.ts` 的 `CellLink`。那一处跟 Vxe 渲染绑在一起，跟页面工具栏分开换。
 
 ## 后换
 
@@ -64,7 +74,7 @@
 | `NSelect` | 12 | shadcn Select 已有，表单 schema 仍走 Naive | `views/monitor/log/login-log.vue` |
 | `NIcon` | 12 | 可换 Lucide，但图标选择器是一整块 | `components/icon-select.vue` |
 | `NForm` / `NFormItem` | 10 / 10 | 手写表单；目标是 `useVbenForm` 或后续原子表单 | `views/schedule/job/edit-drawer.vue` |
-| `useDialog` | 9 | AlertDialog 已有，命令式 `dialog.warning` 还未包成模式 | `views/open/app/index.vue` |
+| `useDialog` | 8 | `ConfirmAction` 已用于开放应用重置密钥；其余 `dialog.warning` 未批量换 | `views/system/user/index.vue` |
 | `NDrawer` / `NDrawerContent` | 8 / 8 | 新页用 `useVbenDrawer` | `views/monitor/log/operation-log.vue` |
 | `NPopconfirm` | 7 | 需要确认模式 | `views/monitor/sms/log/index.vue` |
 | `NRadioGroup` / `NRadio` | 7 / 5 | RadioGroup 已在套件内，未做应用路径 | `views/system/menu/index.vue` |

@@ -10,11 +10,7 @@ import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
-import { VbenButton } from '@vben-core/shadcn-ui';
-
 import {
-  NBadge,
-  NButton,
   NDataTable,
   NDropdown,
   NInput,
@@ -29,6 +25,8 @@ import {
 } from 'naive-ui';
 
 import { roleApi } from '#/api/system/role';
+import { Badge } from '#/ui/badge';
+import { Button } from '#/ui/button';
 import { useUserStore } from '#/store';
 
 import RoleEditDrawer from './components/role-edit-drawer.vue';
@@ -162,10 +160,10 @@ const showRoleDeleteDialog = (role: RoleResp) => {
 // ==================== 角色列表下拉菜单 ====================
 const dropdownOptions = () => [
   { label: $t('pages.common.edit'), key: 'edit' },
-  { 
-    label: '复制', 
+  {
+    label: '复制',
     key: 'copy',
-    icon: () => h(IconifyIcon, { icon: 'lucide:copy' })
+    icon: () => h(IconifyIcon, { icon: 'lucide:copy' }),
   },
   { type: 'divider', key: 'divider' },
   { label: $t('pages.common.delete'), key: 'delete' },
@@ -247,9 +245,11 @@ const userColumns: DataTableColumns<RoleUserResp> = [
     width: 80,
     align: 'center',
     render: (row) => {
-      if (row.gender === 1) return h(NBadge, () => '男');
-      if (row.gender === 2) return h(NBadge, () => '女');
-      return h(NBadge, () => '未知');
+      if (row.gender === 1)
+        return h(Badge, { variant: 'secondary' }, () => '男');
+      if (row.gender === 2)
+        return h(Badge, { variant: 'secondary' }, () => '女');
+      return h(Badge, { variant: 'secondary' }, () => '未知');
     },
   },
   {
@@ -277,8 +277,9 @@ const userColumns: DataTableColumns<RoleUserResp> = [
       userStore.hasPermission('system:role:unassign')
         ? h('div', { class: 'flex items-center gap-2' }, [
             h(
-              VbenButton,
+              Button,
               {
+                type: 'button',
                 variant: 'ghost',
                 size: 'icon',
                 disabled: row.isBuiltin,
@@ -287,7 +288,7 @@ const userColumns: DataTableColumns<RoleUserResp> = [
               () =>
                 h(IconifyIcon, {
                   icon: 'lucide:user-minus',
-                  class: 'text-destructive h-4 w-4',
+                  class: 'text-destructive size-4',
                 }),
             ),
           ])
@@ -466,20 +467,33 @@ onMounted(() => loadRoles());
         <div class="flex flex-col h-full bg-background p-4 overflow-auto">
           <!-- 搜索栏 -->
           <div class="flex items-center gap-2 mb-2">
-            <NInput v-model:value="roleSearchKeyword" :placeholder="$t('system.role.searchKey')" clearable >
+            <NInput
+              v-model:value="roleSearchKeyword"
+              :placeholder="$t('system.role.searchKey')"
+              clearable
+            >
               <template #prefix>
-                <IconifyIcon icon="lucide:search" class="h-4 w-4 text-gray-400" />
+                <IconifyIcon
+                  icon="lucide:search"
+                  class="h-4 w-4 text-gray-400"
+                />
               </template>
             </NInput>
-            <NButton size="small" @click="handleAdd">
-              <template #icon>
-                <IconifyIcon icon="lucide:plus" class="h-6 w-6" />
-              </template>
-            </NButton>
+            <Button
+              type="button"
+              size="icon"
+              variant="outline"
+              @click="handleAdd"
+            >
+              <IconifyIcon icon="lucide:plus" class="size-4" />
+            </Button>
           </div>
 
           <div class="flex-1 overflow-hidden">
-            <div v-if="roleLoading" class="flex items-center justify-center py-12" >
+            <div
+              v-if="roleLoading"
+              class="flex items-center justify-center py-12"
+            >
               <NSpin size="medium" />
             </div>
             <NScrollbar v-else>
@@ -507,20 +521,15 @@ onMounted(() => loadRoles());
                   :options="dropdownOptions()"
                   @select="(key: string) => handleDropdownSelect(key, role)"
                 >
-                  <NButton
-                    quaternary
-                    circle
-                    size="tiny"
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
                     class="opacity-0 group-hover:opacity-100"
                     @click.stop
                   >
-                    <template #icon>
-                      <IconifyIcon
-                        icon="lucide:more-vertical"
-                        class="h-3.5 w-3.5"
-                      />
-                    </template>
-                  </NButton>
+                    <IconifyIcon icon="lucide:more-vertical" class="size-3.5" />
+                  </Button>
                 </NDropdown>
               </div>
 
@@ -538,7 +547,10 @@ onMounted(() => loadRoles());
       <!-- 右侧详情区域 -->
       <template #2>
         <div class="flex flex-col h-full bg-background">
-          <div v-if="!selectedRole" class="h-full flex items-center justify-center" >
+          <div
+            v-if="!selectedRole"
+            class="h-full flex items-center justify-center"
+          >
             <div class="text-center text-muted-foreground">
               <IconifyIcon icon="lucide:info" class="w-12 h-12 mx-auto mb-2" />
               <p>请从左侧选择一个角色</p>
@@ -606,20 +618,18 @@ onMounted(() => loadRoles());
                         />
                       </template>
                     </NInput>
-                    <NButton type="primary" @click="handleUserSearch">
+                    <Button type="button" @click="handleUserSearch">
                       {{ $t('common.search') }}
-                    </NButton>
+                    </Button>
                   </div>
-                  <NButton
+                  <Button
                     v-if="userStore.hasPermission('system:user:create')"
-                    type="primary"
+                    type="button"
                     @click="handleUserSearch"
                   >
-                    <template #icon>
-                      <IconifyIcon icon="lucide:user-plus" />
-                    </template>
+                    <IconifyIcon icon="lucide:user-plus" class="mr-1 size-4" />
                     {{ $t('system.role.assignUser') }}
-                  </NButton>
+                  </Button>
                 </div>
 
                 <!-- 数据表格容器 - 填充剩余空间 -->

@@ -7,7 +7,7 @@ import type { MessageResp } from '#/api/system/user-message';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NButton, NTag, useDialog, useMessage } from 'naive-ui';
+import { NTag, useDialog, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { userMessageApi } from '#/api/system/user-message';
@@ -222,9 +222,14 @@ const onDetailModalClose = () => {
       </template>
 
       <template #title="{ row }">
-        <NButton text type="primary" @click="onView(row)">
+        <Button
+          type="button"
+          variant="link"
+          class="h-auto px-0"
+          @click="onView(row)"
+        >
           {{ row.title }}
-        </NButton>
+        </Button>
       </template>
 
       <template #type="{ row }">

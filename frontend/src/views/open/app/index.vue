@@ -5,15 +5,19 @@ import type {
 } from '#/adapter/vxe-table';
 import type { OpenAppApi } from '#/api';
 
+import { ref } from 'vue';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
-
-import { NButton, useDialog } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { openAppApi } from '#/api/open';
 import { Button } from '#/ui/button';
 import { toast } from '#/ui/sonner';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import { useColumns, useGridFormSchema } from './data';
@@ -21,7 +25,7 @@ import AppDetail from './modules/detail.vue';
 import AppForm from './modules/form.vue';
 
 defineOptions({ name: 'OpenApp' });
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: AppForm,
@@ -86,24 +90,6 @@ function onActionClick(e: OnActionClickParams<OpenAppApi.AppResp>) {
   }
 }
 
-/**
- * 将Naive UI的dialog.warning封装为promise，方便在异步函数中调用。
- * @param content 提示内容
- * @param title 提示标题
- */
-function confirm(content: string, title: string) {
-  return new Promise((resolve, reject) => {
-    dialog.warning({
-      title,
-      content,
-      positiveText: '确定',
-      negativeText: '取消',
-      onPositiveClick: () => resolve(true),
-      onNegativeClick: () => reject(new Error('cancel')),
-    });
-  });
-}
-
 function onEdit(row: OpenAppApi.AppResp) {
   formDrawerApi.setData(row).open();
 }
@@ -138,18 +124,17 @@ function onHideSecret(row: OpenAppApi.AppResp) {
 }
 
 async function onResetSecret(row: OpenAppApi.AppResp) {
+  const ok = await confirmAction.value?.ask({
+    title: '确认重置密钥',
+    description: `确定要重置应用 "${row.name}" 的密钥吗？重置后原密钥将失效。`,
+  });
+  if (!ok) return;
   try {
-    await confirm(
-      `确定要重置应用 "${row.name}" 的密钥吗？重置后原密钥将失效。`,
-      '确认重置密钥',
-    );
     await openAppApi.resetSecretKey(row.id);
     toast.success('密钥重置成功');
     gridApi.query();
-  } catch (error: any) {
-    if (error !== 'cancel') {
-      toast.error('密钥重置失败');
-    }
+  } catch {
+    toast.error('密钥重置失败');
   }
 }
 
@@ -208,6 +193,7 @@ async function onExport() {
 
 <template>
   <Page auto-content-height>
+    <ConfirmAction ref="confirmAction" />
     <FormDrawer @success="onRefresh" />
     <DetailDrawer />
     <Grid :table-title="$t('open.app.listTitle')">
@@ -229,36 +215,36 @@ async function onExport() {
           <span v-else class="text-gray-400">***********</span>
 
           <div class="flex gap-1">
-            <!-- 复制按钮 -->
-            <NButton
+            <Button
               v-if="row.secretKey"
-              text
-              type="primary"
-              size="small"
+              type="button"
+              variant="link"
+              size="sm"
+              class="h-auto px-1"
               @click="onCopySecret(row.secretKey)"
             >
               {{ $t('open.app.copy') }}
-            </NButton>
-
-            <!-- 显示/隐藏按钮 -->
-            <NButton
+            </Button>
+            <Button
               v-if="row.secretKey"
-              text
-              type="warning"
-              size="small"
+              type="button"
+              variant="link"
+              size="sm"
+              class="text-warning h-auto px-1"
               @click="onHideSecret(row)"
             >
               {{ $t('open.app.hide') }}
-            </NButton>
-            <NButton
+            </Button>
+            <Button
               v-else
-              text
-              type="primary"
-              size="small"
+              type="button"
+              variant="link"
+              size="sm"
+              class="h-auto px-1"
               @click="onShowSecret(row)"
             >
               {{ $t('open.app.show') }}
-            </NButton>
+            </Button>
           </div>
         </div>
       </template>
