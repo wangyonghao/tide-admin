@@ -1,7 +1,7 @@
 # Tide Admin — DESIGN.md
 
 > **Status:** draft outline（九段齐，token 对齐现仓库；视觉微调待确认后升为正式版）  
-> **Scope:** 主应用 `frontend/src`（shadcn-vue / Vben 原子 + Vben 壳）中后台产品 UI  
+> **Scope:** 主应用 `frontend/apps/admin`（`@tide/admin`，shadcn-vue / Vben 原子 + Vben 壳）中后台产品 UI  
 > **Token source of truth:** `vendor/@core/base/design/src/design-tokens/{default,dark}.css`  
 > **Page patterns:** [`docs/agent/ui-patterns.md`](../docs/agent/ui-patterns.md)  
 > **Not for:** 营销落地页 / 盲目套用 Linear·Stripe 等品牌 DESIGN.md
@@ -105,7 +105,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 
 ## 4. Component Stylings
 
-实现以 **Vben 封装**（`Page`、`useVbenForm`、`useVbenDrawer`、`useVbenVxeGrid`）和 `#/ui` 原子为准。颜色走本文件 token，经 `src/styles/theme.css` 的 `--color-*` 接到 Tailwind。
+实现以 **Vben 封装**（`Page`、`useVbenForm`、`useVbenDrawer`、`useVbenVxeGrid`）和 `#/ui` 原子为准。颜色走本文件 token，经 `apps/admin/src/styles/theme.css` 的 `--color-*` 接到 Tailwind。
 
 **原子层：** 新代码按路径导入 `@tide/ui/<atom>` 或别名 `#/ui/<atom>`（Button、Input、Label、Checkbox、Switch、Dialog、AlertDialog、Badge、Skeleton、Sonner、Select、Popover、Card、Tabs 等）。源码在 `frontend/packages/ui`；底子留在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA + `cn`）。页面组合放 `frontend/packages/ui-patterns`（`@tide/ui-patterns`，别名 `#/ui-patterns`），按目录路径导入，不建总桶。组件演示在 `frontend/apps/design-system`，只消费这两个包。`naive-ui` 已从依赖里去掉。清单见 [`docs/agent/naive-migration-inventory.md`](../docs/agent/naive-migration-inventory.md)。
 
@@ -208,7 +208,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 
 ### Do
 
-- 新列表页复制黄金样板：`src/views/open/app/`（`Page` + VxeGrid + Drawer + `data.ts`）。
+- 新列表页复制黄金样板：`apps/admin/src/views/open/app/`（`Page` + VxeGrid + Drawer + `data.ts`）。
 - 颜色/圆角只用 token 与语义 Tailwind 类。
 - 主色只作强调；每视图一个明显 Primary CTA。
 - 文案走 i18n（`$t`）；列定义、表单 schema 放 `data.ts` / `data-scope.ts`。
@@ -220,7 +220,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 - 不要在新 CRUD 页手写整页 `NDataTable` + 本地 pagination（与 Vxe 范式分叉）。
 - 不要硬编码颜色、随意 `style="color:#…"`。
 - 不要大改 `vendor/@core` 只为单页视觉。
-- 不要把应用特有布局塞进 `@core`；应用代码放 `frontend/src`。
+- 不要把应用特有布局塞进 `@core`；应用代码放 `frontend/apps/admin/src`。
 - 不要同一模块混用 Drawer 与 Modal 作为主编辑容器（选一种）。
 
 ---

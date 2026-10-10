@@ -3,6 +3,7 @@ packages:
   - vendor/@core/ui-kit/*
   - vendor/@core/*
   - packages/*
+  # @tide/admin, @tide/docs, @tide/design-system
   - apps/*
 
 overrides:

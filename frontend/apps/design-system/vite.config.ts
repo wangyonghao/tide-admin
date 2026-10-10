@@ -5,7 +5,7 @@ import vue from '@vitejs/plugin-vue';
 import { defineConfig } from 'vite';
 
 const themeCss = fileURLToPath(
-  new URL('../../src/styles/theme.css', import.meta.url),
+  new URL('../admin/src/styles/theme.css', import.meta.url),
 );
 
 export default defineConfig({
@@ -20,7 +20,7 @@ export default defineConfig({
   server: {
     host: true,
     port: 6174,
-    // Token stylesheet and workspace packages sit above this app.
+    // Theme stylesheet is owned by the admin app; workspace packages sit above.
     fs: {
       allow: ['../..'],
     },

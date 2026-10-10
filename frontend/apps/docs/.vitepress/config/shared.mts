@@ -29,7 +29,7 @@ import {
 } from 'vitepress-plugin-group-icons';
 
 import { installDocsSsrDom, uninstallDocsSsrDom } from '../ssr-dom';
-import { createVbenAliases } from '../../../../vben.aliases.mts';
+import { createVbenAliases } from '../../../admin/vben.aliases.mts';
 import { demoPreviewPlugin } from './plugins/demo-preview';
 import { search as zhSearch } from './zh.mts';
 
