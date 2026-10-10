@@ -62,7 +62,9 @@ const buttonVariants = [
     </CardHeader>
     <CardContent class="flex flex-col gap-6">
       <section class="flex flex-col gap-3">
-        <h2 class="text-sm font-medium">Button</h2>
+        <h2 class="text-sm font-medium">
+          Button
+        </h2>
         <div class="flex flex-wrap items-center gap-2">
           <Button
             v-for="variant in buttonVariants"
@@ -72,8 +74,18 @@ const buttonVariants = [
           >
             {{ variant }}
           </Button>
-          <Button type="button" size="sm">小号</Button>
-          <Button type="button" loading>提交中</Button>
+          <Button
+            type="button"
+            size="sm"
+          >
+            小号
+          </Button>
+          <Button
+            type="button"
+            loading
+          >
+            提交中
+          </Button>
         </div>
       </section>
 
@@ -82,12 +94,22 @@ const buttonVariants = [
       <section class="grid gap-4 sm:grid-cols-2">
         <div class="flex flex-col gap-2">
           <Label for="ds-name">Input</Label>
-          <Input id="ds-name" v-model="name" placeholder="名称" />
-          <p class="text-muted-foreground text-xs">当前值：{{ name || '（空）' }}</p>
+          <Input
+            id="ds-name"
+            v-model="name"
+            placeholder="名称"
+          />
+          <p class="text-muted-foreground text-xs">
+            当前值：{{ name || '（空）' }}
+          </p>
         </div>
         <div class="flex flex-col gap-2">
           <Label for="ds-note">Textarea</Label>
-          <Textarea id="ds-note" v-model="note" placeholder="备注" />
+          <Textarea
+            id="ds-note"
+            v-model="note"
+            placeholder="备注"
+          />
         </div>
       </section>
 
@@ -98,18 +120,28 @@ const buttonVariants = [
             <SelectValue placeholder="选择角色" />
           </SelectTrigger>
           <SelectContent>
-            <SelectItem value="viewer">查看</SelectItem>
-            <SelectItem value="editor">编辑</SelectItem>
-            <SelectItem value="admin">管理</SelectItem>
+            <SelectItem value="viewer">
+              查看
+            </SelectItem>
+            <SelectItem value="editor">
+              编辑
+            </SelectItem>
+            <SelectItem value="admin">
+              管理
+            </SelectItem>
           </SelectContent>
         </Select>
-        <p class="text-muted-foreground text-xs">当前值：{{ role }}</p>
+        <p class="text-muted-foreground text-xs">
+          当前值：{{ role }}
+        </p>
       </section>
 
       <Separator />
 
       <section class="flex flex-col gap-3">
-        <h2 class="text-sm font-medium">Checkbox / Switch / Radio</h2>
+        <h2 class="text-sm font-medium">
+          Checkbox / Switch / Radio
+        </h2>
         <label class="flex items-center gap-2 text-sm">
           <Checkbox v-model="agreed" />
           已阅读说明（{{ agreed ? '是' : '否' }}）
@@ -119,10 +151,17 @@ const buttonVariants = [
           布尔开关（{{ enabled ? '开' : '关' }}）
         </label>
         <label class="flex items-center gap-2 text-sm">
-          <Switch v-model="bit" :checked-value="1" :unchecked-value="0" />
+          <Switch
+            v-model="bit"
+            :checked-value="1"
+            :unchecked-value="0"
+          />
           1 / 0 开关（{{ bit }}）
         </label>
-        <RadioGroup v-model="tone" class="flex flex-wrap gap-4">
+        <RadioGroup
+          v-model="tone"
+          class="flex flex-wrap gap-4"
+        >
           <label class="flex items-center gap-2 text-sm">
             <RadioGroupItem value="default" />
             默认
@@ -137,14 +176,26 @@ const buttonVariants = [
       <Separator />
 
       <section class="flex flex-col gap-3">
-        <h2 class="text-sm font-medium">Badge / Skeleton / Dialog</h2>
+        <h2 class="text-sm font-medium">
+          Badge / Skeleton / Dialog
+        </h2>
         <div class="flex flex-wrap gap-2">
           <Badge>default</Badge>
-          <Badge variant="secondary">secondary</Badge>
-          <Badge variant="outline">outline</Badge>
-          <Badge variant="success">success</Badge>
-          <Badge variant="warning">warning</Badge>
-          <Badge variant="destructive">destructive</Badge>
+          <Badge variant="secondary">
+            secondary
+          </Badge>
+          <Badge variant="outline">
+            outline
+          </Badge>
+          <Badge variant="success">
+            success
+          </Badge>
+          <Badge variant="warning">
+            warning
+          </Badge>
+          <Badge variant="destructive">
+            destructive
+          </Badge>
         </div>
         <div class="flex flex-col gap-2">
           <Skeleton class="h-4 w-48" />
@@ -152,9 +203,17 @@ const buttonVariants = [
         </div>
         <Dialog v-model:open="dialogOpen">
           <DialogTrigger as-child>
-            <Button type="button" variant="outline">打开对话框</Button>
+            <Button
+              type="button"
+              variant="outline"
+            >
+              打开对话框
+            </Button>
           </DialogTrigger>
-          <DialogContent :open="dialogOpen" class="max-w-md">
+          <DialogContent
+            :open="dialogOpen"
+            class="max-w-md"
+          >
             <DialogTitle>原子对话框</DialogTitle>
             <DialogDescription class="mt-2">
               这里没有业务表单，只确认 Dialog 能打开和关闭。

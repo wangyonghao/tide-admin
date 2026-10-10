@@ -56,8 +56,13 @@ async function askConfirm() {
     </CardHeader>
     <CardContent class="flex flex-col gap-6">
       <section class="flex max-w-sm flex-col gap-2">
-        <h2 class="text-sm font-medium">FilterInput</h2>
-        <FilterInput v-model="keyword" placeholder="筛选关键字" />
+        <h2 class="text-sm font-medium">
+          FilterInput
+        </h2>
+        <FilterInput
+          v-model="keyword"
+          placeholder="筛选关键字"
+        />
         <p class="text-muted-foreground text-xs">
           当前值：{{ keyword === '' ? '（空字符串）' : keyword }}
         </p>
@@ -66,13 +71,28 @@ async function askConfirm() {
       <Separator />
 
       <section class="flex flex-col gap-3">
-        <h2 class="text-sm font-medium">ToolbarActions</h2>
+        <h2 class="text-sm font-medium">
+          ToolbarActions
+        </h2>
         <ToolbarActions>
-          <Button type="button" @click="showToast('success')">成功</Button>
-          <Button type="button" variant="secondary" @click="showToast('info')">
+          <Button
+            type="button"
+            @click="showToast('success')"
+          >
+            成功
+          </Button>
+          <Button
+            type="button"
+            variant="secondary"
+            @click="showToast('info')"
+          >
             信息
           </Button>
-          <Button type="button" variant="outline" @click="showToast('warning')">
+          <Button
+            type="button"
+            variant="outline"
+            @click="showToast('warning')"
+          >
             警告
           </Button>
           <Button
@@ -88,13 +108,21 @@ async function askConfirm() {
       <Separator />
 
       <section class="flex flex-col gap-3">
-        <h2 class="text-sm font-medium">ConfirmAction</h2>
+        <h2 class="text-sm font-medium">
+          ConfirmAction
+        </h2>
         <ToolbarActions>
-          <Button type="button" variant="destructive" @click="askConfirm">
+          <Button
+            type="button"
+            variant="destructive"
+            @click="askConfirm"
+          >
             请求确认
           </Button>
         </ToolbarActions>
-        <p class="text-muted-foreground text-xs">结果：{{ confirmResult }}</p>
+        <p class="text-muted-foreground text-xs">
+          结果：{{ confirmResult }}
+        </p>
         <ConfirmAction ref="confirmRef" />
       </section>
     </CardContent>

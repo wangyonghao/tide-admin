@@ -28,9 +28,15 @@ function toggleTheme() {
           <p class="text-muted-foreground text-xs tracking-wide uppercase">
             @tide/ui · @tide/ui-patterns
           </p>
-          <h1 class="text-xl font-semibold">Tide Design System</h1>
+          <h1 class="text-xl font-semibold">
+            Tide Design System
+          </h1>
         </div>
-        <Button type="button" variant="outline" @click="toggleTheme">
+        <Button
+          type="button"
+          variant="outline"
+          @click="toggleTheme"
+        >
           {{ dark ? '浅色' : '深色' }}
         </Button>
       </div>
@@ -40,6 +46,9 @@ function toggleTheme() {
       <AtomsDemo />
       <PatternsDemo />
     </main>
-    <Toaster :theme="dark ? 'dark' : 'light'" position="top-center" />
+    <Toaster
+      :theme="dark ? 'dark' : 'light'"
+      position="top-center"
+    />
   </div>
 </template>

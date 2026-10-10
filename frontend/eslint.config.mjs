@@ -19,6 +19,15 @@ export default [
       '**/pnpm-lock.yaml',
     ],
   },
+  {
+    files: ['apps/design-system/**/*.{js,mjs,ts,vue}'],
+    languageOptions: {
+      globals: {
+        URL: 'readonly',
+        document: 'readonly',
+      },
+    },
+  },
   js.configs.recommended,
   ...pluginVue.configs['flat/recommended'],
   {

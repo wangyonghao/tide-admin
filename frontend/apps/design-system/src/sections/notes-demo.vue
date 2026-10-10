@@ -23,10 +23,17 @@ defineOptions({ name: 'NotesDemo' });
     <CardContent>
       <Tabs default-value="usage">
         <TabsList>
-          <TabsTrigger value="usage">用法</TabsTrigger>
-          <TabsTrigger value="avoid">反例</TabsTrigger>
+          <TabsTrigger value="usage">
+            用法
+          </TabsTrigger>
+          <TabsTrigger value="avoid">
+            反例
+          </TabsTrigger>
         </TabsList>
-        <TabsContent value="usage" class="text-sm leading-6">
+        <TabsContent
+          value="usage"
+          class="text-sm leading-6"
+        >
           <p>按路径导入，不从包根一次性取出全部组件。</p>
           <pre
             class="bg-muted mt-3 overflow-x-auto rounded-md p-3 text-xs"
@@ -34,7 +41,10 @@ defineOptions({ name: 'NotesDemo' });
 import { toast } from '@tide/ui-patterns/toast';
 import { ConfirmAction } from '@tide/ui-patterns/confirm-action';</code></pre>
         </TabsContent>
-        <TabsContent value="avoid" class="text-sm leading-6">
+        <TabsContent
+          value="avoid"
+          class="text-sm leading-6"
+        >
           <ul class="list-disc space-y-1 pl-5">
             <li>不要引用后台页面、接口或 <code>#/</code> 业务别名。</li>
             <li>不要再引入 <code>naive-ui</code>，也不要包一层同名组件。</li>
