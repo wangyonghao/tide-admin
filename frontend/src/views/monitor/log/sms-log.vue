@@ -19,9 +19,10 @@ import {
   useMessage,
 } from 'naive-ui';
 
-import {
-  smsLogApi,
-} from '#/api/system/sms-log';
+import { smsLogApi } from '#/api/system/sms-log';
+import { Button } from '#/ui/button';
+import { FilterInput } from '#/ui-patterns/filter-input';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 const message = useMessage();
 
@@ -232,10 +233,9 @@ onMounted(() => {
             <NIcon><SearchOutline /></NIcon>
           </template>
         </NInput>
-        <NInput
-          v-model:value="searchForm.phone"
+        <FilterInput
+          v-model="searchForm.phone"
           placeholder="手机号"
-          clearable
           @keyup.enter="handleSearch"
         />
         <NSelect
@@ -247,20 +247,20 @@ onMounted(() => {
       </div>
 
       <!-- 操作按钮 -->
-      <div class="flex items-center gap-2 flex-wrap">
-        <NButton type="primary" @click="handleSearch">
-          <template #icon><IconifyIcon icon="lucide:search" /></template>
+      <ToolbarActions>
+        <Button type="button" @click="handleSearch">
+          <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
           查询
-        </NButton>
-        <NButton @click="handleReset">
-          <template #icon><IconifyIcon icon="lucide:rotate-ccw" /></template>
+        </Button>
+        <Button type="button" variant="outline" @click="handleReset">
+          <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
           重置
-        </NButton>
-        <NButton @click="handleExport">
-          <template #icon><IconifyIcon icon="lucide:download" /></template>
+        </Button>
+        <Button type="button" variant="outline" @click="handleExport">
+          <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
           导出
-        </NButton>
-      </div>
+        </Button>
+      </ToolbarActions>
     </div>
 
     <!-- 数据表格 -->

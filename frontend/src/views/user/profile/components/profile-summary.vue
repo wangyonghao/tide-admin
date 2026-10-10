@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { NCard, NTag, NSpace, NDivider, NText } from 'naive-ui';
+import { NCard, NTag, NSpace, NText } from 'naive-ui';
+import { Separator } from '#/ui/separator';
 import { VbenAvatar } from '@vben-core/shadcn-ui';
 import { $t } from '#/locales';
 import type { UserProfile } from '#/api/auth';
@@ -35,16 +36,20 @@ const accountStatus = computed(() => {
 
 // 安全等级（根据绑定情况计算）
 const securityLevel = computed(() => {
-  if (!props.userInfo) return { text: $t('page.profile.summary.low'), type: 'error' as const };
-  
+  if (!props.userInfo)
+    return { text: $t('page.profile.summary.low'), type: 'error' as const };
+
   let score = 0;
   if (props.userInfo.phone) score += 1;
   if (props.userInfo.email) score += 1;
-  
+
   if (score >= 2) {
     return { text: $t('page.profile.summary.high'), type: 'success' as const };
   } else if (score === 1) {
-    return { text: $t('page.profile.summary.medium'), type: 'warning' as const };
+    return {
+      text: $t('page.profile.summary.medium'),
+      type: 'warning' as const,
+    };
   }
   return { text: $t('page.profile.summary.low'), type: 'error' as const };
 });
@@ -95,7 +100,7 @@ const maskedEmail = computed(() => {
       </div>
     </div>
 
-    <NDivider class="my-4" />
+    <Separator class="my-4" />
 
     <!-- 基本信息 -->
     <NSpace vertical :size="12">
@@ -120,17 +125,21 @@ const maskedEmail = computed(() => {
       </div>
 
       <div class="info-item">
-        <span class="info-label">{{ $t('page.profile.basic.registrationDate') }}</span>
+        <span class="info-label">{{
+          $t('page.profile.basic.registrationDate')
+        }}</span>
         <span class="info-value">{{ userInfo?.registrationDate || '-' }}</span>
       </div>
     </NSpace>
 
-    <NDivider class="my-4" />
+    <Separator class="my-4" />
 
     <!-- 安全等级 -->
     <div class="security-level">
       <div class="flex items-center justify-between mb-2">
-        <span class="text-sm text-gray-600">{{ $t('page.profile.summary.securityLevel') }}</span>
+        <span class="text-sm text-gray-600">{{
+          $t('page.profile.summary.securityLevel')
+        }}</span>
         <NTag :type="securityLevel.type" size="small">
           {{ securityLevel.text }}
         </NTag>
@@ -140,16 +149,30 @@ const maskedEmail = computed(() => {
       <NSpace vertical :size="8" class="mt-3">
         <div class="flex items-center text-xs">
           <span :class="userInfo?.phone ? 'text-green-600' : 'text-gray-400'">
-            <span class="i-carbon-checkmark-filled mr-1" v-if="userInfo?.phone" />
+            <span
+              class="i-carbon-checkmark-filled mr-1"
+              v-if="userInfo?.phone"
+            />
             <span class="i-carbon-close-filled mr-1" v-else />
-            {{ userInfo?.phone ? $t('page.profile.summary.phoneBound') : $t('page.profile.summary.phoneUnbound') }}
+            {{
+              userInfo?.phone
+                ? $t('page.profile.summary.phoneBound')
+                : $t('page.profile.summary.phoneUnbound')
+            }}
           </span>
         </div>
         <div class="flex items-center text-xs">
           <span :class="userInfo?.email ? 'text-green-600' : 'text-gray-400'">
-            <span class="i-carbon-checkmark-filled mr-1" v-if="userInfo?.email" />
+            <span
+              class="i-carbon-checkmark-filled mr-1"
+              v-if="userInfo?.email"
+            />
             <span class="i-carbon-close-filled mr-1" v-else />
-            {{ userInfo?.email ? $t('page.profile.summary.emailBound') : $t('page.profile.summary.emailUnbound') }}
+            {{
+              userInfo?.email
+                ? $t('page.profile.summary.emailBound')
+                : $t('page.profile.summary.emailUnbound')
+            }}
           </span>
         </div>
       </NSpace>

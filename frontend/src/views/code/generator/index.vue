@@ -4,11 +4,11 @@ import type { GenConfigResp } from '#/api';
 
 import { Page, useVbenDrawer, useVbenModal } from '@vben/common-ui';
 
-import { NButton, NSpace } from 'naive-ui';
-
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { listGenConfig } from '#/api';
 import { $t } from '#/locales';
+import { Button } from '#/ui/button';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import { useGenConfigColumns, useGridFormSchema } from './data';
 import GenConfigDrawer from './modules/gen-config-drawer.vue';
@@ -94,21 +94,24 @@ function refreshGrid() {
     <Grid :table-title="$t('system.code.list')">
       <template #toolbar-tools> </template>
       <template #action="{ row }">
-        <NSpace>
-          <NButton
-            @click="openConfig(row)"
+        <ToolbarActions>
+          <Button
+            type="button"
             v-access:code="['code:generator:config']"
+            @click="openConfig(row)"
           >
             配置
-          </NButton>
-          <NButton
+          </Button>
+          <Button
+            type="button"
+            variant="outline"
             :disabled="!row.author"
-            @click="onPreview([row.tableName])"
             v-access:code="['code:generator:preview']"
+            @click="onPreview([row.tableName])"
           >
             生成
-          </NButton>
-        </NSpace>
+          </Button>
+        </ToolbarActions>
       </template>
     </Grid>
   </Page>

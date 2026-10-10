@@ -4,13 +4,13 @@ import {
   NCard,
   NDataTable,
   NSpace,
-  NButton,
   NTag,
   NDatePicker,
   NSelect,
   type DataTableColumns,
 } from 'naive-ui';
 import { $t } from '#/locales';
+import { Button } from '#/ui/button';
 import { useUserStore } from '#/store/user';
 import { authApi, type LoginLogResult } from '#/api/auth';
 import { message } from '#/adapter/naive';
@@ -49,8 +49,16 @@ const columns: DataTableColumns<LoginLogResult> = [
     width: 100,
     render: (row) => {
       return row.loginStatus === 'SUCCESS'
-        ? h(NTag, { type: 'success', size: 'small' }, { default: () => $t('page.profile.logs.login') })
-        : h(NTag, { type: 'error', size: 'small' }, { default: () => $t('page.profile.logs.failure') });
+        ? h(
+            NTag,
+            { type: 'success', size: 'small' },
+            { default: () => $t('page.profile.logs.login') },
+          )
+        : h(
+            NTag,
+            { type: 'error', size: 'small' },
+            { default: () => $t('page.profile.logs.failure') },
+          );
     },
   },
   {
@@ -96,7 +104,9 @@ const fetchLogs = async () => {
     }
 
     if (filters.value.dateRange) {
-      params.loginTimeStart = new Date(filters.value.dateRange[0]).toISOString();
+      params.loginTimeStart = new Date(
+        filters.value.dateRange[0],
+      ).toISOString();
       params.loginTimeEnd = new Date(filters.value.dateRange[1]).toISOString();
     }
 
@@ -122,7 +132,9 @@ const handleExport = async () => {
     }
 
     if (filters.value.dateRange) {
-      params.loginTimeStart = new Date(filters.value.dateRange[0]).toISOString();
+      params.loginTimeStart = new Date(
+        filters.value.dateRange[0],
+      ).toISOString();
       params.loginTimeEnd = new Date(filters.value.dateRange[1]).toISOString();
     }
 
@@ -175,7 +187,7 @@ onMounted(() => {
           style="width: 150px"
           clearable
         />
-        
+
         <NDatePicker
           v-model:value="filters.dateRange"
           type="daterange"
@@ -184,17 +196,17 @@ onMounted(() => {
           clearable
         />
 
-        <NButton type="primary" @click="fetchLogs">
+        <Button type="button" @click="fetchLogs">
           {{ $t('page.profile.logs.filter') }}
-        </NButton>
+        </Button>
 
-        <NButton @click="handleReset">
+        <Button type="button" variant="outline" @click="handleReset">
           {{ $t('common.reset') }}
-        </NButton>
+        </Button>
 
-        <NButton @click="handleExport">
+        <Button type="button" variant="outline" @click="handleExport">
           {{ $t('page.profile.logs.export') }}
-        </NButton>
+        </Button>
       </NSpace>
     </div>
 

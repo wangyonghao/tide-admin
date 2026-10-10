@@ -6,14 +6,13 @@ import {
   NInput,
   NRadioGroup,
   NRadio,
-  NButton,
-  NSpace,
   NUpload,
   type UploadFileInfo,
   NModal,
   NImage,
 } from 'naive-ui';
 import { VbenAvatar } from '@vben-core/shadcn-ui';
+import { Button } from '#/ui/button';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
 import { message } from '#/adapter/naive';
@@ -77,11 +76,11 @@ const handleAvatarUpload = async (options: { file: UploadFileInfo }) => {
     uploadingAvatar.value = true;
     const formData = new FormData();
     formData.append('avatarFile', options.file.file as File);
-    
+
     await userProfileApi.uploadAvatar(formData);
     message.success($t('page.profile.basic.uploadSuccess'));
     showAvatarModal.value = false;
-    
+
     // 刷新用户信息
     await userStore.fetchAuthInfo();
   } catch (error) {
@@ -106,13 +105,9 @@ const userInfo = computed(() => userStore.user);
   <div class="basic-info">
     <div class="flex items-center justify-between mb-6">
       <h3 class="text-lg font-semibold">{{ $t('page.profile.tabs.basic') }}</h3>
-      <NButton
-        v-if="!isEditing"
-        type="primary"
-        @click="handleEdit"
-      >
+      <Button v-if="!isEditing" type="button" @click="handleEdit">
         {{ $t('page.profile.basic.edit') }}
-      </NButton>
+      </Button>
     </div>
 
     <!-- 头像上传区域 -->
@@ -127,14 +122,20 @@ const userInfo = computed(() => userStore.user);
           @click="showAvatarModal = true"
         />
         <div class="flex-1">
-          <h4 class="font-medium mb-2">{{ $t('page.profile.basic.avatar') }}</h4>
-          <p class="text-sm text-gray-500 mb-3">{{ $t('page.profile.basic.uploadTip') }}</p>
-          <NButton
-            size="small"
+          <h4 class="font-medium mb-2">
+            {{ $t('page.profile.basic.avatar') }}
+          </h4>
+          <p class="text-sm text-gray-500 mb-3">
+            {{ $t('page.profile.basic.uploadTip') }}
+          </p>
+          <Button
+            type="button"
+            size="sm"
+            variant="outline"
             @click="showAvatarModal = true"
           >
             {{ $t('page.profile.basic.changeAvatar') }}
-          </NButton>
+          </Button>
         </div>
       </div>
     </div>
@@ -187,14 +188,14 @@ const userInfo = computed(() => userStore.user);
 
       <!-- 操作按钮 -->
       <NFormItem v-if="isEditing" :show-label="false">
-        <NSpace>
-          <NButton type="primary" @click="handleSave">
+        <div class="flex items-center gap-2">
+          <Button type="button" @click="handleSave">
             {{ $t('page.profile.basic.save') }}
-          </NButton>
-          <NButton @click="handleCancel">
+          </Button>
+          <Button type="button" variant="outline" @click="handleCancel">
             {{ $t('page.profile.basic.cancel') }}
-          </NButton>
-        </NSpace>
+          </Button>
+        </div>
       </NFormItem>
     </NForm>
 
@@ -212,9 +213,9 @@ const userInfo = computed(() => userStore.user);
           :custom-request="handleAvatarUpload"
           :show-file-list="false"
         >
-          <NButton :loading="uploadingAvatar">
+          <Button type="button" :loading="uploadingAvatar">
             {{ $t('page.profile.basic.uploadAvatar') }}
-          </NButton>
+          </Button>
         </NUpload>
         <p class="text-sm text-gray-500 mt-4">
           {{ $t('page.profile.basic.uploadTip') }}

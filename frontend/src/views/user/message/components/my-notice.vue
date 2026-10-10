@@ -9,9 +9,10 @@ import { useRouter } from 'vue-router';
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NButton, NTag } from 'naive-ui';
+import { NTag } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { Button } from '#/ui/button';
 import { userMessageApi } from '#/api/system/user-message';
 import { useDict } from '#/hooks';
 
@@ -132,9 +133,14 @@ const onView = (record: NoticeResp) => {
   <Page auto-content-height>
     <TableGrid>
       <template #title="{ row }">
-        <NButton text type="primary" @click="onView(row)">
+        <Button
+          type="button"
+          variant="link"
+          class="h-auto px-0"
+          @click="onView(row)"
+        >
           {{ row.title }}
-        </NButton>
+        </Button>
       </template>
 
       <template #type="{ row }">

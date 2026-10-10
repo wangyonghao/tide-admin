@@ -5,7 +5,6 @@ import type { OptionRequest, OptionResult } from '#/api/system/option';
 import { computed, ref, watch } from 'vue';
 
 import {
-  NButton,
   NDrawer,
   NDrawerContent,
   NForm,
@@ -17,6 +16,7 @@ import {
 } from 'naive-ui';
 
 import { optionApi } from '#/api/system';
+import { Button } from '#/ui/button';
 
 interface Props {
   visible: boolean;
@@ -61,7 +61,8 @@ const formRules: FormRules = {
     },
     {
       pattern: /^[a-zA-Z][a-zA-Z0-9_]{1,29}$/,
-      message: '选项类型长度为 2-30 个字符，支持大小写字母、数字、下划线，以字母开头',
+      message:
+        '选项类型长度为 2-30 个字符，支持大小写字母、数字、下划线，以字母开头',
       trigger: ['blur', 'input'],
     },
   ],
@@ -237,14 +238,12 @@ watch(
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton @click="handleCancel">取消</NButton>
-          <NButton
-            type="primary"
-            :loading="submitting"
-            @click="handleSubmit"
-          >
+          <Button type="button" variant="outline" @click="handleCancel">
+            取消
+          </Button>
+          <Button type="button" :loading="submitting" @click="handleSubmit">
             确定
-          </NButton>
+          </Button>
         </div>
       </template>
     </NDrawerContent>

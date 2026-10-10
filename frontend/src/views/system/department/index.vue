@@ -15,15 +15,19 @@ import {
   NButton,
   NDataTable,
   NInput,
-  NSpace,
   NTag,
-  useDialog,
   useMessage,
 } from 'naive-ui';
 
 import { deptApi } from '#/api/system/dept';
 import { useDownload } from '#/hooks/app/useDownload';
 import { useUserStore } from '#/store/user';
+import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import EditModal from './dept-drawer.vue';
 
@@ -33,7 +37,7 @@ const searchForm = ref({
 });
 
 const message = useMessage();
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 const loading = ref(false);
 const tableData = ref<DeptResp[]>([]);
@@ -44,23 +48,48 @@ const createColumns = (): DataTableColumns<DeptResult> => {
   return [
     { title: $t('system.dept.name'), key: 'name', align: 'left', width: 300 },
     { title: $t('system.dept.code'), key: 'code', align: 'left', width: 140 },
-    { title: $t('system.dept.status'), key: 'status', align: 'center', width: 80,
+    {
+      title: $t('system.dept.status'),
+      key: 'status',
+      align: 'center',
+      width: 80,
       render: (row) => {
-        return h('span', { style: { display: 'inline-flex', alignItems: 'center', gap: '6px' }},
+        return h(
+          'span',
+          {
+            style: { display: 'inline-flex', alignItems: 'center', gap: '6px' },
+          },
           [
-            h(NBadge, { dot: true, color: row.status === 1 ? 'oklch(76.8% 0.233 130.85)' : 'oklch(50.5% 0.213 27.518)'}),
-            row.status === 1 ? $t('common.enabled') : $t('common.disabled')
+            h(NBadge, {
+              dot: true,
+              color:
+                row.status === 1
+                  ? 'oklch(76.8% 0.233 130.85)'
+                  : 'oklch(50.5% 0.213 27.518)',
+            }),
+            row.status === 1 ? $t('common.enabled') : $t('common.disabled'),
           ],
         );
       },
     },
-    { title: $t('system.dept.description'), key: 'description', align: 'left', ellipsis: { tooltip: true } },
-    { title: $t('pages.common.operation'), key: 'action', align: 'center', width: 150, fixed: 'right',
+    {
+      title: $t('system.dept.description'),
+      key: 'description',
+      align: 'left',
+      ellipsis: { tooltip: true },
+    },
+    {
+      title: $t('pages.common.operation'),
+      key: 'action',
+      align: 'center',
+      width: 150,
+      fixed: 'right',
       render: (row) => {
         const actions = [];
         if (userStore.hasPermission('system:dept:update')) {
           actions.push(
-            h(NButton,
+            h(
+              NButton,
               { text: true, onClick: () => handleEdit(row) },
               { icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }) },
             ),
@@ -68,13 +97,18 @@ const createColumns = (): DataTableColumns<DeptResult> => {
         }
         if (userStore.hasPermission('system:dept:delete')) {
           actions.push(
-            h(NButton,
+            h(
+              NButton,
               { text: true, onClick: () => handleDelete(row) },
-              { icon: () => h(IconifyIcon, { icon: 'lucide:trash-2'}) },
+              { icon: () => h(IconifyIcon, { icon: 'lucide:trash-2' }) },
             ),
           );
         }
-        return h(NSpace, { justify: 'center' }, { default: () => actions });
+        return h(
+          'div',
+          { class: 'flex items-center justify-center gap-2' },
+          actions,
+        );
       },
     },
   ];
@@ -132,23 +166,22 @@ const handleAdd = () => {
   editModalVisible.value = true;
 };
 
-const handleDelete = (row: DeptResp) => {
-  dialog.warning({
+const handleDelete = async (row: DeptResp) => {
+  const ok = await confirmAction.value?.ask({
     title: $t('system.dept.deleteTitle'),
-    content: $t('ui.actionMessage.deleteConfirm', [row.name]),
-    positiveText: $t('common.confirm'),
-    negativeText: $t('common.cancel'),
-    showIcon: false,
-    onPositiveClick: async () => {
-      try {
-        await deptApi.delete(row.id);
-        message.success($t('pages.common.deleteSuccess'));
-        await loadData();
-      } catch (error) {
-        console.error('Failed to delete dept:', error);
-      }
-    },
+    description: $t('ui.actionMessage.deleteConfirm', [row.name]),
+    confirmText: $t('common.confirm'),
+    cancelText: $t('common.cancel'),
+    tone: 'destructive',
   });
+  if (!ok) return;
+  try {
+    await deptApi.delete(row.id);
+    message.success($t('pages.common.deleteSuccess'));
+    await loadData();
+  } catch (error) {
+    console.error('Failed to delete dept:', error);
+  }
 };
 
 const handleExport = () => {
@@ -187,6 +220,7 @@ loadData();
 
 <template>
   <Page auto-content-height>
+    <ConfirmAction ref="confirmAction" />
     <div class="flex flex-col h-full bg-background p-4">
       <!-- 工具栏 -->
       <div class="flex items-center justify-between w-full pb-4 gap-4">
@@ -204,34 +238,29 @@ loadData();
         </div>
 
         <!-- 右侧操作按钮 -->
-        <NSpace>
+        <ToolbarActions>
           <span v-access:code="['system:dept:create']">
-            <NButton @click="handleAdd" secondary>
-              <template #icon>
-                <IconifyIcon icon="lucide:plus" />
-              </template>
+            <Button type="button" variant="secondary" @click="handleAdd">
+              <IconifyIcon icon="lucide:plus" class="mr-1 size-4" />
               {{ $t('pages.common.add') }}
-            </NButton>
+            </Button>
           </span>
           <span v-access:code="['system:dept:export']">
-            <NButton secondary @click="handleExport">
-              <template #icon>
-                <IconifyIcon icon="lucide:download" />
-              </template>
+            <Button type="button" variant="secondary" @click="handleExport">
+              <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
               {{ $t('pages.common.export') }}
-            </NButton>
+            </Button>
           </span>
-          <NButton secondary @click="handleExpand">
-            <template #icon>
-              <IconifyIcon
-                :icon="expanded ? 'lucide:chevrons-up' : 'lucide:chevrons-down'"
-              />
-            </template>
+          <Button type="button" variant="secondary" @click="handleExpand">
+            <IconifyIcon
+              :icon="expanded ? 'lucide:chevrons-up' : 'lucide:chevrons-down'"
+              class="mr-1 size-4"
+            />
             {{
               expanded ? $t('pages.common.collapse') : $t('pages.common.expand')
             }}
-          </NButton>
-        </NSpace>
+          </Button>
+        </ToolbarActions>
       </div>
 
       <!-- 表格 -->

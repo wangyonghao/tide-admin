@@ -26,20 +26,23 @@ import {
   NRadio,
   NRadioGroup,
   NSelect,
-  NSpace,
   NSwitch,
   NTag,
   NTreeSelect,
-  useDialog,
   useMessage,
 } from 'naive-ui';
 
 import { menuApi } from '#/api/system/menu';
+import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import IconSelect from '#/components/icon-select.vue';
 import { useUserStore } from '#/store/user';
 
 const message = useMessage();
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 
 // 搜索表单
@@ -202,7 +205,7 @@ const columns: DataTableColumns<Menu> = [
         );
       }
       return buttons.length > 0
-        ? h(NSpace, null, { default: () => buttons })
+        ? h('div', { class: 'flex items-center gap-2' }, buttons)
         : '-';
     },
   },
@@ -313,22 +316,20 @@ async function handleSubmit() {
 }
 
 // 删除
-function handleDelete(row: Menu) {
-  dialog.warning({
+async function handleDelete(row: Menu) {
+  const ok = await confirmAction.value?.ask({
     title: '提示',
-    content: `确定要删除菜单"${row.name}"吗？`,
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      try {
-        await menuApi.delete(row.id);
-        message.success('删除成功');
-        loadData();
-      } catch {
-        // 错误已在拦截器处理
-      }
-    },
+    description: `确定要删除菜单"${row.name}"吗？`,
+    tone: 'destructive',
   });
+  if (!ok) return;
+  try {
+    await menuApi.delete(row.id);
+    message.success('删除成功');
+    loadData();
+  } catch {
+    // 错误已在拦截器处理
+  }
 }
 
 onMounted(() => {
@@ -338,6 +339,7 @@ onMounted(() => {
 
 <template>
   <div class="page-container">
+    <ConfirmAction ref="confirmAction" />
     <NCard class="page-layout">
       <!-- 搜索表单 -->
       <div class="search-form">
@@ -359,30 +361,24 @@ onMounted(() => {
             />
           </NFormItem>
           <NFormItem>
-            <NSpace>
-              <NButton type="primary" @click="handleSearch">
-                <template #icon>
-                  <NIcon><SearchOutline /></NIcon>
-                </template>
-                搜索
-              </NButton>
-            </NSpace>
+            <Button type="button" @click="handleSearch">
+              <NIcon><SearchOutline /></NIcon>
+              搜索
+            </Button>
           </NFormItem>
         </NForm>
       </div>
 
       <!-- 工具栏 -->
       <div class="table-toolbar">
-        <NButton
+        <Button
           v-if="userStore.hasPermission('system:menu:add')"
-          type="primary"
+          type="button"
           @click="handleAdd()"
         >
-          <template #icon>
-            <NIcon><AddOutline /></NIcon>
-          </template>
+          <NIcon><AddOutline /></NIcon>
           新增菜单
-        </NButton>
+        </Button>
       </div>
 
       <!-- 表格 -->
@@ -439,7 +435,9 @@ onMounted(() => {
             <template #checked>是</template>
             <template #unchecked>否</template>
           </NSwitch>
-          <span style="margin-left: 8px; font-size: 12px; color: #999">外链点击后将在新窗口打开</span>
+          <span style="margin-left: 8px; font-size: 12px; color: #999"
+            >外链点击后将在新窗口打开</span
+          >
         </NFormItem>
         <NFormItem
           v-if="formData.type !== 3 && !formData.isFrame"
@@ -510,16 +508,14 @@ onMounted(() => {
         </NFormItem>
       </NForm>
       <template #footer>
-        <NSpace justify="end">
-          <NButton @click="modalVisible = false">取消</NButton>
-          <NButton
-            type="primary"
-            :loading="submitLoading"
-            @click="handleSubmit"
-          >
+        <div class="flex justify-end gap-2">
+          <Button type="button" variant="outline" @click="modalVisible = false">
+            取消
+          </Button>
+          <Button type="button" :loading="submitLoading" @click="handleSubmit">
             确定
-          </NButton>
-        </NSpace>
+          </Button>
+        </div>
       </template>
     </NModal>
   </div>

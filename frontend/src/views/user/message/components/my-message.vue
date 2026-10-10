@@ -7,11 +7,13 @@ import type { MessageResp } from '#/api/system/user-message';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NButton, NSpace, NTag, useDialog, useMessage } from 'naive-ui';
+import { NTag, useDialog, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { userMessageApi } from '#/api/system/user-message';
 import { useDict } from '#/hooks';
+import { Button } from '#/ui/button';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import MyMessageDetailModal from './my-message-detail-modal.vue';
 
@@ -206,23 +208,28 @@ const onDetailModalClose = () => {
   <Page auto-content-height>
     <TableGrid>
       <template #toolbar-tools>
-        <NSpace>
-          <NButton type="error" @click="onDelete">
+        <ToolbarActions>
+          <Button type="button" variant="destructive" @click="onDelete">
             {{ $t('pages.common.delete') }}
-          </NButton>
-          <NButton type="primary" @click="onRead">
+          </Button>
+          <Button type="button" @click="onRead">
             {{ $t('system.msg.markRead') }}
-          </NButton>
-          <NButton type="primary" @click="onReadAll">
+          </Button>
+          <Button type="button" @click="onReadAll">
             {{ $t('system.msg.markAllRead') }}
-          </NButton>
-        </NSpace>
+          </Button>
+        </ToolbarActions>
       </template>
 
       <template #title="{ row }">
-        <NButton text type="primary" @click="onView(row)">
+        <Button
+          type="button"
+          variant="link"
+          class="h-auto px-0"
+          @click="onView(row)"
+        >
           {{ row.title }}
-        </NButton>
+        </Button>
       </template>
 
       <template #type="{ row }">

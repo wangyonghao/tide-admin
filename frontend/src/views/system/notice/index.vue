@@ -25,6 +25,8 @@ import {
 
 import { noticeApi } from '#/api/system/notice';
 import { useDict } from '#/hooks';
+import { Button } from '#/ui/button';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import NoticeForm from './components/notice-form.vue';
 import NoticeView from './components/notice-view.vue';
@@ -104,7 +106,9 @@ const tableColumns: DataTableColumns<NoticeResp> = [
     key: 'type',
     minWidth: 100,
     render(row) {
-      const typeItem = notice_type?.value?.find((item) => String(item.value) === row.type);
+      const typeItem = notice_type?.value?.find(
+        (item) => String(item.value) === row.type,
+      );
       if (!typeItem) return row.type;
       return h(
         NTag,
@@ -147,7 +151,10 @@ const tableColumns: DataTableColumns<NoticeResp> = [
               if (!methodItem) return null;
               return h(
                 NTag,
-                { type: (methodItem as any).tagType || 'default', size: 'small' },
+                {
+                  type: (methodItem as any).tagType || 'default',
+                  size: 'small',
+                },
                 { default: () => methodItem.label },
               );
             }),
@@ -440,24 +447,28 @@ onMounted(() => {
       </div>
 
       <!-- 操作按钮 -->
-      <div class="flex items-center gap-2 flex-wrap">
-        <NButton type="primary" @click="handleSearch">
-          <template #icon><IconifyIcon icon="lucide:search" /></template>
+      <ToolbarActions>
+        <Button type="button" @click="handleSearch">
+          <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
           {{ $t('pages.common.search') }}
-        </NButton>
-        <NButton @click="handleReset">
-          <template #icon><IconifyIcon icon="lucide:rotate-ccw" /></template>
+        </Button>
+        <Button type="button" variant="outline" @click="handleReset">
+          <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
           {{ $t('pages.common.reset') }}
-        </NButton>
-        <NButton type="success" @click="handleAdd">
-          <template #icon><IconifyIcon icon="lucide:plus" /></template>
+        </Button>
+        <Button
+          type="button"
+          class="bg-success text-success-foreground hover:bg-success/90"
+          @click="handleAdd"
+        >
+          <IconifyIcon icon="lucide:plus" class="mr-1 size-4" />
           {{ $t('pages.common.add') }}
-        </NButton>
-        <NButton type="error" @click="handleExport">
-          <template #icon><IconifyIcon icon="lucide:download" /></template>
+        </Button>
+        <Button type="button" variant="destructive" @click="handleExport">
+          <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
           {{ $t('pages.common.export') }}
-        </NButton>
-      </div>
+        </Button>
+      </ToolbarActions>
     </div>
 
     <!-- 数据表格 -->
@@ -471,11 +482,7 @@ onMounted(() => {
     />
 
     <!-- 新增/编辑抽屉 -->
-    <NDrawer
-      v-model:show="showFormDrawer"
-      :width="1000"
-      placement="right"
-    >
+    <NDrawer v-model:show="showFormDrawer" :width="1000" placement="right">
       <NDrawerContent
         :title="currentNoticeId ? $t('common.edit') : $t('common.create')"
         closable
@@ -489,19 +496,9 @@ onMounted(() => {
     </NDrawer>
 
     <!-- 查看抽屉 -->
-    <NDrawer
-      v-model:show="showViewDrawer"
-      :width="900"
-      placement="right"
-    >
-      <NDrawerContent
-        :title="$t('common.detail')"
-        closable
-      >
-        <NoticeView
-          v-if="currentNoticeDetail"
-          :notice="currentNoticeDetail"
-        />
+    <NDrawer v-model:show="showViewDrawer" :width="900" placement="right">
+      <NDrawerContent :title="$t('common.detail')" closable>
+        <NoticeView v-if="currentNoticeDetail" :notice="currentNoticeDetail" />
       </NDrawerContent>
     </NDrawer>
   </div>

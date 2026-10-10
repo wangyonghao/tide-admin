@@ -8,9 +8,10 @@ import { computed, h, ref, watch } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
-import { NButton, NCheckbox, NDataTable, useMessage } from 'naive-ui';
+import { NCheckbox, NDataTable, useMessage } from 'naive-ui';
 
 import { roleApi } from '#/api/system/role';
+import { Button } from '#/ui/button';
 
 interface Permission {
   id: string;
@@ -500,29 +501,30 @@ function rowKey(row: MenuNode) {
             }}</span>
           </label>
         </div>
-        <NButton size="small" @click="collapseAll" title="折叠全部">
-          <template #icon>
-            <IconifyIcon icon="lucide:chevrons-up" />
-          </template>
-          折叠全部
-        </NButton>
-        <NButton size="small" @click="expandAll" title="展开全部">
-          <template #icon>
-            <IconifyIcon icon="lucide:chevrons-down" />
-          </template>
-          展开全部
-        </NButton>
-        <NButton
-          type="primary"
-          size="small"
-          :loading="saving"
-          @click="handleSave"
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          title="折叠全部"
+          @click="collapseAll"
         >
-          <template #icon>
-            <IconifyIcon icon="lucide:save" />
-          </template>
+          <IconifyIcon icon="lucide:chevrons-up" class="mr-1 size-4" />
+          折叠全部
+        </Button>
+        <Button
+          type="button"
+          size="sm"
+          variant="outline"
+          title="展开全部"
+          @click="expandAll"
+        >
+          <IconifyIcon icon="lucide:chevrons-down" class="mr-1 size-4" />
+          展开全部
+        </Button>
+        <Button type="button" size="sm" :loading="saving" @click="handleSave">
+          <IconifyIcon icon="lucide:save" class="mr-1 size-4" />
           保存
-        </NButton>
+        </Button>
       </div>
     </div>
 

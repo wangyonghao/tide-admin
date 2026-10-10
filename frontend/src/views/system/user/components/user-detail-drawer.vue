@@ -6,7 +6,6 @@ import { ref, watch } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 
 import {
-  NButton,
   NDescriptions,
   NDescriptionsItem,
   NDrawer,
@@ -17,6 +16,7 @@ import {
 } from 'naive-ui';
 
 import { userApi } from '#/api/system/user';
+import { Button } from '#/ui/button';
 
 interface Props {
   visible: boolean;
@@ -160,13 +160,13 @@ function handleEdit() {
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton @click="handleClose"> 关闭 </NButton>
-          <NButton type="primary" @click="handleEdit">
-            <template #icon>
-              <IconifyIcon icon="lucide:pencil" />
-            </template>
+          <Button type="button" variant="outline" @click="handleClose">
+            关闭
+          </Button>
+          <Button type="button" @click="handleEdit">
+            <IconifyIcon icon="lucide:pencil" class="mr-1 size-4" />
             编辑
-          </NButton>
+          </Button>
         </div>
       </template>
     </NDrawerContent>

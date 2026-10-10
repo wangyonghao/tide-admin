@@ -8,7 +8,6 @@ import { computed, reactive, ref, watch } from 'vue';
 import { $t } from '@vben/locales';
 
 import {
-  NButton,
   NDrawer,
   NDrawerContent,
   NForm,
@@ -21,6 +20,7 @@ import {
 } from 'naive-ui';
 
 import { roleApi } from '#/api/system/role';
+import { Button } from '#/ui/button';
 
 interface Props {
   visible: boolean;
@@ -148,7 +148,7 @@ const handleSubmit = async () => {
       // 创建新角色（包括复制模式）
       const createRes = await roleApi.create({ ...formData });
       message.success($t('pages.common.addSuccess'));
-      
+
       // 如果是复制模式且有权限数据，复制权限
       if (isCopy.value && copiedMenuIds.value.length > 0 && createRes?.id) {
         try {
@@ -160,7 +160,7 @@ const handleSubmit = async () => {
           message.warning('角色创建成功，但权限复制失败');
         }
       }
-      
+
       emit('update:visible', false);
       emit('success', createRes?.id);
     }
@@ -259,16 +259,12 @@ watch(
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton @click="handleClose">
+          <Button type="button" variant="outline" @click="handleClose">
             {{ $t('common.cancel') }}
-          </NButton>
-          <NButton
-            type="primary"
-            :loading="submitLoading"
-            @click="handleSubmit"
-          >
+          </Button>
+          <Button type="button" :loading="submitLoading" @click="handleSubmit">
             {{ $t('common.confirm') }}
-          </NButton>
+          </Button>
         </div>
       </template>
     </NDrawerContent>

@@ -11,18 +11,23 @@ import {
   NDataTable,
   NIcon,
   NInput,
-  NSpace,
   NTag,
   useDialog,
   useMessage,
 } from 'naive-ui';
 
 import { optionApi } from '#/api/system';
+import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 
 import OptionEditDrawer from './components/option-edit-drawer.vue';
 
 const message = useMessage();
 const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 const searchForm = ref({
   keyword: undefined as string | undefined,
@@ -109,43 +114,37 @@ const columns: DataTableColumns<OptionResult> = [
     width: 180,
     fixed: 'right',
     render(row) {
-      return h(
-        NSpace,
-        { size: 'small' },
-        {
-          default: () => [
-            h(
-              NButton,
-              {
-                size: 'small',
-                type: 'primary',
-                text: true,
-                onClick: () => handleEdit(row),
-              },
-              { default: () => '编辑' },
-            ),
-            h(
-              NButton,
-              {
-                size: 'small',
-                type: 'error',
-                text: true,
-                onClick: () => handleDelete(row),
-              },
-              { default: () => '删除' },
-            ),
-            h(
-              NButton,
-              {
-                size: 'small',
-                text: true,
-                onClick: () => handleClearCache(row),
-              },
-              { default: () => '清除缓存' },
-            ),
-          ],
-        },
-      );
+      return h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          NButton,
+          {
+            size: 'small',
+            type: 'primary',
+            text: true,
+            onClick: () => handleEdit(row),
+          },
+          { default: () => '编辑' },
+        ),
+        h(
+          NButton,
+          {
+            size: 'small',
+            type: 'error',
+            text: true,
+            onClick: () => handleDelete(row),
+          },
+          { default: () => '删除' },
+        ),
+        h(
+          NButton,
+          {
+            size: 'small',
+            text: true,
+            onClick: () => handleClearCache(row),
+          },
+          { default: () => '清除缓存' },
+        ),
+      ]);
     },
   },
 ];
@@ -191,23 +190,21 @@ function handleEditSuccess() {
   loadTableData();
 }
 
-function handleDelete(row: OptionResult) {
-  dialog.warning({
+async function handleDelete(row: OptionResult) {
+  const ok = await confirmAction.value?.ask({
     title: '删除确认',
-    content: `确定要删除选项 "${row.label}" 吗？此操作不可恢复！`,
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      try {
-        await optionApi.delete([row.id]);
-        message.success('删除成功');
-        loadTableData();
-      } catch (error) {
-        console.error('删除选项失败:', error);
-        message.error('删除失败');
-      }
-    },
+    description: `确定要删除选项 "${row.label}" 吗？此操作不可恢复！`,
+    tone: 'destructive',
   });
+  if (!ok) return;
+  try {
+    await optionApi.delete([row.id]);
+    message.success('删除成功');
+    loadTableData();
+  } catch (error) {
+    console.error('删除选项失败:', error);
+    message.error('删除失败');
+  }
 }
 
 function handleClearCache(row: OptionResult) {
@@ -235,6 +232,7 @@ onMounted(() => {
 
 <template>
   <Page auto-content-height>
+    <ConfirmAction ref="confirmAction" />
     <div class="flex flex-col bg-background w-full p-4">
       <div class="flex items-center justify-between gap-2 pb-4">
         <div class="w-64">
@@ -250,9 +248,7 @@ onMounted(() => {
             </template>
           </NInput>
         </div>
-        <NSpace>
-          <NButton type="primary" @click="handleAdd">新建选项</NButton>
-        </NSpace>
+        <Button type="button" @click="handleAdd">新建选项</Button>
       </div>
       <NDataTable
         :columns="columns"

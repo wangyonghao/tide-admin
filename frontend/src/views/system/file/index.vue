@@ -27,6 +27,7 @@ import {
 } from 'naive-ui';
 
 import { fileApi, resolveFilePreviewUrl } from '#/api/system/file';
+import { Button } from '#/ui/button';
 
 const message = useMessage();
 
@@ -85,7 +86,10 @@ function getExtension(fileName?: string) {
 
 function getFileIcon(row: FileResult) {
   const ext = getExtension(row.fileName);
-  if (row.contentType?.startsWith('image/') || ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)) {
+  if (
+    row.contentType?.startsWith('image/') ||
+    ['jpg', 'jpeg', 'png', 'gif', 'webp', 'svg'].includes(ext)
+  ) {
     return { icon: 'vscode-icons:file-type-image', color: '' };
   }
   if (['doc', 'docx'].includes(ext)) {
@@ -130,9 +134,19 @@ function formatRelativeTime(value?: string) {
   if (Number.isNaN(date.getTime())) return value;
 
   const now = new Date();
-  const startOfToday = new Date(now.getFullYear(), now.getMonth(), now.getDate());
-  const startOfTarget = new Date(date.getFullYear(), date.getMonth(), date.getDate());
-  const dayDiff = Math.round((startOfToday.getTime() - startOfTarget.getTime()) / 86_400_000);
+  const startOfToday = new Date(
+    now.getFullYear(),
+    now.getMonth(),
+    now.getDate(),
+  );
+  const startOfTarget = new Date(
+    date.getFullYear(),
+    date.getMonth(),
+    date.getDate(),
+  );
+  const dayDiff = Math.round(
+    (startOfToday.getTime() - startOfTarget.getTime()) / 86_400_000,
+  );
   const hm = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
 
   if (dayDiff === 0) return `今天 ${hm}`;
@@ -166,7 +180,8 @@ function rowActions(row: FileResult): DropdownOption[] {
     {
       label: '删除',
       key: 'delete',
-      icon: () => h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }),
+      icon: () =>
+        h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }),
     },
   ];
 }
@@ -196,7 +211,10 @@ const columns = computed<DataTableColumns<FileResult>>(() => [
     render: (row) => {
       const meta = getFileIcon(row);
       return h('div', { class: 'flex min-w-0 items-center gap-2' }, [
-        h(IconifyIcon, { icon: meta.icon, class: `text-xl shrink-0 ${meta.color}` }),
+        h(IconifyIcon, {
+          icon: meta.icon,
+          class: `text-xl shrink-0 ${meta.color}`,
+        }),
         h('span', { class: 'truncate', title: row.fileName }, row.fileName),
       ]);
     },
@@ -218,7 +236,10 @@ const columns = computed<DataTableColumns<FileResult>>(() => [
         [
           '时间',
           h(IconifyIcon, {
-            icon: sortOrder.value === 'desc' ? 'lucide:arrow-down-narrow-wide' : 'lucide:arrow-up-narrow-wide',
+            icon:
+              sortOrder.value === 'desc'
+                ? 'lucide:arrow-down-narrow-wide'
+                : 'lucide:arrow-up-narrow-wide',
             class: 'text-sm',
           }),
         ],
@@ -252,7 +273,11 @@ const columns = computed<DataTableColumns<FileResult>>(() => [
               NButton,
               { text: true, size: 'small' },
               {
-                icon: () => h(IconifyIcon, { icon: 'lucide:ellipsis', class: 'text-base' }),
+                icon: () =>
+                  h(IconifyIcon, {
+                    icon: 'lucide:ellipsis',
+                    class: 'text-base',
+                  }),
               },
             ),
         },
@@ -332,7 +357,11 @@ async function handleBatchDownload() {
   message.success(`已开始下载 ${rows.length} 个文件`);
 }
 
-async function handleUpload({ file, onFinish, onError }: UploadCustomRequestOptions) {
+async function handleUpload({
+  file,
+  onFinish,
+  onError,
+}: UploadCustomRequestOptions) {
   if (!file.file) {
     onError();
     return;
@@ -357,15 +386,22 @@ onMounted(() => {
 
 <template>
   <Page auto-content-height>
-    <NCard :bordered="false" class="h-full" content-style="display:flex;flex-direction:column;gap:12px;height:100%">
+    <NCard
+      :bordered="false"
+      class="h-full"
+      content-style="display:flex;flex-direction:column;gap:12px;height:100%"
+    >
       <div class="flex flex-wrap items-center justify-between gap-3">
         <NSpace align="center">
-          <NButton :disabled="!hasSelection" @click="handleBatchDownload">
-            <template #icon>
-              <IconifyIcon icon="lucide:download" />
-            </template>
+          <Button
+            type="button"
+            variant="outline"
+            :disabled="!hasSelection"
+            @click="handleBatchDownload"
+          >
+            <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
             下载
-          </NButton>
+          </Button>
           <NCascader
             v-model:value="category"
             :options="categoryOptions"
@@ -377,14 +413,14 @@ onMounted(() => {
             class="w-40"
             @update:value="(v) => (category = (v as FileCategory) || 'ALL')"
           />
-          <NButton
+          <Button
             v-if="hasSelection"
-            type="error"
-            secondary
+            type="button"
+            variant="destructive"
             @click="handleBatchDelete"
           >
             删除所选 ({{ checkedRowKeys.length }})
-          </NButton>
+          </Button>
         </NSpace>
 
         <NSpace>
@@ -403,12 +439,10 @@ onMounted(() => {
             :show-file-list="false"
             :custom-request="handleUpload"
           >
-            <NButton type="primary">
-              <template #icon>
-                <IconifyIcon icon="lucide:upload" />
-              </template>
+            <Button type="button">
+              <IconifyIcon icon="lucide:upload" class="mr-1 size-4" />
               上传
-            </NButton>
+            </Button>
           </NUpload>
         </NSpace>
       </div>

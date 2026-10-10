@@ -1,11 +1,15 @@
 <script setup lang="ts">
-import type { FormInst, FormRules, SelectOption, TreeSelectOption } from 'naive-ui';
+import type {
+  FormInst,
+  FormRules,
+  SelectOption,
+  TreeSelectOption,
+} from 'naive-ui';
 import { reactive, ref, watch } from 'vue';
 
 import { $t } from '@vben/locales';
 
 import {
-  NButton,
   NDrawer,
   NDrawerContent,
   NForm,
@@ -19,6 +23,7 @@ import {
 } from 'naive-ui';
 
 import { userApi } from '#/api/system/user';
+import { Button } from '#/ui/button';
 
 interface Props {
   visible: boolean;
@@ -119,7 +124,8 @@ async function loadUserDetail() {
     formData.gender = res.gender ?? 0;
     formData.email = res.email ?? '';
     formData.phone = res.phone ?? '';
-    formData.deptId = res.deptId == null || res.deptId === '' ? undefined : String(res.deptId);
+    formData.deptId =
+      res.deptId == null || res.deptId === '' ? undefined : String(res.deptId);
     formData.roleIds = (res.roleIds ?? []).map(String);
     formData.status = res.status ?? 1;
     formData.description = res.description ?? '';
@@ -206,7 +212,10 @@ function handleAfterLeave() {
           />
         </NFormItem>
         <NFormItem label="显示名称" path="displayName">
-          <NInput v-model:value="formData.displayName" placeholder="请输入显示名称" />
+          <NInput
+            v-model:value="formData.displayName"
+            placeholder="请输入显示名称"
+          />
         </NFormItem>
         <NFormItem v-if="!isUpdate" label="密码" path="password">
           <NInput
@@ -268,14 +277,12 @@ function handleAfterLeave() {
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton @click="handleClose"> 取消 </NButton>
-          <NButton
-            type="primary"
-            :loading="submitLoading"
-            @click="handleSubmit"
-          >
+          <Button type="button" variant="outline" @click="handleClose">
+            取消
+          </Button>
+          <Button type="button" :loading="submitLoading" @click="handleSubmit">
             确定
-          </NButton>
+          </Button>
         </div>
       </template>
     </NDrawerContent>

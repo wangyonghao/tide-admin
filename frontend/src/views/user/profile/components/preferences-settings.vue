@@ -9,10 +9,11 @@ import {
   NSwitch,
   NButton,
   NPopconfirm,
-  NDivider,
   NInput,
 } from 'naive-ui';
 import { $t } from '#/locales';
+import { Button } from '#/ui/button';
+import { Separator } from '#/ui/separator';
 import { preferences } from '@vben/preferences';
 import { message } from '#/adapter/naive';
 
@@ -60,24 +61,24 @@ const settings = ref({
 const handleSave = () => {
   // 更新语言
   locale.value = settings.value.language;
-  
+
   // 更新主题
   preferences.theme.mode = settings.value.themeMode as any;
   preferences.theme.colorPrimary = settings.value.colorScheme;
-  
+
   // 更新布局
   preferences.app.layout = settings.value.layout as any;
   preferences.app.contentCompact = settings.value.contentWidth === 'fixed';
   preferences.app.compact = settings.value.compactMode;
-  
+
   // 更新显示设置
   preferences.breadcrumb.enable = settings.value.showBreadcrumb;
   preferences.tabbar.enable = settings.value.showTabs;
   preferences.footer.enable = settings.value.showFooter;
-  
+
   // 更新首页路径
   preferences.app.defaultHomePath = settings.value.defaultHomePath;
-  
+
   message.success(t('page.profile.preferences.saveSuccess'));
 };
 
@@ -112,16 +113,20 @@ const presetColors = [
 
 <template>
   <div class="preferences-settings">
-    <h3 class="text-lg font-semibold mb-6">{{ $t('page.profile.tabs.preferences') }}</h3>
+    <h3 class="text-lg font-semibold mb-6">
+      {{ $t('page.profile.tabs.preferences') }}
+    </h3>
 
     <NSpace vertical :size="24">
       <!-- 基础设置 -->
       <NCard :bordered="false" class="shadow-sm">
         <h4 class="font-medium mb-4">基础设置</h4>
-        
+
         <NSpace vertical :size="16">
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.language') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.language') }}
+            </div>
             <NSelect
               v-model:value="settings.language"
               :options="languageOptions"
@@ -129,10 +134,12 @@ const presetColors = [
             />
           </div>
 
-          <NDivider class="my-2" />
+          <Separator class="my-2" />
 
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.themeMode') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.themeMode') }}
+            </div>
             <NRadioGroup v-model:value="settings.themeMode">
               <NRadio
                 v-for="option in themeModeOptions"
@@ -144,10 +151,12 @@ const presetColors = [
             </NRadioGroup>
           </div>
 
-          <NDivider class="my-2" />
+          <Separator class="my-2" />
 
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.colorScheme') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.colorScheme') }}
+            </div>
             <div class="flex gap-3">
               <div
                 v-for="color in presetColors"
@@ -165,10 +174,12 @@ const presetColors = [
       <!-- 布局设置 -->
       <NCard :bordered="false" class="shadow-sm">
         <h4 class="font-medium mb-4">布局设置</h4>
-        
+
         <NSpace vertical :size="16">
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.layoutMode') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.layoutMode') }}
+            </div>
             <NRadioGroup v-model:value="settings.layout">
               <NSpace vertical :size="8">
                 <NRadio
@@ -182,10 +193,12 @@ const presetColors = [
             </NRadioGroup>
           </div>
 
-          <NDivider class="my-2" />
+          <Separator class="my-2" />
 
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.contentWidth') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.contentWidth') }}
+            </div>
             <NRadioGroup v-model:value="settings.contentWidth">
               <NRadio
                 v-for="option in contentWidthOptions"
@@ -197,10 +210,12 @@ const presetColors = [
             </NRadioGroup>
           </div>
 
-          <NDivider class="my-2" />
+          <Separator class="my-2" />
 
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.compactMode') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.compactMode') }}
+            </div>
             <NSwitch v-model:value="settings.compactMode" />
           </div>
         </NSpace>
@@ -209,24 +224,30 @@ const presetColors = [
       <!-- 显示设置 -->
       <NCard :bordered="false" class="shadow-sm">
         <h4 class="font-medium mb-4">显示设置</h4>
-        
+
         <NSpace vertical :size="16">
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.showBreadcrumb') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.showBreadcrumb') }}
+            </div>
             <NSwitch v-model:value="settings.showBreadcrumb" />
           </div>
 
-          <NDivider class="my-2" />
+          <Separator class="my-2" />
 
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.showTabs') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.showTabs') }}
+            </div>
             <NSwitch v-model:value="settings.showTabs" />
           </div>
 
-          <NDivider class="my-2" />
+          <Separator class="my-2" />
 
           <div class="setting-item">
-            <div class="setting-label">{{ $t('page.profile.preferences.showFooter') }}</div>
+            <div class="setting-label">
+              {{ $t('page.profile.preferences.showFooter') }}
+            </div>
             <NSwitch v-model:value="settings.showFooter" />
           </div>
         </NSpace>
@@ -234,10 +255,14 @@ const presetColors = [
 
       <!-- 首页设置 -->
       <NCard :bordered="false" class="shadow-sm">
-        <h4 class="font-medium mb-4">{{ $t('page.profile.preferences.homePage') }}</h4>
-        
+        <h4 class="font-medium mb-4">
+          {{ $t('page.profile.preferences.homePage') }}
+        </h4>
+
         <div class="setting-item">
-          <div class="setting-label">{{ $t('page.profile.preferences.defaultHomePath') }}</div>
+          <div class="setting-label">
+            {{ $t('page.profile.preferences.defaultHomePath') }}
+          </div>
           <NInput
             v-model:value="settings.defaultHomePath"
             :placeholder="$t('page.profile.preferences.defaultHomePath')"
@@ -254,14 +279,16 @@ const presetColors = [
           @positive-click="handleReset"
         >
           <template #trigger>
-            <NButton>{{ $t('page.profile.preferences.resetToDefault') }}</NButton>
+            <NButton>{{
+              $t('page.profile.preferences.resetToDefault')
+            }}</NButton>
           </template>
           {{ $t('page.profile.preferences.resetConfirm') }}
         </NPopconfirm>
 
-        <NButton type="primary" @click="handleSave">
+        <Button type="button" @click="handleSave">
           {{ $t('page.profile.basic.save') }}
-        </NButton>
+        </Button>
       </div>
     </NSpace>
   </div>

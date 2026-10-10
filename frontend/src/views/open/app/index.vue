@@ -5,21 +5,27 @@ import type {
 } from '#/adapter/vxe-table';
 import type { OpenAppApi } from '#/api';
 
+import { ref } from 'vue';
+
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NButton, useDialog, useMessage } from 'naive-ui';
-
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { openAppApi } from '#/api/open';
+import { Button } from '#/ui/button';
+import { toast } from '#/ui/sonner';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import { useColumns, useGridFormSchema } from './data';
 import AppDetail from './modules/detail.vue';
 import AppForm from './modules/form.vue';
 
 defineOptions({ name: 'OpenApp' });
-const message = useMessage();
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
   connectedComponent: AppForm,
@@ -84,24 +90,6 @@ function onActionClick(e: OnActionClickParams<OpenAppApi.AppResp>) {
   }
 }
 
-/**
- * 将Naive UI的dialog.warning封装为promise，方便在异步函数中调用。
- * @param content 提示内容
- * @param title 提示标题
- */
-function confirm(content: string, title: string) {
-  return new Promise((resolve, reject) => {
-    dialog.warning({
-      title,
-      content,
-      positiveText: '确定',
-      negativeText: '取消',
-      onPositiveClick: () => resolve(true),
-      onNegativeClick: () => reject(new Error('cancel')),
-    });
-  });
-}
-
 function onEdit(row: OpenAppApi.AppResp) {
   formDrawerApi.setData(row).open();
 }
@@ -111,13 +99,14 @@ function onDetail(row: OpenAppApi.AppResp) {
 }
 
 function onDelete(row: OpenAppApi.AppResp) {
-  openAppApi.delete(row.id)
+  openAppApi
+    .delete(row.id)
     .then(() => {
-      message.success(`删除应用 "${row.name}" 成功`);
+      toast.success(`删除应用 "${row.name}" 成功`);
       onRefresh();
     })
     .catch(() => {
-      message.error(`删除应用 "${row.name}" 失败`);
+      toast.error(`删除应用 "${row.name}" 失败`);
     });
 }
 
@@ -126,7 +115,7 @@ async function onShowSecret(row: OpenAppApi.AppResp) {
     const { secretKey } = await openAppApi.getSecretKey(row.id);
     row.secretKey = secretKey;
   } catch {
-    message.error('获取密钥失败');
+    toast.error('获取密钥失败');
   }
 }
 
@@ -135,18 +124,17 @@ function onHideSecret(row: OpenAppApi.AppResp) {
 }
 
 async function onResetSecret(row: OpenAppApi.AppResp) {
+  const ok = await confirmAction.value?.ask({
+    title: '确认重置密钥',
+    description: `确定要重置应用 "${row.name}" 的密钥吗？重置后原密钥将失效。`,
+  });
+  if (!ok) return;
   try {
-    await confirm(
-      `确定要重置应用 "${row.name}" 的密钥吗？重置后原密钥将失效。`,
-      '确认重置密钥',
-    );
     await openAppApi.resetSecretKey(row.id);
-    message.success('密钥重置成功');
+    toast.success('密钥重置成功');
     gridApi.query();
-  } catch (error: any) {
-    if (error !== 'cancel') {
-      message.error('密钥重置失败');
-    }
+  } catch {
+    toast.error('密钥重置失败');
   }
 }
 
@@ -157,7 +145,7 @@ async function onResetSecret(row: OpenAppApi.AppResp) {
 async function onCopySecret(secretKey: string) {
   try {
     await navigator.clipboard.writeText(secretKey);
-    message.success('密钥已复制到剪贴板');
+    toast.success('密钥已复制到剪贴板');
   } catch {
     // 降级方案：使用传统的复制方法
     const textArea = document.createElement('textarea');
@@ -169,9 +157,9 @@ async function onCopySecret(secretKey: string) {
     textArea.select();
     try {
       document.execCommand('copy');
-      message.success('密钥已复制到剪贴板');
+      toast.success('密钥已复制到剪贴板');
     } catch {
-      message.error('复制失败，请手动复制');
+      toast.error('复制失败，请手动复制');
     } finally {
       textArea.remove();
     }
@@ -196,25 +184,28 @@ async function onExport() {
     link.download = '应用列表.xlsx';
     link.click();
     window.URL.revokeObjectURL(url);
-    message.success('导出成功');
+    toast.success('导出成功');
   } catch {
-    message.error('导出失败');
+    toast.error('导出失败');
   }
 }
 </script>
 
 <template>
   <Page auto-content-height>
+    <ConfirmAction ref="confirmAction" />
     <FormDrawer @success="onRefresh" />
     <DetailDrawer />
     <Grid :table-title="$t('open.app.listTitle')">
       <template #toolbar-tools>
-        <NButton type="primary" @click="onCreate">
-          {{ $t('pages.common.add') }}
-        </NButton>
-        <NButton @click="onExport">
-          {{ $t('pages.common.export') }}
-        </NButton>
+        <ToolbarActions>
+          <Button type="button" @click="onCreate">
+            {{ $t('pages.common.add') }}
+          </Button>
+          <Button type="button" variant="outline" @click="onExport">
+            {{ $t('pages.common.export') }}
+          </Button>
+        </ToolbarActions>
       </template>
       <template #secretKey="{ row }">
         <div class="flex items-center justify-center gap-2">
@@ -224,36 +215,36 @@ async function onExport() {
           <span v-else class="text-gray-400">***********</span>
 
           <div class="flex gap-1">
-            <!-- 复制按钮 -->
-            <NButton
+            <Button
               v-if="row.secretKey"
-              text
-              type="primary"
-              size="small"
+              type="button"
+              variant="link"
+              size="sm"
+              class="h-auto px-1"
               @click="onCopySecret(row.secretKey)"
             >
               {{ $t('open.app.copy') }}
-            </NButton>
-
-            <!-- 显示/隐藏按钮 -->
-            <NButton
+            </Button>
+            <Button
               v-if="row.secretKey"
-              text
-              type="warning"
-              size="small"
+              type="button"
+              variant="link"
+              size="sm"
+              class="text-warning h-auto px-1"
               @click="onHideSecret(row)"
             >
               {{ $t('open.app.hide') }}
-            </NButton>
-            <NButton
+            </Button>
+            <Button
               v-else
-              text
-              type="primary"
-              size="small"
+              type="button"
+              variant="link"
+              size="sm"
+              class="h-auto px-1"
               @click="onShowSecret(row)"
             >
               {{ $t('open.app.show') }}
-            </NButton>
+            </Button>
           </div>
         </div>
       </template>
