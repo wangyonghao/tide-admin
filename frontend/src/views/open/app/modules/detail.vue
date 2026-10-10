@@ -6,8 +6,6 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NDescriptions, NDescriptionsItem } from 'naive-ui';
-
 import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
 import { toast } from '#/ui-patterns/toast';
@@ -46,13 +44,18 @@ const copyToClipboard = async (text: string) => {
 <template>
   <Drawer :title="getDrawerTitle">
     <div class="p-4">
-      <NDescriptions :column="2" size="large" class="general-description">
-        <NDescriptionsItem label="ID">{{ appData?.id }}</NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.name')">
-          {{ appData?.name }}
-        </NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.accessKey')" :span="2">
-          <div class="inline-block">
+      <dl class="grid grid-cols-2 gap-x-6 gap-y-4 text-sm">
+        <div>
+          <dt class="text-muted-foreground">ID</dt>
+          <dd class="mt-1">{{ appData?.id }}</dd>
+        </div>
+        <div>
+          <dt class="text-muted-foreground">{{ $t('open.app.name') }}</dt>
+          <dd class="mt-1">{{ appData?.name }}</dd>
+        </div>
+        <div class="col-span-2">
+          <dt class="text-muted-foreground">{{ $t('open.app.accessKey') }}</dt>
+          <dd class="mt-1">
             <span class="font-mono text-sm">{{ appData?.accessKey }}</span>
             <Button
               v-if="appData?.accessKey"
@@ -63,31 +66,40 @@ const copyToClipboard = async (text: string) => {
             >
               {{ $t('open.app.copy') }}
             </Button>
-          </div>
-        </NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.status')">
-          <Badge v-if="appData?.status === 1" variant="success">启用</Badge>
-          <Badge v-else variant="destructive">禁用</Badge>
-        </NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.expireTime')">
-          {{ appData?.expireTime }}
-        </NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.createUser')">
-          {{ appData?.createUserString }}
-        </NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.createTime')">
-          {{ appData?.createTime }}
-        </NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.updateUser')">
-          {{ appData?.updateUserString }}
-        </NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.updateTime')">
-          {{ appData?.updateTime }}
-        </NDescriptionsItem>
-        <NDescriptionsItem :label="$t('open.app.description')" :span="2">
-          {{ appData?.description }}
-        </NDescriptionsItem>
-      </NDescriptions>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-muted-foreground">{{ $t('open.app.status') }}</dt>
+          <dd class="mt-1">
+            <Badge v-if="appData?.status === 1" variant="success">启用</Badge>
+            <Badge v-else variant="destructive">禁用</Badge>
+          </dd>
+        </div>
+        <div>
+          <dt class="text-muted-foreground">{{ $t('open.app.expireTime') }}</dt>
+          <dd class="mt-1">{{ appData?.expireTime }}</dd>
+        </div>
+        <div>
+          <dt class="text-muted-foreground">{{ $t('open.app.createUser') }}</dt>
+          <dd class="mt-1">{{ appData?.createUserString }}</dd>
+        </div>
+        <div>
+          <dt class="text-muted-foreground">{{ $t('open.app.createTime') }}</dt>
+          <dd class="mt-1">{{ appData?.createTime }}</dd>
+        </div>
+        <div>
+          <dt class="text-muted-foreground">{{ $t('open.app.updateUser') }}</dt>
+          <dd class="mt-1">{{ appData?.updateUserString }}</dd>
+        </div>
+        <div>
+          <dt class="text-muted-foreground">{{ $t('open.app.updateTime') }}</dt>
+          <dd class="mt-1">{{ appData?.updateTime }}</dd>
+        </div>
+        <div class="col-span-2">
+          <dt class="text-muted-foreground">{{ $t('open.app.description') }}</dt>
+          <dd class="mt-1">{{ appData?.description }}</dd>
+        </div>
+      </dl>
     </div>
   </Drawer>
 </template>

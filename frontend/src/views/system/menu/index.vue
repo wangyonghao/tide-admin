@@ -1,37 +1,24 @@
 <script setup lang="ts">
-import type { FormInst, FormRules } from 'naive-ui';
-
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { Menu } from '#/api/system/menu';
 
-import { computed, nextTick, reactive, ref } from 'vue';
+import { computed, nextTick, ref } from 'vue';
 
-import { Page } from '@vben/common-ui';
+import { Page, useVbenModal } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import {
-  NForm,
-  NFormItem,
-  NInput,
-  NInputNumber,
-  NModal,
-  NRadio,
-  NRadioGroup,
-} from 'naive-ui';
-
-import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { menuApi } from '#/api/system/menu';
-import IconSelect from '#/components/icon-select.vue';
 import { useUserStore } from '#/store/user';
 import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
-import { Switch } from '#/ui/switch';
 import { toast } from '#/ui-patterns/toast';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
+
+import MenuForm from './modules/form.vue';
 
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
@@ -68,7 +55,7 @@ interface MenuOption {
 }
 
 const menuOptions = computed(() => {
-  const options: MenuOption[] = [{ key: 0, label: '顶级菜单' }];
+  const options: MenuOption[] = [{ key: '0', label: '顶级菜单' }];
 
   function convert(menus: Menu[]): MenuOption[] {
     return menus
@@ -184,83 +171,27 @@ const [Grid, gridApi] = useVbenVxeGrid({
   } as VxeTableGridOptions<MenuRow>,
 });
 
-const modalVisible = ref(false);
-const modalTitle = ref('新增菜单');
-const formRef = ref<FormInst | null>(null);
-const submitLoading = ref(false);
-
-const formData = reactive({
-  id: undefined as string | undefined,
-  parentId: '0' as number | string,
-  name: '',
-  type: 1,
-  path: '',
-  component: '',
-  permission: '',
-  icon: '',
-  sort: 0,
-  visible: 1,
-  status: 1,
-  isFrame: 0,
+const [MenuModal, menuModalApi] = useVbenModal({
+  connectedComponent: MenuForm,
+  destroyOnClose: true,
 });
 
-const rules: FormRules = {
-  name: [{ required: true, message: '请输入菜单名称', trigger: 'blur' }],
-  type: [
-    {
-      required: true,
-      type: 'number',
-      message: '请选择菜单类型',
-      trigger: 'change',
-    },
-  ],
-};
-
 function handleAdd(parentId?: string) {
-  modalTitle.value = '新增菜单';
-  Object.assign(formData, {
-    id: undefined,
-    parentId: parentId || '0',
-    name: '',
-    type: 1,
-    path: '',
-    component: '',
-    permission: '',
-    icon: '',
-    sort: 0,
-    visible: 1,
-    status: 1,
-    isFrame: 0,
-  });
-  modalVisible.value = true;
+  menuModalApi
+    .setData({
+      parentId: parentId || '0',
+      menuOptions: menuOptions.value,
+    })
+    .open();
 }
 
 function handleEdit(row: MenuRow) {
-  modalTitle.value = '编辑菜单';
-  Object.assign(formData, { ...row });
-  modalVisible.value = true;
-}
-
-async function handleSubmit() {
-  try {
-    await formRef.value?.validate();
-    submitLoading.value = true;
-
-    if (formData.id) {
-      await menuApi.update({ ...formData }, formData.id);
-      toast.success('更新成功');
-    } else {
-      await menuApi.create({ ...formData });
-      toast.success('创建成功');
-    }
-
-    modalVisible.value = false;
-    await gridApi.query();
-  } catch {
-    // 错误已在拦截器处理
-  } finally {
-    submitLoading.value = false;
-  }
+  menuModalApi
+    .setData({
+      record: row,
+      menuOptions: menuOptions.value,
+    })
+    .open();
 }
 
 async function handleDelete(row: MenuRow) {
@@ -365,184 +296,6 @@ function typeText(row: Menu) {
       </template>
     </Grid>
 
-    <NModal
-      v-model:show="modalVisible"
-      :title="modalTitle"
-      preset="card"
-      style="width: 650px"
-      :mask-closable="false"
-    >
-      <NForm
-        ref="formRef"
-        :model="formData"
-        :rules="rules"
-        label-placement="left"
-        label-width="80"
-        class="modal-form"
-      >
-        <NFormItem
-          label="上级菜单"
-          path="parentId"
-        >
-          <FormTreeSelect
-            v-model:value="formData.parentId"
-            :options="menuOptions"
-            placeholder="请选择上级菜单"
-            default-expand-all
-            clearable
-          />
-        </NFormItem>
-        <NFormItem
-          label="菜单类型"
-          path="type"
-        >
-          <NRadioGroup v-model:value="formData.type">
-            <NRadio :value="1">
-              目录
-            </NRadio>
-            <NRadio :value="2">
-              菜单
-            </NRadio>
-            <NRadio :value="3">
-              按钮
-            </NRadio>
-          </NRadioGroup>
-        </NFormItem>
-        <NFormItem
-          label="菜单名称"
-          path="name"
-        >
-          <NInput
-            v-model:value="formData.name"
-            placeholder="请输入菜单名称"
-          />
-        </NFormItem>
-        <NFormItem
-          v-if="formData.type !== 3"
-          label="是否外链"
-          path="isFrame"
-        >
-          <div class="flex items-center gap-2">
-            <Switch
-              v-model="formData.isFrame"
-              :checked-value="1"
-              :unchecked-value="0"
-            />
-            <span class="text-sm">{{
-              formData.isFrame === 1 ? '是' : '否'
-            }}</span>
-            <span class="text-xs text-muted-foreground">
-              外链点击后将在新窗口打开
-            </span>
-          </div>
-        </NFormItem>
-        <NFormItem
-          v-if="formData.type !== 3 && !formData.isFrame"
-          label="路由地址"
-          path="path"
-        >
-          <NInput
-            v-model:value="formData.path"
-            placeholder="请输入路由地址"
-          />
-        </NFormItem>
-        <NFormItem
-          v-if="formData.type !== 3 && formData.isFrame"
-          label="外链地址"
-          path="component"
-        >
-          <NInput
-            v-model:value="formData.component"
-            placeholder="请输入外链地址，如：https://example.com"
-          />
-        </NFormItem>
-        <NFormItem
-          v-if="formData.type === 2 && !formData.isFrame"
-          label="组件路径"
-          path="component"
-        >
-          <NInput
-            v-model:value="formData.component"
-            placeholder="请输入组件路径"
-          />
-        </NFormItem>
-        <NFormItem
-          v-if="formData.type === 3"
-          label="权限标识"
-          path="permission"
-        >
-          <NInput
-            v-model:value="formData.permission"
-            placeholder="请输入权限标识，如：system:user:create"
-          />
-        </NFormItem>
-        <NFormItem
-          v-if="formData.type !== 3"
-          label="图标"
-          path="icon"
-        >
-          <IconSelect v-model="formData.icon" />
-        </NFormItem>
-        <NFormItem
-          label="排序"
-          path="sort"
-        >
-          <NInputNumber
-            v-model:value="formData.sort"
-            :min="0"
-            style="width: 100%"
-          />
-        </NFormItem>
-        <NFormItem
-          v-if="formData.type !== 3"
-          label="是否可见"
-          path="visible"
-        >
-          <div class="flex items-center gap-2">
-            <Switch
-              v-model="formData.visible"
-              :checked-value="1"
-              :unchecked-value="0"
-            />
-            <span class="text-sm">
-              {{ formData.visible === 1 ? '显示' : '隐藏' }}
-            </span>
-          </div>
-        </NFormItem>
-        <NFormItem
-          label="状态"
-          path="status"
-        >
-          <div class="flex items-center gap-2">
-            <Switch
-              v-model="formData.status"
-              :checked-value="1"
-              :unchecked-value="0"
-            />
-            <span class="text-sm">
-              {{ formData.status === 1 ? '启用' : '禁用' }}
-            </span>
-          </div>
-        </NFormItem>
-      </NForm>
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            @click="modalVisible = false"
-          >
-            取消
-          </Button>
-          <Button
-            type="button"
-            :loading="submitLoading"
-            @click="handleSubmit"
-          >
-            确定
-          </Button>
-        </div>
-      </template>
-    </NModal>
+    <MenuModal @success="gridApi.query()" />
   </Page>
 </template>

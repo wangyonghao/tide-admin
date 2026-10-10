@@ -198,6 +198,35 @@ Naive 包不删。
 - `components/password-modal.vue`、`components/profile-modal.vue` 没有引用，但仍写着 Naive 表单。
 - `adapter/component/index.ts` 的类型仍从 `naive-ui` 引入，运行时不再加载 `naive-ui/es/input`。
 
+## 表单壳、下拉和提示提供者
+
+口径不变。本波开始时：`NForm` / `NFormItem` **5 / 5**，`NDrawer` **1**，`NModal` **2**，`NDropdown` **2**，`NTabs` / `NTabPane` **2 / 2**，`NCard` **9**，`NAlert` **1**，`NEmpty` **1**，`NDescriptions` **2**，`useMessage` **1**，`from 'naive-ui'` 的文件 **25**。Naive 包不删。
+
+- **手写表单**：菜单弹层、用户编辑抽屉、公告表单、安全设置三个弹层、系统配置主体和邮件抽屉里的表单改成 `useVbenForm`。菜单上级仍是字符串 `'0'`。外链地址和路由组件在表单里分成两个字段，提交时按类型写回原来的 `component`。公告定时发布时间仍是 UTC 的 `YYYY-MM-DD HH:mm:ss`。安全设置的验证码按钮仍没有发送动作。配置页把表单值同步回原来的 ref，保存和邮件摘要还读这些 ref。邮件表单在抽屉打开之后再写入，避免抽屉没挂载时 `setValues` 一直等待。
+- **下拉和标签**：角色列表和文件行菜单改成 `#/ui/dropdown-menu`。角色页和个人中心改成 `#/ui/tabs`。这两个页面的标签内容用 `force-mount` 留在页面上，切走再回来时权限树、用户表和个人资料不会被卸掉。角色搜索改成 `FilterInput`，清除后仍是空字符串。
+- **卡片和说明**：没有边框的 `NCard` 改成 `rounded-xl bg-card` 的块。表单演示和系统配置用 `#/ui/card`。开放应用详情和用户详情改成描述列表。邮件验证成功改成带边框的提示块。安全设置的空列表改成一段文字。
+- **提示壳**：`views/demos/naive` 的按钮、消息和通知改成原子按钮和 `#/ui-patterns/toast`。`app.vue` 去掉 `NMessageProvider`、`NDialogProvider`、`NNotificationProvider`。`NConfigProvider` 还在，用来托住剩下的 Naive 控件。
+- **删掉**：`components/password-modal.vue`、`components/profile-modal.vue` 没有页面引用，已删除。
+- **没动**：代码生成预览的 `NTree`（连同旁边的卡片和滚动条）、代码生成步骤和输入、用户页左侧带图标的部门搜索、定时任务时间线弹出层、图标选择器的弹出层。`demos/table` 仍是 `NDataTable` 陈列。
+
+`NForm` / `NFormItem` / `NDrawer` / `NModal` / `NDropdown` / `NTabs` / `NAlert` / `NEmpty` / `NDescriptions` 都是 **0**。`NCard` **1**（代码生成预览）。`NInput` **2**（用户部门搜索、代码生成配置）。`NTree` **1**。`NDataTable` **1**。`useMessage` / `useNotification` / `useDialog` 在页面上是 **0**（`vben/plugins/types.ts` 里只剩一个可选字段名）。仍有 **8** 个文件 `from 'naive-ui'`。Naive 包不删。
+
+仍在 `from 'naive-ui'` 的文件：
+
+`adapter/component/index.ts`（只剩类型）、`app.vue`（`NConfigProvider` 和主题）、`components/icon-select.vue`、`views/code/generator/modules/gen-config-drawer.vue`、`views/code/generator/modules/gen-preview-modal.vue`、`views/demos/table/index.vue`、`views/schedule/job/index.vue`、`views/system/user/index.vue`。
+
+还不能卸掉 `naive-ui`，也不能去掉 `NConfigProvider`。挡住的是：
+
+- 代码生成预览的 `NTree`、`NCard`、`NScrollbar`、`NIcon`。树选择器已有，这棵预览树的数据和右键还没对上，本波不换。
+- 代码生成配置的 `NInput`、`NSteps`。
+- 用户页左侧部门搜索的 `NInput` 和前缀 `NIcon`。
+- 定时任务的 `NPopover`、`NTimeline`。
+- 图标选择器的 `NPopover`、`NScrollbar`、`NIcon`。
+- `demos/table` 的 `NDataTable`。这是剩下的表格陈列，不是产品表单。
+- `adapter/component/index.ts` 的控件 props 类型仍从 `naive-ui` 引入。
+
+应用路径补了 `tabs` 和 `card`。
+
 ## 目录选择
 
 原子实现继续放在 `@vben-core/shadcn-ui/src/ui`（已有 reka-ui、CVA、`cn()`，颜色经 `frontend/src/styles/theme.css` 的 `--color-*` 接 HSL token）。  
@@ -210,7 +239,7 @@ Naive 包不删。
 
 包增加子路径 `./ui/*`，新原子（Skeleton、Sonner）**不**进入 `@vben-core/shadcn-ui` 根桶，避免壳层整包把 `vue-sonner` 带进去。
 
-第一波入口：`button`、`input`、`label`、`checkbox`、`switch`、`dialog`、`alert-dialog`、`badge`、`skeleton`、`sonner`。Phase 3 补了应用路径 `separator`。后来补了 `select`、`popover`、`radio-group`、`textarea`、`number-field`。日期和树那波补了 `date-picker`、`tree`（`VbenTree`）。后来补了 `dropdown-menu`。上传那波补了 `upload`（只选文件，不发请求）。这一波补了 `ui-patterns/toast`。用户页和角色页的左右分割用 `ColPage`。`ColPage` 现在可以按百分比或像素给宽度。
+第一波入口：`button`、`input`、`label`、`checkbox`、`switch`、`dialog`、`alert-dialog`、`badge`、`skeleton`、`sonner`。Phase 3 补了应用路径 `separator`。后来补了 `select`、`popover`、`radio-group`、`textarea`、`number-field`。日期和树那波补了 `date-picker`、`tree`（`VbenTree`）。后来补了 `dropdown-menu`。上传那波补了 `upload`（只选文件，不发请求）。提示那波补了 `ui-patterns/toast`。这一波补了 `tabs`、`card`。用户页和角色页的左右分割用 `ColPage`。`ColPage` 现在可以按百分比或像素给宽度。
 
 ## 可先换
 
@@ -218,17 +247,17 @@ Naive 包不删。
 
 | Naive | 文件数 | 换成 | 例子 |
 |-------|--------|------|------|
-| `NButton` | 1 | `#/ui/button`（含 `loading`） | 只剩 `views/demos/naive/index.vue` 的组件陈列 |
-| `NSpace` | 1 | `flex` + `gap-*` 或 `ToolbarActions` | 只剩 `views/demos/naive/index.vue` 的组件陈列 |
-| `NInput` | 8 | `#/ui/input` 或 `FilterInput` | 带前缀的搜索框仍是 Naive，如 `views/system/user/index.vue`。任务编辑、个人资料和偏好里的输入已换 |
-| `NCard` | 9 | 已有 Card（`#/ui` 尚未再导出，需要时再加路径）。菜单列表已不用 `NCard` | `views/demos/naive/index.vue` |
+| `NButton` | 0 | `#/ui/button`（含 `loading`） | 页面已换完 |
+| `NSpace` | 0 | `flex` + `gap-*` 或 `ToolbarActions` | 页面已换完 |
+| `NInput` | 2 | `#/ui/input` 或 `FilterInput` | 带前缀的部门搜索仍是 Naive：`views/system/user/index.vue`。代码生成配置里的输入也还在 |
+| `NCard` | 1 | `#/ui/card`。无边框的块用 `div` | 只剩代码生成预览 `views/code/generator/modules/gen-preview-modal.vue` |
 | `NDivider` | 0 | `#/ui/separator` | 视图已换完；适配器仍动态加载 |
 | `NCheckbox` | 0 | `#/ui/checkbox` | 页面和表单分组都已换。绑定用 `v-model`（`modelValue`） |
 | `NBadge` | 0 | `#/ui/badge` | 部门状态已改为 `success` / `destructive` 徽标 |
 | `NSpin` | 1 | 已有 Spinner | 单页用量 |
 | `NText` | 1 | 排版类（`text-foreground` 等） | 单页用量 |
 
-`NButton` 只剩 `demos/naive` 的陈列。`CellLink` 和安全设置弹层已经换成原子按钮。
+`NButton` 已从页面去掉。`CellLink` 和安全设置弹层已经换成原子按钮。
 
 ## 后换
 
@@ -236,27 +265,27 @@ Naive 包不删。
 
 | Naive | 文件数 | 原因 | 例子 |
 |-------|--------|------|------|
-| `useMessage` | 1 | 页面和组件外的提示已改 `#/ui-patterns/toast`。只剩 `demos/naive` 的陈列 | `views/demos/naive/index.vue` |
+| `useMessage` | 0 | 页面和组件外的提示已改 `#/ui-patterns/toast`。`demos/naive` 也改了 | — |
 | `NTag` | 0 | 具名颜色已映射到 Badge。`primary` / `info` 用 Badge `default` | — |
 | `NSelect` | 0 | 注册表 `Select`、`ApiSelect` 和页面手写下拉都已接 `FormSelect` | — |
-| `NIcon` | 3 | 可换 Lucide，但图标选择器是一整块。菜单列表和用户详情已不用 `NIcon` | `components/icon-select.vue` |
-| `NForm` / `NFormItem` | 5 / 5 | 选项、角色、部门抽屉和任务编辑、个人资料已换。还留菜单、用户编辑、公告、安全设置、系统配置 | `views/system/menu/index.vue` |
+| `NIcon` | 3 | 可换 Lucide，但图标选择器是一整块。菜单列表和用户详情已不用 `NIcon` | `components/icon-select.vue`、用户部门搜索、代码生成预览 |
+| `NForm` / `NFormItem` | 0 / 0 | 菜单、用户编辑、公告、安全设置和系统配置已改 `useVbenForm` | — |
 | `useDialog` | 0 | 页面上的布尔确认已改 `ConfirmAction` | — |
-| `NDrawer` / `NDrawerContent` | 1 / 1 | 公告、日志详情、用户详情、邮件配置、选项、角色、部门已改 `useVbenDrawer` | `views/system/user/components/user-edit-drawer.vue` |
+| `NDrawer` / `NDrawerContent` | 0 / 0 | 用户编辑也改成 `useVbenDrawer` | — |
 | `NPopconfirm` | 0 | 页面上的确认已改 `ConfirmAction` | — |
-| `NRadioGroup` / `NRadio` | 3 / 2 | 表单 schema、角色数据范围、个人资料、偏好和通知告警级别已接单选。菜单、公告、用户编辑还是 Naive | `views/system/menu/index.vue` |
+| `NRadioGroup` / `NRadio` | 0 / 0 | 菜单、公告、用户编辑已接单选 | — |
 | `NSwitch` | 0 | 页面和表单 schema 都走 `#/ui/switch`。`null` 显示为关；`1/0` 用 `checked-value` / `unchecked-value` | — |
-| `NInputNumber` | 2 | 表单 schema 和任务编辑的数字框已接 NumberField。菜单和系统配置还是 Naive | `views/system/config/index.vue` |
-| `NModal` | 2 | 重置密码结果和头像上传已改 `useVbenModal`。菜单和安全设置还是 Naive | `views/system/menu/index.vue` |
-| `NDropdown` | 2 | 用户行的「更多」已走 `#/ui/dropdown-menu`。角色列表和文件页的下拉还是 Naive | `views/system/role/index.vue` |
+| `NInputNumber` | 0 | 菜单和系统配置的数字框已接 NumberField | — |
+| `NModal` | 0 | 菜单和安全设置已改 `useVbenModal` | — |
+| `NDropdown` | 0 | 角色列表和文件行菜单已走 `#/ui/dropdown-menu` | — |
 | `NCheckboxGroup` | 0 | 页面和表单 `CheckboxGroup` 已改为 Checkbox 列表 | — |
 | `NPopover` | 2 | Popover 已在套件内 | `views/schedule/job/index.vue` |
-| `NTabs` / `NTabPane` | 2 / 2 | Tabs 已在套件内 | `views/system/role/index.vue` |
-| `NDescriptions` / `NDescriptionsItem` | 2 / 2 | 需要描述列表模式 | `views/system/user/components/user-detail-drawer.vue` |
+| `NTabs` / `NTabPane` | 0 / 0 | 角色页和个人中心已走 `#/ui/tabs` | — |
+| `NDescriptions` / `NDescriptionsItem` | 0 / 0 | 开放应用详情和用户详情改成描述列表 | — |
 | `NImage` | 0 | Vxe `CellImage` 已改成 `img` | — |
-| `useNotification` | 1 | 仍走 Naive provider | `views/demos/naive/index.vue` |
-| `NAlert` | 1 | 套件还没有 Alert 路径 | `views/system/config/index.vue` |
-| `NEmpty` | 1 | 套件还没有 Empty | `views/user/profile/components/security-settings.vue` |
+| `useNotification` | 0 | `demos/naive` 改走 toast。Message / Dialog / Notification provider 已从 `app.vue` 去掉 | — |
+| `NAlert` | 0 | 邮件验证成功改成带边框的提示块 | — |
+| `NEmpty` | 0 | 安全设置空列表改成一段文字 | — |
 | `NPagination` | 0 | 角色用户分配的分页已随 Vxe 去掉 | — |
 | `NSteps` / `NList` / `NTimeline` / `NScrollbar` | 各 1–3 | 套件里有的还没做应用路径 | 见对应页面 |
 
@@ -276,7 +305,7 @@ Naive 包不删。
 | `NUpload` + 上传类型 | 0 | 表单 schema 和页面上传都已换。页面走 `#/ui/upload`，请求仍是原来的 `fileApi.upload` / `uploadAvatar` |
 | `NCascader` | 0 | 文件分类改成 `FormTreeSelect`。文档分组里父节点和「全部」共用 `DOCUMENT`，触发器显示「文档」 |
 | `NTimePicker` | 0 | 表单和任务编辑的时间已改 `FormTimePicker`。12 小时制没做 |
-| `NConfigProvider`、`NMessageProvider`、`NDialogProvider`、`NNotificationProvider`、主题与语言包 | `app.vue` | ConfigProvider 托住剩下的 Naive 控件。另外三个 provider 只为 `demos/naive` |
+| `NConfigProvider`、主题与语言包 | `app.vue` | 托住剩下的 Naive 控件。Message / Dialog / Notification provider 已去掉 |
 | `createDiscreteApi` | 0 | 已删除。组件外的提示走 `#/ui-patterns/toast` |
 
 适配器里的 Divider、Space、TimePicker、Upload 已换到上面的控件。图标选择器不再动态加载 `NInput`。

@@ -1,20 +1,24 @@
 <script setup lang="ts">
-import type { DropdownOption } from 'naive-ui';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { FileCategory, FileResult } from '#/api/system/file';
 
-import { h, ref, watch } from 'vue';
+import { ref, watch } from 'vue';
 
 import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
-
-import { NDropdown } from 'naive-ui';
 
 import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { fileApi, resolveFilePreviewUrl } from '#/api/system/file';
 import { Button } from '#/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '#/ui/dropdown-menu';
 import { toast } from '#/ui-patterns/toast';
 import { FileUpload } from '#/ui/upload';
 
@@ -226,28 +230,6 @@ const [Grid, gridApi] = useVbenVxeGrid({
   } as VxeTableGridOptions<FileResult>,
 });
 
-function rowActions(): DropdownOption[] {
-  return [
-    {
-      label: '下载',
-      key: 'download',
-      icon: () => h(IconifyIcon, { icon: 'lucide:download' }),
-    },
-    {
-      label: '预览',
-      key: 'preview',
-      icon: () => h(IconifyIcon, { icon: 'lucide:eye' }),
-    },
-    { type: 'divider', key: 'd1' },
-    {
-      label: '删除',
-      key: 'delete',
-      icon: () =>
-        h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-destructive' }),
-    },
-  ];
-}
-
 async function handleRowAction(key: string | number, row: FileResult) {
   switch (String(key)) {
     case 'download': {
@@ -397,22 +379,47 @@ watch(category, () => {
         {{ resolveStorageLabel(row) }}
       </template>
       <template #action="{ row }">
-        <NDropdown
-          trigger="click"
-          :options="rowActions()"
-          @select="(key) => handleRowAction(key, row)"
-        >
-          <Button
-            type="button"
-            variant="ghost"
-            size="icon"
-          >
-            <IconifyIcon
-              icon="lucide:ellipsis"
-              class="size-4"
-            />
-          </Button>
-        </NDropdown>
+        <DropdownMenu>
+          <DropdownMenuTrigger as-child>
+            <Button
+              type="button"
+              variant="ghost"
+              size="icon"
+            >
+              <IconifyIcon
+                icon="lucide:ellipsis"
+                class="size-4"
+              />
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem @select="handleRowAction('download', row)">
+              <IconifyIcon
+                icon="lucide:download"
+                class="mr-2 size-4"
+              />
+              下载
+            </DropdownMenuItem>
+            <DropdownMenuItem @select="handleRowAction('preview', row)">
+              <IconifyIcon
+                icon="lucide:eye"
+                class="mr-2 size-4"
+              />
+              预览
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem
+              class="text-destructive"
+              @select="handleRowAction('delete', row)"
+            >
+              <IconifyIcon
+                icon="lucide:trash-2"
+                class="mr-2 size-4"
+              />
+              删除
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
       </template>
     </Grid>
   </Page>

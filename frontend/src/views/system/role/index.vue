@@ -3,26 +3,26 @@ import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 
 import type { RoleDetailResp, RoleResp, RoleUserResp } from '#/api/system/role';
 
-import { computed, h, onMounted, ref, watch } from 'vue';
+import { computed, onMounted, ref, watch } from 'vue';
 
 import { ColPage } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
-
-import {
-  NDropdown,
-  NInput,
-  NScrollbar,
-  NSpin,
-  NTabPane,
-  NTabs,
-} from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { roleApi } from '#/api/system/role';
 import { useUserStore } from '#/store';
 import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '#/ui/dropdown-menu';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '#/ui/tabs';
+import { FilterInput } from '#/ui-patterns/filter-input';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
@@ -152,24 +152,6 @@ const showRoleDeleteDialog = async (role: RoleResp) => {
   } catch {
     // ignore
   }
-};
-
-// ==================== 角色列表下拉菜单 ====================
-const dropdownOptions = () => [
-  { label: $t('pages.common.edit'), key: 'edit' },
-  {
-    label: '复制',
-    key: 'copy',
-    icon: () => h(IconifyIcon, { icon: 'lucide:copy' }),
-  },
-  { type: 'divider', key: 'divider' },
-  { label: $t('pages.common.delete'), key: 'delete' },
-];
-
-const handleDropdownSelect = (key: string, role: RoleResp) => {
-  if (key === 'edit') handleEdit(role);
-  if (key === 'copy') handleCopy(role);
-  if (key === 'delete') showRoleDeleteDialog(role);
 };
 
 // ==================== 右侧详情区域 ====================
@@ -442,18 +424,10 @@ onMounted(() => loadRoles());
       <div class="flex flex-col h-full bg-background p-4 overflow-auto">
         <!-- 搜索栏 -->
         <div class="flex items-center gap-2 mb-2">
-          <NInput
-            v-model:value="roleSearchKeyword"
+          <FilterInput
+            v-model="roleSearchKeyword"
             :placeholder="$t('system.role.searchKey')"
-            clearable
-          >
-            <template #prefix>
-              <IconifyIcon
-                icon="lucide:search"
-                class="h-4 w-4 text-gray-400"
-              />
-            </template>
-          </NInput>
+          />
           <Button
             type="button"
             size="icon"
@@ -472,9 +446,12 @@ onMounted(() => loadRoles());
             v-if="roleLoading"
             class="flex items-center justify-center py-12"
           >
-            <NSpin size="medium" />
+            <IconifyIcon
+              icon="lucide:loader-2"
+              class="size-6 animate-spin text-primary"
+            />
           </div>
-          <NScrollbar v-else>
+          <div v-else class="h-full overflow-y-auto">
             <div
               v-for="role in filteredRoles"
               :key="role.id ?? role.name"
@@ -496,24 +473,41 @@ onMounted(() => loadRoles());
                   {{ role.description }}
                 </div>
               </div>
-              <NDropdown
-                trigger="click"
-                :options="dropdownOptions()"
-                @select="(key: string) => handleDropdownSelect(key, role)"
-              >
-                <Button
-                  type="button"
-                  variant="ghost"
-                  size="icon"
-                  class="opacity-0 group-hover:opacity-100"
-                  @click.stop
-                >
-                  <IconifyIcon
-                    icon="lucide:more-vertical"
-                    class="size-3.5"
-                  />
-                </Button>
-              </NDropdown>
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button
+                    type="button"
+                    variant="ghost"
+                    size="icon"
+                    class="opacity-0 group-hover:opacity-100"
+                    @click.stop
+                  >
+                    <IconifyIcon
+                      icon="lucide:more-vertical"
+                      class="size-3.5"
+                    />
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem @select="handleEdit(role)">
+                    {{ $t('pages.common.edit') }}
+                  </DropdownMenuItem>
+                  <DropdownMenuItem @select="handleCopy(role)">
+                    <IconifyIcon
+                      icon="lucide:copy"
+                      class="mr-2 size-4"
+                    />
+                    复制
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    class="text-destructive"
+                    @select="showRoleDeleteDialog(role)"
+                  >
+                    {{ $t('pages.common.delete') }}
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
             </div>
 
             <div
@@ -522,7 +516,7 @@ onMounted(() => loadRoles());
             >
               {{ $t('common.noData') }}
             </div>
-          </NScrollbar>
+          </div>
         </div>
       </div>
     </template>
@@ -541,17 +535,19 @@ onMounted(() => loadRoles());
         </div>
       </div>
 
-      <NTabs
+      <Tabs
         v-else
-        v-model:value="activeTab"
-        type="line"
-        animated
-        class="role-tabs h-full px-4"
+        v-model="activeTab"
+        class="flex h-full min-h-0 flex-col px-4"
       >
-        <!-- 功能权限标签页 -->
-        <NTabPane
-          name="permission"
-          tab="功能权限"
+        <TabsList class="h-auto w-full justify-start bg-transparent p-0">
+          <TabsTrigger value="permission">功能权限</TabsTrigger>
+          <TabsTrigger value="users">{{ $t('system.role.userTab') }}</TabsTrigger>
+        </TabsList>
+        <TabsContent
+          value="permission"
+          force-mount
+          class="mt-0 min-h-0 flex-1 overflow-auto data-[state=inactive]:hidden"
         >
           <div
             v-if="detailLoading"
@@ -582,12 +578,12 @@ onMounted(() => loadRoles());
               请从左侧选择一个角色以配置权限
             </p>
           </div>
-        </NTabPane>
+        </TabsContent>
 
-        <NTabPane
-          name="users"
-          :tab="$t('system.role.userTab')"
-          class="h-full"
+        <TabsContent
+          value="users"
+          force-mount
+          class="mt-0 min-h-0 flex-1 data-[state=inactive]:hidden"
         >
           <div class="h-full min-h-[420px]">
             <UserGrid>
@@ -645,8 +641,8 @@ onMounted(() => loadRoles());
               </template>
             </UserGrid>
           </div>
-        </NTabPane>
-      </NTabs>
+        </TabsContent>
+      </Tabs>
     </div>
 
     <!-- 角色编辑抽屉 -->
@@ -659,19 +655,3 @@ onMounted(() => loadRoles());
   </ColPage>
 </template>
 
-<style scoped>
-.role-tabs {
-  display: flex;
-  min-height: 0;
-  flex-direction: column;
-}
-
-.role-tabs :deep(.n-tabs-pane-wrapper) {
-  min-height: 0;
-  flex: 1;
-}
-
-.role-tabs :deep(.n-tab-pane) {
-  height: 100%;
-}
-</style>

@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { NCard } from 'naive-ui';
 
 import FormRadioGroup from '#/adapter/component/FormRadioGroup.vue';
 import { Input } from '#/ui/input';
@@ -132,7 +131,7 @@ const presetColors = [
 
     <div class="flex flex-col gap-6">
       <!-- 基础设置 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div class="rounded-xl bg-card p-4 shadow-sm">
         <h4 class="font-medium mb-4">基础设置</h4>
 
         <div class="flex flex-col gap-4">
@@ -177,10 +176,10 @@ const presetColors = [
             </div>
           </div>
         </div>
-      </NCard>
+      </div>
 
       <!-- 布局设置 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div class="rounded-xl bg-card p-4 shadow-sm">
         <h4 class="font-medium mb-4">布局设置</h4>
 
         <div class="flex flex-col gap-4">
@@ -215,10 +214,10 @@ const presetColors = [
             <Switch v-model="settings.compactMode" />
           </div>
         </div>
-      </NCard>
+      </div>
 
       <!-- 显示设置 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div class="rounded-xl bg-card p-4 shadow-sm">
         <h4 class="font-medium mb-4">显示设置</h4>
 
         <div class="flex flex-col gap-4">
@@ -247,10 +246,10 @@ const presetColors = [
             <Switch v-model="settings.showFooter" />
           </div>
         </div>
-      </NCard>
+      </div>
 
       <!-- 首页设置 -->
-      <NCard :bordered="false" class="shadow-sm">
+      <div class="rounded-xl bg-card p-4 shadow-sm">
         <h4 class="font-medium mb-4">
           {{ $t('page.profile.preferences.homePage') }}
         </h4>
@@ -265,7 +264,7 @@ const presetColors = [
             class="w-[300px]"
           />
         </div>
-      </NCard>
+      </div>
 
       <!-- 操作按钮 -->
       <div class="flex justify-between">

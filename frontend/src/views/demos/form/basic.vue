@@ -1,10 +1,14 @@
 <script lang="ts" setup>
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { NCard } from 'naive-ui';
-
 import { useVbenForm } from '#/adapter/form';
 import { Button } from '#/ui/button';
+import {
+  Card,
+  CardContent,
+  CardHeader,
+  CardTitle,
+} from '#/ui/card';
 import { menuApi } from '#/api/system/menu';
 
 import modalDemo from './modal.vue';
@@ -167,15 +171,18 @@ const [Modal, modalApi] = useVbenModal({
     description="表单适配器重新包装了CheckboxGroup和RadioGroup，可以通过options属性传递选项数据（选项数据将作为子组件的属性）"
     title="表单演示"
   >
-    <NCard title="基础表单" header-extra-class="gap-4">
-      <template #header-extra>
-        <Button type="button" @click="setFormValues">设置表单值</Button>
-        <Button type="button" class="ml-2" @click="modalApi.open()">
-          打开弹窗
-        </Button>
-      </template>
-      <Form />
-    </NCard>
+    <Card>
+      <CardHeader class="flex-row items-center justify-between space-y-0">
+        <CardTitle>基础表单</CardTitle>
+        <div class="flex gap-2">
+          <Button type="button" @click="setFormValues">设置表单值</Button>
+          <Button type="button" @click="modalApi.open()">打开弹窗</Button>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <Form />
+      </CardContent>
+    </Card>
     <Modal />
   </Page>
 </template>

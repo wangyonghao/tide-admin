@@ -6,8 +6,6 @@ import { ref, watch } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import { NDescriptions, NDescriptionsItem } from 'naive-ui';
-
 import { userApi } from '#/api/system/user';
 import { Badge } from '#/ui/badge';
 import { badgeVariantForTag } from '#/ui/badge/variant';
@@ -124,55 +122,64 @@ function handleEdit() {
         class="size-10 animate-spin"
       />
     </div>
-    <NDescriptions
+    <dl
       v-else-if="detailData"
-      :column="2"
-      label-placement="left"
+      class="grid grid-cols-2 gap-x-6 gap-y-4 text-sm"
     >
-      <NDescriptionsItem label="用户名">
-        {{ detailData.username || '-' }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="显示名称">
-        {{ detailData.displayName || '-' }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="性别">
-        {{ getGenderLabel(detailData.gender) }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="邮箱">
-        {{ detailData.email || '-' }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="手机号">
-        {{ detailData.phone || '-' }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="部门">
-        {{ detailData.deptName || '-' }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="角色">
-        {{ detailData.roleNames || '-' }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="状态">
-        <Badge
-          :variant="
-            badgeVariantForTag(getStatusType(detailData.status)) ||
-              'secondary'
-          "
-        >
-          {{ getStatusLabel(detailData.status) }}
-        </Badge>
-      </NDescriptionsItem>
-      <NDescriptionsItem
-        label="描述"
-        :span="2"
-      >
-        {{ detailData.description || '-' }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="创建时间">
-        {{ detailData.createTime || '-' }}
-      </NDescriptionsItem>
-      <NDescriptionsItem label="更新时间">
-        {{ detailData.updateTime || '-' }}
-      </NDescriptionsItem>
-    </NDescriptions>
+      <div>
+        <dt class="text-muted-foreground">用户名</dt>
+        <dd class="mt-1">{{ detailData.username || '-' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">显示名称</dt>
+        <dd class="mt-1">{{ detailData.displayName || '-' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">性别</dt>
+        <dd class="mt-1">{{ getGenderLabel(detailData.gender) }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">邮箱</dt>
+        <dd class="mt-1">{{ detailData.email || '-' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">手机号</dt>
+        <dd class="mt-1">{{ detailData.phone || '-' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">部门</dt>
+        <dd class="mt-1">{{ detailData.deptName || '-' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">角色</dt>
+        <dd class="mt-1">{{ detailData.roleNames || '-' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">状态</dt>
+        <dd class="mt-1">
+          <Badge
+            :variant="
+              badgeVariantForTag(getStatusType(detailData.status)) ||
+                'secondary'
+            "
+          >
+            {{ getStatusLabel(detailData.status) }}
+          </Badge>
+        </dd>
+      </div>
+      <div class="col-span-2">
+        <dt class="text-muted-foreground">描述</dt>
+        <dd class="mt-1">{{ detailData.description || '-' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">创建时间</dt>
+        <dd class="mt-1">{{ detailData.createTime || '-' }}</dd>
+      </div>
+      <div>
+        <dt class="text-muted-foreground">更新时间</dt>
+        <dd class="mt-1">{{ detailData.updateTime || '-' }}</dd>
+      </div>
+    </dl>
 
     <template #footer>
       <div class="flex w-full justify-end gap-2">
