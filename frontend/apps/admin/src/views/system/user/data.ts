@@ -33,10 +33,10 @@ export function useUserColumns(): VxeTableGridOptions<UserResp>['columns'] {
       align: 'left',
     },
     {
-      field: 'deptName',
+      field: 'departmentName',
       title: '部门',
       minWidth: 100,
-      slots: { default: 'deptName' },
+      slots: { default: 'departmentName' },
     },
     {
       field: 'roleNames',

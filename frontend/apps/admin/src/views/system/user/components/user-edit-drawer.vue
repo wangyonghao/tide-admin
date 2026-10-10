@@ -1,30 +1,29 @@
 <script setup lang="ts">
-import type { FormInst, FormRules, SelectOption, TreeSelectOption } from 'naive-ui';
-import { reactive, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
-import { $t } from '@vben/locales';
+import { useVbenDrawer } from '@vben/common-ui';
 
-import {
-  NButton,
-  NDrawer,
-  NDrawerContent,
-  NForm,
-  NFormItem,
-  NInput,
-  NRadio,
-  NRadioGroup,
-  NSelect,
-  NTreeSelect,
-  useMessage,
-} from 'naive-ui';
-
+import { asSelectList } from '#/adapter/component/select-value';
+import { useVbenForm, z } from '#/adapter/form';
 import { userApi } from '#/api/system/user';
+import { toast } from '#/ui-patterns/toast';
+
+interface DeptNode {
+  children?: DeptNode[];
+  id?: number | string;
+  name?: string;
+}
+
+interface RoleOption {
+  label?: unknown;
+  value?: unknown;
+}
 
 interface Props {
   visible: boolean;
   userId?: string;
-  departmentData: TreeSelectOption[];
-  roleOptions: SelectOption[];
+  departmentData: DeptNode[];
+  roleOptions: RoleOption[];
   defaultDepartmentId?: string;
 }
 
@@ -36,248 +35,254 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const message = useMessage();
-
-const formRef = ref<FormInst | null>(null);
-const submitLoading = ref(false);
 const isUpdate = ref(false);
 
-const formData = reactive({
-  username: '',
-  displayName: '',
-  password: '',
-  gender: 0,
-  email: '',
-  phone: '',
-  departmentId: undefined as string | undefined,
-  roleIds: [] as string[],
-  status: 1,
-  description: '',
+const roleSelectOptions = computed(() =>
+  props.roleOptions.flatMap((item) => {
+    if (item.label == null || item.value == null) return [];
+    if (typeof item.value !== 'string' && typeof item.value !== 'number') {
+      return [];
+    }
+    return [{ label: String(item.label), value: String(item.value) }];
+  }),
+);
+
+const optionalEmail = z
+  .string()
+  .email('请输入正确的邮箱格式')
+  .or(z.literal(''))
+  .nullish();
+
+const optionalPhone = z
+  .string()
+  .regex(/^1[3-9]\d{9}$/, '请输入正确的手机号码')
+  .or(z.literal(''))
+  .nullish();
+
+const [Form, formApi] = useVbenForm({
+  showDefaultActions: false,
+  layout: 'horizontal',
+  commonConfig: {
+    labelWidth: 80,
+    componentProps: { class: 'w-full' },
+  },
+  schema: [
+    {
+      component: 'Input',
+      fieldName: 'username',
+      label: '用户名',
+      componentProps: { placeholder: '请输入用户名' },
+      rules: 'required',
+      dependencies: {
+        disabled: () => isUpdate.value,
+        triggerFields: ['username'],
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'displayName',
+      label: '显示名称',
+      componentProps: { placeholder: '请输入显示名称' },
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'password',
+      label: '密码',
+      componentProps: {
+        type: 'password',
+        placeholder: '请输入密码',
+      },
+      rules: 'required',
+      dependencies: {
+        if: () => !isUpdate.value,
+        triggerFields: ['username'],
+      },
+    },
+    {
+      component: 'RadioGroup',
+      fieldName: 'gender',
+      label: '性别',
+      defaultValue: 0,
+      componentProps: {
+        options: [
+          { label: '未知', value: 0 },
+          { label: '男', value: 1 },
+          { label: '女', value: 2 },
+        ],
+      },
+    },
+    {
+      component: 'Input',
+      fieldName: 'email',
+      label: '邮箱',
+      componentProps: { placeholder: '请输入邮箱' },
+      rules: optionalEmail,
+    },
+    {
+      component: 'Input',
+      fieldName: 'phone',
+      label: '手机号',
+      componentProps: { placeholder: '请输入手机号' },
+      rules: optionalPhone,
+    },
+    {
+      component: 'TreeSelect',
+      fieldName: 'departmentId',
+      label: '部门',
+      componentProps: () => ({
+        options: props.departmentData,
+        keyField: 'id',
+        labelField: 'name',
+        childrenField: 'children',
+        placeholder: '请选择部门',
+        clearable: true,
+        defaultExpandAll: true,
+      }),
+    },
+    {
+      component: 'Select',
+      fieldName: 'roleIds',
+      label: '角色',
+      componentProps: () => ({
+        options: roleSelectOptions.value,
+        placeholder: '请选择角色',
+        filterable: true,
+        multiple: true,
+        clearable: true,
+      }),
+    },
+    {
+      component: 'RadioGroup',
+      fieldName: 'status',
+      label: '状态',
+      defaultValue: 1,
+      componentProps: {
+        options: [
+          { label: '启用', value: 1 },
+          { label: '禁用', value: 0 },
+        ],
+      },
+    },
+    {
+      component: 'Textarea',
+      fieldName: 'description',
+      label: '描述',
+      componentProps: {
+        placeholder: '请输入描述',
+        rows: 3,
+      },
+    },
+  ],
 });
 
-const formRules: FormRules = {
-  username: [
-    {
-      required: true,
-      message: `请输入 ${$t('system.user.field.username')}`,
-      trigger: 'blur',
-    },
-  ],
-  displayName: [
-    {
-      required: true,
-      message: '请输入显示名称',
-      trigger: 'blur',
-    },
-  ],
-  password: [
-    {
-      required: true,
-      message: '请输入密码',
-      trigger: 'blur',
-    },
-  ],
-  email: [
-    {
-      type: 'email',
-      message: '请输入正确的邮箱格式',
-      trigger: 'blur',
-    },
-  ],
-  phone: [
-    {
-      pattern: /^1[3-9]\d{9}$/,
-      message: '请输入正确的手机号码',
-      trigger: 'blur',
-    },
-  ],
-};
+async function fillCreate() {
+  isUpdate.value = false;
+  await formApi.resetForm();
+  await formApi.setValues({
+    username: '',
+    displayName: '',
+    password: '',
+    gender: 0,
+    email: '',
+    phone: '',
+    departmentId: props.defaultDepartmentId ?? null,
+    roleIds: [],
+    status: 1,
+    description: '',
+  });
+}
+
+async function fillEdit() {
+  if (!props.userId) return;
+  isUpdate.value = true;
+  drawerApi.lock(true);
+  try {
+    const res = await userApi.detail(props.userId);
+    await formApi.resetForm();
+    await formApi.setValues({
+      username: res.username ?? '',
+      displayName: res.displayName ?? '',
+      password: '',
+      gender: res.gender ?? 0,
+      email: res.email ?? '',
+      phone: res.phone ?? '',
+      departmentId:
+        res.departmentId == null || res.departmentId === '' ? null : String(res.departmentId),
+      roleIds: (res.roleIds ?? []).map(String),
+      status: res.status ?? 1,
+      description: res.description ?? '',
+    });
+  } catch (error) {
+    console.error('加载用户详情失败:', error);
+    toast.error('加载用户详情失败');
+  } finally {
+    drawerApi.unlock();
+  }
+}
+
+const [Drawer, drawerApi] = useVbenDrawer({
+  class: 'w-[480px]',
+  async onConfirm() {
+    const { valid } = await formApi.validate();
+    if (!valid) return;
+    const values = await formApi.getValues();
+    const payload = {
+      username: String(values.username ?? ''),
+      displayName: String(values.displayName ?? ''),
+      password: String(values.password ?? ''),
+      gender: values.gender ?? 0,
+      email: values.email ?? '',
+      phone: values.phone ?? '',
+      departmentId:
+        values.departmentId == null || values.departmentId === ''
+          ? undefined
+          : String(values.departmentId),
+      roleIds: asSelectList(values.roleIds).map(String),
+      status: values.status ?? 1,
+      description: values.description ?? '',
+    };
+    drawerApi.lock();
+    try {
+      if (isUpdate.value && props.userId) {
+        const { username: _username, ...updateData } = payload;
+        await userApi.update(updateData, props.userId);
+        toast.success('修改成功');
+      } else {
+        await userApi.create(payload);
+        toast.success('新增成功');
+      }
+      emit('success');
+      drawerApi.close();
+    } catch (error) {
+      console.error('保存用户失败:', error);
+      drawerApi.unlock();
+    }
+  },
+  async onOpenChange(isOpen) {
+    if (!isOpen) {
+      emit('update:visible', false);
+      return;
+    }
+    drawerApi.setState({
+      title: props.userId ? '编辑用户' : '新增用户',
+    });
+    if (props.userId) await fillEdit();
+    else await fillCreate();
+  },
+});
 
 watch(
   () => props.visible,
-  async (newVal) => {
-    if (newVal) {
-      if (props.userId) {
-        // 编辑模式
-        isUpdate.value = true;
-        await loadUserDetail();
-      } else {
-        // 新增模式
-        resetForm();
-      }
-    }
+  (open) => {
+    if (open) drawerApi.open();
+    else drawerApi.close();
   },
 );
-
-async function loadUserDetail() {
-  if (!props.userId) return;
-
-  try {
-    const res = await userApi.detail(props.userId);
-    formData.username = res.username ?? '';
-    formData.displayName = res.displayName ?? '';
-    formData.gender = res.gender ?? 0;
-    formData.email = res.email ?? '';
-    formData.phone = res.phone ?? '';
-    formData.departmentId = res.departmentId == null || res.departmentId === '' ? undefined : String(res.departmentId);
-    formData.roleIds = (res.roleIds ?? []).map(String);
-    formData.status = res.status ?? 1;
-    formData.description = res.description ?? '';
-    // 编辑时不需要密码
-    formData.password = '';
-  } catch (error) {
-    console.error('加载用户详情失败:', error);
-    message.error('加载用户详情失败');
-  }
-}
-
-function resetForm() {
-  isUpdate.value = false;
-  formData.username = '';
-  formData.displayName = '';
-  formData.password = '';
-  formData.gender = 0;
-  formData.email = '';
-  formData.phone = '';
-  formData.departmentId = props.defaultDepartmentId;
-  formData.roleIds = [];
-  formData.status = 1;
-  formData.description = '';
-  formRef.value?.restoreValidation();
-}
-
-async function handleSubmit() {
-  try {
-    await formRef.value?.validate();
-  } catch {
-    return;
-  }
-
-  submitLoading.value = true;
-  try {
-    if (isUpdate.value && props.userId) {
-      // 编辑时不传递 username
-      const { username: _username, ...updateData } = formData;
-      await userApi.update(updateData, props.userId);
-      message.success('修改成功');
-    } else {
-      await userApi.create({ ...formData });
-      message.success('新增成功');
-    }
-    handleClose();
-    emit('success');
-  } catch (error) {
-    console.error('保存用户失败:', error);
-  } finally {
-    submitLoading.value = false;
-  }
-}
-
-function handleClose() {
-  emit('update:visible', false);
-}
-
-function handleAfterLeave() {
-  resetForm();
-}
 </script>
 
 <template>
-  <NDrawer
-    :show="visible"
-    :width="480"
-    placement="right"
-    @update:show="handleClose"
-    @after-leave="handleAfterLeave"
-  >
-    <NDrawerContent :title="isUpdate ? '编辑用户' : '新增用户'" closable>
-      <NForm
-        ref="formRef"
-        :model="formData"
-        :rules="formRules"
-        label-placement="left"
-        label-width="80"
-      >
-        <NFormItem label="用户名" path="username">
-          <NInput
-            v-model:value="formData.username"
-            placeholder="请输入用户名"
-            :disabled="isUpdate"
-          />
-        </NFormItem>
-        <NFormItem label="显示名称" path="displayName">
-          <NInput v-model:value="formData.displayName" placeholder="请输入显示名称" />
-        </NFormItem>
-        <NFormItem v-if="!isUpdate" label="密码" path="password">
-          <NInput
-            v-model:value="formData.password"
-            type="password"
-            show-password-on="click"
-            placeholder="请输入密码"
-          />
-        </NFormItem>
-        <NFormItem label="性别" path="gender">
-          <NRadioGroup v-model:value="formData.gender">
-            <NRadio :value="0">未知</NRadio>
-            <NRadio :value="1">男</NRadio>
-            <NRadio :value="2">女</NRadio>
-          </NRadioGroup>
-        </NFormItem>
-        <NFormItem label="邮箱" path="email">
-          <NInput v-model:value="formData.email" placeholder="请输入邮箱" />
-        </NFormItem>
-        <NFormItem label="手机号" path="phone">
-          <NInput v-model:value="formData.phone" placeholder="请输入手机号" />
-        </NFormItem>
-        <NFormItem label="部门" path="departmentId">
-          <NTreeSelect
-            v-model:value="formData.departmentId"
-            :options="departmentData"
-            key-field="id"
-            label-field="name"
-            children-field="children"
-            placeholder="请选择部门"
-            clearable
-          />
-        </NFormItem>
-        <NFormItem label="角色" path="roleIds">
-          <NSelect
-            v-model:value="formData.roleIds"
-            :options="roleOptions"
-            placeholder="请选择角色"
-            filterable
-            multiple
-            clearable
-          />
-        </NFormItem>
-        <NFormItem label="状态" path="status">
-          <NRadioGroup v-model:value="formData.status">
-            <NRadio :value="1">启用</NRadio>
-            <NRadio :value="0">禁用</NRadio>
-          </NRadioGroup>
-        </NFormItem>
-        <NFormItem label="描述" path="description">
-          <NInput
-            v-model:value="formData.description"
-            type="textarea"
-            :autosize="{ minRows: 3, maxRows: 5 }"
-            placeholder="请输入描述"
-          />
-        </NFormItem>
-      </NForm>
-
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <NButton @click="handleClose"> 取消 </NButton>
-          <NButton
-            type="primary"
-            :loading="submitLoading"
-            @click="handleSubmit"
-          >
-            确定
-          </NButton>
-        </div>
-      </template>
-    </NDrawerContent>
-  </NDrawer>
+  <Drawer :title="isUpdate ? '编辑用户' : '新增用户'">
+    <Form />
+  </Drawer>
 </template>
