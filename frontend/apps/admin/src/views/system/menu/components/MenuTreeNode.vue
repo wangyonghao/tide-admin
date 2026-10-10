@@ -23,7 +23,8 @@ import {
   TooltipTrigger,
 } from '@vben-core/shadcn-ui';
 
-import { useMessage } from 'naive-ui';
+import { toast } from '#/ui-patterns/toast';
+
 
 import { childrenOf, isDescendant } from '../composables/useMenuTree';
 import { useMenuState } from '../composables/useMenuState';
@@ -37,7 +38,6 @@ const props = defineProps<{
   node: MenuRecord;
 }>();
 
-const message = useMessage();
 const userStore = useUserStore();
 const state = useMenuState();
 const listRef = ref<HTMLElement | null>(null);
@@ -103,7 +103,7 @@ async function select() {
 async function relocate(parentId: null | string, appId?: string) {
   const result = await state.moveNode(props.node.id, parentId, 0, appId);
   if (!result.ok) {
-    if (result.reason !== 'persist') message.warning($t('appMenu.dropRejected'));
+    if (result.reason !== 'persist') toast.warning($t('appMenu.dropRejected'));
     return;
   }
   if (result.shouldAsk) {
@@ -157,7 +157,7 @@ async function mountSortable() {
       void (async () => {
         const result = await state.moveNode(id, parentId, index, appId);
         if (!result.ok) {
-          if (result.reason !== 'persist') message.warning($t('appMenu.dropRejected'));
+          if (result.reason !== 'persist') toast.warning($t('appMenu.dropRejected'));
           return;
         }
         if (result.shouldAsk) {

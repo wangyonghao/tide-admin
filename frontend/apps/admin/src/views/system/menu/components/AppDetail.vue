@@ -9,12 +9,12 @@ import { $t } from '@vben/locales';
 
 import { Button, Input, Switch } from '@vben-core/shadcn-ui';
 
-import { useMessage } from 'naive-ui';
+import { toast } from '#/ui-patterns/toast';
+
 import { z } from 'zod';
 
 import { useMenuState } from '../composables/useMenuState';
 
-const message = useMessage();
 const userStore = useUserStore();
 const state = useMenuState();
 
@@ -113,7 +113,7 @@ async function save() {
   }
   snapshot.value = JSON.stringify(model);
   state.setDirty(false);
-  message.success($t('appMenu.saved'));
+  toast.success($t('appMenu.saved'));
   return true;
 }
 

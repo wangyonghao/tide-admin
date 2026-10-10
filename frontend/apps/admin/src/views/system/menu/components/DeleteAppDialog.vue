@@ -13,11 +13,11 @@ import {
   Input,
 } from '@vben-core/shadcn-ui';
 
-import { useMessage } from 'naive-ui';
+import { toast } from '#/ui-patterns/toast';
+
 
 import { useMenuState } from '../composables/useMenuState';
 
-const message = useMessage();
 const state = useMenuState();
 const deleteInput = ref('');
 const deleteError = ref('');
@@ -48,7 +48,7 @@ async function confirmDelete() {
   const ok = await state.removeApp(app.value.id);
   if (!ok) return;
   close();
-  message.success($t('appMenu.removed'));
+  toast.success($t('appMenu.removed'));
 }
 </script>
 
