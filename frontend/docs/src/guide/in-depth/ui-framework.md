@@ -1,5 +1,11 @@
 # 组件库切换
 
+::: tip 本仓库
+
+Tide Admin 的产品界面是 shadcn-vue / Vben 原子（`#/ui`、`#/ui-patterns`）。本节是上游 Vben 的组件库切换说明。
+
+:::
+
 `Vue Admin` 支持你自由选择组件库，目前演示站点的默认组件库是 `Ant Design Vue`，与旧版本保持一致。同时框架还内置了 `Element Plus` 版本和 `Naive UI` 版本，你可以根据自己的喜好选择。
 
 ## 新增组件库应用

@@ -1,6 +1,6 @@
 {
   "title": "Demos",
-  "naive": "Atoms",
+  "atoms": "Atoms",
   "table": "Table",
   "form": "Form",
   "vben": {
@@ -9,7 +9,7 @@
     "document": "Document",
     "antdv": "Ant Design Vue Version",
     "antdv-next": "Antdv Next Version",
-    "naive-ui": "shadcn-vue / Vben atoms",
+    "atoms": "shadcn-vue / Vben atoms",
     "tdesign": "TDesign Vue Version"
   }
 }

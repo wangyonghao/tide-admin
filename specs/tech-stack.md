@@ -47,7 +47,7 @@
 | 语言 | TypeScript | 6.0.2 |
 | 构建 | Vite | 8.0.8 |
 | Monorepo | pnpm workspace（仅 `vendor/@core` + 可选 docs） | catalog 在根；无独立工程配置包 |
-| UI（主应用） | Naive UI | 2.44.1（`frontend/src`） |
+| UI（主应用） | shadcn-vue / Vben 原子 | `@vben-core/shadcn-ui` 5.7.0；入口 `#/ui`、`#/ui-patterns`。基座 reka-ui 2.9.5、CVA 0.7.1、vue-sonner 2.0.9。`naive-ui` 已移除 |
 | 路由 / 状态 | Vue Router / Pinia | 5.0.4 / 3.0.4（含 persistedstate） |
 | 请求 / 工具 | Axios、VueUse、Day.js | 1.15.0 / 14.2.1 / 1.11.20 |
 | 校验 | Zod | 3.25.76 |
@@ -90,7 +90,7 @@ platform/*              # 平台能力
 ### Frontend package layout
 
 ```
-frontend/src             # 业务应用（Naive UI）
+frontend/src             # 业务应用（shadcn-vue / Vben 原子：`#/ui`、`#/ui-patterns`）
   ├── …                  # views / api / …
   └── vben/              # 内联壳（@vben/*）
        ↓
@@ -110,7 +110,7 @@ vendor/@core             # UI 内核（慎改）
 3. **新增依赖先登记版本**：后端写入根 `pom.xml` 的 `properties` / `dependencyManagement`；前端写入 catalog，禁止应用内随意钉死游离版本。
 4. **数据库变更走 Liquibase**：脚本放在 `db/changelog/postgresql/`，禁止只改库不改 changelog。
 5. **任务调度以 Quartz（platform-job）为准**：勿回退或并行引入另一套分布式调度框架，除非宪法与 roadmap 明确变更。
-6. **前端主 UI 为 Naive UI（`frontend/src`）**：业务页面优先落在现有设计与组件体系；勿默认新开平行 UI 应用。
+6. **前端主 UI 为 shadcn-vue / Vben 原子（`#/ui`、`#/ui-patterns`）**：业务页面优先落在现有设计与组件体系；勿默认新开平行 UI 应用，也不要再引入 `naive-ui`。
 7. **慎改 `@core`**：共享核心包变更影响面大；应用特有逻辑放 `frontend/src`，壳层封装在 `frontend/src/vben`。
 8. **配置集中**：运行配置以 `tide-bootstrap/src/main/resources/config/` 为准；敏感项用环境变量覆盖。
 
@@ -122,12 +122,13 @@ vendor/@core             # UI 内核（慎改）
 | 以 MySQL 为主库默认 | 当前 changelog 与默认 JDBC 面向 PostgreSQL |
 | SnailJob 作为调度内核 | 代码已收敛到 Spring Quartz + `platform-job` |
 | 在业务域直接堆基础设施细节 | 基础设施归 `cmn-*`，域内保持应用 / 领域边界 |
+| Naive UI 作为主 UI | 已从依赖移除；产品界面走 shadcn-vue / Vben 原子 |
 
 ## Key decisions (why)
 
 - **MyBatis Plus**：CRUD 增强、Lambda 查询、分页等，减少样板。
 - **Sa-Token**：轻量、鉴权能力完整、与 Boot 集成简单。
-- **Naive UI**：TypeScript 友好、组件齐全、体积与性能合适。
+- **shadcn-vue / Vben 原子**：实现在 `@vben-core/shadcn-ui`（reka-ui + CVA），应用按 `#/ui`、`#/ui-patterns` 路径导入。`naive-ui` 已从依赖移除。
 - **pnpm + Turbo**：磁盘与安装效率、增量构建，适合前端 Monorepo。
 - **Vite**：开发启动与 HMR 快，构建产物可控。
 - **PostgreSQL + Liquibase**：版本化 schema，与现网默认路径一致。

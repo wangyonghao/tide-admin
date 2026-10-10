@@ -9,6 +9,12 @@
 
 :::
 
+::: tip This repository
+
+Tide Admin’s product UI is shadcn-vue / Vben atoms (`#/ui`, `#/ui-patterns`). The rest of this page follows upstream Vben’s multi-library overview.
+
+:::
+
 [Vben Admin](https://github.com/vbenjs/vue-vben-admin) is a backend solution based on [Vue 3.0](https://github.com/vuejs/core), [Vite](https://github.com/vitejs/vite), and [TypeScript](https://www.typescriptlang.org/), aimed at providing an out-of-the-box solution for developing medium to large-scale projects. It includes features like component re-encapsulation, utilities, hooks, dynamic menus, permission validation, multi-theme configurations, and button-level permission control. The project uses the latest frontend technology stack, making it a good starting template for quickly building enterprise-level mid- to backend product prototypes. It can also serve as an example for learning `vue3`, `vite`, `ts`, and other mainstream technologies. The project will continue to follow the latest technologies and apply them within the project.
 
 ## Features

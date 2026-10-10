@@ -265,6 +265,23 @@ Naive 包不删。
 - `views/demos/naive/` 目录名还在。页面本身已经是原子按钮和 Sonner，没有挂到路由上。
 - `.kiro` 里的历史改造记录仍按当时的 Naive 页面来写。
 
+上面的技术栈、文档站说明和 `views/demos/naive/` 目录名在下一节收口。
+
+## 命名与文档收尾
+
+上一节留下的技术栈、演示目录和文档站说明，这一节收口。不改控件行为，也不改 `vendor/@core` 里空值为 `null` 的注释。
+
+- **技术栈**：`specs/tech-stack.md` 的主 UI 改为 shadcn-vue / Vben 原子。应用入口是 `#/ui`、`#/ui-patterns`，实现是 `@vben-core/shadcn-ui` 5.7.0（catalog：reka-ui 2.9.5、CVA 0.7.1、vue-sonner 2.0.9）。不再把 Naive UI 写成当前界面。
+- **演示目录**：`views/demos/naive/` 改为 `views/demos/atoms/`。页面仍是原子按钮和 Sonner。`routes.ts` 里挂上的演示只有 `/demos/form`，没有旧路径。语言包 `demos.naive` 改为 `demos.atoms`，`demos.vben.naive-ui` 改为 `demos.vben.atoms`，文案不变。后端菜单里没有 `demos/naive`。
+- **文档站**：`frontend/docs` 仍保留上游 Vben 的多组件库正文。中英文「关于」和「组件库切换」页首加了一句：Tide Admin 的产品界面是 shadcn-vue / Vben 原子。没有改写那些上游列表。
+
+还留着：
+
+- `vendor/@core` 里表单空值为 `null` 的注释仍提到 naive-ui。应用继续用 `null`。
+- `src/vben/styles` 里未引用的 `antd`、`antdv-next`、`ele` 样式。
+- 文档站 `site-layout.vue` 里已注释、未执行的 `useAntdDesignTokens`。
+- `.kiro` 里的历史改造记录。
+
 ## 目录选择
 
 原子实现继续放在 `@vben-core/shadcn-ui/src/ui`（已有 reka-ui、CVA、`cn()`，颜色经 `frontend/src/styles/theme.css` 的 `--color-*` 接 HSL token）。  

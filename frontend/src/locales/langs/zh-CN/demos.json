@@ -1,6 +1,6 @@
 {
   "title": "演示",
-  "naive": "原子控件",
+  "atoms": "原子控件",
   "table": "Table",
   "form": "表单",
   "vben": {
@@ -9,7 +9,7 @@
     "document": "文档",
     "antdv": "Ant Design Vue 版本",
     "antdv-next": "Antdv Next 版本",
-    "naive-ui": "shadcn-vue / Vben 原子",
+    "atoms": "shadcn-vue / Vben 原子",
     "tdesign": "TDesign Vue 版本"
   }
 }
