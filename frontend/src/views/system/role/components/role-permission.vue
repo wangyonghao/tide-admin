@@ -8,10 +8,11 @@ import { computed, h, ref, watch } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
-import { NCheckbox, NDataTable, useMessage } from 'naive-ui';
+import { NDataTable, useMessage } from 'naive-ui';
 
 import { roleApi } from '#/api/system/role';
 import { Button } from '#/ui/button';
+import { Checkbox } from '#/ui/checkbox';
 
 interface Permission {
   id: string;
@@ -385,19 +386,23 @@ const columns = computed<DataTableColumns<MenuNode>>(() => [
     width: 50,
     align: 'center',
     title: () => {
-      return h(NCheckbox, {
-        checked: allChecked.value,
+      return h(Checkbox, {
+        modelValue: allChecked.value
+          ? true
+          : someChecked.value
+            ? 'indeterminate'
+            : false,
         indeterminate: someChecked.value,
-        onUpdateChecked: (checked: boolean) => {
-          toggleAllCheck(checked);
+        'onUpdate:modelValue': (checked: boolean | 'indeterminate') => {
+          toggleAllCheck(checked === true);
         },
       });
     },
     render: (row) => {
-      return h(NCheckbox, {
-        checked: row.checked,
-        onUpdateChecked: (checked: boolean) => {
-          toggleMenuCheck(row, checked);
+      return h(Checkbox, {
+        modelValue: row.checked === true,
+        'onUpdate:modelValue': (checked: boolean | 'indeterminate') => {
+          toggleMenuCheck(row, checked === true);
         },
       });
     },
@@ -446,10 +451,10 @@ const columns = computed<DataTableColumns<MenuNode>>(() => [
               },
             },
             [
-              h(NCheckbox, {
-                checked: perm.checked,
-                onUpdateChecked: (checked: boolean) =>
-                  togglePermissionCheck(row, perm, checked),
+              h(Checkbox, {
+                modelValue: perm.checked,
+                'onUpdate:modelValue': (checked: boolean | 'indeterminate') =>
+                  togglePermissionCheck(row, perm, checked === true),
               }),
               h('span', {}, perm.label),
             ],
@@ -485,16 +490,12 @@ function rowKey(row: MenuNode) {
       <div class="flex items-center gap-2">
         <div class="flex items-center gap-2 text-sm text-muted-foreground">
           <span>节点关联:</span>
-          <label class="flex items-center gap-1.5 cursor-pointer">
-            <input
-              type="checkbox"
-              :checked="localRoleDetail?.menuCheckStrictly"
-              @change="
-                handleMenuCheckStrictlyChange(
-                  !localRoleDetail?.menuCheckStrictly,
-                )
+          <label class="flex cursor-pointer items-center gap-1.5">
+            <Checkbox
+              :model-value="localRoleDetail?.menuCheckStrictly === true"
+              @update:model-value="
+                (checked) => handleMenuCheckStrictlyChange(checked === true)
               "
-              class="w-4 h-4 rounded border-gray-300"
             />
             <span>{{
               localRoleDetail?.menuCheckStrictly ? '已启用' : '已禁用'

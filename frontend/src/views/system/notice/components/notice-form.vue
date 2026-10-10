@@ -8,24 +8,23 @@ import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import {
-  NCheckbox,
-  NCheckboxGroup,
   NDatePicker,
   NForm,
   NFormItem,
   NInput,
   NRadioGroup,
   NSelect,
-  NSpace,
   useMessage,
 } from 'naive-ui';
 
 import { VbenTiptap } from '@vben/plugins/tiptap';
 
 import { noticeApi } from '#/api/system/notice';
-import { Button } from '#/ui/button';
 import { userApi } from '#/api/system/user';
 import { useDict } from '#/hooks';
+import { Button } from '#/ui/button';
+import { Checkbox } from '#/ui/checkbox';
+import { isValueChecked, toggleCheckedValue } from '#/ui/checkbox/group';
 
 defineOptions({ name: 'NoticeForm' });
 
@@ -311,15 +310,28 @@ watch(
           path="noticeMethods"
           class="md:col-span-2"
         >
-          <NCheckboxGroup v-model:value="formData.noticeMethods">
-            <NSpace>
-              <template v-for="item in notice_method_enum" :key="item.value">
-                <NCheckbox :value="String(item.value)">
-                  {{ item.label }}
-                </NCheckbox>
-              </template>
-            </NSpace>
-          </NCheckboxGroup>
+          <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+            <label
+              v-for="item in notice_method_enum"
+              :key="String(item.value)"
+              class="inline-flex cursor-pointer items-center gap-2 text-sm"
+            >
+              <Checkbox
+                :model-value="
+                  isValueChecked(formData.noticeMethods, String(item.value))
+                "
+                @update:model-value="
+                  (checked) =>
+                    (formData.noticeMethods = toggleCheckedValue(
+                      formData.noticeMethods,
+                      String(item.value),
+                      checked === true,
+                    ))
+                "
+              />
+              <span>{{ item.label }}</span>
+            </label>
+          </div>
         </NFormItem>
 
         <NFormItem :label="$t('system.notice.isTiming')" path="isTiming">

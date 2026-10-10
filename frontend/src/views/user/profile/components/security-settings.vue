@@ -3,7 +3,6 @@ import { ref, computed, onMounted } from 'vue';
 import {
   NCard,
   NSpace,
-  NButton,
   NModal,
   NForm,
   NFormItem,
@@ -198,9 +197,9 @@ onMounted(() => {
             <h4 class="font-medium mb-1">{{ $t('page.profile.security.changePassword') }}</h4>
             <p class="text-sm text-gray-500">{{ $t('page.profile.security.passwordRule') }}</p>
           </div>
-          <NButton @click="showPasswordModal = true">
+          <Button type="button" variant="outline" @click="showPasswordModal = true">
             {{ $t('page.profile.security.changePassword') }}
-          </NButton>
+          </Button>
         </div>
       </NCard>
 
@@ -213,9 +212,9 @@ onMounted(() => {
               {{ userStore.user?.phone || $t('page.profile.summary.phoneUnbound') }}
             </p>
           </div>
-          <NButton @click="showPhoneModal = true">
+          <Button type="button" variant="outline" @click="showPhoneModal = true">
             {{ userStore.user?.phone ? $t('page.profile.security.changePhone') : $t('page.profile.security.bindPhone') }}
-          </NButton>
+          </Button>
         </div>
       </NCard>
 
@@ -228,9 +227,9 @@ onMounted(() => {
               {{ userStore.user?.email || $t('page.profile.summary.emailUnbound') }}
             </p>
           </div>
-          <NButton @click="showEmailModal = true">
+          <Button type="button" variant="outline" @click="showEmailModal = true">
             {{ userStore.user?.email ? $t('page.profile.security.changeEmail') : $t('page.profile.security.bindEmail') }}
-          </NButton>
+          </Button>
         </div>
       </NCard>
 
@@ -238,14 +237,14 @@ onMounted(() => {
       <NCard :bordered="false" class="shadow-sm">
         <div class="flex items-center justify-between mb-4">
           <h4 class="font-medium">{{ $t('page.profile.security.loginDevices') }}</h4>
-          <NButton
-            type="error"
-            secondary
-            size="small"
+          <Button
+            type="button"
+            variant="destructive"
+            size="sm"
             @click="handleLogoutAllDevices"
           >
             {{ $t('page.profile.security.logoutAllDevices') }}
-          </NButton>
+          </Button>
         </div>
 
         <NList v-if="loginDevices.length > 0" :loading="loadingDevices">
@@ -333,8 +332,8 @@ onMounted(() => {
       </NForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton @click="showPasswordModal = false">{{ $t('common.cancel') }}</NButton>
-          <NButton type="primary" @click="handleChangePassword">{{ $t('common.confirm') }}</NButton>
+          <Button type="button" variant="outline" @click="showPasswordModal = false">{{ $t('common.cancel') }}</Button>
+          <Button type="button" @click="handleChangePassword">{{ $t('common.confirm') }}</Button>
         </div>
       </template>
     </NModal>
@@ -359,7 +358,7 @@ onMounted(() => {
               v-model:value="phoneForm.captcha"
               :placeholder="$t('page.profile.security.captcha')"
             />
-            <NButton>{{ $t('page.profile.security.sendCaptcha') }}</NButton>
+            <Button type="button" variant="outline">{{ $t('page.profile.security.sendCaptcha') }}</Button>
           </div>
         </NFormItem>
         <NFormItem :label="$t('page.profile.security.oldPassword')">
@@ -373,8 +372,8 @@ onMounted(() => {
       </NForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton @click="showPhoneModal = false">{{ $t('common.cancel') }}</NButton>
-          <NButton type="primary" @click="handleChangePhone">{{ $t('common.confirm') }}</NButton>
+          <Button type="button" variant="outline" @click="showPhoneModal = false">{{ $t('common.cancel') }}</Button>
+          <Button type="button" @click="handleChangePhone">{{ $t('common.confirm') }}</Button>
         </div>
       </template>
     </NModal>
@@ -399,7 +398,7 @@ onMounted(() => {
               v-model:value="emailForm.captcha"
               :placeholder="$t('page.profile.security.captcha')"
             />
-            <NButton>{{ $t('page.profile.security.sendCaptcha') }}</NButton>
+            <Button type="button" variant="outline">{{ $t('page.profile.security.sendCaptcha') }}</Button>
           </div>
         </NFormItem>
         <NFormItem :label="$t('page.profile.security.oldPassword')">
@@ -413,8 +412,8 @@ onMounted(() => {
       </NForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <NButton @click="showEmailModal = false">{{ $t('common.cancel') }}</NButton>
-          <NButton type="primary" @click="handleChangeEmail">{{ $t('common.confirm') }}</NButton>
+          <Button type="button" variant="outline" @click="showEmailModal = false">{{ $t('common.cancel') }}</Button>
+          <Button type="button" @click="handleChangeEmail">{{ $t('common.confirm') }}</Button>
         </div>
       </template>
     </NModal>

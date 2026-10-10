@@ -10,11 +10,12 @@ import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { useDebounceFn } from '@vueuse/core';
-import { NBadge, NDataTable, NInput, NTag, useMessage } from 'naive-ui';
+import { NDataTable, NInput, NTag, useMessage } from 'naive-ui';
 
 import { deptApi } from '#/api/system/dept';
 import { useDownload } from '#/hooks/app/useDownload';
 import { useUserStore } from '#/store/user';
+import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
 import {
   ConfirmAction,
@@ -45,23 +46,12 @@ const createColumns = (): DataTableColumns<DeptResult> => {
       title: $t('system.dept.status'),
       key: 'status',
       align: 'center',
-      width: 80,
+      width: 100,
       render: (row) => {
         return h(
-          'span',
-          {
-            style: { display: 'inline-flex', alignItems: 'center', gap: '6px' },
-          },
-          [
-            h(NBadge, {
-              dot: true,
-              color:
-                row.status === 1
-                  ? 'oklch(76.8% 0.233 130.85)'
-                  : 'oklch(50.5% 0.213 27.518)',
-            }),
-            row.status === 1 ? $t('common.enabled') : $t('common.disabled'),
-          ],
+          Badge,
+          { variant: row.status === 1 ? 'success' : 'destructive' },
+          () => (row.status === 1 ? $t('common.enabled') : $t('common.disabled')),
         );
       },
     },

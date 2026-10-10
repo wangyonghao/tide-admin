@@ -6,8 +6,6 @@ import { computed, reactive, ref } from 'vue';
 import { useVbenModal } from '@vben/common-ui';
 
 import {
-  NCheckbox,
-  NCheckboxGroup,
   NForm,
   NFormItem,
   NInput,
@@ -18,6 +16,8 @@ import {
 } from 'naive-ui';
 
 import { addJob, listJobHandlers, updateJob } from '#/api/schedule';
+import { Checkbox } from '#/ui/checkbox';
+import { isValueChecked, toggleCheckedValue } from '#/ui/checkbox/group';
 
 const emits = defineEmits(['success']);
 const message = useMessage();
@@ -181,9 +181,26 @@ const [Modal, drawerApi] = useVbenModal({
         <NTimePicker v-model:value="clockValue" format="HH:mm" />
       </NFormItem>
       <NFormItem v-if="form.mode === 'WEEKLY'" label="星期">
-        <NCheckboxGroup v-model:value="form.daysOfWeek">
-          <NCheckbox v-for="item in weekdayOptions" :key="item.value" :value="item.value" :label="item.label" />
-        </NCheckboxGroup>
+        <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
+          <label
+            v-for="item in weekdayOptions"
+            :key="item.value"
+            class="inline-flex cursor-pointer items-center gap-2 text-sm"
+          >
+            <Checkbox
+              :model-value="isValueChecked(form.daysOfWeek, item.value)"
+              @update:model-value="
+                (checked) =>
+                  (form.daysOfWeek = toggleCheckedValue(
+                    form.daysOfWeek,
+                    item.value,
+                    checked === true,
+                  ))
+              "
+            />
+            <span>{{ item.label }}</span>
+          </label>
+        </div>
       </NFormItem>
       <NFormItem v-if="form.mode === 'MONTHLY'" label="每月">
         <NInputNumber v-model:value="form.dayOfMonth" :min="1" :max="31" />
