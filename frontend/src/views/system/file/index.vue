@@ -14,7 +14,6 @@ import { Page } from '@vben/common-ui';
 
 import { SearchOutline } from '@vicons/ionicons5';
 import {
-  NButton,
   NCard,
   NCascader,
   NDataTable,
@@ -270,13 +269,13 @@ const columns = computed<DataTableColumns<FileResult>>(() => [
         {
           default: () =>
             h(
-              NButton,
-              { text: true, size: 'small' },
+              Button,
+              { type: 'button', variant: 'ghost', size: 'icon' },
               {
-                icon: () =>
+                default: () =>
                   h(IconifyIcon, {
                     icon: 'lucide:ellipsis',
-                    class: 'text-base',
+                    class: 'size-4',
                   }),
               },
             ),

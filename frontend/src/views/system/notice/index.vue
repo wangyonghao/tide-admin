@@ -9,14 +9,12 @@ import { $t } from '@vben/locales';
 
 import { SearchOutline } from '@vicons/ionicons5';
 import {
-  NButton,
   NDataTable,
   NDatePicker,
   NDrawer,
   NDrawerContent,
   NIcon,
   NInput,
-  NPopconfirm,
   NSelect,
   NSpace,
   NTag,
@@ -26,12 +24,17 @@ import {
 import { noticeApi } from '#/api/system/notice';
 import { useDict } from '#/hooks';
 import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import NoticeForm from './components/notice-form.vue';
 import NoticeView from './components/notice-view.vue';
 
 const message = useMessage();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 // ==================== 字典数据 ====================
 const {
@@ -219,62 +222,59 @@ const tableColumns: DataTableColumns<NoticeResp> = [
     width: 180,
     fixed: 'right',
     render(row) {
-      return h(
-        NSpace,
-        { size: 'small' },
-        {
-          default: () => [
-            h(
-              NButton,
-              {
-                size: 'small',
-                type: 'info',
-                text: true,
-                onClick: () => handlePreview(row),
-              },
-              {
-                icon: () => h(IconifyIcon, { icon: 'lucide:eye' }),
-                default: () => '预览',
-              },
-            ),
-            h(
-              NButton,
-              {
-                size: 'small',
-                type: 'primary',
-                text: true,
-                onClick: () => handleEdit(row),
-              },
-              {
-                icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }),
-                default: () => '编辑',
-              },
-            ),
-            h(
-              NPopconfirm,
-              {
-                onPositiveClick: () => handleDelete(row),
-              },
-              {
-                trigger: () =>
-                  h(
-                    NButton,
-                    {
-                      size: 'small',
-                      type: 'error',
-                      text: true,
-                    },
-                    {
-                      icon: () => h(IconifyIcon, { icon: 'lucide:trash-2' }),
-                      default: () => '删除',
-                    },
-                  ),
-                default: () => `确定删除公告"${row.title}"吗？`,
-              },
-            ),
-          ],
-        },
-      );
+      return h('div', { class: 'flex items-center gap-2' }, [
+        h(
+          Button,
+          {
+            type: 'button',
+            variant: 'link',
+            size: 'sm',
+            class: 'h-auto px-1',
+            onClick: () => handlePreview(row),
+          },
+          {
+            default: () => [
+              h(IconifyIcon, { icon: 'lucide:eye', class: 'mr-1 size-3.5' }),
+              '预览',
+            ],
+          },
+        ),
+        h(
+          Button,
+          {
+            type: 'button',
+            variant: 'link',
+            size: 'sm',
+            class: 'h-auto px-1',
+            onClick: () => handleEdit(row),
+          },
+          {
+            default: () => [
+              h(IconifyIcon, { icon: 'lucide:pencil', class: 'mr-1 size-3.5' }),
+              '编辑',
+            ],
+          },
+        ),
+        h(
+          Button,
+          {
+            type: 'button',
+            variant: 'link',
+            size: 'sm',
+            class: 'text-destructive h-auto px-1',
+            onClick: () => handleDelete(row),
+          },
+          {
+            default: () => [
+              h(IconifyIcon, {
+                icon: 'lucide:trash-2',
+                class: 'mr-1 size-3.5',
+              }),
+              '删除',
+            ],
+          },
+        ),
+      ]);
     },
   },
 ];
@@ -359,6 +359,12 @@ function handleEdit(record: NoticeResp) {
 
 // ==================== 删除 ====================
 async function handleDelete(row: NoticeResp) {
+  const ok = await confirmAction.value?.ask({
+    title: '删除确认',
+    description: `确定删除公告"${row.title}"吗？`,
+    tone: 'destructive',
+  });
+  if (!ok) return;
   try {
     await noticeApi.delete(row.id);
     message.success($t('pages.common.deleteSuccess'));
@@ -407,6 +413,7 @@ onMounted(() => {
 
 <template>
   <div class="h-full bg-background p-4">
+    <ConfirmAction ref="confirmAction" />
     <!-- 搜索和操作栏 -->
     <div class="mb-4">
       <!-- 搜索表单 - 响应式网格布局 -->

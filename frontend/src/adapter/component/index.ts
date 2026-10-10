@@ -34,10 +34,11 @@ import { ApiComponent, globalShareState, IconPicker } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
 import { message } from '#/adapter/naive';
+import { Button } from '#/ui/button';
 
-const NButton = defineAsyncComponent(() =>
-  import('naive-ui/es/button').then((res) => res.NButton),
-);
+import FormCheckbox from './FormCheckbox.vue';
+import FormTextInput from './FormTextInput.vue';
+
 const NCheckbox = defineAsyncComponent(() =>
   import('naive-ui/es/checkbox').then((res) => res.NCheckbox),
 );
@@ -193,7 +194,7 @@ async function initComponentAdapter() {
         visibleEvent: 'onVisibleChange',
       },
     ),
-    Checkbox: NCheckbox,
+    Checkbox: FormCheckbox,
     CheckboxGroup: (props, { attrs, slots }) => {
       let defaultSlot;
       if (Reflect.has(slots, 'default')) {
@@ -211,20 +212,29 @@ async function initComponentAdapter() {
       );
     },
     DatePicker: NDatePicker,
-    // 自定义默认按钮
+    // 提交/重置。content、show 是表单动作元数据，不能落到 DOM 上。
     DefaultButton: (props, { attrs, slots }) => {
-      return h(NButton, { ...props, attrs, type: 'default' }, slots);
+      const { content: _content, show: _show, ...rest } = props ?? {};
+      return h(
+        Button,
+        { ...rest, ...attrs, type: 'button', variant: 'outline' },
+        slots,
+      );
     },
-    // 自定义主要按钮
     PrimaryButton: (props, { attrs, slots }) => {
-      return h(NButton, { ...props, attrs, type: 'primary' }, slots);
+      const { content: _content, show: _show, ...rest } = props ?? {};
+      return h(
+        Button,
+        { ...rest, ...attrs, type: 'button', variant: 'default' },
+        slots,
+      );
     },
     Divider: NDivider,
     IconPicker: withDefaultPlaceholder(IconPicker, 'select', {
       iconSlot: 'suffix',
       inputComponent: NInput,
     }),
-    Input: withDefaultPlaceholder(NInput, 'input'),
+    Input: withDefaultPlaceholder(FormTextInput, 'input'),
     InputNumber: withDefaultPlaceholder(NInputNumber, 'input'),
     RadioGroup: (props, { attrs, slots }) => {
       let defaultSlot;

@@ -8,7 +8,6 @@ import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import {
-  NButton,
   NCheckbox,
   NCheckboxGroup,
   NDatePicker,
@@ -276,16 +275,17 @@ watch(
           <NRadioGroup v-model:value="formData.noticeScope">
             <div class="flex flex-wrap items-center gap-2">
               <template v-for="item in notice_scope_enum" :key="item.value">
-                <NButton
-                  :type="
+                <Button
+                  type="button"
+                  :variant="
                     formData.noticeScope === String(item.value)
-                      ? 'primary'
-                      : 'default'
+                      ? 'default'
+                      : 'outline'
                   "
                   @click="formData.noticeScope = String(item.value)"
                 >
                   {{ item.label }}
-                </NButton>
+                </Button>
               </template>
             </div>
           </NRadioGroup>
@@ -326,14 +326,15 @@ watch(
           <NRadioGroup v-model:value="formData.isTiming">
             <div class="flex flex-wrap items-center gap-2">
               <template v-for="item in yesNoOptions" :key="item.value">
-                <NButton
-                  :type="
-                    formData.isTiming === item.value ? 'primary' : 'default'
+                <Button
+                  type="button"
+                  :variant="
+                    formData.isTiming === item.value ? 'default' : 'outline'
                   "
                   @click="formData.isTiming = item.value"
                 >
                   {{ item.label }}
-                </NButton>
+                </Button>
               </template>
             </div>
           </NRadioGroup>
@@ -357,12 +358,15 @@ watch(
           <NRadioGroup v-model:value="formData.isTop">
             <div class="flex flex-wrap items-center gap-2">
               <template v-for="item in yesNoOptions" :key="item.value">
-                <NButton
-                  :type="formData.isTop === item.value ? 'primary' : 'default'"
+                <Button
+                  type="button"
+                  :variant="
+                    formData.isTop === item.value ? 'default' : 'outline'
+                  "
                   @click="formData.isTop = item.value"
                 >
                   {{ item.label }}
-                </NButton>
+                </Button>
               </template>
             </div>
           </NRadioGroup>

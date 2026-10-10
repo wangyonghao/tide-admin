@@ -20,13 +20,16 @@ import {
   NSplit,
   NTabPane,
   NTabs,
-  useDialog,
   useMessage,
 } from 'naive-ui';
 
 import { roleApi } from '#/api/system/role';
 import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { useUserStore } from '#/store';
 
 import RoleEditDrawer from './components/role-edit-drawer.vue';
@@ -35,7 +38,7 @@ import RolePermission from './components/role-permission.vue';
 defineOptions({ name: 'SystemRole' });
 
 const message = useMessage();
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 
 // ==================== 左侧角色列表状态 ====================
@@ -128,33 +131,31 @@ const handleDrawerSuccess = async (newRoleId?: string) => {
 };
 
 // ==================== 角色删除 ====================
-const showRoleDeleteDialog = (role: RoleResp) => {
-  dialog.error({
+const showRoleDeleteDialog = async (role: RoleResp) => {
+  const ok = await confirmAction.value?.ask({
     title: $t('system.role.deleteTitle'),
-    content: $t('ui.actionMessage.deleteConfirm', [role.name]),
-    positiveText: $t('common.confirm'),
-    negativeText: $t('common.cancel'),
-    onPositiveClick: async () => {
-      if (!role.id) return;
-      try {
-        await roleApi.delete(role.id);
-        message.success($t('pages.common.deleteSuccess'));
-        const wasSelected = selectedRoleId.value === role.id;
-        await loadRoles();
-
-        // 如果删除的是当前选中的角色，自动选中第一个角色
-        const firstRole = roleData.value[0];
-        if (wasSelected && firstRole) {
-          selectRole(firstRole);
-        } else if (wasSelected) {
-          selectedRoleId.value = null;
-          selectedRole.value = null;
-        }
-      } catch {
-        // ignore
-      }
-    },
+    description: $t('ui.actionMessage.deleteConfirm', [role.name]),
+    confirmText: $t('common.confirm'),
+    cancelText: $t('common.cancel'),
+    tone: 'destructive',
   });
+  if (!ok || !role.id) return;
+  try {
+    await roleApi.delete(role.id);
+    message.success($t('pages.common.deleteSuccess'));
+    const wasSelected = selectedRoleId.value === role.id;
+    await loadRoles();
+
+    const firstRole = roleData.value[0];
+    if (wasSelected && firstRole) {
+      selectRole(firstRole);
+    } else if (wasSelected) {
+      selectedRoleId.value = null;
+      selectedRole.value = null;
+    }
+  } catch {
+    // ignore
+  }
 };
 
 // ==================== 角色列表下拉菜单 ====================
@@ -387,27 +388,25 @@ const handleRefreshPermission = async () => {
 };
 
 // 用户删除对话框
-const showUserDeleteDialog = (row: RoleUserResp) => {
-  dialog.error({
+const showUserDeleteDialog = async (row: RoleUserResp) => {
+  const ok = await confirmAction.value?.ask({
     title: '取消分配',
-    content: $t('system.role.cancelRoleConfirm', [
+    description: $t('system.role.cancelRoleConfirm', [
       row.displayName,
       roleDetail.value?.name || '',
     ]),
-    positiveText: $t('common.confirm'),
-    negativeText: $t('common.cancel'),
-    onPositiveClick: async () => {
-      try {
-        if (roleDetail.value?.id) {
-          await roleApi.removeMember(roleDetail.value.id, [row.id]);
-          message.success($t('pages.common.deleteSuccess'));
-          loadUserData();
-        }
-      } catch {
-        // ignore
-      }
-    },
+    confirmText: $t('common.confirm'),
+    cancelText: $t('common.cancel'),
+    tone: 'destructive',
   });
+  if (!ok || !roleDetail.value?.id) return;
+  try {
+    await roleApi.removeMember(roleDetail.value.id, [row.id]);
+    message.success($t('pages.common.deleteSuccess'));
+    loadUserData();
+  } catch {
+    // ignore
+  }
 };
 
 // 监听选中角色变化
@@ -455,6 +454,7 @@ onMounted(() => loadRoles());
 
 <template>
   <Page class="h-full">
+    <ConfirmAction ref="confirmAction" />
     <NSplit
       direction="horizontal"
       :default-size="0.3"

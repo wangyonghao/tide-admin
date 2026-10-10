@@ -6,16 +6,20 @@ import {
   NSelect,
   NRadioGroup,
   NRadio,
-  NSwitch,
-  NButton,
-  NPopconfirm,
   NInput,
 } from 'naive-ui';
 import { $t } from '#/locales';
 import { Button } from '#/ui/button';
 import { Separator } from '#/ui/separator';
+import { Switch } from '#/ui/switch';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { preferences } from '@vben/preferences';
 import { message } from '#/adapter/naive';
+
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 // 语言选项
 const languageOptions = [
@@ -83,6 +87,17 @@ const handleSave = () => {
 };
 
 // 恢复默认
+const confirmReset = async () => {
+  const ok = await confirmAction.value?.ask({
+    title: $t('common.tips'),
+    description: $t('page.profile.preferences.resetConfirm'),
+    confirmText: $t('common.confirm'),
+    cancelText: $t('common.cancel'),
+  });
+  if (!ok) return;
+  handleReset();
+};
+
 const handleReset = () => {
   settings.value = {
     language: 'zh-CN',
@@ -113,6 +128,7 @@ const presetColors = [
 
 <template>
   <div class="preferences-settings">
+    <ConfirmAction ref="confirmAction" />
     <h3 class="text-lg font-semibold mb-6">
       {{ $t('page.profile.tabs.preferences') }}
     </h3>
@@ -216,7 +232,7 @@ const presetColors = [
             <div class="setting-label">
               {{ $t('page.profile.preferences.compactMode') }}
             </div>
-            <NSwitch v-model:value="settings.compactMode" />
+            <Switch v-model="settings.compactMode" />
           </div>
         </NSpace>
       </NCard>
@@ -230,7 +246,7 @@ const presetColors = [
             <div class="setting-label">
               {{ $t('page.profile.preferences.showBreadcrumb') }}
             </div>
-            <NSwitch v-model:value="settings.showBreadcrumb" />
+            <Switch v-model="settings.showBreadcrumb" />
           </div>
 
           <Separator class="my-2" />
@@ -239,7 +255,7 @@ const presetColors = [
             <div class="setting-label">
               {{ $t('page.profile.preferences.showTabs') }}
             </div>
-            <NSwitch v-model:value="settings.showTabs" />
+            <Switch v-model="settings.showTabs" />
           </div>
 
           <Separator class="my-2" />
@@ -248,7 +264,7 @@ const presetColors = [
             <div class="setting-label">
               {{ $t('page.profile.preferences.showFooter') }}
             </div>
-            <NSwitch v-model:value="settings.showFooter" />
+            <Switch v-model="settings.showFooter" />
           </div>
         </NSpace>
       </NCard>
@@ -273,18 +289,9 @@ const presetColors = [
 
       <!-- 操作按钮 -->
       <div class="flex justify-between">
-        <NPopconfirm
-          :positive-text="$t('common.confirm')"
-          :negative-text="$t('common.cancel')"
-          @positive-click="handleReset"
-        >
-          <template #trigger>
-            <NButton>{{
-              $t('page.profile.preferences.resetToDefault')
-            }}</NButton>
-          </template>
-          {{ $t('page.profile.preferences.resetConfirm') }}
-        </NPopconfirm>
+        <Button type="button" variant="outline" @click="confirmReset">
+          {{ $t('page.profile.preferences.resetToDefault') }}
+        </Button>
 
         <Button type="button" @click="handleSave">
           {{ $t('page.profile.basic.save') }}

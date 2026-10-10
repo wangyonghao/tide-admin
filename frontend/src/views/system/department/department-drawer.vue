@@ -15,13 +15,13 @@ import {
   NInput,
   NInputNumber,
   NSelect,
-  NSwitch,
   NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
 import { deptApi } from '#/api/system/dept';
 import { Button } from '#/ui/button';
+import { Switch } from '#/ui/switch';
 import { useDict } from '#/hooks/app';
 
 interface Props {
@@ -272,18 +272,20 @@ watch(
           />
         </NFormItem>
         <NFormItem :label="$t('system.dept.status')" path="status">
-          <NSwitch
-            :checked-value="1"
-            :unchecked-value="2"
-            v-model:value="formModel.status"
-          >
-            <template #checked>
-              {{ $t('pages.common.enable') }}
-            </template>
-            <template #unchecked>
-              {{ $t('pages.common.disable') }}
-            </template>
-          </NSwitch>
+          <div class="flex items-center gap-2">
+            <Switch
+              v-model="formModel.status"
+              :checked-value="1"
+              :unchecked-value="2"
+            />
+            <span class="text-sm text-muted-foreground">
+              {{
+                formModel.status === 1
+                  ? $t('pages.common.enable')
+                  : $t('pages.common.disable')
+              }}
+            </span>
+          </div>
         </NFormItem>
       </NForm>
 

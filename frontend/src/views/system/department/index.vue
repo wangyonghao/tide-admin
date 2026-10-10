@@ -10,14 +10,7 @@ import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { useDebounceFn } from '@vueuse/core';
-import {
-  NBadge,
-  NButton,
-  NDataTable,
-  NInput,
-  NTag,
-  useMessage,
-} from 'naive-ui';
+import { NBadge, NDataTable, NInput, NTag, useMessage } from 'naive-ui';
 
 import { deptApi } from '#/api/system/dept';
 import { useDownload } from '#/hooks/app/useDownload';
@@ -89,18 +82,35 @@ const createColumns = (): DataTableColumns<DeptResult> => {
         if (userStore.hasPermission('system:dept:update')) {
           actions.push(
             h(
-              NButton,
-              { text: true, onClick: () => handleEdit(row) },
-              { icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }) },
+              Button,
+              {
+                type: 'button',
+                variant: 'ghost',
+                size: 'icon',
+                onClick: () => handleEdit(row),
+              },
+              {
+                default: () =>
+                  h(IconifyIcon, { icon: 'lucide:pencil', class: 'size-4' }),
+              },
             ),
           );
         }
         if (userStore.hasPermission('system:dept:delete')) {
           actions.push(
             h(
-              NButton,
-              { text: true, onClick: () => handleDelete(row) },
-              { icon: () => h(IconifyIcon, { icon: 'lucide:trash-2' }) },
+              Button,
+              {
+                type: 'button',
+                variant: 'ghost',
+                size: 'icon',
+                class: 'text-destructive',
+                onClick: () => handleDelete(row),
+              },
+              {
+                default: () =>
+                  h(IconifyIcon, { icon: 'lucide:trash-2', class: 'size-4' }),
+              },
             ),
           );
         }

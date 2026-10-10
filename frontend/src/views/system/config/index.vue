@@ -26,7 +26,6 @@ import {
   NDrawerContent,
   NAlert,
   NTag,
-  useDialog,
   useMessage,
 } from 'naive-ui';
 
@@ -34,9 +33,13 @@ import { configApi } from '#/api/system';
 import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
 import { Separator } from '#/ui/separator';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 
 const message = useMessage();
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 // ==================== 配置类型定义 ====================
 interface ConfigItem {
@@ -291,23 +294,21 @@ onUnmounted(() => {
 
 // ==================== 发送测试邮件 ====================
 async function handleSendTestEmail() {
-  dialog.warning({
+  const ok = await confirmAction.value?.ask({
     title: '发送测试邮件',
-    content: '系统将发送测试邮件到您的邮箱，确认继续吗？',
-    positiveText: '确认',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      sendingTestEmail.value = true;
-      try {
-        await configApi.sendTestEmail();
-        message.success('测试邮件已发送，请查收您的邮箱');
-      } catch (error: any) {
-        message.error(error.message || '发送失败');
-      } finally {
-        sendingTestEmail.value = false;
-      }
-    },
+    description: '系统将发送测试邮件到您的邮箱，确认继续吗？',
+    confirmText: '确认',
   });
+  if (!ok) return;
+  sendingTestEmail.value = true;
+  try {
+    await configApi.sendTestEmail();
+    message.success('测试邮件已发送，请查收您的邮箱');
+  } catch (error: any) {
+    message.error(error.message || '发送失败');
+  } finally {
+    sendingTestEmail.value = false;
+  }
 }
 
 // ==================== 打开邮件配置抽屉 ====================
@@ -415,6 +416,7 @@ async function handleVerifyCode() {
 
 <template>
   <Page class="h-full m-4 bg-background">
+    <ConfirmAction ref="confirmAction" />
     <NSplit
       direction="horizontal"
       default-size="200px"

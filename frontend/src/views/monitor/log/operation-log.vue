@@ -8,7 +8,6 @@ import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
 import {
-  NButton,
   NDataTable,
   NDatePicker,
   NDrawer,
@@ -104,11 +103,12 @@ const tableColumns: DataTableColumns<OperationLogResp> = [
     fixed: 'right',
     render(row) {
       return h(
-        NButton,
+        Button,
         {
-          size: 'small',
-          type: 'primary',
-          text: true,
+          type: 'button',
+          variant: 'link',
+          size: 'sm',
+          class: 'h-auto px-1',
           onClick: () => handleDetail(row),
         },
         { default: () => '详情' },

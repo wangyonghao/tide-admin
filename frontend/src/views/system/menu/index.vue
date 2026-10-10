@@ -14,7 +14,6 @@ import { IconifyIcon } from '@vben/icons';
 
 import { AddOutline, SearchOutline } from '@vicons/ionicons5';
 import {
-  NButton,
   NCard,
   NDataTable,
   NForm,
@@ -26,7 +25,6 @@ import {
   NRadio,
   NRadioGroup,
   NSelect,
-  NSwitch,
   NTag,
   NTreeSelect,
   useMessage,
@@ -34,6 +32,7 @@ import {
 
 import { menuApi } from '#/api/system/menu';
 import { Button } from '#/ui/button';
+import { Switch } from '#/ui/switch';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
@@ -180,8 +179,14 @@ const columns: DataTableColumns<Menu> = [
       if (row.type !== 3 && userStore.hasPermission('system:menu:create')) {
         buttons.push(
           h(
-            NButton,
-            { size: 'small', onClick: () => handleAdd(row.id) },
+            Button,
+            {
+              type: 'button',
+              variant: 'link',
+              size: 'sm',
+              class: 'h-auto px-1',
+              onClick: () => handleAdd(row.id),
+            },
             { default: () => '新增' },
           ),
         );
@@ -189,8 +194,14 @@ const columns: DataTableColumns<Menu> = [
       if (userStore.hasPermission('system:menu:edit')) {
         buttons.push(
           h(
-            NButton,
-            { size: 'small', onClick: () => handleEdit(row) },
+            Button,
+            {
+              type: 'button',
+              variant: 'link',
+              size: 'sm',
+              class: 'h-auto px-1',
+              onClick: () => handleEdit(row),
+            },
             { default: () => '编辑' },
           ),
         );
@@ -198,8 +209,14 @@ const columns: DataTableColumns<Menu> = [
       if (userStore.hasPermission('system:menu:delete')) {
         buttons.push(
           h(
-            NButton,
-            { size: 'small', type: 'error', onClick: () => handleDelete(row) },
+            Button,
+            {
+              type: 'button',
+              variant: 'link',
+              size: 'sm',
+              class: 'text-destructive h-auto px-1',
+              onClick: () => handleDelete(row),
+            },
             { default: () => '删除' },
           ),
         );
@@ -427,17 +444,17 @@ onMounted(() => {
           <NInput v-model:value="formData.name" placeholder="请输入菜单名称" />
         </NFormItem>
         <NFormItem v-if="formData.type !== 3" label="是否外链" path="isFrame">
-          <NSwitch
-            v-model:value="formData.isFrame"
-            :checked-value="1"
-            :unchecked-value="0"
-          >
-            <template #checked>是</template>
-            <template #unchecked>否</template>
-          </NSwitch>
-          <span style="margin-left: 8px; font-size: 12px; color: #999"
-            >外链点击后将在新窗口打开</span
-          >
+          <div class="flex items-center gap-2">
+            <Switch
+              v-model="formData.isFrame"
+              :checked-value="1"
+              :unchecked-value="0"
+            />
+            <span class="text-sm">{{ formData.isFrame === 1 ? '是' : '否' }}</span>
+            <span class="text-xs text-muted-foreground">
+              外链点击后将在新窗口打开
+            </span>
+          </div>
         </NFormItem>
         <NFormItem
           v-if="formData.type !== 3 && !formData.isFrame"
@@ -487,24 +504,28 @@ onMounted(() => {
           />
         </NFormItem>
         <NFormItem v-if="formData.type !== 3" label="是否可见" path="visible">
-          <NSwitch
-            v-model:value="formData.visible"
-            :checked-value="1"
-            :unchecked-value="0"
-          >
-            <template #checked>显示</template>
-            <template #unchecked>隐藏</template>
-          </NSwitch>
+          <div class="flex items-center gap-2">
+            <Switch
+              v-model="formData.visible"
+              :checked-value="1"
+              :unchecked-value="0"
+            />
+            <span class="text-sm">
+              {{ formData.visible === 1 ? '显示' : '隐藏' }}
+            </span>
+          </div>
         </NFormItem>
         <NFormItem label="状态" path="status">
-          <NSwitch
-            v-model:value="formData.status"
-            :checked-value="1"
-            :unchecked-value="0"
-          >
-            <template #checked>启用</template>
-            <template #unchecked>禁用</template>
-          </NSwitch>
+          <div class="flex items-center gap-2">
+            <Switch
+              v-model="formData.status"
+              :checked-value="1"
+              :unchecked-value="0"
+            />
+            <span class="text-sm">
+              {{ formData.status === 1 ? '启用' : '禁用' }}
+            </span>
+          </div>
         </NFormItem>
       </NForm>
       <template #footer>
