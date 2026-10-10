@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NCard, NSpace, NRadioGroup, NRadio } from 'naive-ui';
+import { NCard, NRadioGroup, NRadio } from 'naive-ui';
 import { $t } from '@vben/locales';
 import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
@@ -66,12 +66,12 @@ const noticeTypeOptions = [
       {{ $t('page.profile.tabs.notification') }}
     </h3>
 
-    <NSpace vertical :size="24">
+    <div class="flex flex-col gap-6">
       <!-- 通知渠道 -->
       <NCard :bordered="false" class="shadow-sm">
         <h4 class="font-medium mb-4">通知渠道</h4>
 
-        <NSpace vertical :size="16">
+        <div class="flex flex-col gap-4">
           <div class="flex items-center justify-between">
             <div>
               <div class="font-medium mb-1">
@@ -111,7 +111,7 @@ const noticeTypeOptions = [
             </div>
             <Switch v-model="notificationSettings.smsNotice" />
           </div>
-        </NSpace>
+        </div>
       </NCard>
 
       <!-- 通知类型 -->
@@ -149,7 +149,7 @@ const noticeTypeOptions = [
         </h4>
 
         <NRadioGroup v-model:value="alertLevel">
-          <NSpace vertical :size="12">
+          <div class="flex flex-col gap-3">
             <NRadio
               v-for="option in alertLevelOptions"
               :key="option.value"
@@ -157,7 +157,7 @@ const noticeTypeOptions = [
             >
               {{ option.label }}
             </NRadio>
-          </NSpace>
+          </div>
         </NRadioGroup>
       </NCard>
 
@@ -167,7 +167,7 @@ const noticeTypeOptions = [
           {{ $t('page.profile.basic.save') }}
         </Button>
       </div>
-    </NSpace>
+    </div>
   </div>
 </template>
 

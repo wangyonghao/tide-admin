@@ -9,7 +9,9 @@ import { ref } from 'vue';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NTag, useMessage } from 'naive-ui';
+import { useMessage } from 'naive-ui';
+
+import { Badge } from '#/ui/badge';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { userMessageApi } from '#/api/system/user-message';
@@ -243,9 +245,9 @@ const onDetailModalClose = () => {
       </template>
 
       <template #isRead="{ row }">
-        <NTag :type="row.isRead ? 'default' : 'info'">
+        <Badge :variant="row.isRead ? 'secondary' : 'default'">
           {{ row.isRead ? '已读' : '未读' }}
-        </NTag>
+        </Badge>
       </template>
     </TableGrid>
     <DetailModal @close="onDetailModalClose" />

@@ -6,8 +6,9 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NDescriptions, NDescriptionsItem, NTag, useMessage } from 'naive-ui';
+import { NDescriptions, NDescriptionsItem, useMessage } from 'naive-ui';
 
+import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
 
 const appData = ref<OpenAppApi.AppResp>();
@@ -65,8 +66,8 @@ const copyToClipboard = async (text: string) => {
           </div>
         </NDescriptionsItem>
         <NDescriptionsItem :label="$t('open.app.status')">
-          <NTag v-if="appData?.status === 1" type="success">启用</NTag>
-          <NTag v-else type="error">禁用</NTag>
+          <Badge v-if="appData?.status === 1" variant="success">启用</Badge>
+          <Badge v-else variant="destructive">禁用</Badge>
         </NDescriptionsItem>
         <NDescriptionsItem :label="$t('open.app.expireTime')">
           {{ appData?.expireTime }}

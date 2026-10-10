@@ -9,7 +9,7 @@ import { useRouter } from 'vue-router';
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NTag } from 'naive-ui';
+import { Badge } from '#/ui/badge';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { Button } from '#/ui/button';
@@ -148,9 +148,9 @@ const onView = (record: NoticeResp) => {
       </template>
 
       <template #isRead="{ row }">
-        <NTag :type="row.isRead ? 'default' : 'info'">
+        <Badge :variant="row.isRead ? 'secondary' : 'default'">
           {{ row.isRead ? '已读' : '未读' }}
-        </NTag>
+        </Badge>
       </template>
     </TableGrid>
   </Page>

@@ -6,9 +6,9 @@ import { h } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 
-import { NTag } from 'naive-ui';
-
 import { DictTag } from '#/components/dict';
+import { Badge } from '#/ui/badge';
+import { badgeVariantForTag } from '#/ui/badge/variant';
 
 /**
  * 渲染标签
@@ -17,7 +17,9 @@ import { DictTag } from '#/components/dict';
  * @returns render
  */
 function renderTag(text: string, color?: string) {
-  return <NTag type={color as any}>{text}</NTag>;
+  return (
+    <Badge variant={badgeVariantForTag(color) ?? 'secondary'}>{text}</Badge>
+  );
 }
 
 /**
@@ -66,7 +68,9 @@ export function renderHttpMethodTag(type: string) {
   const color = colors[method] ?? 'default';
   const title = `${method}请求`;
 
-  return <NTag type={color}>{title}</NTag>;
+  return (
+    <Badge variant={badgeVariantForTag(color) ?? 'secondary'}>{title}</Badge>
+  );
 }
 
 export function renderDictTag(value: number | string, dicts: DictItemResp[]) {

@@ -24,13 +24,14 @@ import {
   NModal,
   NRadio,
   NRadioGroup,
-  NTag,
   NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
 import FormSelect from '#/adapter/component/FormSelect.vue';
 import { menuApi } from '#/api/system/menu';
+import { Badge } from '#/ui/badge';
+import { badgeVariantForTag } from '#/ui/badge/variant';
 import { Button } from '#/ui/button';
 import { Switch } from '#/ui/switch';
 import {
@@ -111,10 +112,13 @@ const columns: DataTableColumns<Menu> = [
     key: 'type',
     width: 80,
     render(row) {
-      const info = typeMap[row.type];
+      const info = typeMap[row.type] ?? {
+        text: String(row.type),
+        type: 'default' as const,
+      };
       return h(
-        NTag,
-        { type: info.type, size: 'small' },
+        Badge,
+        { variant: badgeVariantForTag(info.type) ?? 'secondary' },
         { default: () => info.text },
       );
     },
@@ -151,8 +155,8 @@ const columns: DataTableColumns<Menu> = [
     render(row) {
       if (row.type === 3) return '-';
       return h(
-        NTag,
-        { type: row.visible === 1 ? 'success' : 'default', size: 'small' },
+        Badge,
+        { variant: row.visible === 1 ? 'success' : 'secondary' },
         { default: () => (row.visible === 1 ? '是' : '否') },
       );
     },
@@ -163,8 +167,8 @@ const columns: DataTableColumns<Menu> = [
     width: 80,
     render(row) {
       return h(
-        NTag,
-        { type: row.status === 1 ? 'success' : 'error', size: 'small' },
+        Badge,
+        { variant: row.status === 1 ? 'success' : 'destructive' },
         { default: () => (row.status === 1 ? '启用' : '禁用') },
       );
     },

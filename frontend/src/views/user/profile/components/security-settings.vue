@@ -2,7 +2,6 @@
 import { ref, computed, onMounted } from 'vue';
 import {
   NCard,
-  NSpace,
   NModal,
   NForm,
   NFormItem,
@@ -10,12 +9,12 @@ import {
   NList,
   NListItem,
   NThing,
-  NTag,
   NEmpty,
 } from 'naive-ui';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
 import { message } from '#/adapter/naive';
+import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
 import {
   ConfirmAction,
@@ -107,8 +106,12 @@ const handleChangePassword = async () => {
     });
     message.success($t('page.profile.security.passwordChanged'));
     showPasswordModal.value = false;
-    passwordForm.value = { oldPassword: '', newPassword: '', confirmPassword: '' };
-    
+    passwordForm.value = {
+      oldPassword: '',
+      newPassword: '',
+      confirmPassword: '',
+    };
+
     // 退出登录
     setTimeout(() => {
       userStore.logout();
@@ -187,17 +190,27 @@ onMounted(() => {
 <template>
   <div class="security-settings">
     <ConfirmAction ref="confirmAction" />
-    <h3 class="text-lg font-semibold mb-6">{{ $t('page.profile.tabs.security') }}</h3>
+    <h3 class="text-lg font-semibold mb-6">
+      {{ $t('page.profile.tabs.security') }}
+    </h3>
 
-    <NSpace vertical :size="24">
+    <div class="flex flex-col gap-6">
       <!-- 修改密码 -->
       <NCard :bordered="false" class="shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-medium mb-1">{{ $t('page.profile.security.changePassword') }}</h4>
-            <p class="text-sm text-gray-500">{{ $t('page.profile.security.passwordRule') }}</p>
+            <h4 class="font-medium mb-1">
+              {{ $t('page.profile.security.changePassword') }}
+            </h4>
+            <p class="text-sm text-gray-500">
+              {{ $t('page.profile.security.passwordRule') }}
+            </p>
           </div>
-          <Button type="button" variant="outline" @click="showPasswordModal = true">
+          <Button
+            type="button"
+            variant="outline"
+            @click="showPasswordModal = true"
+          >
             {{ $t('page.profile.security.changePassword') }}
           </Button>
         </div>
@@ -207,13 +220,25 @@ onMounted(() => {
       <NCard :bordered="false" class="shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-medium mb-1">{{ $t('page.profile.basic.phone') }}</h4>
+            <h4 class="font-medium mb-1">
+              {{ $t('page.profile.basic.phone') }}
+            </h4>
             <p class="text-sm text-gray-500">
-              {{ userStore.user?.phone || $t('page.profile.summary.phoneUnbound') }}
+              {{
+                userStore.user?.phone || $t('page.profile.summary.phoneUnbound')
+              }}
             </p>
           </div>
-          <Button type="button" variant="outline" @click="showPhoneModal = true">
-            {{ userStore.user?.phone ? $t('page.profile.security.changePhone') : $t('page.profile.security.bindPhone') }}
+          <Button
+            type="button"
+            variant="outline"
+            @click="showPhoneModal = true"
+          >
+            {{
+              userStore.user?.phone
+                ? $t('page.profile.security.changePhone')
+                : $t('page.profile.security.bindPhone')
+            }}
           </Button>
         </div>
       </NCard>
@@ -222,13 +247,25 @@ onMounted(() => {
       <NCard :bordered="false" class="shadow-sm">
         <div class="flex items-center justify-between">
           <div>
-            <h4 class="font-medium mb-1">{{ $t('page.profile.basic.email') }}</h4>
+            <h4 class="font-medium mb-1">
+              {{ $t('page.profile.basic.email') }}
+            </h4>
             <p class="text-sm text-gray-500">
-              {{ userStore.user?.email || $t('page.profile.summary.emailUnbound') }}
+              {{
+                userStore.user?.email || $t('page.profile.summary.emailUnbound')
+              }}
             </p>
           </div>
-          <Button type="button" variant="outline" @click="showEmailModal = true">
-            {{ userStore.user?.email ? $t('page.profile.security.changeEmail') : $t('page.profile.security.bindEmail') }}
+          <Button
+            type="button"
+            variant="outline"
+            @click="showEmailModal = true"
+          >
+            {{
+              userStore.user?.email
+                ? $t('page.profile.security.changeEmail')
+                : $t('page.profile.security.bindEmail')
+            }}
           </Button>
         </div>
       </NCard>
@@ -236,7 +273,9 @@ onMounted(() => {
       <!-- 登录设备管理 -->
       <NCard :bordered="false" class="shadow-sm">
         <div class="flex items-center justify-between mb-4">
-          <h4 class="font-medium">{{ $t('page.profile.security.loginDevices') }}</h4>
+          <h4 class="font-medium">
+            {{ $t('page.profile.security.loginDevices') }}
+          </h4>
           <Button
             type="button"
             variant="destructive"
@@ -253,17 +292,29 @@ onMounted(() => {
               <template #header>
                 <div class="flex items-center gap-2">
                   <span>{{ device.browser }} / {{ device.os }}</span>
-                  <NTag v-if="device.id === loginDevices[0]?.id" type="success" size="small">
+                  <Badge
+                    v-if="device.id === loginDevices[0]?.id"
+                    variant="success"
+                  >
                     {{ $t('page.profile.security.currentDevice') }}
-                  </NTag>
+                  </Badge>
                 </div>
               </template>
               <template #description>
-                <NSpace vertical :size="4">
-                  <span class="text-xs">{{ $t('page.profile.security.ipAddress') }}: {{ device.ipAddress }}</span>
-                  <span class="text-xs">{{ $t('page.profile.security.location') }}: {{ device.location }}</span>
-                  <span class="text-xs">{{ $t('page.profile.security.loginTime') }}: {{ device.loginTime }}</span>
-                </NSpace>
+                <div class="flex flex-col gap-1">
+                  <span class="text-xs"
+                    >{{ $t('page.profile.security.ipAddress') }}:
+                    {{ device.ipAddress }}</span
+                  >
+                  <span class="text-xs"
+                    >{{ $t('page.profile.security.location') }}:
+                    {{ device.location }}</span
+                  >
+                  <span class="text-xs"
+                    >{{ $t('page.profile.security.loginTime') }}:
+                    {{ device.loginTime }}</span
+                  >
+                </div>
               </template>
             </NThing>
           </NListItem>
@@ -273,8 +324,10 @@ onMounted(() => {
 
       <!-- 三方账号绑定 -->
       <NCard :bordered="false" class="shadow-sm">
-        <h4 class="font-medium mb-4">{{ $t('page.profile.security.socialAccount') }}</h4>
-        
+        <h4 class="font-medium mb-4">
+          {{ $t('page.profile.security.socialAccount') }}
+        </h4>
+
         <NList v-if="socialAccounts.length > 0" :loading="loadingSocial">
           <NListItem v-for="account in socialAccounts" :key="account.source">
             <NThing>
@@ -295,7 +348,7 @@ onMounted(() => {
         </NList>
         <NEmpty v-else description="暂无绑定的三方账号" />
       </NCard>
-    </NSpace>
+    </div>
 
     <!-- 修改密码弹窗 -->
     <NModal
@@ -332,8 +385,15 @@ onMounted(() => {
       </NForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button type="button" variant="outline" @click="showPasswordModal = false">{{ $t('common.cancel') }}</Button>
-          <Button type="button" @click="handleChangePassword">{{ $t('common.confirm') }}</Button>
+          <Button
+            type="button"
+            variant="outline"
+            @click="showPasswordModal = false"
+            >{{ $t('common.cancel') }}</Button
+          >
+          <Button type="button" @click="handleChangePassword">{{
+            $t('common.confirm')
+          }}</Button>
         </div>
       </template>
     </NModal>
@@ -358,7 +418,9 @@ onMounted(() => {
               v-model:value="phoneForm.captcha"
               :placeholder="$t('page.profile.security.captcha')"
             />
-            <Button type="button" variant="outline">{{ $t('page.profile.security.sendCaptcha') }}</Button>
+            <Button type="button" variant="outline">{{
+              $t('page.profile.security.sendCaptcha')
+            }}</Button>
           </div>
         </NFormItem>
         <NFormItem :label="$t('page.profile.security.oldPassword')">
@@ -372,8 +434,15 @@ onMounted(() => {
       </NForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button type="button" variant="outline" @click="showPhoneModal = false">{{ $t('common.cancel') }}</Button>
-          <Button type="button" @click="handleChangePhone">{{ $t('common.confirm') }}</Button>
+          <Button
+            type="button"
+            variant="outline"
+            @click="showPhoneModal = false"
+            >{{ $t('common.cancel') }}</Button
+          >
+          <Button type="button" @click="handleChangePhone">{{
+            $t('common.confirm')
+          }}</Button>
         </div>
       </template>
     </NModal>
@@ -398,7 +467,9 @@ onMounted(() => {
               v-model:value="emailForm.captcha"
               :placeholder="$t('page.profile.security.captcha')"
             />
-            <Button type="button" variant="outline">{{ $t('page.profile.security.sendCaptcha') }}</Button>
+            <Button type="button" variant="outline">{{
+              $t('page.profile.security.sendCaptcha')
+            }}</Button>
           </div>
         </NFormItem>
         <NFormItem :label="$t('page.profile.security.oldPassword')">
@@ -412,8 +483,15 @@ onMounted(() => {
       </NForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button type="button" variant="outline" @click="showEmailModal = false">{{ $t('common.cancel') }}</Button>
-          <Button type="button" @click="handleChangeEmail">{{ $t('common.confirm') }}</Button>
+          <Button
+            type="button"
+            variant="outline"
+            @click="showEmailModal = false"
+            >{{ $t('common.cancel') }}</Button
+          >
+          <Button type="button" @click="handleChangeEmail">{{
+            $t('common.confirm')
+          }}</Button>
         </div>
       </template>
     </NModal>

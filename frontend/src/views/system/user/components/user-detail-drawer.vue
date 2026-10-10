@@ -11,11 +11,12 @@ import {
   NDrawer,
   NDrawerContent,
   NIcon,
-  NTag,
   useMessage,
 } from 'naive-ui';
 
 import { userApi } from '#/api/system/user';
+import { Badge } from '#/ui/badge';
+import { badgeVariantForTag } from '#/ui/badge/variant';
 import { Button } from '#/ui/button';
 
 interface Props {
@@ -143,9 +144,14 @@ function handleEdit() {
           {{ detailData.roleNames || '-' }}
         </NDescriptionsItem>
         <NDescriptionsItem label="状态">
-          <NTag :type="getStatusType(detailData.status)" size="small">
+          <Badge
+            :variant="
+              badgeVariantForTag(getStatusType(detailData.status)) ||
+              'secondary'
+            "
+          >
             {{ getStatusLabel(detailData.status) }}
-          </NTag>
+          </Badge>
         </NDescriptionsItem>
         <NDescriptionsItem label="描述" :span="2">
           {{ detailData.description || '-' }}

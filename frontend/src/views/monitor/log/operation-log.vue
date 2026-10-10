@@ -1,199 +1,136 @@
 <script setup lang="ts">
-import type { DataTableColumns } from 'naive-ui';
+import type { VbenFormSchema } from '#/adapter/form';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { OperationLogResp } from '#/api/monitor/log';
 
-import { h, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 
-import { SearchOutline } from '@vicons/ionicons5';
-import {
-  NDataTable,
-  NDatePicker,
-  NDrawer,
-  NDrawerContent,
-  NIcon,
-  NInput,
-  NTag,
-} from 'naive-ui';
+import { NDrawer, NDrawerContent } from 'naive-ui';
 
+import { formatDateTimeRange } from '#/adapter/component/date-range';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { logApi } from '#/api/monitor/log';
+import { Badge } from '#/ui/badge';
+import { badgeVariantForTag } from '#/ui/badge/variant';
 import { Button } from '#/ui/button';
-import { FilterInput } from '#/ui-patterns/filter-input';
-import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
-// ==================== 搜索表单 ====================
-const searchForm = ref({
-  operatorName: '',
-  operation: '',
-  operatorIp: '',
-  createTime: null as [number, number] | null,
-});
+const operationTypeMap: Record<string, { label: string; type: string }> = {
+  create: { type: 'success', label: '新增' },
+  update: { type: 'info', label: '修改' },
+  delete: { type: 'error', label: '删除' },
+  login: { type: 'success', label: '登录' },
+  logout: { type: 'warning', label: '登出' },
+  send: { type: 'info', label: '发送' },
+};
 
-// ==================== 表格数据 ====================
-const tableData = ref<OperationLogResp[]>([]);
-const tableLoading = ref(false);
-const tablePagination = ref({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [10, 20, 50, 100],
-  onChange: (page: number) => {
-    tablePagination.value.page = page;
-    loadTableData();
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    tablePagination.value.pageSize = pageSize;
-    tablePagination.value.page = 1;
-    loadTableData();
-  },
-});
-
-// ==================== 表格列定义 ====================
-const tableColumns: DataTableColumns<OperationLogResp> = [
-  {
-    title: '序号',
-    key: 'index',
-    width: 60,
-    render: (_row, index) =>
-      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
-      index +
-      1,
-  },
-  { title: '操作时间', key: 'operateTime', minWidth: 160, sorter: 'default' },
-  { title: '操作人', key: 'operatorName', minWidth: 120 },
-  {
-    title: '操作类型',
-    key: 'operation',
-    minWidth: 120,
-    render(row) {
-      const typeMap: Record<
-        string,
-        {
-          type: 'default' | 'error' | 'info' | 'success' | 'warning';
-          label: string;
-        }
-      > = {
-        create: { type: 'success', label: '新增' },
-        update: { type: 'info', label: '修改' },
-        delete: { type: 'error', label: '删除' },
-        login: { type: 'success', label: '登录' },
-        logout: { type: 'warning', label: '登出' },
-        send: { type: 'info', label: '发送' },
-      };
-      const config = typeMap[row.operation] || {
-        type: 'default',
-        label: row.operation,
-      };
-      return h(
-        NTag,
-        { type: config.type, size: 'small' },
-        { default: () => config.label },
-      );
-    },
-  },
-  { title: '业务对象', key: 'objectType', minWidth: 120 },
-  { title: 'IP地址', key: 'operatorIp', minWidth: 140 },
-  { title: '操作地点', key: 'operatorLocation', minWidth: 150 },
-  {
-    title: '操作',
-    key: 'action',
-    width: 100,
-    fixed: 'right',
-    render(row) {
-      return h(
-        Button,
-        {
-          type: 'button',
-          variant: 'link',
-          size: 'sm',
-          class: 'h-auto px-1',
-          onClick: () => handleDetail(row),
-        },
-        { default: () => '详情' },
-      );
-    },
-  },
-];
-
-// ==================== 加载数据 ====================
-async function loadTableData() {
-  tableLoading.value = true;
-  try {
-    const createTime = searchForm.value.createTime
-      ? [
-          new Date(searchForm.value.createTime[0])
-            .toISOString()
-            .slice(0, 19)
-            .replace('T', ' '),
-          new Date(searchForm.value.createTime[1])
-            .toISOString()
-            .slice(0, 19)
-            .replace('T', ' '),
-        ]
-      : undefined;
-
-    const res = await logApi.list({
-      page: tablePagination.value.page,
-      pageSize: tablePagination.value.pageSize,
-      operatorName: searchForm.value.operatorName || undefined,
-      operation: searchForm.value.operation || undefined,
-      operatorIp: searchForm.value.operatorIp || undefined,
-      createTime,
-      sort: ['operateTime,desc'],
-    });
-    tableData.value = res.records;
-    tablePagination.value.itemCount = res.total;
-  } finally {
-    tableLoading.value = false;
-  }
+function operationLabel(operation: string) {
+  return operationTypeMap[operation] || { type: 'default', label: operation };
 }
 
-// ==================== 搜索 ====================
-function handleSearch() {
-  tablePagination.value.page = 1;
-  loadTableData();
+function useSearchSchema(): VbenFormSchema[] {
+  return [
+    { component: 'Input', fieldName: 'operatorName', label: '操作人' },
+    { component: 'Input', fieldName: 'operation', label: '操作类型' },
+    { component: 'Input', fieldName: 'operatorIp', label: 'IP地址' },
+    {
+      component: 'DatePicker',
+      fieldName: 'createTime',
+      label: '操作时间',
+      componentProps: {
+        type: 'datetimerange',
+        clearable: true,
+        format: 'yyyy-MM-dd HH:mm:ss',
+      },
+    },
+  ];
 }
 
-// ==================== 重置 ====================
-function handleReset() {
-  searchForm.value = {
-    operatorName: '',
-    operation: '',
-    operatorIp: '',
-    createTime: null,
+function textValue(value: unknown) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function operationQuery(formValues: Record<string, unknown>) {
+  const range = formatDateTimeRange(formValues.createTime);
+  const operatorName = textValue(formValues.operatorName);
+  const operation = textValue(formValues.operation);
+  const operatorIp = textValue(formValues.operatorIp);
+  return {
+    operatorName: operatorName || undefined,
+    operation: operation || undefined,
+    operatorIp: operatorIp || undefined,
+    createTime: range.start && range.end ? [range.start, range.end] : undefined,
   };
-  handleSearch();
 }
 
-// ==================== 导出 ====================
-function handleExport() {
-  const createTime = searchForm.value.createTime
-    ? [
-        new Date(searchForm.value.createTime[0])
-          .toISOString()
-          .slice(0, 19)
-          .replace('T', ' '),
-        new Date(searchForm.value.createTime[1])
-          .toISOString()
-          .slice(0, 19)
-          .replace('T', ' '),
-      ]
-    : undefined;
-
-  logApi.exportOperationLog({
-    operatorName: searchForm.value.operatorName || undefined,
-    operation: searchForm.value.operation || undefined,
-    operatorIp: searchForm.value.operatorIp || undefined,
-    createTime,
-  });
-}
-
-// ==================== 详情抽屉 ====================
 const detailDrawerVisible = ref(false);
-const detailData = ref<any>(null);
+const detailData = ref<null | Record<string, any>>(null);
 const detailLoading = ref(false);
+
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    schema: useSearchSchema(),
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
+  },
+  gridOptions: {
+    columns: [
+      { type: 'seq', width: 70, fixed: 'left' },
+      {
+        field: 'operateTime',
+        title: '操作时间',
+        minWidth: 160,
+        sortable: true,
+      },
+      { field: 'operatorName', title: '操作人', minWidth: 120 },
+      {
+        field: 'operation',
+        title: '操作类型',
+        minWidth: 120,
+        slots: { default: 'operation' },
+      },
+      { field: 'objectType', title: '业务对象', minWidth: 120 },
+      { field: 'operatorIp', title: 'IP地址', minWidth: 140 },
+      { field: 'operatorLocation', title: '操作地点', minWidth: 150 },
+      {
+        field: 'action',
+        title: '操作',
+        width: 100,
+        fixed: 'right',
+        slots: { default: 'action' },
+      },
+    ],
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: { pageSize: 10 },
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues) => {
+          return await logApi.list({
+            page: page.currentPage,
+            pageSize: page.pageSize,
+            ...operationQuery(formValues ?? {}),
+            sort: ['operateTime,desc'],
+          });
+        },
+      },
+    },
+    rowConfig: { keyField: 'id' },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: { code: 'query' },
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<OperationLogResp>,
+});
+
+async function handleExport() {
+  const formValues = (await gridApi.formApi?.getValues?.()) ?? {};
+  logApi.exportOperationLog(operationQuery(formValues));
+}
 
 async function handleDetail(row: OperationLogResp) {
   detailDrawerVisible.value = true;
@@ -205,130 +142,98 @@ async function handleDetail(row: OperationLogResp) {
   }
 }
 
-// ==================== 初始化 ====================
-onMounted(() => {
-  loadTableData();
-});
+function extraText(extra: unknown) {
+  if (typeof extra !== 'string' || extra === '') return '';
+  try {
+    return JSON.stringify(JSON.parse(extra), null, 2);
+  } catch {
+    return extra;
+  }
+}
 </script>
 
 <template>
-  <div class="h-full bg-background p-4">
-    <!-- 搜索和操作栏 -->
-    <div class="mb-4">
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3"
-      >
-        <NInput
-          v-model:value="searchForm.operatorName"
-          placeholder="操作人"
-          clearable
-          class="w-[180px]"
-          @keyup.enter="handleSearch"
+  <div class="h-full">
+    <Grid>
+      <template #toolbar-tools>
+        <Button type="button" variant="outline" @click="handleExport">
+          <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
+          导出
+        </Button>
+      </template>
+      <template #operation="{ row }">
+        <Badge
+          :variant="
+            badgeVariantForTag(operationLabel(row.operation).type) ||
+            'secondary'
+          "
         >
-          <template #prefix>
-            <NIcon><SearchOutline /></NIcon>
-          </template>
-        </NInput>
-        <FilterInput
-          v-model="searchForm.operation"
-          placeholder="操作类型"
-          class="w-[180px]"
-          @keyup.enter="handleSearch"
-        />
-        <FilterInput
-          v-model="searchForm.operatorIp"
-          placeholder="IP地址"
-          class="w-[180px]"
-          @keyup.enter="handleSearch"
-        />
-        <div class="sm:col-span-2 lg:col-span-1 xl:col-span-1">
-          <NDatePicker
-            v-model:value="searchForm.createTime"
-            type="datetimerange"
-            clearable
-            class="w-[360px]"
-            format="yyyy-MM-dd HH:mm:ss"
-          />
-        </div>
-        <ToolbarActions>
-          <Button type="button" @click="handleSearch">
-            <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
-            查询
-          </Button>
-          <Button type="button" variant="outline" @click="handleReset">
-            <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
-            重置
-          </Button>
-          <Button type="button" variant="outline" @click="handleExport">
-            <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
-            导出
-          </Button>
-        </ToolbarActions>
-      </div>
-    </div>
+          {{ operationLabel(row.operation).label }}
+        </Badge>
+      </template>
+      <template #action="{ row }">
+        <Button
+          type="button"
+          variant="link"
+          size="sm"
+          class="h-auto px-1"
+          @click="handleDetail(row)"
+        >
+          详情
+        </Button>
+      </template>
+    </Grid>
 
-    <!-- 数据表格 -->
-    <NDataTable
-      :columns="tableColumns"
-      :data="tableData"
-      :loading="tableLoading"
-      :row-key="(row) => row.id"
-      :pagination="tablePagination"
-      scroll-x="1200px"
-    />
-
-    <!-- 详情抽屉 -->
     <NDrawer v-model:show="detailDrawerVisible" :width="600">
       <NDrawerContent title="操作日志详情" closable>
-        <div v-if="detailLoading" class="flex justify-center items-center h-64">
+        <div v-if="detailLoading" class="flex h-64 items-center justify-center">
           加载中...
         </div>
         <div v-else-if="detailData" class="space-y-4">
           <div class="grid grid-cols-2 gap-4">
             <div>
-              <div class="text-sm text-gray-500 mb-1">操作人</div>
+              <div class="text-muted-foreground mb-1 text-sm">操作人</div>
               <div class="font-medium">{{ detailData.operatorName }}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-500 mb-1">操作时间</div>
+              <div class="text-muted-foreground mb-1 text-sm">操作时间</div>
               <div class="font-medium">{{ detailData.operateTime }}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-500 mb-1">操作类型</div>
+              <div class="text-muted-foreground mb-1 text-sm">操作类型</div>
               <div class="font-medium">{{ detailData.operation }}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-500 mb-1">业务对象</div>
+              <div class="text-muted-foreground mb-1 text-sm">业务对象</div>
               <div class="font-medium">{{ detailData.objectType }}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-500 mb-1">IP地址</div>
+              <div class="text-muted-foreground mb-1 text-sm">IP地址</div>
               <div class="font-medium">{{ detailData.operatorIp }}</div>
             </div>
             <div>
-              <div class="text-sm text-gray-500 mb-1">操作地点</div>
+              <div class="text-muted-foreground mb-1 text-sm">操作地点</div>
               <div class="font-medium">{{ detailData.operatorLocation }}</div>
             </div>
             <div class="col-span-2">
-              <div class="text-sm text-gray-500 mb-1">状态</div>
-              <NTag
-                :type="detailData.status === 'success' ? 'success' : 'error'"
+              <div class="text-muted-foreground mb-1 text-sm">状态</div>
+              <Badge
+                :variant="
+                  detailData.status === 'success' ? 'success' : 'destructive'
+                "
               >
                 {{ detailData.status === 'success' ? '成功' : '失败' }}
-              </NTag>
+              </Badge>
             </div>
             <div v-if="detailData.remark" class="col-span-2">
-              <div class="text-sm text-gray-500 mb-1">备注</div>
+              <div class="text-muted-foreground mb-1 text-sm">备注</div>
               <div class="font-medium">{{ detailData.remark }}</div>
             </div>
             <div v-if="detailData.extra" class="col-span-2">
-              <div class="text-sm text-gray-500 mb-1">额外信息</div>
-              <pre
-                class="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm overflow-auto"
-                >{{
-                  JSON.stringify(JSON.parse(detailData.extra), null, 2)
-                }}</pre
-              >
+              <div class="text-muted-foreground mb-1 text-sm">额外信息</div>
+              <pre class="bg-muted overflow-auto rounded p-3 text-sm">{{
+                extraText(detailData.extra)
+              }}</pre>
             </div>
           </div>
         </div>
@@ -336,5 +241,3 @@ onMounted(() => {
     </NDrawer>
   </div>
 </template>
-
-<style lang="scss" scoped></style>

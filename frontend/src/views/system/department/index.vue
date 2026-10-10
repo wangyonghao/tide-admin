@@ -10,7 +10,7 @@ import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { useDebounceFn } from '@vueuse/core';
-import { NDataTable, NInput, NTag, useMessage } from 'naive-ui';
+import { NDataTable, NInput, useMessage } from 'naive-ui';
 
 import { deptApi } from '#/api/system/dept';
 import { useDownload } from '#/hooks/app/useDownload';
@@ -51,7 +51,8 @@ const createColumns = (): DataTableColumns<DeptResult> => {
         return h(
           Badge,
           { variant: row.status === 1 ? 'success' : 'destructive' },
-          () => (row.status === 1 ? $t('common.enabled') : $t('common.disabled')),
+          () =>
+            row.status === 1 ? $t('common.enabled') : $t('common.disabled'),
         );
       },
     },

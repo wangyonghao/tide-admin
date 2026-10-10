@@ -1,28 +1,23 @@
 <script setup lang="ts">
-import type { DataTableColumns } from 'naive-ui';
-import type { NoticeResp, NoticeDetailResp } from '#/api/system/notice';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { NoticeDetailResp, NoticeResp } from '#/api/system/notice';
 
-import { h, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
+import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
-import { SearchOutline } from '@vicons/ionicons5';
-import {
-  NDataTable,
-  NDatePicker,
-  NDrawer,
-  NDrawerContent,
-  NIcon,
-  NInput,
-  NTag,
-  useMessage,
-} from 'naive-ui';
+import { NDrawer, NDrawerContent } from 'naive-ui';
 
-import FormSelect from '#/adapter/component/FormSelect.vue';
+import { joinDateTimeRange } from '#/adapter/component/date-range';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { noticeApi } from '#/api/system/notice';
 import { useDict } from '#/hooks';
+import { Badge } from '#/ui/badge';
+import { badgeVariantForDictItem } from '#/ui/badge/variant';
 import { Button } from '#/ui/button';
+import { toast } from '#/ui/sonner';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
@@ -31,11 +26,9 @@ import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import NoticeForm from './components/notice-form.vue';
 import NoticeView from './components/notice-view.vue';
+import { useNoticeColumns, useNoticeSearchSchema } from './data';
 
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
-
-// ==================== 字典数据 ====================
 const {
   notice_type,
   notice_scope_enum,
@@ -48,312 +41,100 @@ const {
   'notice_status_enum',
 );
 
-// ==================== 搜索表单 ====================
-const searchForm = ref({
-  title: '',
-  type: null as string | null,
-  publishTime: null as [number, number] | null,
-  status: null as string | null,
-});
-
-// ==================== 表格数据 ====================
-const tableData = ref<NoticeResp[]>([]);
-const tableLoading = ref(false);
-const tablePagination = ref({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [10, 20, 50, 100],
-  onChange: (page: number) => {
-    tablePagination.value.page = page;
-    loadTableData();
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    tablePagination.value.pageSize = pageSize;
-    tablePagination.value.page = 1;
-    loadTableData();
-  },
-});
-
-// ==================== 抽屉状态 ====================
 const showFormDrawer = ref(false);
 const showViewDrawer = ref(false);
 const currentNoticeId = ref<string>();
 const currentNoticeDetail = ref<NoticeDetailResp>();
 
-// ==================== 表格列定义 ====================
-const tableColumns: DataTableColumns<NoticeResp> = [
-  {
-    title: '序号',
-    key: 'index',
-    width: 60,
-    render: (_row, index) =>
-      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
-      index +
-      1,
-  },
-  {
-    title: $t('system.notice.title'),
-    key: 'title',
-    minWidth: 200,
-  },
-  {
-    title: $t('system.notice.createUser'),
-    key: 'createUserString',
-    minWidth: 120,
-  },
-  {
-    title: $t('system.notice.type'),
-    key: 'type',
-    minWidth: 100,
-    render(row) {
-      const typeItem = notice_type?.value?.find(
-        (item) => String(item.value) === row.type,
-      );
-      if (!typeItem) return row.type;
-      return h(
-        NTag,
-        { type: (typeItem as any).tagType || 'default', size: 'small' },
-        { default: () => typeItem.label },
-      );
-    },
-  },
-  {
-    title: $t('system.notice.noticeScope'),
-    key: 'noticeScope',
-    minWidth: 120,
-    render(row) {
-      const scopeItem = notice_scope_enum?.value?.find(
-        (item) => String(item.value) === row.noticeScope,
-      );
-      if (!scopeItem) return row.noticeScope;
-      return h(
-        NTag,
-        { type: (scopeItem as any).tagType || 'default', size: 'small' },
-        { default: () => scopeItem.label },
-      );
-    },
-  },
-  {
-    title: $t('system.notice.noticeMethods'),
-    key: 'noticeMethods',
-    minWidth: 150,
-    render(row) {
-      const methods = row.noticeMethods?.split(',') || [];
-      return h(
-        'div',
-        { class: 'flex flex-wrap items-center gap-1' },
-        methods.map((method) => {
-          const methodItem = notice_method_enum?.value?.find(
-            (item) => String(item.value) === method,
-          );
-          if (!methodItem) return null;
-          return h(
-            NTag,
-            {
-              type: (methodItem as any).tagType || 'default',
-              size: 'small',
-            },
-            { default: () => methodItem.label },
-          );
-        }),
-      );
-    },
-  },
-  {
-    title: $t('system.notice.isTiming'),
-    key: 'isTiming',
-    minWidth: 100,
-    render(row) {
-      return h(
-        NTag,
-        {
-          type: row.isTiming === 'true' ? 'success' : 'default',
-          size: 'small',
-        },
-        { default: () => (row.isTiming === 'true' ? '是' : '否') },
-      );
-    },
-  },
-  {
-    title: $t('system.notice.isTop'),
-    key: 'isTop',
-    minWidth: 100,
-    render(row) {
-      return h(
-        NTag,
-        {
-          type: row.isTop === 'true' ? 'warning' : 'default',
-          size: 'small',
-        },
-        { default: () => (row.isTop === 'true' ? '是' : '否') },
-      );
-    },
-  },
-  {
-    title: $t('system.notice.status'),
-    key: 'status',
-    minWidth: 100,
-    render(row) {
-      const statusItem = notice_status_enum?.value?.find(
-        (item) => Number(item.value) === row.status,
-      );
-      if (!statusItem) return row.status;
-      return h(
-        NTag,
-        { type: (statusItem as any).tagType || 'default', size: 'small' },
-        { default: () => statusItem.label },
-      );
-    },
-  },
-  {
-    title: $t('system.notice.publishTime'),
-    key: 'publishTime',
-    minWidth: 160,
-  },
-  {
-    title: $t('common.operation'),
-    key: 'action',
-    width: 180,
-    fixed: 'right',
-    render(row) {
-      return h('div', { class: 'flex items-center gap-2' }, [
-        h(
-          Button,
-          {
-            type: 'button',
-            variant: 'link',
-            size: 'sm',
-            class: 'h-auto px-1',
-            onClick: () => handlePreview(row),
-          },
-          {
-            default: () => [
-              h(IconifyIcon, { icon: 'lucide:eye', class: 'mr-1 size-3.5' }),
-              '预览',
-            ],
-          },
-        ),
-        h(
-          Button,
-          {
-            type: 'button',
-            variant: 'link',
-            size: 'sm',
-            class: 'h-auto px-1',
-            onClick: () => handleEdit(row),
-          },
-          {
-            default: () => [
-              h(IconifyIcon, { icon: 'lucide:pencil', class: 'mr-1 size-3.5' }),
-              '编辑',
-            ],
-          },
-        ),
-        h(
-          Button,
-          {
-            type: 'button',
-            variant: 'link',
-            size: 'sm',
-            class: 'text-destructive h-auto px-1',
-            onClick: () => handleDelete(row),
-          },
-          {
-            default: () => [
-              h(IconifyIcon, {
-                icon: 'lucide:trash-2',
-                class: 'mr-1 size-3.5',
-              }),
-              '删除',
-            ],
-          },
-        ),
-      ]);
-    },
-  },
-];
-
-// ==================== 加载数据 ====================
-async function loadTableData() {
-  tableLoading.value = true;
-  try {
-    let publishTime: string | undefined;
-
-    if (searchForm.value.publishTime) {
-      const start = new Date(searchForm.value.publishTime[0])
-        .toISOString()
-        .slice(0, 19)
-        .replace('T', ' ');
-      const end = new Date(searchForm.value.publishTime[1])
-        .toISOString()
-        .slice(0, 19)
-        .replace('T', ' ');
-      publishTime = `${start},${end}`;
-    }
-
-    const res = await noticeApi.list({
-      page: tablePagination.value.page,
-      pageSize: tablePagination.value.pageSize,
-      title: searchForm.value.title || undefined,
-      type: searchForm.value.type || undefined,
-      publishTime,
-      status: searchForm.value.status || undefined,
-    });
-
-    tableData.value = res.records;
-    tablePagination.value.itemCount = res.total;
-  } catch (error) {
-    console.error('加载公告列表失败:', error);
-    message.error('加载数据失败');
-  } finally {
-    tableLoading.value = false;
-  }
+function textValue(value: unknown) {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
-// ==================== 搜索 ====================
-function handleSearch() {
-  tablePagination.value.page = 1;
-  loadTableData();
-}
-
-// ==================== 重置 ====================
-function handleReset() {
-  searchForm.value = {
-    title: '',
-    type: null,
-    publishTime: null,
-    status: null,
+function noticeQuery(formValues: Record<string, unknown>) {
+  const title = textValue(formValues.title);
+  const type = textValue(formValues.type);
+  const status = textValue(formValues.status);
+  return {
+    title: title || undefined,
+    type: type || undefined,
+    status: status || undefined,
+    publishTime: joinDateTimeRange(formValues.publishTime),
   };
-  handleSearch();
 }
 
-// ==================== 新增 ====================
+interface DictLike {
+  label?: string;
+  value?: unknown;
+}
+
+function findDict(list: unknown, value: unknown): DictLike | undefined {
+  if (!Array.isArray(list)) return undefined;
+  return list.find((item) => {
+    if (!item || typeof item !== 'object') return false;
+    return String((item as DictLike).value) === String(value);
+  }) as DictLike | undefined;
+}
+
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    schema: useNoticeSearchSchema({
+      typeOptions: () => notice_type?.value ?? [],
+      statusOptions: () => notice_status_enum?.value ?? [],
+    }),
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
+  },
+  gridOptions: {
+    columns: useNoticeColumns(),
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: {
+      pageSize: 10,
+    },
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues) => {
+          return await noticeApi.list({
+            page: page.currentPage,
+            pageSize: page.pageSize,
+            ...noticeQuery(formValues ?? {}),
+          });
+        },
+      },
+    },
+    rowConfig: {
+      keyField: 'id',
+    },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: { code: 'query' },
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<NoticeResp>,
+});
+
 function handleAdd() {
   currentNoticeId.value = undefined;
   showFormDrawer.value = true;
 }
 
-// ==================== 预览 ====================
-async function handlePreview(record: NoticeResp) {
+async function handlePreview(row: NoticeResp) {
   try {
-    const detail = await noticeApi.detail(record.id);
-    currentNoticeDetail.value = detail;
+    currentNoticeDetail.value = await noticeApi.detail(row.id);
     showViewDrawer.value = true;
   } catch (error) {
     console.error('加载公告详情失败:', error);
-    message.error('加载数据失败');
+    toast.error('加载数据失败');
   }
 }
 
-// ==================== 编辑 ====================
-function handleEdit(record: NoticeResp) {
-  currentNoticeId.value = record.id;
+function handleEdit(row: NoticeResp) {
+  currentNoticeId.value = row.id;
   showFormDrawer.value = true;
 }
 
-// ==================== 删除 ====================
 async function handleDelete(row: NoticeResp) {
   const ok = await confirmAction.value?.ask({
     title: '删除确认',
@@ -363,128 +144,135 @@ async function handleDelete(row: NoticeResp) {
   if (!ok) return;
   try {
     await noticeApi.delete(row.id);
-    message.success($t('pages.common.deleteSuccess'));
-    await loadTableData();
+    toast.success($t('pages.common.deleteSuccess'));
+    await gridApi.query();
   } catch (error) {
     console.error('删除公告失败:', error);
-    message.error('删除失败');
+    toast.error('删除失败');
   }
 }
 
-// ==================== 导出 ====================
-function handleExport() {
-  let publishTime: string | undefined;
-
-  if (searchForm.value.publishTime) {
-    const start = new Date(searchForm.value.publishTime[0])
-      .toISOString()
-      .slice(0, 19)
-      .replace('T', ' ');
-    const end = new Date(searchForm.value.publishTime[1])
-      .toISOString()
-      .slice(0, 19)
-      .replace('T', ' ');
-    publishTime = `${start},${end}`;
-  }
-
-  noticeApi.export({
-    title: searchForm.value.title || undefined,
-    type: searchForm.value.type || undefined,
-    publishTime,
-    status: searchForm.value.status || undefined,
-  });
+async function handleExport() {
+  const formValues = (await gridApi.formApi?.getValues?.()) ?? {};
+  noticeApi.export(noticeQuery(formValues));
 }
 
-// ==================== 表单提交成功 ====================
 function handleFormSuccess() {
   showFormDrawer.value = false;
-  loadTableData();
+  gridApi.query();
 }
 
-// ==================== 初始化 ====================
-onMounted(() => {
-  loadTableData();
-});
+function methodItems(row: NoticeResp) {
+  const methods = row.noticeMethods?.split(',') || [];
+  return methods
+    .map((method) => findDict(notice_method_enum?.value ?? [], method))
+    .filter((item) => item != null);
+}
 </script>
 
 <template>
-  <div class="h-full bg-background p-4">
+  <Page auto-content-height>
     <ConfirmAction ref="confirmAction" />
-    <!-- 搜索和操作栏 -->
-    <div class="mb-4">
-      <!-- 搜索表单 - 响应式网格布局 -->
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3"
-      >
-        <NInput
-          v-model:value="searchForm.title"
-          :placeholder="$t('system.notice.title')"
-          clearable
-          @keyup.enter="handleSearch"
+    <Grid>
+      <template #toolbar-tools>
+        <ToolbarActions>
+          <Button type="button" @click="handleAdd">
+            <IconifyIcon icon="lucide:plus" class="mr-1 size-4" />
+            {{ $t('pages.common.add') }}
+          </Button>
+          <Button type="button" variant="outline" @click="handleExport">
+            <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
+            {{ $t('pages.common.export') }}
+          </Button>
+        </ToolbarActions>
+      </template>
+      <template #type="{ row }">
+        <Badge
+          :variant="badgeVariantForDictItem(findDict(notice_type, row.type))"
         >
-          <template #prefix>
-            <NIcon><SearchOutline /></NIcon>
-          </template>
-        </NInput>
-        <FormSelect
-          v-model:value="searchForm.type"
-          :options="notice_type"
-          :placeholder="$t('system.notice.type')"
-          clearable
-        />
-        <FormSelect
-          v-model:value="searchForm.status"
-          :options="notice_status_enum"
-          :placeholder="$t('system.notice.status')"
-          clearable
-        />
-        <div class="sm:col-span-2 lg:col-span-1 xl:col-span-1">
-          <NDatePicker
-            v-model:value="searchForm.publishTime"
-            type="datetimerange"
-            clearable
-            class="w-full"
-            format="yyyy-MM-dd HH:mm:ss"
-          />
+          {{ findDict(notice_type, row.type)?.label || row.type }}
+        </Badge>
+      </template>
+      <template #scope="{ row }">
+        <Badge
+          :variant="
+            badgeVariantForDictItem(
+              findDict(notice_scope_enum, row.noticeScope),
+            )
+          "
+        >
+          {{
+            findDict(notice_scope_enum, row.noticeScope)?.label ||
+            row.noticeScope
+          }}
+        </Badge>
+      </template>
+      <template #methods="{ row }">
+        <div class="flex flex-wrap items-center justify-center gap-1">
+          <Badge
+            v-for="item in methodItems(row)"
+            :key="String(item.value)"
+            :variant="badgeVariantForDictItem(item)"
+          >
+            {{ item.label }}
+          </Badge>
         </div>
-      </div>
-
-      <!-- 操作按钮 -->
-      <ToolbarActions>
-        <Button type="button" @click="handleSearch">
-          <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
-          {{ $t('pages.common.search') }}
-        </Button>
-        <Button type="button" variant="outline" @click="handleReset">
-          <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
-          {{ $t('pages.common.reset') }}
-        </Button>
-        <Button
-          type="button"
-          class="bg-success text-success-foreground hover:bg-success/90"
-          @click="handleAdd"
+      </template>
+      <template #timing="{ row }">
+        <Badge :variant="row.isTiming === 'true' ? 'success' : 'secondary'">
+          {{ row.isTiming === 'true' ? '是' : '否' }}
+        </Badge>
+      </template>
+      <template #isTop="{ row }">
+        <Badge :variant="row.isTop === 'true' ? 'warning' : 'secondary'">
+          {{ row.isTop === 'true' ? '是' : '否' }}
+        </Badge>
+      </template>
+      <template #status="{ row }">
+        <Badge
+          :variant="
+            badgeVariantForDictItem(findDict(notice_status_enum, row.status))
+          "
         >
-          <IconifyIcon icon="lucide:plus" class="mr-1 size-4" />
-          {{ $t('pages.common.add') }}
-        </Button>
-        <Button type="button" variant="destructive" @click="handleExport">
-          <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
-          {{ $t('pages.common.export') }}
-        </Button>
-      </ToolbarActions>
-    </div>
+          {{ findDict(notice_status_enum, row.status)?.label || row.status }}
+        </Badge>
+      </template>
+      <template #action="{ row }">
+        <div class="inline-flex items-center gap-2">
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            class="h-auto px-1"
+            @click="handlePreview(row)"
+          >
+            <IconifyIcon icon="lucide:eye" class="mr-1 size-3.5" />
+            预览
+          </Button>
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            class="h-auto px-1"
+            @click="handleEdit(row)"
+          >
+            <IconifyIcon icon="lucide:pencil" class="mr-1 size-3.5" />
+            编辑
+          </Button>
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            class="text-destructive h-auto px-1"
+            @click="handleDelete(row)"
+          >
+            <IconifyIcon icon="lucide:trash-2" class="mr-1 size-3.5" />
+            删除
+          </Button>
+        </div>
+      </template>
+    </Grid>
 
-    <!-- 数据表格 -->
-    <NDataTable
-      :columns="tableColumns"
-      :data="tableData"
-      :loading="tableLoading"
-      :row-key="(row) => row.id"
-      :pagination="tablePagination"
-      scroll-x="1600px"
-    />
-
-    <!-- 新增/编辑抽屉 -->
     <NDrawer v-model:show="showFormDrawer" :width="1000" placement="right">
       <NDrawerContent
         :title="currentNoticeId ? $t('common.edit') : $t('common.create')"
@@ -498,13 +286,10 @@ onMounted(() => {
       </NDrawerContent>
     </NDrawer>
 
-    <!-- 查看抽屉 -->
     <NDrawer v-model:show="showViewDrawer" :width="900" placement="right">
       <NDrawerContent :title="$t('common.detail')" closable>
         <NoticeView v-if="currentNoticeDetail" :notice="currentNoticeDetail" />
       </NDrawerContent>
     </NDrawer>
-  </div>
+  </Page>
 </template>
-
-<style lang="scss" scoped></style>

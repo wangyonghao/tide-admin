@@ -24,12 +24,12 @@ import {
   NDrawer,
   NDrawerContent,
   NAlert,
-  NTag,
   useMessage,
 } from 'naive-ui';
 
 import FormSelect from '#/adapter/component/FormSelect.vue';
 import { configApi } from '#/api/system';
+import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
 import { Separator } from '#/ui/separator';
@@ -593,13 +593,12 @@ async function handleVerifyCode() {
                     <span class="font-medium">{{
                       emailForm.username || '未配置'
                     }}</span>
-                    <NTag
+                    <Badge
                       v-if="emailForm.username"
-                      :type="emailVerified ? 'success' : 'warning'"
-                      size="small"
+                      :variant="emailVerified ? 'success' : 'warning'"
                     >
                       {{ emailVerified ? '已验证' : '未验证' }}
-                    </NTag>
+                    </Badge>
                   </div>
                 </div>
                 <Button

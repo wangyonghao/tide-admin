@@ -8,9 +8,9 @@ import OperationLogList from './operation-log.vue';
 import SmsLogList from './sms-log.vue';
 </script>
 <template>
-  <Page h-full bg-background p-4>
-    <Tabs default-value="login" class="w-full">
-      <TabsList>
+  <Page auto-content-height>
+    <Tabs default-value="login" class="flex h-full flex-col">
+      <TabsList class="w-fit">
         <TabsTrigger value="login">
           {{ $t('monitor.loginLog.title') }}
         </TabsTrigger>
@@ -21,16 +21,15 @@ import SmsLogList from './sms-log.vue';
           {{ $t('system.smsLog.listTitle') }}
         </TabsTrigger>
       </TabsList>
-      <TabsContent value="login">
+      <TabsContent value="login" class="mt-2 min-h-0 flex-1">
         <LoginLogList />
       </TabsContent>
-      <TabsContent value="operation">
+      <TabsContent value="operation" class="mt-2 min-h-0 flex-1">
         <OperationLogList />
       </TabsContent>
-      <TabsContent value="sms">
+      <TabsContent value="sms" class="mt-2 min-h-0 flex-1">
         <SmsLogList />
       </TabsContent>
     </Tabs>
   </Page>
 </template>
-<style lang="scss" scoped></style>
