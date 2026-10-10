@@ -9,9 +9,6 @@ import { computed, onMounted, ref } from 'vue';
 import { ColPage, useVbenModal } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import { SearchOutline } from '@vicons/ionicons5';
-import { NIcon, NInput } from 'naive-ui';
-
 import { filterRawTree } from '#/adapter/component/tree-select-value';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deptApi, roleApi, userApi } from '#/api/system';
@@ -25,6 +22,7 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from '#/ui/dropdown-menu';
+import { Input } from '#/ui/input';
 import { VbenTree } from '#/ui/tree';
 import {
   ConfirmAction,
@@ -285,16 +283,26 @@ onMounted(() => {
   >
     <template #left>
       <div class="flex h-full flex-col bg-background p-4">
-        <NInput
-          v-model:value="deptSearchKeyword"
-          placeholder="搜索部门"
-          clearable
-          class="mb-4"
-        >
-          <template #prefix>
-            <NIcon><SearchOutline /></NIcon>
-          </template>
-        </NInput>
+        <div class="relative mb-4">
+          <IconifyIcon
+            icon="lucide:search"
+            class="text-muted-foreground pointer-events-none absolute top-1/2 left-2.5 size-4 -translate-y-1/2"
+          />
+          <Input
+            v-model="deptSearchKeyword"
+            placeholder="搜索部门"
+            class="pl-8"
+            :class="deptSearchKeyword ? 'pr-8' : undefined"
+          />
+          <button
+            v-if="deptSearchKeyword"
+            type="button"
+            class="text-muted-foreground absolute top-1/2 right-2 -translate-y-1/2 text-sm leading-none"
+            @click="deptSearchKeyword = ''"
+          >
+            ×
+          </button>
+        </div>
         <div class="min-h-0 flex-1 overflow-auto">
           <VbenTree
             v-if="visibleDept.length"

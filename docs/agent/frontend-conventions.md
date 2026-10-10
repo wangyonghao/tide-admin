@@ -19,7 +19,7 @@ import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 - 应用入口：`frontend/src/ui/<atom>`、`frontend/src/ui-patterns/<pattern>`
 - 实现：`@vben-core/shadcn-ui/src/ui`（`cn` + CVA + reka-ui）。颜色用现有 HSL token，经 `src/styles/theme.css` 的 `--color-*`
-- 新组件不要新增 `naive-ui` 导入，除非控件属于暂留类（表、树、复杂选择器）。`naive-ui` 保持依赖
+- 新组件不要导入 `naive-ui`。表格用 Vxe。清单见 [`docs/agent/naive-migration-inventory.md`](naive-migration-inventory.md)。
 - 壳层可以继续用 `@vben-core/shadcn-ui` 根导出里的 `Vben*` 封装；业务页不要再复制一套同名原子
 
 ## Layout

@@ -169,9 +169,9 @@ import {
   WatchOutline,
   WifiOutline,
 } from '@vicons/ionicons5';
-import { NIcon, NPopover, NScrollbar } from 'naive-ui';
 
 import { Input } from '#/ui/input';
+import { Popover, PopoverContent, PopoverTrigger } from '#/ui/popover';
 
 defineOptions({ name: 'IconSelect' });
 const modelValue = defineModel<string>({ default: '' });
@@ -656,12 +656,8 @@ defineExpose({ getIconComponent, iconMap });
 </script>
 
 <template>
-  <NPopover
-    trigger="click"
-    placement="bottom"
-    :width="400"
-  >
-    <template #trigger>
+  <Popover>
+    <PopoverTrigger as-child>
       <div class="relative">
         <Input
           :model-value="modelValue"
@@ -670,92 +666,56 @@ defineExpose({ getIconComponent, iconMap });
           class="cursor-pointer"
           :class="modelValue ? 'px-8' : undefined"
         />
-        <NIcon
+        <span
           v-if="modelValue"
-          :size="18"
-          class="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2"
+          class="pointer-events-none absolute top-1/2 left-2 inline-flex -translate-y-1/2 text-[18px]"
         >
           <component :is="getIconComponent(modelValue)" />
-        </NIcon>
+        </span>
         <button
           v-if="modelValue"
           type="button"
-          class="absolute top-1/2 right-2 -translate-y-1/2"
+          class="absolute top-1/2 right-2 inline-flex -translate-y-1/2 text-sm"
           @click.stop="handleClear"
         >
-          <NIcon :size="14">
-            <CloseOutline />
-          </NIcon>
+          <CloseOutline />
         </button>
       </div>
-    </template>
-    <div class="icon-select-container">
+    </PopoverTrigger>
+    <PopoverContent
+      class="w-[400px] p-3"
+      align="start"
+      side="bottom"
+    >
       <Input
         v-model="searchText"
         placeholder="搜索图标"
         class="mb-3 h-8"
       />
-      <NScrollbar style="max-height: 300px">
-        <div class="icon-grid">
-          <div
+      <div class="max-h-[300px] overflow-y-auto">
+        <div class="grid grid-cols-6 gap-2">
+          <button
             v-for="icon in filteredIcons"
             :key="icon.name"
-            class="icon-item"
-            :class="{ active: modelValue === icon.name }"
+            type="button"
+            class="hover:bg-accent flex cursor-pointer flex-col items-center justify-center rounded-md border border-transparent px-1 py-2"
+            :class="
+              modelValue === icon.name
+                ? 'border-primary bg-accent text-primary'
+                : undefined
+            "
             :title="icon.name"
             @click="handleSelect(icon.name)"
           >
-            <NIcon :size="22">
+            <span class="inline-flex text-[22px]">
               <component :is="icon.component" />
-            </NIcon>
-            <span class="icon-name">{{ icon.label }}</span>
-          </div>
+            </span>
+            <span class="mt-1 max-w-full truncate text-center text-[10px]">
+              {{ icon.label }}
+            </span>
+          </button>
         </div>
-      </NScrollbar>
-    </div>
-  </NPopover>
+      </div>
+    </PopoverContent>
+  </Popover>
 </template>
-
-<style scoped lang="scss">
-.icon-select-container {
-  padding: 4px;
-}
-
-.icon-grid {
-  display: grid;
-  grid-template-columns: repeat(6, 1fr);
-  gap: 8px;
-}
-
-.icon-item {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 8px 4px;
-  cursor: pointer;
-  border: 1px solid transparent;
-  border-radius: 6px;
-  transition: all 0.2s;
-
-  &:hover {
-    background-color: #f0f0f0;
-  }
-
-  &.active {
-    color: #1890ff;
-    background-color: #e8f4ff;
-    border-color: #1890ff;
-  }
-
-  .icon-name {
-    max-width: 100%;
-    margin-top: 4px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 10px;
-    text-align: center;
-    white-space: nowrap;
-  }
-}
-</style>

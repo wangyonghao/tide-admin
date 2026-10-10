@@ -13,7 +13,7 @@
 
 原子实现在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA）。应用代码走上面的路径，不从包根桶整包引入，也不要再包一层 `Foo` / `FooShadcn`。
 
-**新代码：** 优先 `#/ui/*`。不要在新组件里新增 `naive-ui` 导入，除非该控件属于暂留类（表、树、复杂选择器，见 [`naive-migration-inventory.md`](naive-migration-inventory.md)）。Naive 保持安装；Vxe Grid 仍是表格默认。
+**新代码：** 优先 `#/ui/*`。不要新增 `naive-ui` 导入。表格用 Vxe。清单见 [`naive-migration-inventory.md`](naive-migration-inventory.md)。
 
 已有模式壳：`ui-patterns/toolbar-actions`（两个及以上工具栏按钮，`inline-flex` + `gap-2`）；`ui-patterns/filter-input`（无前缀的字符串筛选框，清除后为空字符串）；`ui-patterns/confirm-action`（AlertDialog 确认，`ask()` 返回是否确认）；`ui-patterns/toast`（成功 / 失败 / 警告，`duration: 0` 不自动关闭）。分割线走 `#/ui/separator`。状态开关走 `#/ui/switch`：默认布尔；`checked-value` / `unchecked-value` 用来接 `1/0` 这类字段，比较是严格相等。
 
@@ -31,7 +31,7 @@
 | P-FALLBACK | 空态/错误 | 403/404/500/offline | `views/_core/fallback/` | canonical |
 | P-PROFILE | 个人中心 | Tab + 分组表单 | `views/user/profile/`、`views/_core/profile/` | 宜收敛到一种 |
 | P-CONFIG | 配置/字典 | 分组表单或可编辑表 | `views/system/option/`、`config/` | 按模块对齐 CRUD 或 Form |
-| P-LEGACY-TABLE | 手写 NDataTable | **仅存量** | `views/demos/table/index.vue` | **禁止新建**。权限矩阵已改成 Checkbox 表格。用户右表、角色用户分配、系统选项、在线用户、公告、日志三 Tab、文件列表已改 Vxe |
+| P-LEGACY-TABLE | 手写 NDataTable | — | — | 已去掉。新列表用 Vxe |
 
 ---
 
