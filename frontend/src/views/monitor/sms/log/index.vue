@@ -4,17 +4,24 @@ import type { VbenFormSchema } from '@vben/common-ui';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SmsLogQuery, SmsLogResp } from '#/api/system/sms-log';
 
+import { ref } from 'vue';
+
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NButton, useMessage, NPopconfirm, NSpace } from 'naive-ui';
+import { useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { smsLogApi } from '#/api/system/sms-log';
 import { useDownload } from '#/hooks/app/useDownload';
 import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 
 const message = useMessage();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 function useSmsLogGridSearchFormSchema(): VbenFormSchema[] {
   return [
@@ -141,13 +148,20 @@ const [TableGrid, tableGridApi] = useVbenVxeGrid({
 });
 
 const handleDelete = async (row: SmsLogResp) => {
+  const ok = await confirmAction.value?.ask({
+    title: $t('pages.common.delete'),
+    description: $t('ui.actionMessage.deleteConfirm', [row.phone]),
+    confirmText: '确认',
+    cancelText: '取消',
+    tone: 'destructive',
+  });
+  if (!ok) return;
   try {
     await smsLogApi.delete(row.id);
     message.success($t('pages.common.deleteSuccess'));
     await tableGridApi.query();
-    return true;
   } catch {
-    return false;
+    // 错误已在拦截器处理
   }
 };
 
@@ -160,6 +174,7 @@ const handleExport = () => {
 
 <template>
   <Page auto-content-height>
+    <ConfirmAction ref="confirmAction" />
     <TableGrid :table-title="$t('system.smsLog.listTitle')">
       <template #toolbar-tools>
         <span v-access:code="['system:smsLog:export']">
@@ -169,22 +184,17 @@ const handleExport = () => {
         </span>
       </template>
       <template #action="{ row }">
-        <NSpace>
-          <span v-access:code="['system:smsLog:delete']">
-            <NPopconfirm
-              :title="$t('ui.actionMessage.deleteConfirm', [row.phone])"
-              positive-text="确认"
-              negative-text="取消"
-              @positive-click="handleDelete(row)"
-            >
-              <template #trigger>
-                <NButton type="error" text>
-                  {{ $t('pages.common.delete') }}
-                </NButton>
-              </template>
-            </NPopconfirm>
-          </span>
-        </NSpace>
+        <span v-access:code="['system:smsLog:delete']">
+          <Button
+            type="button"
+            variant="link"
+            size="sm"
+            class="text-destructive h-auto px-1"
+            @click="handleDelete(row)"
+          >
+            {{ $t('pages.common.delete') }}
+          </Button>
+        </span>
       </template>
     </TableGrid>
   </Page>

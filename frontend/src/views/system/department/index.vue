@@ -15,9 +15,7 @@ import {
   NButton,
   NDataTable,
   NInput,
-  NSpace,
   NTag,
-  useDialog,
   useMessage,
 } from 'naive-ui';
 
@@ -25,6 +23,10 @@ import { deptApi } from '#/api/system/dept';
 import { useDownload } from '#/hooks/app/useDownload';
 import { useUserStore } from '#/store/user';
 import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import EditModal from './dept-drawer.vue';
@@ -35,7 +37,7 @@ const searchForm = ref({
 });
 
 const message = useMessage();
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 const loading = ref(false);
 const tableData = ref<DeptResp[]>([]);
@@ -102,7 +104,11 @@ const createColumns = (): DataTableColumns<DeptResult> => {
             ),
           );
         }
-        return h(NSpace, { justify: 'center' }, { default: () => actions });
+        return h(
+          'div',
+          { class: 'flex items-center justify-center gap-2' },
+          actions,
+        );
       },
     },
   ];
@@ -160,23 +166,22 @@ const handleAdd = () => {
   editModalVisible.value = true;
 };
 
-const handleDelete = (row: DeptResp) => {
-  dialog.warning({
+const handleDelete = async (row: DeptResp) => {
+  const ok = await confirmAction.value?.ask({
     title: $t('system.dept.deleteTitle'),
-    content: $t('ui.actionMessage.deleteConfirm', [row.name]),
-    positiveText: $t('common.confirm'),
-    negativeText: $t('common.cancel'),
-    showIcon: false,
-    onPositiveClick: async () => {
-      try {
-        await deptApi.delete(row.id);
-        message.success($t('pages.common.deleteSuccess'));
-        await loadData();
-      } catch (error) {
-        console.error('Failed to delete dept:', error);
-      }
-    },
+    description: $t('ui.actionMessage.deleteConfirm', [row.name]),
+    confirmText: $t('common.confirm'),
+    cancelText: $t('common.cancel'),
+    tone: 'destructive',
   });
+  if (!ok) return;
+  try {
+    await deptApi.delete(row.id);
+    message.success($t('pages.common.deleteSuccess'));
+    await loadData();
+  } catch (error) {
+    console.error('Failed to delete dept:', error);
+  }
 };
 
 const handleExport = () => {
@@ -215,6 +220,7 @@ loadData();
 
 <template>
   <Page auto-content-height>
+    <ConfirmAction ref="confirmAction" />
     <div class="flex flex-col h-full bg-background p-4">
       <!-- 工具栏 -->
       <div class="flex items-center justify-between w-full pb-4 gap-4">

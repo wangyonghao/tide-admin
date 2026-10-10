@@ -15,14 +15,12 @@ import { IconifyIcon } from '@vben/icons';
 import { Page } from '@vben/common-ui';
 
 import {
-  NButton,
   NCard,
   NForm,
   NFormItem,
   NInput,
   NInputNumber,
   NSelect,
-  NSpace,
   NSplit,
   NDrawer,
   NDrawerContent,
@@ -33,6 +31,7 @@ import {
 } from 'naive-ui';
 
 import { configApi } from '#/api/system';
+import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
 import { Separator } from '#/ui/separator';
 
@@ -601,9 +600,14 @@ async function handleVerifyCode() {
                     </NTag>
                   </div>
                 </div>
-                <NButton text type="primary" @click="handleOpenEmailDrawer">
+                <Button
+                  type="button"
+                  variant="link"
+                  class="h-auto px-0"
+                  @click="handleOpenEmailDrawer"
+                >
                   更换
-                </NButton>
+                </Button>
               </div>
             </div>
 
@@ -764,13 +768,15 @@ async function handleVerifyCode() {
             </NForm>
 
             <template #action>
-              <NSpace justify="end">
-                <NButton @click="handleReset">重置</NButton>
-                <NButton type="primary" :loading="saving" @click="handleSave">
-                  <template #icon><IconifyIcon icon="lucide:save" /></template>
+              <div class="flex justify-end gap-2">
+                <Button type="button" variant="outline" @click="handleReset">
+                  重置
+                </Button>
+                <Button type="button" :loading="saving" @click="handleSave">
+                  <IconifyIcon icon="lucide:save" class="mr-1 size-4" />
                   保存
-                </NButton>
-              </NSpace>
+                </Button>
+              </div>
             </template>
           </NCard>
         </div>
@@ -876,10 +882,11 @@ async function handleVerifyCode() {
                   @keyup.enter="handleVerifyCode"
                   style="width: 200px"
                 />
-                <NButton
+                <Button
                   v-if="countdown === 0"
-                  text
-                  type="primary"
+                  type="button"
+                  variant="link"
+                  class="h-auto px-1"
                   :loading="sendingVerificationCode"
                   :disabled="
                     !emailForm.username ||
@@ -892,7 +899,7 @@ async function handleVerifyCode() {
                   {{
                     verificationCodeSent ? '重新发送验证码' : '给我发送验证码'
                   }}
-                </NButton>
+                </Button>
                 <span v-else class="text-sm text-muted-foreground">
                   {{ countdown }}秒后可重新发送
                 </span>
@@ -910,18 +917,24 @@ async function handleVerifyCode() {
         </div>
 
         <template #footer>
-          <NSpace justify="end">
-            <NButton @click="showEmailDrawer = false">取消</NButton>
-            <NButton
-              type="primary"
+          <div class="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="outline"
+              @click="showEmailDrawer = false"
+            >
+              取消
+            </Button>
+            <Button
+              type="button"
               :loading="saving"
               :disabled="!emailVerified"
               @click="handleSaveEmailConfig"
             >
-              <template #icon><IconifyIcon icon="lucide:save" /></template>
+              <IconifyIcon icon="lucide:save" class="mr-1 size-4" />
               保存配置
-            </NButton>
-          </NSpace>
+            </Button>
+          </div>
         </template>
       </NDrawerContent>
     </NDrawer>

@@ -2,7 +2,7 @@
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { JobResp } from '#/api/schedule';
 
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 import { Page, useVbenModal } from '@vben/common-ui';
@@ -11,7 +11,6 @@ import {
   NButton,
   NPopconfirm,
   NPopover,
-  NSpace,
   NSwitch,
   NTimeline,
   NTimelineItem,
@@ -27,11 +26,16 @@ import {
 } from '#/api/schedule';
 import { useUserStore } from '#/store/user';
 import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 
 import { useGridFieldColumns, useGridSearchFormSchema } from './data-scope';
 import JobEditDrawer from './edit-drawer.vue';
 
 const message = useMessage();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 const router = useRouter();
 
@@ -88,6 +92,12 @@ function handleEdit(record: JobResp) {
 }
 
 async function handleDelete(row: JobResp) {
+  const ok = await confirmAction.value?.ask({
+    title: '删除任务',
+    description: `确定删除「${row.name}」？`,
+    tone: 'destructive',
+  });
+  if (!ok) return;
   await deleteJob(row.id);
   message.success('删除成功');
   await tableGridApi.query();
@@ -123,6 +133,7 @@ onMounted(() => {
 
 <template>
   <Page auto-content-height>
+    <ConfirmAction ref="confirmAction" />
     <TableGrid>
       <template #toolbar-tools>
         <span v-access:code="['schedule:job:create']">
@@ -154,7 +165,7 @@ onMounted(() => {
         />
       </template>
       <template #action="{ row }">
-        <NSpace>
+        <div class="inline-flex items-center gap-2">
           <span v-access:code="['schedule:job:trigger']">
             <NPopconfirm @positive-click="onTrigger(row)">
               <template #trigger>
@@ -170,14 +181,17 @@ onMounted(() => {
             <NButton type="primary" text @click="onLog(row)">日志</NButton>
           </span>
           <span v-access:code="['schedule:job:delete']">
-            <NPopconfirm @positive-click="handleDelete(row)">
-              <template #trigger>
-                <NButton type="error" text>删除</NButton>
-              </template>
-              确定删除「{{ row.name }}」？
-            </NPopconfirm>
+            <Button
+              type="button"
+              variant="link"
+              size="sm"
+              class="text-destructive h-auto px-1"
+              @click="handleDelete(row)"
+            >
+              删除
+            </Button>
           </span>
-        </NSpace>
+        </div>
       </template>
     </TableGrid>
     <EditorWindow @success="tableGridApi.query()" />

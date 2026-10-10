@@ -24,6 +24,7 @@ import {
 import { VbenTiptap } from '@vben/plugins/tiptap';
 
 import { noticeApi } from '#/api/system/notice';
+import { Button } from '#/ui/button';
 import { userApi } from '#/api/system/user';
 import { useDict } from '#/hooks';
 
@@ -41,11 +42,7 @@ const emit = defineEmits<{
 const message = useMessage();
 
 // ==================== 字典数据 ====================
-const {
-  notice_type,
-  notice_scope_enum,
-  notice_method_enum,
-} = useDict(
+const { notice_type, notice_scope_enum, notice_method_enum } = useDict(
   'notice_type',
   'notice_scope_enum',
   'notice_method_enum',
@@ -84,12 +81,8 @@ const userList = ref<SelectOption[]>([]);
 
 // ==================== 表单验证规则 ====================
 const formRules: FormRules = {
-  title: [
-    { required: true, message: '请输入公告标题', trigger: 'blur' },
-  ],
-  type: [
-    { required: true, message: '请选择公告类型', trigger: 'change' },
-  ],
+  title: [{ required: true, message: '请输入公告标题', trigger: 'blur' }],
+  type: [{ required: true, message: '请选择公告类型', trigger: 'change' }],
   noticeScope: [
     { required: true, message: '请选择通知范围', trigger: 'change' },
   ],
@@ -100,7 +93,10 @@ const formRules: FormRules = {
       message: '请选择通知用户',
       trigger: 'change',
       validator: (_rule, value) => {
-        if (formData.value.noticeScope === '2' && (!value || value.length === 0)) {
+        if (
+          formData.value.noticeScope === '2' &&
+          (!value || value.length === 0)
+        ) {
           return new Error('请选择通知用户');
         }
         return true;
@@ -110,9 +106,7 @@ const formRules: FormRules = {
   noticeMethods: [
     { required: true, message: '请选择通知方式', trigger: 'change' },
   ],
-  isTiming: [
-    { required: true, message: '请选择是否定时', trigger: 'change' },
-  ],
+  isTiming: [{ required: true, message: '请选择是否定时', trigger: 'change' }],
   publishTime: [
     {
       required: true,
@@ -127,12 +121,8 @@ const formRules: FormRules = {
       },
     },
   ],
-  isTop: [
-    { required: true, message: '请选择是否置顶', trigger: 'change' },
-  ],
-  content: [
-    { required: true, message: '请输入公告内容', trigger: 'blur' },
-  ],
+  isTop: [{ required: true, message: '请选择是否置顶', trigger: 'change' }],
+  content: [{ required: true, message: '请输入公告内容', trigger: 'blur' }],
 };
 
 // ==================== 是否/否选项 ====================
@@ -164,13 +154,18 @@ async function handleSubmit(_status: number) {
 
     const submitData: NoticeCreateReq | NoticeUpdateReq = {
       ...formData.value,
-      noticeUsers: formData.value.noticeScope === '1' 
-        ? undefined 
-        : formData.value.noticeUsers?.join(','),
+      noticeUsers:
+        formData.value.noticeScope === '1'
+          ? undefined
+          : formData.value.noticeUsers?.join(','),
       noticeMethods: formData.value.noticeMethods.join(','),
-      publishTime: formData.value.isTiming === 'true' && formData.value.publishTime
-        ? new Date(formData.value.publishTime).toISOString().slice(0, 19).replace('T', ' ')
-        : undefined,
+      publishTime:
+        formData.value.isTiming === 'true' && formData.value.publishTime
+          ? new Date(formData.value.publishTime)
+              .toISOString()
+              .slice(0, 19)
+              .replace('T', ' ')
+          : undefined,
     };
 
     if (isUpdate.value) {
@@ -209,10 +204,16 @@ async function loadData() {
         content: detail.content,
         type: detail.type,
         noticeScope: detail.noticeScope,
-        noticeUsers: detail.noticeUsers ? detail.noticeUsers.split(',') : undefined,
-        noticeMethods: detail.noticeMethods ? detail.noticeMethods.split(',') : [],
+        noticeUsers: detail.noticeUsers
+          ? detail.noticeUsers.split(',')
+          : undefined,
+        noticeMethods: detail.noticeMethods
+          ? detail.noticeMethods.split(',')
+          : [],
         isTiming: detail.isTiming,
-        publishTime: detail.publishTime ? new Date(detail.publishTime).getTime() : undefined,
+        publishTime: detail.publishTime
+          ? new Date(detail.publishTime).getTime()
+          : undefined,
         isTop: detail.isTop,
       };
 
@@ -229,10 +230,14 @@ async function loadData() {
 }
 
 // ==================== 监听 noticeId 变化 ====================
-watch(() => props.noticeId, () => {
-  handleReset();
-  loadData();
-}, { immediate: true });
+watch(
+  () => props.noticeId,
+  () => {
+    handleReset();
+    loadData();
+  },
+  { immediate: true },
+);
 </script>
 
 <template>
@@ -248,7 +253,11 @@ watch(() => props.noticeId, () => {
       require-mark-placement="left"
     >
       <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-        <NFormItem :label="$t('system.notice.title')" path="title" class="md:col-span-2">
+        <NFormItem
+          :label="$t('system.notice.title')"
+          path="title"
+          class="md:col-span-2"
+        >
           <NInput
             v-model:value="formData.title"
             :placeholder="$t('system.notice.title')"
@@ -265,16 +274,20 @@ watch(() => props.noticeId, () => {
 
         <NFormItem :label="$t('system.notice.noticeScope')" path="noticeScope">
           <NRadioGroup v-model:value="formData.noticeScope">
-            <NSpace>
+            <div class="flex flex-wrap items-center gap-2">
               <template v-for="item in notice_scope_enum" :key="item.value">
                 <NButton
-                  :type="formData.noticeScope === String(item.value) ? 'primary' : 'default'"
+                  :type="
+                    formData.noticeScope === String(item.value)
+                      ? 'primary'
+                      : 'default'
+                  "
                   @click="formData.noticeScope = String(item.value)"
                 >
                   {{ item.label }}
                 </NButton>
               </template>
-            </NSpace>
+            </div>
           </NRadioGroup>
         </NFormItem>
 
@@ -293,7 +306,11 @@ watch(() => props.noticeId, () => {
           />
         </NFormItem>
 
-        <NFormItem :label="$t('system.notice.noticeMethods')" path="noticeMethods" class="md:col-span-2">
+        <NFormItem
+          :label="$t('system.notice.noticeMethods')"
+          path="noticeMethods"
+          class="md:col-span-2"
+        >
           <NCheckboxGroup v-model:value="formData.noticeMethods">
             <NSpace>
               <template v-for="item in notice_method_enum" :key="item.value">
@@ -307,16 +324,18 @@ watch(() => props.noticeId, () => {
 
         <NFormItem :label="$t('system.notice.isTiming')" path="isTiming">
           <NRadioGroup v-model:value="formData.isTiming">
-            <NSpace>
+            <div class="flex flex-wrap items-center gap-2">
               <template v-for="item in yesNoOptions" :key="item.value">
                 <NButton
-                  :type="formData.isTiming === item.value ? 'primary' : 'default'"
+                  :type="
+                    formData.isTiming === item.value ? 'primary' : 'default'
+                  "
                   @click="formData.isTiming = item.value"
                 >
                   {{ item.label }}
                 </NButton>
               </template>
-            </NSpace>
+            </div>
           </NRadioGroup>
         </NFormItem>
 
@@ -336,7 +355,7 @@ watch(() => props.noticeId, () => {
 
         <NFormItem :label="$t('system.notice.isTop')" path="isTop">
           <NRadioGroup v-model:value="formData.isTop">
-            <NSpace>
+            <div class="flex flex-wrap items-center gap-2">
               <template v-for="item in yesNoOptions" :key="item.value">
                 <NButton
                   :type="formData.isTop === item.value ? 'primary' : 'default'"
@@ -345,11 +364,15 @@ watch(() => props.noticeId, () => {
                   {{ item.label }}
                 </NButton>
               </template>
-            </NSpace>
+            </div>
           </NRadioGroup>
         </NFormItem>
 
-        <NFormItem :label="$t('system.notice.content')" path="content" class="md:col-span-2">
+        <NFormItem
+          :label="$t('system.notice.content')"
+          path="content"
+          class="md:col-span-2"
+        >
           <VbenTiptap v-model="formData.content" :min-height="400" />
         </NFormItem>
       </div>
@@ -357,25 +380,53 @@ watch(() => props.noticeId, () => {
 
     <!-- 操作按钮 -->
     <div class="mt-6 flex justify-end gap-3">
-      <NButton v-if="!disabledEdit" type="info" :loading="loading" @click="handleSubmit(1)">
-        <template #icon><IconifyIcon icon="lucide:save" /></template>
+      <Button
+        v-if="!disabledEdit"
+        type="button"
+        variant="secondary"
+        :loading="loading"
+        @click="handleSubmit(1)"
+      >
+        <IconifyIcon icon="lucide:save" class="mr-1 size-4" />
         保存为草稿
-      </NButton>
-      <NButton v-if="!disabledEdit" type="primary" :loading="loading" @click="handleSubmit(3)">
-        <template #icon><IconifyIcon icon="lucide:send" /></template>
+      </Button>
+      <Button
+        v-if="!disabledEdit"
+        type="button"
+        :loading="loading"
+        @click="handleSubmit(3)"
+      >
+        <IconifyIcon icon="lucide:send" class="mr-1 size-4" />
         发布
-      </NButton>
-      <NButton v-if="!disabledEdit" :disabled="loading" @click="handleReset">
-        <template #icon><IconifyIcon icon="lucide:rotate-ccw" /></template>
+      </Button>
+      <Button
+        v-if="!disabledEdit"
+        type="button"
+        variant="outline"
+        :disabled="loading"
+        @click="handleReset"
+      >
+        <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
         重置
-      </NButton>
-      <NButton :disabled="loading" @click="emit('cancel')">
-        <template #icon><IconifyIcon icon="lucide:x" /></template>
+      </Button>
+      <Button
+        type="button"
+        variant="outline"
+        :disabled="loading"
+        @click="emit('cancel')"
+      >
+        <IconifyIcon icon="lucide:x" class="mr-1 size-4" />
         取消
-      </NButton>
-      <NButton v-if="disabledEdit" type="warning" disabled>
+      </Button>
+      <Button
+        v-if="disabledEdit"
+        type="button"
+        variant="outline"
+        disabled
+        class="text-warning"
+      >
         已发布不可编辑
-      </NButton>
+      </Button>
     </div>
   </div>
 </template>

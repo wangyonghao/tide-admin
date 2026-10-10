@@ -22,11 +22,14 @@ import {
   NSplit,
   NTag,
   NTree,
-  useDialog,
   useMessage,
 } from 'naive-ui';
 
 import { Button } from '#/ui/button';
+import {
+  ConfirmAction,
+  type ConfirmActionExpose,
+} from '#/ui-patterns/confirm-action';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import { deptApi, roleApi, userApi } from '#/api/system';
@@ -35,7 +38,7 @@ import UserDetailDrawer from './components/user-detail-drawer.vue';
 import UserEditDrawer from './components/user-edit-drawer.vue';
 
 const message = useMessage();
-const dialog = useDialog();
+const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 // ==================== 部门树逻辑 ====================
 const deptSearchKeyword = ref('');
@@ -319,23 +322,21 @@ function handleEditSuccess() {
 const resetPasswordDialogVisible = ref(false);
 const newPassword = ref('');
 
-function handleResetPassword(row: UserResp) {
-  dialog.warning({
+async function handleResetPassword(row: UserResp) {
+  const ok = await confirmAction.value?.ask({
     title: '重置密码',
-    content: `确定要重置用户"${row.username}"的密码吗？`,
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      try {
-        const password = await userApi.resetPassword(row.id);
-        newPassword.value = password;
-        resetPasswordDialogVisible.value = true;
-      } catch (error) {
-        console.error('重置密码失败:', error);
-        message.error('重置密码失败');
-      }
-    },
+    description: `确定要重置用户"${row.username}"的密码吗？`,
+    tone: 'destructive',
   });
+  if (!ok) return;
+  try {
+    const password = await userApi.resetPassword(row.id);
+    newPassword.value = password;
+    resetPasswordDialogVisible.value = true;
+  } catch (error) {
+    console.error('重置密码失败:', error);
+    message.error('重置密码失败');
+  }
 }
 
 // 复制密码
@@ -349,23 +350,21 @@ async function handleCopyPassword() {
   }
 }
 
-function handleDelete(row: UserResp) {
-  dialog.warning({
+async function handleDelete(row: UserResp) {
+  const ok = await confirmAction.value?.ask({
     title: '删除用户',
-    content: `确定要删除用户 "${row.username}" 吗？此操作不可恢复！`,
-    positiveText: '确定',
-    negativeText: '取消',
-    onPositiveClick: async () => {
-      try {
-        await userApi.delete(row.id);
-        message.success('删除成功');
-        loadUserData();
-      } catch (error) {
-        console.error('删除用户失败:', error);
-        message.error('删除失败');
-      }
-    },
+    description: `确定要删除用户 "${row.username}" 吗？此操作不可恢复！`,
+    tone: 'destructive',
   });
+  if (!ok) return;
+  try {
+    await userApi.delete(row.id);
+    message.success('删除成功');
+    loadUserData();
+  } catch (error) {
+    console.error('删除用户失败:', error);
+    message.error('删除失败');
+  }
 }
 
 function handleDropdownSelect(key: string, row: UserResp) {
@@ -403,6 +402,7 @@ onMounted(() => {
 
 <template>
   <Page>
+    <ConfirmAction ref="confirmAction" />
     <NSplit
       direction="horizontal"
       default-size="200px"
