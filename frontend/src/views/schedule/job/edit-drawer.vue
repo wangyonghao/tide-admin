@@ -10,16 +10,10 @@ import { computed, reactive, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
-import {
-  NForm,
-  NFormItem,
-  NInput,
-  NInputNumber,
-  NTimePicker,
-  useMessage,
-} from 'naive-ui';
+import { NForm, NFormItem, NInput, NInputNumber, useMessage } from 'naive-ui';
 
 import FormSelect from '#/adapter/component/FormSelect.vue';
+import FormTimePicker from '#/adapter/component/FormTimePicker.vue';
 
 import { addJob, listJobHandlers, updateJob } from '#/api/schedule';
 import { Checkbox } from '#/ui/checkbox';
@@ -73,8 +67,8 @@ const clockValue = computed({
     date.setHours(form.hour, form.minute, 0, 0);
     return date.getTime();
   },
-  set(value: number | null) {
-    if (value == null) return;
+  set(value: null | number | string) {
+    if (typeof value !== 'number') return;
     const date = new Date(value);
     form.hour = date.getHours();
     form.minute = date.getMinutes();
@@ -196,7 +190,7 @@ const [Modal, drawerApi] = useVbenModal({
         "
         label="时间"
       >
-        <NTimePicker v-model:value="clockValue" format="HH:mm" />
+        <FormTimePicker v-model:value="clockValue" format="HH:mm" />
       </NFormItem>
       <NFormItem v-if="form.mode === 'WEEKLY'" label="星期">
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2">

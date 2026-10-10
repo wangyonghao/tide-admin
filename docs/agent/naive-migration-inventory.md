@@ -136,6 +136,17 @@ Naive 包不删。
 | `code/generator/modules/gen-preview-modal.vue` | 预览弹层里的目录树，选中后要拼路径 |
 | `demos/table/index.vue`、`demos/naive` | 组件陈列，这一波不改 |
 
+## 用户表、角色分配与表单壳
+
+口径不变。本波开始时：`NDataTable` **4**，`DataTableColumns` **3**，`NSplit` **2**，`NPagination` **1**，`NTimePicker` **1**，`NDropdown` **3**，`from 'naive-ui'` 的文件 **39**。Naive 包不删。
+
+- **用户右表**：`system/user/index.vue` 右侧改为 `useVbenVxeGrid`。左侧部门树和 `ColPage` 不动。搜索、远程分页（10 / 20 / 50）、详情、修改、更多里的重置密码和删除都还在。重置密码仍是确认后弹出只显示一次的新密码。点部门回到第一页。状态仍是 Badge。行上的「更多」改成 `#/ui/dropdown-menu`。部门搜索框仍带前缀，还是 `NInput`。
+- **角色用户分配**：`system/role/index.vue` 的分配表改为 Vxe，远程分页和取消分配还在。「分配用户」仍是按当前关键字重新查询，没有新做分配弹层。左右栏从 `NSplit` 改成 `ColPage`（左 30%，可拖到 20%–35%）。功能权限那个 Tab 没动。
+- **权限矩阵**：`role-permission.vue` 仍是 `NDataTable`。它有菜单列和权限列，勾选还要按 `menuCheckStrictly` 把父子一起写进 `menuIds`。`VbenTree` 只有一个节点插槽，换成它会改保存结果。这一波不换。
+- **表单壳**：`TimePicker` 用 `#/ui/input` 的 `type="time"`。`null` 显示为空，清空回写 `null`，`0` 仍是时间戳。没有 `valueFormat` 时提交时间戳，有则提交格式化字符串。任务编辑里的 `HH:mm` 走这个控件。12 小时制和禁用时刻没做。`Upload` 绑 `fileList`，没文件回写 `null`，不回写 `[]`。单选会替换列表，`max` 封顶。带自定义请求的页面上传（文件列表、头像、`image-upload` 的 `n-upload`）仍是 Naive。`Divider` 走 `#/ui/separator`，`dashed` 画虚线。`Space` 是 flex，`small` / `medium` / `large` 为 8 / 12 / 16，默认换行。
+- **没动**：配置页 `NSplit` 用的是 200–320 像素，`ColPage` 只吃百分比，换了宽度会对不上。代码生成预览树要按文件类型画图标，选中后再打开内容，不是把 `VbenTree` 套上去就能保持现在的点选。`demos` 仍是陈列。
+- **数量**：`NDataTable` 4 → **2**（权限矩阵、`demos/table`）。`DataTableColumns` 3 → **1**。`NSplit` 2 → **1**（只剩配置页）。`NPagination` 1 → **0**。`NTimePicker` 1 → **0**。`NDropdown` 3 → **2**。`NUpload` 具名仍是 **2**。仍有 **39** 个文件导入 naive-ui。适配器不再动态加载 Divider、Space、TimePicker、Upload。Naive 包不删。
+
 ## 目录选择
 
 原子实现继续放在 `@vben-core/shadcn-ui/src/ui`（已有 reka-ui、CVA、`cn()`，颜色经 `frontend/src/styles/theme.css` 的 `--color-*` 接 HSL token）。  
@@ -148,7 +159,7 @@ Naive 包不删。
 
 包增加子路径 `./ui/*`，新原子（Skeleton、Sonner）**不**进入 `@vben-core/shadcn-ui` 根桶，避免壳层整包把 `vue-sonner` 带进去。
 
-第一波入口：`button`、`input`、`label`、`checkbox`、`switch`、`dialog`、`alert-dialog`、`badge`、`skeleton`、`sonner`。Phase 3 补了应用路径 `separator`。后来补了 `select`、`popover`、`radio-group`、`textarea`、`number-field`。日期和树这波补了 `date-picker`、`tree`（`VbenTree`）。用户页的左右分割用已有的 `ColPage`，没有再导出一套 Resizable。
+第一波入口：`button`、`input`、`label`、`checkbox`、`switch`、`dialog`、`alert-dialog`、`badge`、`skeleton`、`sonner`。Phase 3 补了应用路径 `separator`。后来补了 `select`、`popover`、`radio-group`、`textarea`、`number-field`。日期和树那波补了 `date-picker`、`tree`（`VbenTree`）。这一波补了 `dropdown-menu`。用户页和角色页的左右分割用已有的 `ColPage`，没有再导出一套 Resizable。
 
 ## 可先换
 
@@ -186,7 +197,7 @@ Naive 包不删。
 | `NSwitch` | 0 | 页面和表单 schema 都走 `#/ui/switch`。`null` 显示为关；`1/0` 用 `checked-value` / `unchecked-value` | — |
 | `NInputNumber` | 6 | 表单 schema 的 `InputNumber` 已接 NumberField，清空回写 `null`。页面上手写数字框还是 Naive | `views/schedule/job/edit-drawer.vue` |
 | `NModal` | 4 | Dialog 已有；存量居中弹层按页迁 | `views/system/menu/index.vue` |
-| `NDropdown` | 3 | DropdownMenu 已在套件内 | `views/system/role/index.vue` |
+| `NDropdown` | 2 | 用户行的「更多」已走 `#/ui/dropdown-menu`。角色列表和文件页的下拉还是 Naive | `views/system/role/index.vue` |
 | `NCheckboxGroup` | 0 | 页面和表单 `CheckboxGroup` 已改为 Checkbox 列表 | — |
 | `NPopover` | 2 | Popover 已在套件内 | `views/schedule/job/index.vue` |
 | `NTabs` / `NTabPane` | 2 / 2 | Tabs 已在套件内 | `views/system/role/index.vue` |
@@ -195,29 +206,29 @@ Naive 包不删。
 | `useNotification` | 1 | 仍走 Naive provider | `views/demos/naive/index.vue` |
 | `NAlert` | 1 | 套件还没有 Alert 路径 | `views/system/config/index.vue` |
 | `NEmpty` | 1 | 套件还没有 Empty | `views/user/profile/components/security-settings.vue` |
-| `NPagination` | 1 | 这页的分页跟手写表在一起，随表格迁 | `views/system/role/index.vue` |
+| `NPagination` | 0 | 角色用户分配的分页已随 Vxe 去掉 | — |
 | `NSteps` / `NList` / `NTimeline` / `NScrollbar` | 各 1–3 | 套件里有的还没做应用路径 | 见对应页面 |
 
-`adapter/component/index.ts` 里，提交/重置按钮、Input（含文本域、密码、字数、成对输入）、Textarea、Checkbox、CheckboxGroup、Select、ApiSelect、RadioGroup、InputNumber、Switch、DatePicker、TreeSelect、ApiTreeSelect 已经换成原子控件，空值仍是 `null`（`adapter/form.ts`）。Select / Radio、树选择和日期清除后回写 `null`。日期没有 `valueFormat` 时是时间戳，有 `valueFormat` 时是格式化字符串。InputNumber 清空回写 `null`。Divider、Space、TimePicker、Upload 仍动态加载 Naive。
+`adapter/component/index.ts` 里，提交/重置按钮、Input（含文本域、密码、字数、成对输入）、Textarea、Checkbox、CheckboxGroup、Select、ApiSelect、RadioGroup、InputNumber、Switch、DatePicker、TreeSelect、ApiTreeSelect、TimePicker、Upload、Divider、Space 已经换成原子控件或薄包装，空值仍是 `null`（`adapter/form.ts`）。Select / Radio、树选择、日期和时间清除后回写 `null`。日期和时间没有 `valueFormat` 时是时间戳，有 `valueFormat` 时是格式化字符串。InputNumber 清空回写 `null`。Upload 的 `fileList` 为空时回写 `null`。图标选择器的内层输入仍动态加载 `NInput`。
 
 ## 暂留
 
-表、树、复杂选择器，以及还要托住上述调用的壳。Vxe Grid 继续当表格默认，不换 `NDataTable`。
+表、树、复杂选择器，以及还要托住上述调用的壳。Vxe Grid 继续当表格默认。
 
 | Naive | 文件数 | 例子 |
 |-------|--------|------|
-| `NDataTable` + `DataTableColumns` | 4 / 3 | 公告、三张日志、文件、部门、菜单和个人日志已改 Vxe。剩下权限矩阵、角色里的用户分配、用户列表和示例。例子：`views/system/role/components/role-permission.vue`、`views/system/user/index.vue`、`views/demos/table/index.vue` |
+| `NDataTable` + `DataTableColumns` | 2 / 1 | 用户列表和角色用户分配已改 Vxe。剩下权限矩阵和示例：`views/system/role/components/role-permission.vue`、`views/demos/table/index.vue` |
 | `NDatePicker` | 0 | 表单和页面都改 `#/ui/date-picker`。周、月、季、快捷范围没有对应页面，也没有套件 Calendar |
 | `NTreeSelect` | 0 | 表单 `TreeSelect` / `ApiTreeSelect` 和菜单、部门、用户编辑里的上级/部门都改 `FormTreeSelect` |
-| `NSplit` | 2 | 用户页已改 `ColPage`。还留 `views/system/config/index.vue`、`views/system/role/index.vue` |
+| `NSplit` | 1 | 用户页和角色页已改 `ColPage`。还留 `views/system/config/index.vue`（200–320 像素，不是百分比） |
 | `NTree` | 1 | 用户部门树已改 `VbenTree`。还留代码生成预览 `views/code/generator/modules/gen-preview-modal.vue` |
-| `NUpload` + 上传类型 | 2 + 类型 | `views/system/file/index.vue`、`components/image-upload.vue` |
+| `NUpload` + 上传类型 | 2 + 类型 | 表单 schema 的 `Upload` 已换。页面仍是 `views/system/file/index.vue`、`views/user/profile/components/basic-info.vue`，`components/image-upload.vue` 用全局 `n-upload` |
 | `NCascader` | 1 | `views/system/file/index.vue` |
-| `NTimePicker` | 1 | `views/schedule/job/edit-drawer.vue`（适配器里另有动态导入） |
+| `NTimePicker` | 0 | 表单和任务编辑的时间已改 `FormTimePicker`。12 小时制没做 |
 | `NConfigProvider`、`NMessageProvider`、`NDialogProvider`、`NNotificationProvider`、主题与语言包 | `app.vue` | 调用点还在就留着 |
 | `createDiscreteApi` | `adapter/naive.ts` | 设置页等在 setup 外发消息 |
 
-适配器里的 `time-picker`、`upload` 仍动态加载 Naive。`date-picker` 和 `tree-select` 已换到上面的控件。
+适配器里的 Divider、Space、TimePicker、Upload 已换到上面的控件。图标选择器仍动态加载 `NInput`。
 
 ## 新代码
 

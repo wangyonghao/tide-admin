@@ -6,15 +6,11 @@
 import type {
   CheckboxGroupProps,
   CheckboxProps,
-  DividerProps,
   InputNumberProps,
   InputProps,
   RadioGroupProps,
   SelectProps,
-  SpaceProps,
   SwitchProps,
-  TimePickerProps,
-  UploadProps,
 } from 'naive-ui';
 
 import type { Component } from 'vue';
@@ -28,6 +24,8 @@ import type { Recordable } from '@vben/types';
 
 import type { FormDatePickerProps } from '#/ui/date-picker/date-value';
 
+import type { FormDividerProps } from './divider-props';
+import type { FormSpaceProps } from './space-layout';
 import type { FormTreeSelectProps } from './tree-select-value';
 
 import { defineAsyncComponent, defineComponent, h, ref } from 'vue';
@@ -41,28 +39,20 @@ import { DatePicker } from '#/ui/date-picker';
 
 import FormCheckbox from './FormCheckbox.vue';
 import FormCheckboxGroup from './FormCheckboxGroup.vue';
+import FormDivider from './FormDivider.vue';
 import FormInputNumber from './FormInputNumber.vue';
 import FormRadioGroup from './FormRadioGroup.vue';
 import FormSelect from './FormSelect.vue';
+import FormSpace from './FormSpace.vue';
 import FormSwitch from './FormSwitch.vue';
 import FormTextarea from './FormTextarea.vue';
 import FormTextInput from './FormTextInput.vue';
+import FormTimePicker from './FormTimePicker.vue';
 import FormTreeSelect from './FormTreeSelect.vue';
+import FormUpload from './FormUpload.vue';
 
-const NDivider = defineAsyncComponent(() =>
-  import('naive-ui/es/divider').then((res) => res.NDivider),
-);
 const NInput = defineAsyncComponent(() =>
   import('naive-ui/es/input').then((res) => res.NInput),
-);
-const NSpace = defineAsyncComponent(() =>
-  import('naive-ui/es/space').then((res) => res.NSpace),
-);
-const NTimePicker = defineAsyncComponent(() =>
-  import('naive-ui/es/time-picker').then((res) => res.NTimePicker),
-);
-const NUpload = defineAsyncComponent(() =>
-  import('naive-ui/es/upload').then((res) => res.NUpload),
 );
 
 const withDefaultPlaceholder = <T extends Component>(
@@ -129,18 +119,31 @@ export interface ComponentPropsMap {
   Checkbox: CheckboxProps;
   CheckboxGroup: CheckboxGroupProps;
   DatePicker: FormDatePickerProps;
-  Divider: DividerProps;
+  Divider: FormDividerProps;
   IconPicker: IconPickerProps;
   Input: InputProps;
   InputNumber: InputNumberProps;
   RadioGroup: RadioGroupProps;
   Select: SelectProps;
-  Space: SpaceProps;
+  Space: FormSpaceProps;
   Switch: SwitchProps;
   Textarea: InputProps;
-  TimePicker: TimePickerProps;
+  TimePicker: {
+    clearable?: boolean;
+    disabled?: boolean;
+    format?: string;
+    placeholder?: string;
+    value?: null | number | string;
+    valueFormat?: string;
+  };
   TreeSelect: FormTreeSelectProps;
-  Upload: UploadProps;
+  Upload: {
+    accept?: string;
+    disabled?: boolean;
+    fileList?: null | unknown[];
+    max?: number;
+    multiple?: boolean;
+  };
 }
 
 async function initComponentAdapter() {
@@ -197,7 +200,7 @@ async function initComponentAdapter() {
         slots,
       );
     },
-    Divider: NDivider,
+    Divider: FormDivider,
     IconPicker: withDefaultPlaceholder(IconPicker, 'select', {
       iconSlot: 'suffix',
       inputComponent: NInput,
@@ -206,12 +209,12 @@ async function initComponentAdapter() {
     InputNumber: withDefaultPlaceholder(FormInputNumber, 'input'),
     RadioGroup: FormRadioGroup,
     Select: withDefaultPlaceholder(FormSelect, 'select'),
-    Space: NSpace,
+    Space: FormSpace,
     Switch: FormSwitch,
     Textarea: withDefaultPlaceholder(FormTextarea, 'input'),
-    TimePicker: NTimePicker,
+    TimePicker: FormTimePicker,
     TreeSelect: withDefaultPlaceholder(FormTreeSelect, 'select'),
-    Upload: NUpload,
+    Upload: FormUpload,
   };
 
   // 将组件注册到全局共享状态中
