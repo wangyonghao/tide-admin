@@ -6,13 +6,11 @@ import {
   NInput,
   NRadioGroup,
   NRadio,
-  NUpload,
-  type UploadFileInfo,
   NModal,
-  NImage,
 } from 'naive-ui';
 import { VbenAvatar } from '@vben-core/shadcn-ui';
 import { Button } from '#/ui/button';
+import { FileUpload } from '#/ui/upload';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
 import { message } from '#/adapter/naive';
@@ -71,13 +69,15 @@ const handleSave = async () => {
 };
 
 // 上传头像
-const handleAvatarUpload = async (options: { file: UploadFileInfo }) => {
+const handleAvatarUpload = async (files: File[]) => {
+  const avatarFile = files[0];
+  if (!avatarFile) return;
   try {
     uploadingAvatar.value = true;
-    const formData = new FormData();
-    formData.append('avatarFile', options.file.file as File);
+    const body = new FormData();
+    body.append('avatarFile', avatarFile);
 
-    await userProfileApi.uploadAvatar(formData);
+    await userProfileApi.uploadAvatar(body);
     message.success($t('page.profile.basic.uploadSuccess'));
     showAvatarModal.value = false;
 
@@ -207,16 +207,16 @@ const userInfo = computed(() => userStore.user);
       style="width: 500px"
     >
       <div class="text-center">
-        <NUpload
+        <FileUpload
           :max="1"
           accept="image/png,image/jpeg,image/jpg"
-          :custom-request="handleAvatarUpload"
-          :show-file-list="false"
+          :disabled="uploadingAvatar"
+          @select="handleAvatarUpload"
         >
           <Button type="button" :loading="uploadingAvatar">
             {{ $t('page.profile.basic.uploadAvatar') }}
           </Button>
-        </NUpload>
+        </FileUpload>
         <p class="text-sm text-gray-500 mt-4">
           {{ $t('page.profile.basic.uploadTip') }}
         </p>

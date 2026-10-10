@@ -31,7 +31,7 @@
 | P-FALLBACK | 空态/错误 | 403/404/500/offline | `views/_core/fallback/` | canonical |
 | P-PROFILE | 个人中心 | Tab + 分组表单 | `views/user/profile/`、`views/_core/profile/` | 宜收敛到一种 |
 | P-CONFIG | 配置/字典 | 分组表单或可编辑表 | `views/system/option/`、`config/` | 按模块对齐 CRUD 或 Form |
-| P-LEGACY-TABLE | 手写 NDataTable | **仅存量** | `views/system/role/components/role-permission.vue` | **禁止新建**。用户右表、角色用户分配、系统选项、在线用户、公告、日志三 Tab、文件列表已改 Vxe |
+| P-LEGACY-TABLE | 手写 NDataTable | **仅存量** | `views/demos/table/index.vue` | **禁止新建**。权限矩阵已改成 Checkbox 表格。用户右表、角色用户分配、系统选项、在线用户、公告、日志三 Tab、文件列表已改 Vxe |
 
 ---
 
@@ -100,7 +100,7 @@ ColPage (auto-content-height, 左约 16%–32%)
 
 - 左右都是 `bg-background`。选中树节点让右侧表格回到第一页。
 - 右侧用 `useVbenVxeGrid`（搜索 schema、远程分页、行操作），和 P-CRUD 同一套。
-- 宽度用 `ColPage` 的百分比。像素分割不要再新开 `NSplit`。
+- 宽度用 `ColPage`。百分比是默认；像素用 `left-size-unit="px"`（配置页左栏 200–320）。不要再新开 `NSplit`。
 
 ### 参考
 
@@ -161,7 +161,9 @@ Page 或纯容器
 
 | 区域 | 示例 |
 |------|------|
-| system | `role/components/role-permission.vue`（菜单列加权限列） |
+| demos | `views/demos/table/index.vue`（Naive 表格示例） |
+
+角色权限矩阵是 Checkbox 表格，保存规则在 `role/components/permission-tree.ts`，不是 `NDataTable`。
 
 已迁到 `useVbenVxeGrid`：`views/system/option/`、`views/system/user/`（右表）、`views/system/role/`（用户分配）、`views/monitor/online/`、`views/system/notice/`、`views/monitor/log/`（登录 / 操作 / 短信三个 Tab）、`views/system/file/`、`views/system/department/`、`views/system/menu/`、`views/user/profile/components/operation-logs.vue`。`views/demos/table` 仍是 Naive 示例。
 

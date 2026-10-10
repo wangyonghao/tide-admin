@@ -147,6 +147,32 @@ Naive 包不删。
 - **没动**：配置页 `NSplit` 用的是 200–320 像素，`ColPage` 只吃百分比，换了宽度会对不上。代码生成预览树要按文件类型画图标，选中后再打开内容，不是把 `VbenTree` 套上去就能保持现在的点选。`demos` 仍是陈列。
 - **数量**：`NDataTable` 4 → **2**（权限矩阵、`demos/table`）。`DataTableColumns` 3 → **1**。`NSplit` 2 → **1**（只剩配置页）。`NPagination` 1 → **0**。`NTimePicker` 1 → **0**。`NDropdown` 3 → **2**。`NUpload` 具名仍是 **2**。仍有 **39** 个文件导入 naive-ui。适配器不再动态加载 Divider、Space、TimePicker、Upload。Naive 包不删。
 
+## 权限矩阵、像素分割与页面上传
+
+口径不变。本波开始时：`NDataTable` **2**，`NSplit` **1**，`NUpload` **2**，`from 'naive-ui'` 的文件 **39**。Naive 包不删。
+
+- **权限矩阵**：`role-permission.vue` 不再用 `NDataTable`。勾选和保存抽到 `permission-tree.ts`，并用单测锁住结果。`menuIds` 仍是已选菜单 id，加上 `checked` 的权限 id，顺序仍是深度优先。`menuCheckStrictly` 为真时，勾菜单会连带下级菜单和权限；勾权限只带上它所在的菜单，不带上级；取消权限不取消菜单。关闭关联时，菜单和权限各自独立。已保存的 key 回填不级联。表头全选仍只看菜单列，不看权限列。页面是 Checkbox 加表格。折叠只藏行，不改保存结果。成功提示改为 toast。
+- **配置分割**：`ColPage` 增加 `left-size-unit` / `right-size-unit`（`%` 或 `px`，默认 `%`）。用户页和角色页仍是百分比，宽度不变。一侧是像素时，另一侧的百分比默认宽度不参与初始布局，用来吃掉剩余空间。配置页左栏 200px，可拖到 200–320px，不再用 `NSplit`。
+- **页面上传**：`#/ui/upload` 的 `FileUpload` 只负责选出 `File`。文件列表仍调用 `fileApi.upload`，头像仍调用 `userProfileApi.uploadAvatar`，`image-upload` 仍调用 `fileApi.upload` 并回写 fileId。`multiple` 默认 false，和原来的单文件按钮一样。表单 schema 的 Upload 不动。
+- **没动**：代码生成预览树。选中只在顶层 key 里找节点，目录还会合并，图标按扩展名画。换成 `VbenTree` 会改点选。`demos/naive` 和 `demos/table` 仍是陈列，用来留住 provider。
+- **数量**：`NDataTable` 2 → **1**（只剩 `demos/table`）。`DataTableColumns` 1 → **0**。`NSplit` 1 → **0**。`NUpload` 2 → **0**。`useMessage` 21 → **20**。`role-permission.vue` 和 `components/image-upload.vue` 不再导入 naive-ui。仍有 **37** 个文件 `from 'naive-ui'`。Naive 包不删。
+
+仍在 `from 'naive-ui'` 的文件：
+
+`adapter/component/index.ts`、`adapter/naive.ts`、`adapter/vxe-table.ts`、`app.vue`、`components/icon-select.vue`、`components/password-modal.vue`、`components/profile-modal.vue`、`views/code/generator/modules/gen-config-drawer.vue`、`views/code/generator/modules/gen-preview-modal.vue`、`views/demos/form/basic.vue`、`views/demos/naive/index.vue`、`views/demos/table/index.vue`、`views/monitor/log/operation-log.vue`、`views/monitor/sms/log/index.vue`、`views/open/app/modules/detail.vue`、`views/schedule/job/edit-drawer.vue`、`views/schedule/job/index.vue`、`views/system/config/index.vue`、`views/system/department/department-drawer.vue`、`views/system/department/index.vue`、`views/system/file/index.vue`、`views/system/menu/index.vue`、`views/system/notice/components/notice-form.vue`、`views/system/notice/index.vue`、`views/system/option/components/option-edit-drawer.vue`、`views/system/role/components/role-edit-drawer.vue`、`views/system/role/index.vue`、`views/system/user/components/user-detail-drawer.vue`、`views/system/user/components/user-edit-drawer.vue`、`views/system/user/index.vue`、`views/user/message/components/my-message.vue`、`views/user/profile/components/basic-info.vue`、`views/user/profile/components/notification-settings.vue`、`views/user/profile/components/preferences-settings.vue`、`views/user/profile/components/profile-summary.vue`、`views/user/profile/components/security-settings.vue`、`views/user/profile/index.vue`。
+
+`adapter/component/index.ts` 另外还动态加载 `naive-ui/es/input` 给图标选择器。
+
+还不能卸掉 `naive-ui`。`app.vue` 里的 `NConfigProvider`、`NMessageProvider`、`NDialogProvider`、`NNotificationProvider` 不是最后的硬依赖。卸掉 provider 之后，下面这些仍会直接导入这个包：
+
+- `useMessage` 还有 **20** 个文件。`adapter/naive.ts` 的 `createDiscreteApi` 在组件外面发消息。
+- 手写表单：`NForm` / `NFormItem`、`NInput`、`NInputNumber`、`NRadioGroup`。
+- `NDrawer`、`NModal`、`NCard`、`NAlert`、`NCascader`（文件分类）、`NTree`（代码生成预览）、`NDropdown`、`NTabs`。
+- `NDataTable` 只剩 `views/demos/table/index.vue`。`NImage` 还在 Vxe `CellImage`。
+- `views/demos/naive/index.vue` 仍是 `NButton`、`NSpace`、`useNotification` 的陈列。
+
+包继续安装。
+
 ## 目录选择
 
 原子实现继续放在 `@vben-core/shadcn-ui/src/ui`（已有 reka-ui、CVA、`cn()`，颜色经 `frontend/src/styles/theme.css` 的 `--color-*` 接 HSL token）。  
@@ -159,7 +185,7 @@ Naive 包不删。
 
 包增加子路径 `./ui/*`，新原子（Skeleton、Sonner）**不**进入 `@vben-core/shadcn-ui` 根桶，避免壳层整包把 `vue-sonner` 带进去。
 
-第一波入口：`button`、`input`、`label`、`checkbox`、`switch`、`dialog`、`alert-dialog`、`badge`、`skeleton`、`sonner`。Phase 3 补了应用路径 `separator`。后来补了 `select`、`popover`、`radio-group`、`textarea`、`number-field`。日期和树那波补了 `date-picker`、`tree`（`VbenTree`）。这一波补了 `dropdown-menu`。用户页和角色页的左右分割用已有的 `ColPage`，没有再导出一套 Resizable。
+第一波入口：`button`、`input`、`label`、`checkbox`、`switch`、`dialog`、`alert-dialog`、`badge`、`skeleton`、`sonner`。Phase 3 补了应用路径 `separator`。后来补了 `select`、`popover`、`radio-group`、`textarea`、`number-field`。日期和树那波补了 `date-picker`、`tree`（`VbenTree`）。后来补了 `dropdown-menu`。这一波补了 `upload`（只选文件，不发请求）。用户页和角色页的左右分割用 `ColPage`。`ColPage` 现在可以按百分比或像素给宽度。
 
 ## 可先换
 
@@ -185,7 +211,7 @@ Naive 包不删。
 
 | Naive | 文件数 | 原因 | 例子 |
 |-------|--------|------|------|
-| `useMessage` | 21 | Sonner 已挂到 `app.vue`；开放应用、系统选项、在线用户、公告、短信日志和文件列表已改 `toast`，其余调用点仍是 Naive | `views/schedule/job/index.vue` |
+| `useMessage` | 20 | Sonner 已挂到 `app.vue`；开放应用、系统选项、在线用户、公告、短信日志、文件列表和角色权限保存已改 `toast`，其余调用点仍是 Naive | `views/schedule/job/index.vue` |
 | `NTag` | 0 | 具名颜色已映射到 Badge。`primary` / `info` 用 Badge `default` | — |
 | `NSelect` | 0 | 注册表 `Select`、`ApiSelect` 和页面手写下拉都已接 `FormSelect` | — |
 | `NIcon` | 4 | 可换 Lucide，但图标选择器是一整块。菜单列表已不用 `NIcon` | `components/icon-select.vue` |
@@ -217,12 +243,12 @@ Naive 包不删。
 
 | Naive | 文件数 | 例子 |
 |-------|--------|------|
-| `NDataTable` + `DataTableColumns` | 2 / 1 | 用户列表和角色用户分配已改 Vxe。剩下权限矩阵和示例：`views/system/role/components/role-permission.vue`、`views/demos/table/index.vue` |
+| `NDataTable` + `DataTableColumns` | 1 / 0 | 权限矩阵已改成 Checkbox 表格。只剩示例 `views/demos/table/index.vue` |
 | `NDatePicker` | 0 | 表单和页面都改 `#/ui/date-picker`。周、月、季、快捷范围没有对应页面，也没有套件 Calendar |
 | `NTreeSelect` | 0 | 表单 `TreeSelect` / `ApiTreeSelect` 和菜单、部门、用户编辑里的上级/部门都改 `FormTreeSelect` |
-| `NSplit` | 1 | 用户页和角色页已改 `ColPage`。还留 `views/system/config/index.vue`（200–320 像素，不是百分比） |
+| `NSplit` | 0 | 用户页、角色页和配置页都改 `ColPage`。配置页左栏用 `left-size-unit="px"`，200–320 |
 | `NTree` | 1 | 用户部门树已改 `VbenTree`。还留代码生成预览 `views/code/generator/modules/gen-preview-modal.vue` |
-| `NUpload` + 上传类型 | 2 + 类型 | 表单 schema 的 `Upload` 已换。页面仍是 `views/system/file/index.vue`、`views/user/profile/components/basic-info.vue`，`components/image-upload.vue` 用全局 `n-upload` |
+| `NUpload` + 上传类型 | 0 | 表单 schema 和页面上传都已换。页面走 `#/ui/upload`，请求仍是原来的 `fileApi.upload` / `uploadAvatar` |
 | `NCascader` | 1 | `views/system/file/index.vue` |
 | `NTimePicker` | 0 | 表单和任务编辑的时间已改 `FormTimePicker`。12 小时制没做 |
 | `NConfigProvider`、`NMessageProvider`、`NDialogProvider`、`NNotificationProvider`、主题与语言包 | `app.vue` | 调用点还在就留着 |

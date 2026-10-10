@@ -11,19 +11,18 @@ import type {
 
 import { onMounted, ref, onUnmounted, watch } from 'vue';
 
+import { ColPage } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
-import { Page } from '@vben/common-ui';
 
 import {
+  NAlert,
   NCard,
+  NDrawer,
+  NDrawerContent,
   NForm,
   NFormItem,
   NInput,
   NInputNumber,
-  NSplit,
-  NDrawer,
-  NDrawerContent,
-  NAlert,
   useMessage,
 } from 'naive-ui';
 
@@ -415,17 +414,17 @@ async function handleVerifyCode() {
 </script>
 
 <template>
-  <Page class="h-full m-4 bg-background">
+  <ColPage
+    class="m-4 h-full bg-background"
+    :left-width="200"
+    :left-min-width="200"
+    :left-max-width="320"
+    left-size-unit="px"
+    resizable
+    split-line
+  >
     <ConfirmAction ref="confirmAction" />
-    <NSplit
-      direction="horizontal"
-      default-size="200px"
-      min="200px"
-      max="320px"
-      :resizable="true"
-      class="h-full"
-    >
-      <template #1>
+    <template #left>
         <!-- 左侧配置列表 -->
         <div class="space-y-2">
           <div
@@ -443,8 +442,7 @@ async function handleVerifyCode() {
             <span>{{ item.label }}</span>
           </div>
         </div>
-      </template>
-      <template #2>
+    </template>
         <!-- 右侧配置表单 -->
         <div class="h-full bg-background p-4 overflow-auto">
           <NCard
@@ -781,8 +779,6 @@ async function handleVerifyCode() {
             </template>
           </NCard>
         </div>
-      </template>
-    </NSplit>
 
     <!-- 邮件配置抽屉 -->
     <NDrawer v-model:show="showEmailDrawer" :width="600" placement="right">
@@ -939,7 +935,7 @@ async function handleVerifyCode() {
         </template>
       </NDrawerContent>
     </NDrawer>
-  </Page>
+  </ColPage>
 </template>
 
 <style scoped>

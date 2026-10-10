@@ -1,9 +1,5 @@
 <script setup lang="ts">
-import type {
-  DropdownOption,
-  UploadCustomRequestOptions,
-  UploadFileInfo,
-} from 'naive-ui';
+import type { DropdownOption } from 'naive-ui';
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { FileCategory, FileResult } from '#/api/system/file';
 
@@ -12,15 +8,15 @@ import { h, ref, watch } from 'vue';
 import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import { NCascader, NDropdown, NUpload } from 'naive-ui';
+import { NCascader, NDropdown } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { fileApi, resolveFilePreviewUrl } from '#/api/system/file';
 import { Button } from '#/ui/button';
 import { toast } from '#/ui/sonner';
+import { FileUpload } from '#/ui/upload';
 
 const category = ref<FileCategory>('ALL');
-const uploadFileList = ref<UploadFileInfo[]>([]);
 const checkedCount = ref(0);
 
 const categoryOptions = [
@@ -309,25 +305,16 @@ async function handleBatchDownload() {
   toast.success(`已开始下载 ${rows.length} 个文件`);
 }
 
-async function handleUpload({
-  file,
-  onFinish,
-  onError,
-}: UploadCustomRequestOptions) {
-  if (!file.file) {
-    onError();
-    return;
-  }
+async function handleUpload(files: File[]) {
+  const file = files[0];
+  if (!file) return;
   try {
-    await fileApi.upload(file.file as File);
+    await fileApi.upload(file);
     toast.success('上传成功');
-    onFinish();
-    uploadFileList.value = [];
     await reload();
   } catch (error) {
     toast.error('上传失败');
     console.error(error);
-    onError();
   }
 }
 
@@ -374,16 +361,12 @@ watch(category, () => {
         </div>
       </template>
       <template #toolbar-tools>
-        <NUpload
-          v-model:file-list="uploadFileList"
-          :show-file-list="false"
-          :custom-request="handleUpload"
-        >
+        <FileUpload @select="handleUpload">
           <Button type="button">
             <IconifyIcon icon="lucide:upload" class="mr-1 size-4" />
             上传
           </Button>
-        </NUpload>
+        </FileUpload>
       </template>
       <template #fileName="{ row }">
         <div class="flex min-w-0 items-center gap-2">
