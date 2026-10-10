@@ -7,8 +7,6 @@ import { useRouter } from 'vue-router';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { NPopover, NTimeline, NTimelineItem } from 'naive-ui';
-
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
   deleteJob,
@@ -18,6 +16,7 @@ import {
 } from '#/api/schedule';
 import { useUserStore } from '#/store/user';
 import { Button } from '#/ui/button';
+import { Popover, PopoverContent, PopoverTrigger } from '#/ui/popover';
 import { Switch } from '#/ui/switch';
 import {
   ConfirmAction,
@@ -144,19 +143,37 @@ onMounted(() => {
         </span>
       </template>
       <template #scheduleLabel="{ row }">
-        <NPopover placement="bottom" style="width: 240px">
-          <template #trigger>
-            <a class="text-primary cursor-pointer">{{ row.scheduleLabel }}</a>
-          </template>
-          <div class="mb-2 text-sm">接下来 5 次</div>
-          <NTimeline>
-            <NTimelineItem
-              v-for="item in row.upcomingTimes ?? []"
-              :key="item"
-              :title="item"
-            />
-          </NTimeline>
-        </NPopover>
+        <Popover>
+          <PopoverTrigger as-child>
+            <button
+              type="button"
+              class="text-primary cursor-pointer"
+            >
+              {{ row.scheduleLabel }}
+            </button>
+          </PopoverTrigger>
+          <PopoverContent
+            class="w-60"
+            side="bottom"
+            align="start"
+          >
+            <div class="mb-2 text-sm">
+              接下来 5 次
+            </div>
+            <ol class="border-border ml-1 space-y-3 border-l pl-4">
+              <li
+                v-for="item in row.upcomingTimes ?? []"
+                :key="item"
+                class="relative text-sm"
+              >
+                <span
+                  class="bg-primary absolute top-1.5 -left-[1.2rem] size-2 rounded-full"
+                />
+                {{ item }}
+              </li>
+            </ol>
+          </PopoverContent>
+        </Popover>
       </template>
       <template #status="{ row }">
         <Switch

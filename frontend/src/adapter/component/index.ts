@@ -3,16 +3,6 @@
  * 可用于 vben-form、vben-modal、vben-drawer 等组件使用,
  */
 
-import type {
-  CheckboxGroupProps,
-  CheckboxProps,
-  InputNumberProps,
-  InputProps,
-  RadioGroupProps,
-  SelectProps,
-  SwitchProps,
-} from 'naive-ui';
-
 import type { Component } from 'vue';
 
 import type {
@@ -25,6 +15,15 @@ import type { Recordable } from '@vben/types';
 import type { FormDatePickerProps } from '#/ui/date-picker/date-value';
 
 import type { FormDividerProps } from './divider-props';
+import type {
+  FormCheckboxGroupProps,
+  FormCheckboxProps,
+  FormInputNumberProps,
+  FormRadioGroupProps,
+  FormSelectProps,
+  FormSwitchProps,
+  FormTextProps,
+} from './form-props';
 import type { FormSpaceProps } from './space-layout';
 import type { FormTreeSelectProps } from './tree-select-value';
 
@@ -110,20 +109,20 @@ export type ComponentType =
  * 与 {@link ComponentType} 中注册的组件名一一对应，便于 Schema 上 `component` + `componentProps` 联动提示
  */
 export interface ComponentPropsMap {
-  ApiSelect: ApiComponentSharedProps & SelectProps;
+  ApiSelect: ApiComponentSharedProps & FormSelectProps;
   ApiTreeSelect: ApiComponentSharedProps & FormTreeSelectProps;
-  Checkbox: CheckboxProps;
-  CheckboxGroup: CheckboxGroupProps;
+  Checkbox: FormCheckboxProps;
+  CheckboxGroup: FormCheckboxGroupProps;
   DatePicker: FormDatePickerProps;
   Divider: FormDividerProps;
   IconPicker: IconPickerProps;
-  Input: InputProps;
-  InputNumber: InputNumberProps;
-  RadioGroup: RadioGroupProps;
-  Select: SelectProps;
+  Input: FormTextProps;
+  InputNumber: FormInputNumberProps;
+  RadioGroup: FormRadioGroupProps;
+  Select: FormSelectProps;
   Space: FormSpaceProps;
-  Switch: SwitchProps;
-  Textarea: InputProps;
+  Switch: FormSwitchProps;
+  Textarea: FormTextProps;
   TimePicker: {
     clearable?: boolean;
     disabled?: boolean;

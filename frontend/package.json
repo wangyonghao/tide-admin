@@ -62,7 +62,6 @@
     "echarts": "catalog:",
     "jsencrypt": "^3.5.4",
     "json-bigint": "catalog:",
-    "naive-ui": "catalog:",
     "pinia": "catalog:",
     "pinia-plugin-persistedstate": "catalog:",
     "qrcode": "catalog:",

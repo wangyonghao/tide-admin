@@ -105,19 +105,18 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 
 ## 4. Component Stylings
 
-实现以 **Naive UI** + **Vben 封装**（`Page`、`useVbenForm`、`useVbenDrawer`、`useVbenVxeGrid`）为准；样式从 token → `useNaiveDesignTokens` → `NConfigProvider themeOverrides`。
+实现以 **Vben 封装**（`Page`、`useVbenForm`、`useVbenDrawer`、`useVbenVxeGrid`）和 `#/ui` 原子为准。颜色走本文件 token，经 `src/styles/theme.css` 的 `--color-*` 接到 Tailwind。
 
-**原子层（迁移中）：** 新代码优先路径导入 `frontend/src/ui/<atom>`（Button、Input、Label、Checkbox、Switch、Dialog、AlertDialog、Badge、Skeleton、Sonner）。实现留在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA + `cn`），颜色沿用本文件 token，经 `src/styles/theme.css` 的 `--color-*` 接到 Tailwind。页面组合放 `frontend/src/ui-patterns/<pattern>`，按目录路径导入，不建总桶。Naive 仍安装；表、树、复杂选择器暂留。清单见 [`docs/agent/naive-migration-inventory.md`](../docs/agent/naive-migration-inventory.md)。
+**原子层：** 新代码按路径导入 `frontend/src/ui/<atom>`（Button、Input、Label、Checkbox、Switch、Dialog、AlertDialog、Badge、Skeleton、Sonner、Select、Popover、Card、Tabs 等）。实现留在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA + `cn`）。页面组合放 `frontend/src/ui-patterns/<pattern>`，按目录路径导入，不建总桶。`naive-ui` 已从依赖里去掉。清单见 [`docs/agent/naive-migration-inventory.md`](../docs/agent/naive-migration-inventory.md)。
 
 ### Buttons
 
 | 角色 | 用法 | 约定 |
 |------|------|------|
-| Primary | `NButton type="primary"` | 每页主操作唯一优先：新建 |
-| Default | `NButton` | 导出、次要操作 |
-| Text / Tertiary | `NButton text` | 行内：复制、显示/隐藏 |
-| Warning text | `type="warning" text` | 敏感次级操作 |
-| Destructive | 删除走 `dialog.warning` / Popconfirm，按钮 `type="error"` 或确认框主按钮 |
+| Primary | `#/ui/button` | 每页主操作唯一优先：新建 |
+| Default | `variant="outline"` | 导出、次要操作 |
+| Text / Tertiary | `variant="link"` 或 `ghost` | 行内：复制、显示/隐藏 |
+| Destructive | 删除走 `ConfirmAction`，按钮可用 `text-destructive` | 敏感操作先确认 |
 
 工具栏顺序（左→右）：**主操作（新建）→ 次操作（导出）→ …**；行内操作：查看 / 编辑 / 更多（删除放菜单或确认）。
 
@@ -125,13 +124,13 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 
 - 搜索与编辑表单优先 `useVbenForm` + Zod schema（`#/adapter/form`）。
 - 栅格：搜索区常用 `grid-cols-1 md:grid-cols-2 lg:grid-cols-3/4`；`showCollapseButton` 字段多时开启。
-- 校验错误态走全局 `.form-valid-error`（`src/vben/styles/naive`），不单页覆写边框色。
+- 校验错误态走表单控件自己的错误样式，不单页覆写边框色。
 
 ### Tables
 
 - **默认：** `useVbenVxeGrid`（`#/adapter/vxe-table`），`height: 'auto'`，`Page auto-content-height`。
 - 工具栏：`refresh` / `search` / `custom` / `zoom` 按需；业务按钮放 `#toolbar-tools`。
-- **例外：** 极复杂树表可暂用 `NDataTable`，须在范式文档登记；新 CRUD 不得新开例外。
+- 新 CRUD 用 Vxe，不再手写另一套表格。
 
 ### Overlays
 
@@ -139,12 +138,12 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 |------|------|
 | 创建/编辑 | `useVbenDrawer`（或 Modal，同一模块内统一） |
 | 详情只读 | Drawer / 独立详情组件 |
-| 危险确认 | `useDialog` / `NPopconfirm` |
-| 轻反馈 | `useMessage`（成功/失败） |
+| 危险确认 | `ConfirmAction` |
+| 轻反馈 | `#/ui-patterns/toast`（成功/失败） |
 
 ### Tags & status
 
-- 状态用字典 + `NTag`；颜色映射语义 token（success/warning/error/default），禁止每页自定义色板。
+- 状态用字典 + `#/ui/badge`；颜色映射语义 token（success/warning/error/default），禁止每页自定义色板。
 
 ### Navigation (shell)
 
@@ -154,7 +153,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 ### Cards
 
 - 仪表盘统计/图表：`@vben/common-ui` 已有 Analysis/Workbench 组件；统一 gutter，避免每卡不同 padding。
-- CRUD 列表页：**不要**再套一层无意义 `NCard` 包住整个 Grid（`Page` + Grid 即可）。
+- CRUD 列表页：**不要**再套一层无意义卡片包住整个 Grid（`Page` + Grid 即可）。
 
 ---
 

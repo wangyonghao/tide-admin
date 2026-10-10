@@ -1,6 +1,4 @@
 <script lang="ts" setup>
-import type { TreeNodeData } from 'naive-ui';
-
 import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type {
   FieldConfigResp,
@@ -14,12 +12,11 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { getPopupContainer } from '@vben/utils';
 
-import { NInput, NSteps, NStep } from 'naive-ui';
-
+import { commitFormText, displayFormText } from '#/adapter/component/empty-value';
 import FormSelect from '#/adapter/component/FormSelect.vue';
 
 import { Checkbox } from '#/ui/checkbox';
-
+import { Input } from '#/ui/input';
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -110,13 +107,7 @@ const [FirstForm, firstFormApi] = useVbenForm({
         // 设置弹窗滚动高度 默认256
         listHeight: 300,
         nodeKey: 'key',
-        onNodeClick: (
-          data: TreeNodeData,
-          node: CascaderNode,
-          // treeNode: TreeNode,
-        ) => {
-          // treeNode.expanded = false;
-          node.checked = !node.checked;
+        onNodeClick: (data: { key?: unknown }) => {
           firstFormApi.form.setFieldValue('parentMenuId', data.key);
         },
       },
@@ -377,6 +368,16 @@ const [Drawer, drawerApi] = useVbenDrawer({
   },
 });
 
+const configSteps = ['生成配置', '字段配置'];
+
+function onFieldText(
+  row: { comment?: null | string; fieldName?: null | string },
+  field: 'comment' | 'fieldName',
+  value: number | string,
+) {
+  row[field] = commitFormText(value);
+}
+
 const getDrawerTitle = computed(() => {
   let comment = '';
   if (genTable.value?.comment) {
@@ -388,10 +389,34 @@ const getDrawerTitle = computed(() => {
 <template>
   <Drawer :title="getDrawerTitle" class="w-[80%]">
     <div class="mx-auto flex h-full w-full flex-col">
-      <NSteps :current="currentTab" class="px-16">
-        <NStep title="生成配置" />
-        <NStep title="字段配置" />
-      </NSteps>
+      <ol class="flex items-center justify-center gap-10 px-16">
+        <li
+          v-for="(title, index) in configSteps"
+          :key="title"
+          class="flex items-center gap-2 text-sm"
+          :class="
+            index === currentTab
+              ? 'text-primary font-medium'
+              : index < currentTab
+                ? 'text-foreground'
+                : 'text-muted-foreground'
+          "
+        >
+          <span
+            class="flex size-6 items-center justify-center rounded-full border text-xs"
+            :class="
+              index === currentTab
+                ? 'border-primary bg-primary text-primary-foreground'
+                : index < currentTab
+                  ? 'border-primary text-primary'
+                  : 'border-border'
+            "
+          >
+            {{ index + 1 }}
+          </span>
+          {{ title }}
+        </li>
+      </ol>
       <div class="w-full flex-1 p-6">
         <FirstForm v-show="currentTab === 0" />
         <Grid v-show="currentTab === 1">
@@ -417,7 +442,11 @@ const getDrawerTitle = computed(() => {
 </a-popconfirm> -->
           </template>
           <template #fieldName="{ row }">
-            <NInput v-model:value="row.fieldName" />
+            <Input
+              class="h-8"
+              :model-value="displayFormText(row.fieldName)"
+              @update:model-value="onFieldText(row, 'fieldName', $event)"
+            />
           </template>
           <template #fieldType="{ row }">
             <FormSelect
@@ -430,7 +459,11 @@ const getDrawerTitle = computed(() => {
             />
           </template>
           <template #comment="{ row }">
-            <NInput v-model:value="row.comment" />
+            <Input
+              class="h-8"
+              :model-value="displayFormText(row.comment)"
+              @update:model-value="onFieldText(row, 'comment', $event)"
+            />
           </template>
           <template #showInList="{ row }">
             <Checkbox v-model="row.showInList" />
@@ -477,7 +510,6 @@ const getDrawerTitle = computed(() => {
         </Grid>
       </div>
     </div>
-    {{ fieldOptions }}
   </Drawer>
 </template>
 <style lang="css" scoped></style>
