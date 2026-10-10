@@ -15,10 +15,12 @@
 ```ts
 import { Button } from '#/ui/button';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
+// 等价：@tide/ui/button 、 @tide/ui-patterns/toolbar-actions
 ```
 
-- 应用入口：`frontend/src/ui/<atom>`、`frontend/src/ui-patterns/<pattern>`
-- 实现：`@vben-core/shadcn-ui/src/ui`（`cn` + CVA + reka-ui）。颜色用现有 HSL token，经 `src/styles/theme.css` 的 `--color-*`
+- 源码：`frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）
+- 应用在这一版仍可写 `#/ui/<atom>`、`#/ui-patterns/<pattern>`。这两条路径是别名，指向包源码，不是第二套实现
+- 原子底子：`@vben-core/shadcn-ui/src/ui`（`cn` + CVA + reka-ui）。颜色用现有 HSL token，经 `src/styles/theme.css` 的 `--color-*`（`@source` 包含 `packages/`）
 - 新组件不要导入 `naive-ui`。表格用 Vxe。清单见 [`docs/agent/naive-migration-inventory.md`](naive-migration-inventory.md)。
 - 壳层可以继续用 `@vben-core/shadcn-ui` 根导出里的 `Vben*` 封装；业务页不要再复制一套同名原子
 
@@ -27,8 +29,9 @@ import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 ```
 frontend/
 ├── src/                 # 业务 + src/vben 壳 + src/styles/theme.css
-│   ├── ui/              # 原子路径入口（再导出 @vben-core/shadcn-ui）
-│   └── ui-patterns/     # 页面组合，按目录导入
+├── packages/
+│   ├── ui/              # @tide/ui：原子路径（再导出 @vben-core/shadcn-ui，或本地控件）
+│   └── ui-patterns/     # @tide/ui-patterns：页面组合，按目录导入
 └── vendor/@core         # UI 内核（慎改；原子实现已在 shadcn-ui）
 ```
 

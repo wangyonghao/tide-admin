@@ -4,8 +4,9 @@
 @plugin '@tailwindcss/typography';
 @plugin '@iconify/tailwind4';
 
-/* Scan app + vendor sources for utility classes */
+/* Scan app, shared packages, and vendor sources for utility classes */
 @source '../**/*.{vue,ts,tsx}';
+@source '../../packages/**/*.{vue,ts,tsx}';
 @source '../../vendor/**/*.{vue,ts,tsx}';
 @source '../../docs/**/*.{vue,ts,tsx}';
 

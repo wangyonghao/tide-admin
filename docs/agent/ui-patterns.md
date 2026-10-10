@@ -8,10 +8,12 @@
 
 | 层 | 路径 | 导入 |
 |----|------|------|
-| 原子 | `frontend/src/ui/<atom>` | `import { Button } from '#/ui/button'` |
-| 模式 | `frontend/src/ui-patterns/<pattern>` | `import { ToolbarActions } from '#/ui-patterns/toolbar-actions'` |
+| 原子 | `frontend/packages/ui`（`@tide/ui`） | `import { Button } from '#/ui/button'` |
+| 模式 | `frontend/packages/ui-patterns`（`@tide/ui-patterns`） | `import { ToolbarActions } from '#/ui-patterns/toolbar-actions'` |
 
-原子实现在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA）。应用代码走上面的路径，不从包根桶整包引入，也不要再包一层 `Foo` / `FooShadcn`。
+`#/ui` 与 `#/ui-patterns` 是应用侧别名，源码在上面的包里。也可以直接写 `@tide/ui/<atom>`、`@tide/ui-patterns/<pattern>`。不从包根桶整包引入，也不要再包一层 `Foo` / `FooShadcn`。
+
+原子底子在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA）。应用代码走上面的路径。
 
 **新代码：** 优先 `#/ui/*`。不要新增 `naive-ui` 导入。表格用 Vxe。清单见 [`naive-migration-inventory.md`](naive-migration-inventory.md)。
 

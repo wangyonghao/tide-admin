@@ -5,6 +5,24 @@ export function frontendPath(...parts: string[]) {
   return fileURLToPath(new URL(`./${parts.join('/')}`, import.meta.url));
 }
 
+/**
+ * `#/ui` and `#/ui-patterns` stay as app import paths for this release.
+ * The source of truth is `@tide/ui` and `@tide/ui-patterns`.
+ * `#/ui-patterns` must be matched before `#/ui`.
+ */
+export function createTideUiAliases() {
+  return [
+    {
+      find: /^#\/ui-patterns(?=\/|$)/,
+      replacement: frontendPath('packages/ui-patterns/src'),
+    },
+    {
+      find: /^#\/ui(?=\/|$)/,
+      replacement: frontendPath('packages/ui/src'),
+    },
+  ];
+}
+
 /** Absolute path under frontend/src/vben/<pkg>/... */
 export function vbenSrc(...parts: string[]) {
   return frontendPath('src/vben', ...parts);

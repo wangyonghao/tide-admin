@@ -1,4 +1,4 @@
-import { toast as sonner } from '#/ui/sonner';
+import { toast as sonner } from '@tide/ui/sonner';
 
 import { createToast } from './toast-options';
 

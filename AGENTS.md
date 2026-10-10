@@ -62,6 +62,7 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 | 开放 API | `backend/interfaces/open-api` |
 | 系统壳 / 仪表盘等 | `backend/biz/biz-system` |
 | 前端页面 / API | `frontend/src/views`、`frontend/src/api` |
+| UI 原子 / 页面模式 | `frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）。应用仍可用 `#/ui`、`#/ui-patterns` |
 
 完整表见 [`docs/agent/repo-map.md`](docs/agent/repo-map.md)。
 

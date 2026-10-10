@@ -3,7 +3,7 @@
  * 日期把 null 画成未选；清除、未选完的范围都回写 null。
  * 没有 valueFormat 时提交时间戳（页面筛选就是这样读的）。
  * 有 valueFormat 时提交格式化字符串，供 LocalDateTime（yyyy-MM-dd HH:mm:ss）。
- * 套件里没有 Calendar 原子，月历放在 #/ui/date-picker，周/月/季/快捷范围不做。
+ * 套件里没有 Calendar 原子，月历放在 @tide/ui/date-picker，周/月/季/快捷范围不做。
  */
 
 export type DatePickerKind = 'date' | 'datetime' | 'daterange' | 'datetimerange';
