@@ -12,6 +12,8 @@ import { NButton, useDialog, useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { openAppApi } from '#/api/open';
+import { Button } from '#/ui/button';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import { useColumns, useGridFormSchema } from './data';
 import AppDetail from './modules/detail.vue';
@@ -209,12 +211,14 @@ async function onExport() {
     <DetailDrawer />
     <Grid :table-title="$t('open.app.listTitle')">
       <template #toolbar-tools>
-        <NButton type="primary" @click="onCreate">
-          {{ $t('pages.common.add') }}
-        </NButton>
-        <NButton @click="onExport">
-          {{ $t('pages.common.export') }}
-        </NButton>
+        <ToolbarActions>
+          <Button type="button" @click="onCreate">
+            {{ $t('pages.common.add') }}
+          </Button>
+          <Button type="button" variant="outline" @click="onExport">
+            {{ $t('pages.common.export') }}
+          </Button>
+        </ToolbarActions>
       </template>
       <template #secretKey="{ row }">
         <div class="flex items-center justify-center gap-2">

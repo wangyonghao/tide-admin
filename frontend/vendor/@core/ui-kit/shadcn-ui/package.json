@@ -25,6 +25,11 @@
       "types": "./src/index.ts",
       "development": "./src/index.ts",
       "default": "./src/index.ts"
+    },
+    "./ui/*": {
+      "types": "./src/ui/*/index.ts",
+      "development": "./src/ui/*/index.ts",
+      "default": "./src/ui/*/index.ts"
     }
   },
   "publishConfig": {
@@ -33,6 +38,11 @@
         "types": "./src/index.ts",
         "development": "./src/index.ts",
         "default": "./src/index.ts"
+      },
+      "./ui/*": {
+        "types": "./src/ui/*/index.ts",
+        "development": "./src/ui/*/index.ts",
+        "default": "./src/ui/*/index.ts"
       }
     }
   },
@@ -47,6 +57,7 @@
     "lucide-vue-next": "catalog:",
     "reka-ui": "catalog:",
     "vee-validate": "catalog:",
-    "vue": "catalog:"
+    "vue": "catalog:",
+    "vue-sonner": "catalog:"
   }
 }

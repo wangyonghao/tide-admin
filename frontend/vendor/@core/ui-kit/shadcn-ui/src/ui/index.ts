@@ -1,3 +1,5 @@
+// New atoms stay on `./ui/<name>` subpath exports (see package.json `./ui/*`).
+// Do not add them to this barrel; the shell already imports it wholesale.
 export * from './accordion';
 export * from './alert-dialog';
 export * from './avatar';

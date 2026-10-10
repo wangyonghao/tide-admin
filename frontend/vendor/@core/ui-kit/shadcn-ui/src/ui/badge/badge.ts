@@ -17,6 +17,10 @@ export const badgeVariants = cva(
         outline: 'text-foreground',
         secondary:
           'border-transparent bg-secondary text-secondary-foreground hover:bg-secondary/80',
+        success:
+          'border-transparent bg-success text-success-foreground shadow-sm hover:bg-success/80',
+        warning:
+          'border-transparent bg-warning text-warning-foreground shadow-sm hover:bg-warning/80',
       },
     },
   },

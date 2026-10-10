@@ -4,6 +4,19 @@
 > **目的：** 用固定页面骨架消灭「每页一种写法」。视觉细节以 DESIGN.md 为准。  
 > **主应用：** `frontend/src`
 
+## 组件分层
+
+| 层 | 路径 | 导入 |
+|----|------|------|
+| 原子 | `frontend/src/ui/<atom>` | `import { Button } from '#/ui/button'` |
+| 模式 | `frontend/src/ui-patterns/<pattern>` | `import { ToolbarActions } from '#/ui-patterns/toolbar-actions'` |
+
+原子实现在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA）。应用代码走上面的路径，不从包根桶整包引入，也不要再包一层 `Foo` / `FooShadcn`。
+
+**新代码：** 优先 `#/ui/*`。不要在新组件里新增 `naive-ui` 导入，除非该控件属于暂留类（表、树、复杂选择器，见 [`naive-migration-inventory.md`](naive-migration-inventory.md)）。Naive 保持安装；Vxe Grid 仍是表格默认。
+
+已有模式壳：`ui-patterns/toolbar-actions`（工具栏按钮簇，`inline-flex` + `gap-2`）。
+
 ---
 
 ## 范式总表

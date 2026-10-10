@@ -107,6 +107,8 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 
 实现以 **Naive UI** + **Vben 封装**（`Page`、`useVbenForm`、`useVbenDrawer`、`useVbenVxeGrid`）为准；样式从 token → `useNaiveDesignTokens` → `NConfigProvider themeOverrides`。
 
+**原子层（迁移中）：** 新代码优先路径导入 `frontend/src/ui/<atom>`（Button、Input、Label、Checkbox、Switch、Dialog、AlertDialog、Badge、Skeleton、Sonner）。实现留在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA + `cn`），颜色沿用本文件 token，经 `src/styles/theme.css` 的 `--color-*` 接到 Tailwind。页面组合放 `frontend/src/ui-patterns/<pattern>`，按目录路径导入，不建总桶。Naive 仍安装；表、树、复杂选择器暂留。清单见 [`docs/agent/naive-migration-inventory.md`](../docs/agent/naive-migration-inventory.md)。
+
 ### Buttons
 
 | 角色 | 用法 | 约定 |
@@ -270,6 +272,8 @@ stack:         Vue3 + Naive UI + Page + useVbenVxeGrid + useVbenForm + useVbenDr
 | Token CSS | `frontend/vendor/@core/base/design/src/design-tokens/` |
 | Naive 桥接 | `frontend/src/vben/hooks/use-design-tokens.ts` |
 | 工程约定 | `docs/agent/frontend-conventions.md` |
+| 原子 / 模式 | `frontend/src/ui/<atom>`、`frontend/src/ui-patterns/<pattern>` |
+| Naive 迁移清单 | `docs/agent/naive-migration-inventory.md` |
 
 ---
 
@@ -278,3 +282,4 @@ stack:         Vue3 + Naive UI + Page + useVbenVxeGrid + useVbenForm + useVbenDr
 | Date | Note |
 |------|------|
 | 2026-09-27 | 初稿大纲：九段 + 现有 token 映射；待确认气质后定稿 |
+| 2026-10-09 | 补原子层路径：`src/ui`、`src/ui-patterns`；Naive 分波退出，见迁移清单 |

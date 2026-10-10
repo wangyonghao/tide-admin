@@ -4,7 +4,7 @@ import type { GlobalThemeOverrides } from 'naive-ui';
 import { computed } from 'vue';
 
 import { useNaiveDesignTokens } from '@vben/hooks';
-import { preferences } from '@vben/preferences';
+import { preferences, usePreferences } from '@vben/preferences';
 
 import {
   darkTheme,
@@ -19,9 +19,12 @@ import {
   zhCN,
 } from 'naive-ui';
 
+import { Toaster } from '#/ui/sonner';
+
 defineOptions({ name: 'App' });
 
 const { commonTokens } = useNaiveDesignTokens();
+const { theme } = usePreferences();
 
 const tokenLocale = computed(() =>
   preferences.app.locale === 'zh-CN' ? zhCN : enUS,
@@ -52,6 +55,7 @@ const themeOverrides = computed((): GlobalThemeOverrides => {
       <NMessageProvider>
         <NDialogProvider>
           <RouterView />
+          <Toaster :theme="theme" position="top-center" />
         </NDialogProvider>
       </NMessageProvider>
     </NNotificationProvider>
