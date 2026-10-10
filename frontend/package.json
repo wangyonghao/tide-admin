@@ -21,8 +21,6 @@
     "test:unit": "vitest run --dom",
     "check": "pnpm run typecheck && pnpm run lint",
     "bootstrap": "pnpm install",
-    "dev:naive": "pnpm run dev",
-    "build:naive": "pnpm run build",
     "postinstall": "pnpm -r run stub --if-present",
     "preinstall": "npx only-allow pnpm",
     "prepare": "is-ci || pnpm exec lefthook install"

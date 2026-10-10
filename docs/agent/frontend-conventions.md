@@ -1,12 +1,12 @@
 # Frontend conventions
 
-配合 `.cursor/rules/frontend-vue.mdc`。主应用在 `frontend/src`：新 UI 走 shadcn 原子，Naive 过渡保留。
+配合 `.cursor/rules/frontend-vue.mdc`。主应用在 `frontend/src`：新 UI 走 shadcn-vue 原子与 Vben 封装。
 
 **UI 风格与页面骨架（写页面必读）：**
 
 - [`frontend/DESIGN.md`](../../frontend/DESIGN.md) — 视觉 token、Do/Don't、Agent 提示
 - [`docs/agent/ui-patterns.md`](ui-patterns.md) — CRUD / 树表等范式与黄金样板
-- [`docs/agent/naive-migration-inventory.md`](naive-migration-inventory.md) — Naive 可先换 / 后换 / 暂留
+- [`docs/agent/naive-migration-inventory.md`](naive-migration-inventory.md) — 迁移记录。`naive-ui` 已从依赖去掉
 
 ## UI atoms
 

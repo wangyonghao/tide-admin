@@ -1,7 +1,7 @@
 # Tide Admin — DESIGN.md
 
 > **Status:** draft outline（九段齐，token 对齐现仓库；视觉微调待确认后升为正式版）  
-> **Scope:** 主应用 `frontend/src`（Naive UI + Vben 壳）中后台产品 UI  
+> **Scope:** 主应用 `frontend/src`（shadcn-vue / Vben 原子 + Vben 壳）中后台产品 UI  
 > **Token source of truth:** `vendor/@core/base/design/src/design-tokens/{default,dark}.css`  
 > **Page patterns:** [`docs/agent/ui-patterns.md`](../docs/agent/ui-patterns.md)  
 > **Not for:** 营销落地页 / 盲目套用 Linear·Stripe 等品牌 DESIGN.md
@@ -55,7 +55,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 |-------|--------|------|
 | `--primary` | `#0077E6`（`212 100% 45%`） | 主按钮、链接、选中、关键焦点 |
 | `--primary-foreground` | `#FAFAFA` | 主色上的文字 |
-| `--primary-600` / `--primary-700` | （palette） | hover / pressed（Naive `commonTokens`） |
+| `--primary-600` / `--primary-700` | （palette） | hover / pressed |
 | `--destructive` | `#FF4D6A` | 删除、危险确认 |
 | `--success` | `#3ECF8E` | 成功 Message / Tag |
 | `--warning` | `#F0B429` | 警告 |
@@ -94,7 +94,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 |-------|------|------|
 | Page title | 16–18px / 600 | 少用独立大标题；多数页靠路由 `meta.title` + 表格 `table-title` |
 | Section | 14–16px / 600 | 抽屉内分组标题、卡片标题 |
-| Body | 14px / 400 | 表单、表格单元格（Naive/Vxe 默认） |
+| Body | 14px / 400 | 表单、表格单元格（原子控件 / Vxe 默认） |
 | Caption | 12–13px / 400 | 辅助说明、时间戳、`--muted-foreground` |
 | Mono | `font-mono` | 密钥、ID、代码片段 |
 
@@ -233,7 +233,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 | `md–lg` | 搜索 2 列 |
 | `lg+` | 搜索 3–4 列；树+表左右 Split |
 
-- 触控：按钮保持 Naive 默认高度；行内 `text` 按钮避免过密（`gap-1`/`gap-2`）。
+- 触控：按钮用原子控件默认高度；行内 `text` 按钮避免过密（`gap-1`/`gap-2`）。
 - 表格：横向滚动可接受；关键列 `minWidth`，操作列固定右侧（Vxe 配置）。
 - 抽屉：小屏全宽；表单字段单列优先。
 
@@ -252,7 +252,7 @@ border:        --border
 primary:       --primary  (~#0077E6)
 danger:        --destructive
 radius:        --radius (8px)
-stack:         Vue3 + Naive UI + Page + useVbenVxeGrid + useVbenForm + useVbenDrawer
+stack:         Vue3 + shadcn-vue / Vben 原子 + Page + useVbenVxeGrid + useVbenForm + useVbenDrawer
 ```
 
 ### Ready prompts（可直接对 Agent 说）
@@ -269,7 +269,6 @@ stack:         Vue3 + Naive UI + Page + useVbenVxeGrid + useVbenForm + useVbenDr
 | 视觉规则 | `frontend/DESIGN.md`（本文件） |
 | 页面骨架 | `docs/agent/ui-patterns.md` |
 | Token CSS | `frontend/vendor/@core/base/design/src/design-tokens/` |
-| Naive 桥接 | `frontend/src/vben/hooks/use-design-tokens.ts` |
 | 工程约定 | `docs/agent/frontend-conventions.md` |
 | 原子 / 模式 | `frontend/src/ui/<atom>`、`frontend/src/ui-patterns/<pattern>` |
 | Naive 迁移清单 | `docs/agent/naive-migration-inventory.md` |
@@ -282,3 +281,4 @@ stack:         Vue3 + Naive UI + Page + useVbenVxeGrid + useVbenForm + useVbenDr
 |------|------|
 | 2026-09-27 | 初稿大纲：九段 + 现有 token 映射；待确认气质后定稿 |
 | 2026-10-09 | 补原子层路径：`src/ui`、`src/ui-patterns`；Naive 分波退出，见迁移清单 |
+| 2026-10-10 | 当前栈改为 shadcn-vue / Vben 原子。去掉已删除的 Naive token 桥接入口 |
