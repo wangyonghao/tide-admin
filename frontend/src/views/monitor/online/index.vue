@@ -1,119 +1,109 @@
 <script setup lang="ts">
-import type { DataTableColumns } from 'naive-ui';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { OnlineUser } from '#/api/monitor/online';
 
-import { h, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
-import { IconifyIcon } from '@vben/icons';
 import { Page } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
 import { useAccessStore } from '@vben/stores';
 
-import { SearchOutline } from '@vicons/ionicons5';
-import { NDataTable, NIcon, NInput, useMessage } from 'naive-ui';
-
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { onlineApi } from '#/api/monitor/online';
 import { Button } from '#/ui/button';
+import { toast } from '#/ui/sonner';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
 
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 const accessStore = useAccessStore();
 const currentToken = accessStore.accessToken;
 
-// ==================== 搜索表单 ====================
-const searchForm = ref({ keyword: '' });
+function useColumns(): VxeTableGridOptions<OnlineUser>['columns'] {
+  return [
+    { type: 'checkbox', width: 50, fixed: 'left' },
+    { type: 'seq', width: 70, fixed: 'left' },
+    { field: 'loginName', title: '用户名', minWidth: 120 },
+    { field: 'ip', title: 'IP地址', minWidth: 140 },
+    { field: 'location', title: '登录地点', minWidth: 150 },
+    { field: 'browser', title: '浏览器', minWidth: 150 },
+    { field: 'os', title: '操作系统', minWidth: 120 },
+    { field: 'loginTime', title: '登录时间', minWidth: 160 },
+    { field: 'lastActiveTime', title: '最后活跃时间', minWidth: 160 },
+    {
+      field: 'action',
+      title: '操作',
+      width: 100,
+      fixed: 'right',
+      align: 'center',
+      slots: { default: 'action' },
+    },
+  ];
+}
 
-// ==================== 表格数据 ====================
-const tableData = ref<OnlineUser[]>([]);
-const tableLoading = ref(false);
-const selectedRowKeys = ref<string[]>([]);
-const tablePagination = ref({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [10, 20, 50],
-  onChange: (page: number) => {
-    tablePagination.value.page = page;
-    loadTableData();
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    schema: [
+      {
+        component: 'Input',
+        fieldName: 'keyword',
+        label: '用户名',
+        componentProps: {
+          placeholder: '搜索用户名',
+        },
+      },
+    ],
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
   },
-  onUpdatePageSize: (pageSize: number) => {
-    tablePagination.value.pageSize = pageSize;
-    tablePagination.value.page = 1;
-    loadTableData();
-  },
+  gridOptions: {
+    columns: useColumns(),
+    height: 'auto',
+    keepSource: true,
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues) => {
+          const keyword =
+            typeof formValues.keyword === 'string'
+              ? formValues.keyword.trim()
+              : '';
+          return await onlineApi.list({
+            page: page.currentPage,
+            pageSize: page.pageSize,
+            keyword: keyword || undefined,
+          });
+        },
+      },
+    },
+    rowConfig: {
+      keyField: 'token',
+    },
+    checkboxConfig: {
+      highlight: true,
+      checkMethod: ({ row }) => row.token !== currentToken,
+    },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: { code: 'query' },
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<OnlineUser>,
 });
 
-// ==================== 表格列定义 ====================
-const tableColumns: DataTableColumns<OnlineUser> = [
-  {
-    type: 'selection',
-    disabled: (row) => row.token === currentToken,
-  },
-  {
-    title: '序号',
-    key: 'index',
-    width: 60,
-    render: (_row, index) =>
-      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
-      index +
-      1,
-  },
-  { title: '用户名', key: 'loginName', minWidth: 120 },
-  { title: 'IP地址', key: 'ip', minWidth: 140 },
-  { title: '登录地点', key: 'location', minWidth: 150 },
-  { title: '浏览器', key: 'browser', minWidth: 150 },
-  { title: '操作系统', key: 'os', minWidth: 120 },
-  { title: '登录时间', key: 'loginTime', minWidth: 160 },
-  { title: '最后活跃时间', key: 'lastActiveTime', minWidth: 160 },
-  {
-    title: '操作',
-    key: 'action',
-    width: 100,
-    fixed: 'right',
-    render(row) {
-      return h(
-        Button,
-        {
-          type: 'button',
-          variant: 'link',
-          size: 'sm',
-          class: 'text-destructive h-auto px-1',
-          disabled: row.token === currentToken,
-          onClick: () => confirmKickout(row),
-        },
-        { default: () => '强退' },
-      );
-    },
-  },
-];
-
-// ==================== 加载数据 ====================
-async function loadTableData() {
-  tableLoading.value = true;
-  try {
-    const res = await onlineApi.list({
-      page: tablePagination.value.page,
-      pageSize: tablePagination.value.pageSize,
-      keyword: searchForm.value.keyword,
-    });
-    tableData.value = res.records;
-    tablePagination.value.itemCount = res.total;
-  } finally {
-    tableLoading.value = false;
-  }
+function selectedTokens() {
+  const rows = gridApi.grid?.getCheckboxRecords?.() ?? [];
+  return rows.map((row: OnlineUser) => row.token);
 }
 
-// ==================== 搜索 ====================
-function handleSearch() {
-  tablePagination.value.page = 1;
-  loadTableData();
+async function refresh() {
+  await gridApi.query();
+  gridApi.grid?.clearCheckboxRow?.();
 }
 
-// ==================== 强退单个用户 ====================
 async function confirmKickout(row: OnlineUser) {
   const ok = await confirmAction.value?.ask({
     title: '强退用户',
@@ -121,107 +111,51 @@ async function confirmKickout(row: OnlineUser) {
     tone: 'destructive',
   });
   if (!ok) return;
-  await handleKickout(row.token);
+  await onlineApi.kickout(row.token);
+  toast.success('强退成功');
+  await refresh();
 }
 
-async function handleKickout(token: string) {
-  await onlineApi.kickout(token);
-  message.success('强退成功');
-  loadTableData();
-  selectedRowKeys.value = [];
-}
-
-// ==================== 批量强退 ====================
 async function handleBatchKickout() {
-  if (selectedRowKeys.value.length === 0) {
-    message.warning('请选择要强退的用户');
+  const tokens = selectedTokens();
+  if (tokens.length === 0) {
+    toast.warning('请选择要强退的用户');
     return;
   }
-
   const ok = await confirmAction.value?.ask({
     title: '批量强退',
-    description: `确定要强退选中的 ${selectedRowKeys.value.length} 个用户吗？`,
+    description: `确定要强退选中的 ${tokens.length} 个用户吗？`,
     tone: 'destructive',
   });
   if (!ok) return;
-  await onlineApi.batchKickout(selectedRowKeys.value);
-  message.success('批量强退成功');
-  loadTableData();
-  selectedRowKeys.value = [];
+  await onlineApi.batchKickout(tokens);
+  toast.success('批量强退成功');
+  await refresh();
 }
-
-// ==================== 行选择 ====================
-function handleCheck(rowKeys: string[]) {
-  selectedRowKeys.value = rowKeys;
-}
-
-// ==================== 初始化 ====================
-onMounted(() => {
-  loadTableData();
-});
 </script>
 
 <template>
-  <Page>
+  <Page auto-content-height>
     <ConfirmAction ref="confirmAction" />
-    <div class="h-full bg-background p-4">
-      <!-- 搜索和操作栏 -->
-      <div class="flex items-center justify-between mb-4 gap-3">
-        <div class="flex items-center gap-2">
-          <NInput
-            v-model:value="searchForm.keyword"
-            placeholder="搜索用户名"
-            clearable
-            class="w-[240px]"
-            @keyup.enter="handleSearch"
-          >
-            <template #prefix>
-              <NIcon><SearchOutline /></NIcon>
-            </template>
-          </NInput>
-          <Button type="button" @click="handleSearch">
-            <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
-            查询
-          </Button>
-        </div>
-      </div>
-
-      <!-- 已选中提示和批量操作 -->
-      <div
-        v-if="selectedRowKeys.length > 0"
-        class="flex items-center justify-between mb-4 p-3 bg-primary/10 rounded"
-      >
-        <span class="text-sm">
-          已选中
-          <span class="font-bold text-primary">{{
-            selectedRowKeys.length
-          }}</span>
-          项
-        </span>
-        <Button
-          type="button"
-          size="sm"
-          variant="destructive"
-          @click="handleBatchKickout"
-        >
+    <Grid>
+      <template #toolbar-tools>
+        <Button type="button" variant="destructive" @click="handleBatchKickout">
           <IconifyIcon icon="lucide:user-x" class="mr-1 size-4" />
           批量强退
         </Button>
-      </div>
-
-      <!-- 数据表格 -->
-      <NDataTable
-        :columns="tableColumns"
-        :data="tableData"
-        :loading="tableLoading"
-        :row-key="(row) => row.token"
-        :pagination="tablePagination"
-        :checked-row-keys="selectedRowKeys"
-        scroll-x="1200px"
-        @update:checked-row-keys="handleCheck"
-      />
-    </div>
+      </template>
+      <template #action="{ row }">
+        <Button
+          type="button"
+          variant="link"
+          size="sm"
+          class="text-destructive h-auto px-1"
+          :disabled="row.token === currentToken"
+          @click="confirmKickout(row)"
+        >
+          强退
+        </Button>
+      </template>
+    </Grid>
   </Page>
 </template>
-
-<style lang="scss" scoped></style>

@@ -3,12 +3,11 @@ import { ref, onMounted, h } from 'vue';
 import {
   NCard,
   NDataTable,
-  NSpace,
   NTag,
   NDatePicker,
-  NSelect,
   type DataTableColumns,
 } from 'naive-ui';
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { $t } from '#/locales';
 import { Button } from '#/ui/button';
 import { useUserStore } from '#/store/user';
@@ -36,7 +35,6 @@ const filters = ref({
 
 // 状态选项
 const statusOptions = [
-  { label: $t('page.profile.logs.all'), value: null },
   { label: $t('page.profile.logs.success'), value: 'SUCCESS' },
   { label: $t('page.profile.logs.failure'), value: 'FAILURE' },
 ];
@@ -179,11 +177,11 @@ onMounted(() => {
 
     <!-- 筛选区域 -->
     <div class="mb-4">
-      <NSpace :size="16" align="center">
-        <NSelect
+      <div class="flex flex-wrap items-center gap-4">
+        <FormSelect
           v-model:value="filters.loginStatus"
           :options="statusOptions"
-          :placeholder="$t('page.profile.logs.operationResult')"
+          :placeholder="$t('page.profile.logs.all')"
           style="width: 150px"
           clearable
         />
@@ -207,7 +205,7 @@ onMounted(() => {
         <Button type="button" variant="outline" @click="handleExport">
           {{ $t('page.profile.logs.export') }}
         </Button>
-      </NSpace>
+      </div>
     </div>
 
     <!-- 表格 -->

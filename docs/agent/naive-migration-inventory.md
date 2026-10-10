@@ -65,6 +65,30 @@
 
 Naive 包不删。
 
+## 页面 Select 与薄表
+
+口径不变。本波开始时：页面 `NSelect` **12**，`NDataTable` **14**，`NSpace` **8**，`from 'naive-ui'` 的文件 **47**。
+
+- **手写下拉**：12 个文件里的 `NSelect` 都改成适配器 `FormSelect`（`#/ui/select`，空值仍是 `null`）。单选、`clearable`、`multiple`、`filterable` 和页面上的 `style` / `class` 宽度沿用原来的字段。多选清空在适配器里是 `null`；公告接收人和用户角色在写回页面前收成数组，空选择不把 `null` 交给接口。代码生成的字段类型带 `tag`：输入列表外的名字会当成字符串提交，命中已有选项仍回写原值。个人日志筛选里原来的「全部」（`value: null`）不是合法选项，改成占位符加清除。
+- **ApiSelect**：注册表里的内层控件从 `NSelect` 换成 `FormSelect`。加载中仍由 `ApiComponent` 往 `arrow` 插槽放转圈；可搜索时这个插槽换掉箭头，普通下拉时转圈出现在箭头旁边（套件触发器自带箭头，没有替换入口）。`ApiTreeSelect` 仍是 `NTreeSelect`。
+- **表格**：系统选项、在线用户两页改成 `useVbenVxeGrid`（搜索 schema、远程分页、行操作）。选项状态用 Badge。在线用户当前登录不可勾选、不可强退；批量强退留在工具栏。Vxe 仍是 CRUD 默认。没有再抽一套空态/加载组件，这两页用表格自带的加载和空数据。
+- **NSpace**：公告通知方式上只包标签的 `NSpace`，以及个人日志筛选那一行，改成 flex。`NSpace` 8 → **6**。`demos/naive` 仍是组件陈列，不改。
+- **数量**：页面 `NSelect` 12 → **0**。`NDataTable` 14 → **12**。`useMessage` 26 → **24**，`NInput` 23 → **21**，`NTag` 18 → **17**，`NIcon` 12 → **10**。后四项是因为选项页和在线用户页不再导入 naive-ui，不是把输入框、标签或图标换成原子控件。仍有 **45** 个文件导入 naive-ui。Naive 包不删。
+
+仍不换表的页面，以及原因：
+
+| 页面 | 原因 |
+|------|------|
+| `system/role/components/role-permission.vue` | 菜单列加权限列，父子关联是页面自己的规则 |
+| `system/menu/index.vue`、`system/department/index.vue` | 树表，展开状态和子节点不在现有 Vxe CRUD 样板里 |
+| `system/user/index.vue` | 左树右表，表还嵌在分割布局里 |
+| `system/role/index.vue` | 角色列表里再嵌用户分配表和分页 |
+| `system/file/index.vue` | 上传、分类级联和批量勾选绑在同一张手写表上 |
+| `system/notice/index.vue` | 时间范围、预览抽屉、多种标签列，不是薄列表 |
+| `monitor/log/login-log.vue`、`operation-log.vue`、`sms-log.vue` | 三个列表塞在同一个 Tab 里，高度跟着 Tab 走；只改其中一张会和旁边两张脱节 |
+| `user/profile/components/operation-logs.vue` | 个人中心里的一块，不是独立 `Page` |
+| `demos/table/index.vue` | Naive 表格示例 |
+
 ## 目录选择
 
 原子实现继续放在 `@vben-core/shadcn-ui/src/ui`（已有 reka-ui、CVA、`cn()`，颜色经 `frontend/src/styles/theme.css` 的 `--color-*` 接 HSL token）。  
@@ -86,8 +110,8 @@ Naive 包不删。
 | Naive | 文件数 | 换成 | 例子 |
 |-------|--------|------|------|
 | `NButton` | 1 | `#/ui/button`（含 `loading`） | 只剩 `views/demos/naive/index.vue` 的组件陈列 |
-| `NSpace` | 8 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着选择器或整段表单的，如 `views/system/file/index.vue` |
-| `NInput` | 23 | `#/ui/input` 或 `FilterInput` | 带前缀的搜索框仍是 Naive，如 `views/system/user/index.vue`。无前缀筛选用 `FilterInput` |
+| `NSpace` | 6 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着整段表单的，如 `views/system/file/index.vue`、个人设置 |
+| `NInput` | 21 | `#/ui/input` 或 `FilterInput` | 带前缀的搜索框仍是 Naive，如 `views/system/user/index.vue`。无前缀筛选用 `FilterInput` |
 | `NCard` | 12 | 已有 Card（`#/ui` 尚未再导出，需要时再加路径） | `views/demos/naive/index.vue` |
 | `NDivider` | 0 | `#/ui/separator` | 视图已换完；适配器仍动态加载 |
 | `NCheckbox` | 0 | `#/ui/checkbox` | 页面和表单分组都已换。绑定用 `v-model`（`modelValue`） |
@@ -103,10 +127,10 @@ Naive 包不删。
 
 | Naive | 文件数 | 原因 | 例子 |
 |-------|--------|------|------|
-| `useMessage` | 26 | Sonner 已挂到 `app.vue`；开放应用列表已改 `toast`，其余调用点仍是 Naive | `views/schedule/job/index.vue` |
-| `NTag` | 18 | Badge 已补 `success` / `warning`，字典色映射还未收成模式 | `views/schedule/log/index.vue` |
-| `NSelect` | 12 | 注册表 `Select` 已接 `#/ui/select`。这 12 个是手写表单，含可搜索和多选 | `views/monitor/log/login-log.vue`、`views/system/user/components/user-edit-drawer.vue` |
-| `NIcon` | 12 | 可换 Lucide，但图标选择器是一整块 | `components/icon-select.vue` |
+| `useMessage` | 24 | Sonner 已挂到 `app.vue`；开放应用、系统选项、在线用户已改 `toast`，其余调用点仍是 Naive | `views/schedule/job/index.vue` |
+| `NTag` | 17 | Badge 已补 `success` / `warning`，字典色映射还未收成模式 | `views/schedule/log/index.vue` |
+| `NSelect` | 0 | 注册表 `Select`、`ApiSelect` 和页面手写下拉都已接 `FormSelect` | — |
+| `NIcon` | 10 | 可换 Lucide，但图标选择器是一整块 | `components/icon-select.vue` |
 | `NForm` / `NFormItem` | 10 / 10 | 手写表单；目标是 `useVbenForm` 或后续原子表单 | `views/schedule/job/edit-drawer.vue` |
 | `useDialog` | 0 | 页面上的布尔确认已改 `ConfirmAction` | — |
 | `NDrawer` / `NDrawerContent` | 8 / 8 | 新页用 `useVbenDrawer` | `views/monitor/log/operation-log.vue` |
@@ -127,7 +151,7 @@ Naive 包不删。
 | `NPagination` | 1 | 这页的分页跟手写表在一起，随表格迁 | `views/system/role/index.vue` |
 | `NSteps` / `NList` / `NTimeline` / `NScrollbar` | 各 1–3 | 套件里有的还没做应用路径 | 见对应页面 |
 
-`adapter/component/index.ts` 里，提交/重置按钮、单行 Input、Checkbox、CheckboxGroup、Select 已经换成原子控件，空值仍是 `null`（`adapter/form.ts`）。Select 的清除和多选清空回写 `null`。Divider、InputNumber、Radio、Space、Switch，文本域 Input，以及 `ApiSelect` 里的 `NSelect`，仍动态加载 Naive。
+`adapter/component/index.ts` 里，提交/重置按钮、单行 Input、Checkbox、CheckboxGroup、Select、ApiSelect 已经换成原子控件，空值仍是 `null`（`adapter/form.ts`）。Select 的清除和多选清空回写 `null`。Divider、InputNumber、Radio、Space、Switch，文本域 Input，以及 `ApiTreeSelect` 里的 `NTreeSelect`，仍动态加载 Naive。
 
 ## 暂留
 
@@ -135,7 +159,7 @@ Naive 包不删。
 
 | Naive | 文件数 | 例子 |
 |-------|--------|------|
-| `NDataTable` + `DataTableColumns` | 14 / 13 | 本波确认整页都不是薄包装，继续留着。例子：`views/system/notice/index.vue`、`views/system/user/index.vue`、`views/system/role/components/role-permission.vue`、`views/demos/table/index.vue` |
+| `NDataTable` + `DataTableColumns` | 12 / 11 | 系统选项和在线用户已改 Vxe。剩下的是树、权限矩阵、Tab 里的日志、文件和公告。例子：`views/system/notice/index.vue`、`views/system/role/components/role-permission.vue`、`views/demos/table/index.vue` |
 | `NDatePicker` | 5 | `views/monitor/log/login-log.vue` |
 | `NTreeSelect` | 3 | `views/system/menu/index.vue` |
 | `NSplit` | 3 | `views/system/user/index.vue`、`views/system/config/index.vue` |

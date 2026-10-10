@@ -14,7 +14,9 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { getPopupContainer } from '@vben/utils';
 
-import { NInput, NSelect, useMessage, NSteps, NStep } from 'naive-ui';
+import { NInput, useMessage, NSteps, NStep } from 'naive-ui';
+
+import FormSelect from '#/adapter/component/FormSelect.vue';
 
 import { Checkbox } from '#/ui/checkbox';
 
@@ -46,6 +48,19 @@ const currentTab = ref(0);
 
 // 获取存在的字典，方便筛选
 const dictList = ref<Option[]>([]);
+
+const fieldTypeOptions = [
+  'String',
+  'Integer',
+  'Long',
+  'Float',
+  'Double',
+  'Boolean',
+  'BigDecimal',
+  'LocalDate',
+  'LocalTime',
+  'LocalDateTime',
+].map((item) => ({ label: item, value: item }));
 
 // 生成配置表单
 function onFirstSubmit(values: Record<string, any>) {
@@ -405,24 +420,14 @@ const getDrawerTitle = computed(() => {
             <NInput v-model:value="row.fieldName" />
           </template>
           <template #fieldType="{ row }">
-            <NSelect
+            <FormSelect
               v-model:value="row.fieldType"
               placeholder="请选择字段类型"
+              :options="fieldTypeOptions"
               clearable
               filterable
               tag
-            >
-              <option value="String">String</option>
-              <option value="Integer">Integer</option>
-              <option value="Long">Long</option>
-              <option value="Float">Float</option>
-              <option value="Double">Double</option>
-              <option value="Boolean">Boolean</option>
-              <option value="BigDecimal">BigDecimal</option>
-              <option value="LocalDate">LocalDate</option>
-              <option value="LocalTime">LocalTime</option>
-              <option value="LocalDateTime">LocalDateTime</option>
-            </NSelect>
+            />
           </template>
           <template #comment="{ row }">
             <NInput v-model:value="row.comment" />
@@ -441,54 +446,33 @@ const getDrawerTitle = computed(() => {
             <Checkbox v-model="row.showInQuery" />
           </template>
           <template #formType="{ row }">
-            <NSelect
+            <FormSelect
               v-if="row.showInForm || row.showInQuery"
               v-model:value="row.formType"
               placeholder="请选择表单类型"
+              :options="form_type_enum"
               clearable
-            >
-              <option
-                v-for="item in form_type_enum"
-                :key="item.value"
-                :value="item.value"
-              >
-                {{ item.label }}
-              </option>
-            </NSelect>
+            />
             <span v-else>无需设置</span>
           </template>
           <template #queryType="{ row }">
-            <NSelect
+            <FormSelect
               v-if="row.showInQuery"
               v-model:value="row.queryType"
               placeholder="请选择查询方式"
+              :options="query_type_enum"
               clearable
-            >
-              <option
-                v-for="item in query_type_enum"
-                :key="item.value"
-                :value="item.value"
-              >
-                {{ item.label }}
-              </option>
-            </NSelect>
+            />
             <span v-else>无需设置</span>
           </template>
           <template #dictCode="{ row }">
-            <NSelect
+            <FormSelect
               v-model:value="row.dictCode"
               placeholder="请选择字典类型"
+              :options="dictList"
               clearable
               filterable
-            >
-              <option
-                v-for="item in dictList"
-                :key="item.value"
-                :value="item.value"
-              >
-                {{ item.label }}
-              </option>
-            </NSelect>
+            />
           </template>
         </Grid>
       </div>

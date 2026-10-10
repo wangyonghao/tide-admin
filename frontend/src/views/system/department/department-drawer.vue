@@ -14,11 +14,11 @@ import {
   NFormItem,
   NInput,
   NInputNumber,
-  NSelect,
   NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { deptApi } from '#/api/system/dept';
 import { Button } from '#/ui/button';
 import { Switch } from '#/ui/switch';
@@ -246,13 +246,11 @@ watch(
           />
         </NFormItem>
         <NFormItem :label="$t('system.dept.type')" path="type">
-          <NSelect
+          <FormSelect
             v-model:value="formModel.type"
             :options="dept_type"
             :placeholder="$t('ui.formRules.selectRequired')"
             clearable
-            label-field="label"
-            value-field="value"
           />
         </NFormItem>
         <NFormItem :label="$t('system.dept.sort')" path="sort">

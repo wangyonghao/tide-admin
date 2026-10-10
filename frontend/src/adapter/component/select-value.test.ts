@@ -1,7 +1,9 @@
 import { describe, expect, it } from 'vitest';
 
 import {
+  asSelectList,
   commitSelectValue,
+  commitTaggedQuery,
   filterSelectOptions,
   isSelectEmpty,
   normalizeSelectOptions,
@@ -49,7 +51,9 @@ describe('form select empty value', () => {
   it('does not treat string 1 as number 1', () => {
     expect(selectDisplayKey(1, options)).toBe('n:1');
     expect(selectDisplayKey('1', options)).toBe('s:1');
-    expect(selectDisplayKey(1, options)).not.toBe(selectDisplayKey('1', options));
+    expect(selectDisplayKey(1, options)).not.toBe(
+      selectDisplayKey('1', options),
+    );
   });
 
   it('clears a multiple selection back to null', () => {
@@ -72,9 +76,9 @@ describe('form select empty value', () => {
     expect(filterSelectOptions(options, '  已读 ')).toEqual([
       expect.objectContaining({ value: true }),
     ]);
-    expect(filterSelectOptions(options, 'OFF').map((option) => option.value)).toEqual([
-      'off',
-    ]);
+    expect(
+      filterSelectOptions(options, 'OFF').map((option) => option.value),
+    ).toEqual(['off']);
     expect(filterSelectOptions(options, '   ')).toHaveLength(options.length);
     expect(options.map((option) => option.value)).toEqual([
       true,
@@ -84,6 +88,36 @@ describe('form select empty value', () => {
       '1',
       'off',
     ]);
-    expect(options.find((option) => option.value === 'off')?.disabled).toBe(true);
+    expect(options.find((option) => option.value === 'off')?.disabled).toBe(
+      true,
+    );
+  });
+
+  it('drops a null option so an explicit 全部 entry is not a real value', () => {
+    const withAll = normalizeSelectOptions([
+      { label: '全部', value: null },
+      { label: '成功', value: 'SUCCESS' },
+    ]);
+    expect(withAll.map((option) => option.value)).toEqual(['SUCCESS']);
+    expect(selectDisplayKey(null, withAll)).toBeUndefined();
+  });
+
+  it('turns a cleared multiple value into an empty list for page forms', () => {
+    expect(asSelectList(null)).toEqual([]);
+    expect(asSelectList(undefined)).toEqual([]);
+    expect(asSelectList('1')).toEqual([]);
+    expect(asSelectList([0, false, '1', null, { id: 1 }])).toEqual([
+      0,
+      false,
+      '1',
+    ]);
+  });
+
+  it('commits a typed tag as text, or the original option when it matches', () => {
+    expect(commitTaggedQuery('  ', options)).toBeNull();
+    expect(commitTaggedQuery('  已停止 ', options)).toBe(0);
+    expect(commitTaggedQuery('1', options)).toBe(1);
+    expect(commitTaggedQuery('停用项', options)).toBeNull();
+    expect(commitTaggedQuery('LocalDate', options)).toBe('LocalDate');
   });
 });

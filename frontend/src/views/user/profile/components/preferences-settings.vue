@@ -1,13 +1,7 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import {
-  NCard,
-  NSpace,
-  NSelect,
-  NRadioGroup,
-  NRadio,
-  NInput,
-} from 'naive-ui';
+import { NCard, NSpace, NRadioGroup, NRadio, NInput } from 'naive-ui';
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { $t } from '#/locales';
 import { Button } from '#/ui/button';
 import { Separator } from '#/ui/separator';
@@ -143,7 +137,7 @@ const presetColors = [
             <div class="setting-label">
               {{ $t('page.profile.preferences.language') }}
             </div>
-            <NSelect
+            <FormSelect
               v-model:value="settings.language"
               :options="languageOptions"
               style="width: 200px"

@@ -24,12 +24,12 @@ import {
   NModal,
   NRadio,
   NRadioGroup,
-  NSelect,
   NTag,
   NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { menuApi } from '#/api/system/menu';
 import { Button } from '#/ui/button';
 import { Switch } from '#/ui/switch';
@@ -369,7 +369,7 @@ onMounted(() => {
             />
           </NFormItem>
           <NFormItem label="状态">
-            <NSelect
+            <FormSelect
               v-model:value="searchForm.status"
               placeholder="请选择状态"
               :options="statusOptions"
@@ -450,7 +450,9 @@ onMounted(() => {
               :checked-value="1"
               :unchecked-value="0"
             />
-            <span class="text-sm">{{ formData.isFrame === 1 ? '是' : '否' }}</span>
+            <span class="text-sm">{{
+              formData.isFrame === 1 ? '是' : '否'
+            }}</span>
             <span class="text-xs text-muted-foreground">
               外链点击后将在新窗口打开
             </span>

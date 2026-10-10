@@ -13,12 +13,13 @@ import {
   NFormItem,
   NInput,
   NRadioGroup,
-  NSelect,
   useMessage,
 } from 'naive-ui';
 
 import { VbenTiptap } from '@vben/plugins/tiptap';
 
+import { asSelectList } from '#/adapter/component/select-value';
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { noticeApi } from '#/api/system/notice';
 import { userApi } from '#/api/system/user';
 import { useDict } from '#/hooks';
@@ -144,6 +145,11 @@ function handleReset() {
   };
 }
 
+function onNoticeUsers(value: unknown) {
+  const users = asSelectList(value).map(String);
+  formData.value.noticeUsers = users.length > 0 ? users : undefined;
+}
+
 // ==================== 提交 ====================
 async function handleSubmit(_status: number) {
   try {
@@ -263,9 +269,9 @@ watch(
         </NFormItem>
 
         <NFormItem :label="$t('system.notice.type')" path="type">
-          <NSelect
+          <FormSelect
             v-model:value="formData.type"
-            :options="notice_type as any"
+            :options="notice_type"
             :placeholder="$t('system.notice.type')"
           />
         </NFormItem>
@@ -296,12 +302,14 @@ watch(
           path="noticeUsers"
           class="md:col-span-2"
         >
-          <NSelect
-            v-model:value="formData.noticeUsers"
+          <FormSelect
+            :value="formData.noticeUsers ?? null"
             :options="userList"
             :placeholder="$t('system.notice.noticeUsers')"
             multiple
             filterable
+            clearable
+            @update:value="onNoticeUsers"
           />
         </NFormItem>
 

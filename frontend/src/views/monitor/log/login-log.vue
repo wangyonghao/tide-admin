@@ -7,15 +7,9 @@ import { h, onMounted, ref } from 'vue';
 import { $t } from '#/locales';
 import { IconifyIcon } from '@vben/icons';
 import { SearchOutline } from '@vicons/ionicons5';
-import {
-  NDataTable,
-  NDatePicker,
-  NIcon,
-  NInput,
-  NSelect,
-  NTag,
-} from 'naive-ui';
+import { NDataTable, NDatePicker, NIcon, NInput, NTag } from 'naive-ui';
 
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { authApi } from '#/api/auth';
 import { Button } from '#/ui/button';
 import { FilterInput } from '#/ui-patterns/filter-input';
@@ -222,7 +216,7 @@ onMounted(() => {
           placeholder="IP地址"
           @keyup.enter="handleSearch"
         />
-        <NSelect
+        <FormSelect
           v-model:value="searchForm.loginStatus"
           :options="loginStatusOptions"
           placeholder="登录状态"

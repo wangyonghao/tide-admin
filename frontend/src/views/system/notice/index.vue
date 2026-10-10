@@ -15,12 +15,11 @@ import {
   NDrawerContent,
   NIcon,
   NInput,
-  NSelect,
-  NSpace,
   NTag,
   useMessage,
 } from 'naive-ui';
 
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { noticeApi } from '#/api/system/notice';
 import { useDict } from '#/hooks';
 import { Button } from '#/ui/button';
@@ -143,25 +142,22 @@ const tableColumns: DataTableColumns<NoticeResp> = [
     render(row) {
       const methods = row.noticeMethods?.split(',') || [];
       return h(
-        NSpace,
-        { size: 'small' },
-        {
-          default: () =>
-            methods.map((method) => {
-              const methodItem = notice_method_enum?.value?.find(
-                (item) => String(item.value) === method,
-              );
-              if (!methodItem) return null;
-              return h(
-                NTag,
-                {
-                  type: (methodItem as any).tagType || 'default',
-                  size: 'small',
-                },
-                { default: () => methodItem.label },
-              );
-            }),
-        },
+        'div',
+        { class: 'flex flex-wrap items-center gap-1' },
+        methods.map((method) => {
+          const methodItem = notice_method_enum?.value?.find(
+            (item) => String(item.value) === method,
+          );
+          if (!methodItem) return null;
+          return h(
+            NTag,
+            {
+              type: (methodItem as any).tagType || 'default',
+              size: 'small',
+            },
+            { default: () => methodItem.label },
+          );
+        }),
       );
     },
   },
@@ -430,15 +426,15 @@ onMounted(() => {
             <NIcon><SearchOutline /></NIcon>
           </template>
         </NInput>
-        <NSelect
+        <FormSelect
           v-model:value="searchForm.type"
-          :options="notice_type as any"
+          :options="notice_type"
           :placeholder="$t('system.notice.type')"
           clearable
         />
-        <NSelect
+        <FormSelect
           v-model:value="searchForm.status"
-          :options="notice_status_enum as any"
+          :options="notice_status_enum"
           :placeholder="$t('system.notice.status')"
           clearable
         />
