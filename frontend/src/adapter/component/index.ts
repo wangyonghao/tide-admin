@@ -37,14 +37,10 @@ import { message } from '#/adapter/naive';
 import { Button } from '#/ui/button';
 
 import FormCheckbox from './FormCheckbox.vue';
+import FormCheckboxGroup from './FormCheckboxGroup.vue';
+import FormSelect from './FormSelect.vue';
 import FormTextInput from './FormTextInput.vue';
 
-const NCheckbox = defineAsyncComponent(() =>
-  import('naive-ui/es/checkbox').then((res) => res.NCheckbox),
-);
-const NCheckboxGroup = defineAsyncComponent(() =>
-  import('naive-ui/es/checkbox').then((res) => res.NCheckboxGroup),
-);
 const NDatePicker = defineAsyncComponent(() =>
   import('naive-ui/es/date-picker').then((res) => res.NDatePicker),
 );
@@ -195,22 +191,7 @@ async function initComponentAdapter() {
       },
     ),
     Checkbox: FormCheckbox,
-    CheckboxGroup: (props, { attrs, slots }) => {
-      let defaultSlot;
-      if (Reflect.has(slots, 'default')) {
-        defaultSlot = slots.default;
-      } else {
-        const { options } = attrs;
-        if (Array.isArray(options)) {
-          defaultSlot = () => options.map((option) => h(NCheckbox, option));
-        }
-      }
-      return h(
-        NCheckboxGroup,
-        { ...props, ...attrs },
-        { default: defaultSlot },
-      );
-    },
+    CheckboxGroup: FormCheckboxGroup,
     DatePicker: NDatePicker,
     // 提交/重置。content、show 是表单动作元数据，不能落到 DOM 上。
     DefaultButton: (props, { attrs, slots }) => {
@@ -258,7 +239,7 @@ async function initComponentAdapter() {
         ? h(NSpace, { vertical: true }, () => groupRender)
         : groupRender;
     },
-    Select: withDefaultPlaceholder(NSelect, 'select'),
+    Select: withDefaultPlaceholder(FormSelect, 'select'),
     Space: NSpace,
     Switch: NSwitch,
     TimePicker: NTimePicker,

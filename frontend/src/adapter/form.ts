@@ -13,6 +13,7 @@ async function initSetupVbenForm() {
     config: {
       // 空值保持 null，不能是 undefined，否则重置不生效。
       // 单行 Input 把 null 显示成空字符串，回写仍是字符串。
+      // Select 把 null 显示成未选，清除后回写 null。
       emptyStateValue: null,
       baseModelPropName: 'value',
       modelPropNameMap: {

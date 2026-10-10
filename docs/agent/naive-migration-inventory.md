@@ -52,6 +52,19 @@
 
 `NSpace` 具名 11 → **9**。用户操作列和短信日志操作列不再用它包按钮。Naive 包不删。Vxe 仍是表格默认。
 
+## 本波已换
+
+口径和上面一样。本波开始时：`NButton` 4（正文 59），`NCheckbox` 4，`NCheckboxGroup` 3，`NBadge` 1，页面 `NSelect` 12，`NSpace` 9。仍有 **47** 个文件导入 `naive-ui`。
+
+- **表单 Select**：注册表里的 `Select` 改为适配器 `FormSelect`。单选和多选走 `#/ui/select`（reka Select 的 `multiple`）。`options` 的数字、布尔、字符串原样回写，`1` 和 `"1"` 不会并成一个。`null` 显示为未选；`clearable` 和多选清空都回写 `null`。`0` 和 `false` 仍是已选。`filterable` 用 Popover 加搜索框：套件下拉的可视高度跟触发器绑在一起，搜索框放不进去。应用路径补了 `select` 和 `popover`。
+- **没换的 Select**：`ApiSelect` 仍包 `NSelect`。`ApiComponent` 自己管加载和 `arrow` 插槽，和 schema 上的 `Select` 不是同一条。页面上手写的 `NSelect` 仍是 **12** 个文件（公告接收人、用户编辑、任务执行器这类可搜索多选没进注册表）。
+- **勾选**：角色权限树的全选、菜单、权限和「节点关联」改为 `#/ui/checkbox`，全选保留半选。权限矩阵仍是 `NDataTable`。它有菜单列和权限列，父子关联也是页面自己的规则；套件里的树只有一个节点插槽，整表换掉会改保存结果。页面上的 `NCheckboxGroup`（通知方式、通知类型、任务星期）和表单 `CheckboxGroup` 改为 Checkbox 列表。用户取消最后一项回写空数组，和原来的分组一样；`null` 只来自表单重置，显示为全不选。`NCheckbox` 4 → **0**。`NCheckboxGroup` 3 → **0**。
+- **表格周边**：`CellLink` 改为 `variant="link"` 的原子按钮。`CellImage` 仍是 `NImage`。部门状态从圆点改为 `success` / `destructive` 的 Badge。安全设置的操作按钮和三个弹层底栏，以及表单演示页的两个按钮，改为原子按钮。`NButton` 4 → **1**，只剩 `views/demos/naive/index.vue`。`NBadge` 1 → **0**。`NSpace` 9 → **8**（公告表单不再用它包勾选）。
+- **NDataTable**：14 个文件都留着，没有整页改成 Vxe，也没有新做 shadcn Table。在线用户、公告、用户、部门、角色、菜单、文件、日志都是手写分页或树表，不是薄包装。`views/demos/table` 是示例。Vxe 仍是 CRUD 默认。权限树只换了勾选。
+- **`demos/naive`**：仍是 Naive 组件陈列，这一波不改。
+
+Naive 包不删。
+
 ## 目录选择
 
 原子实现继续放在 `@vben-core/shadcn-ui/src/ui`（已有 reka-ui、CVA、`cn()`，颜色经 `frontend/src/styles/theme.css` 的 `--color-*` 接 HSL token）。  
@@ -64,7 +77,7 @@
 
 包增加子路径 `./ui/*`，新原子（Skeleton、Sonner）**不**进入 `@vben-core/shadcn-ui` 根桶，避免壳层整包把 `vue-sonner` 带进去。
 
-第一波入口：`button`、`input`、`label`、`checkbox`、`switch`、`dialog`、`alert-dialog`、`badge`、`skeleton`、`sonner`。Phase 3 补了应用路径 `separator`。
+第一波入口：`button`、`input`、`label`、`checkbox`、`switch`、`dialog`、`alert-dialog`、`badge`、`skeleton`、`sonner`。Phase 3 补了应用路径 `separator`。本波补了 `select`、`popover`。
 
 ## 可先换
 
@@ -72,17 +85,17 @@
 
 | Naive | 文件数 | 换成 | 例子 |
 |-------|--------|------|------|
-| `NButton` | 4 | `#/ui/button`（含 `loading`） | `adapter/vxe-table.ts` 的 `CellLink`；安全设置弹层底栏；`demos/naive` |
-| `NSpace` | 9 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着选择器或整段表单的，如 `views/system/file/index.vue` |
+| `NButton` | 1 | `#/ui/button`（含 `loading`） | 只剩 `views/demos/naive/index.vue` 的组件陈列 |
+| `NSpace` | 8 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着选择器或整段表单的，如 `views/system/file/index.vue` |
 | `NInput` | 23 | `#/ui/input` 或 `FilterInput` | 带前缀的搜索框仍是 Naive，如 `views/system/user/index.vue`。无前缀筛选用 `FilterInput` |
 | `NCard` | 12 | 已有 Card（`#/ui` 尚未再导出，需要时再加路径） | `views/demos/naive/index.vue` |
 | `NDivider` | 0 | `#/ui/separator` | 视图已换完；适配器仍动态加载 |
-| `NCheckbox` | 4 | `#/ui/checkbox` | `views/system/role/components/role-permission.vue`。绑定用 `v-model`（`modelValue`） |
-| `NBadge` | 1 | `#/ui/badge` | `views/system/department/index.vue` 圆点，不是胶囊 |
+| `NCheckbox` | 0 | `#/ui/checkbox` | 页面和表单分组都已换。绑定用 `v-model`（`modelValue`） |
+| `NBadge` | 0 | `#/ui/badge` | 部门状态已改为 `success` / `destructive` 徽标 |
 | `NSpin` | 1 | 已有 Spinner | 单页用量 |
 | `NText` | 1 | 排版类（`text-foreground` 等） | 单页用量 |
 
-`NButton` 的 4 里，`adapter/vxe-table.ts` 的 `CellLink` 跟 Vxe 渲染绑在一起，跟页面工具栏分开换。安全设置弹层和 demo 页留着。
+`NButton` 只剩 `demos/naive` 的陈列。`CellLink` 和安全设置弹层已经换成原子按钮。
 
 ## 后换
 
@@ -92,7 +105,7 @@
 |-------|--------|------|------|
 | `useMessage` | 26 | Sonner 已挂到 `app.vue`；开放应用列表已改 `toast`，其余调用点仍是 Naive | `views/schedule/job/index.vue` |
 | `NTag` | 18 | Badge 已补 `success` / `warning`，字典色映射还未收成模式 | `views/schedule/log/index.vue` |
-| `NSelect` | 12 | shadcn Select 已有，表单 schema 仍走 Naive | `views/monitor/log/login-log.vue` |
+| `NSelect` | 12 | 注册表 `Select` 已接 `#/ui/select`。这 12 个是手写表单，含可搜索和多选 | `views/monitor/log/login-log.vue`、`views/system/user/components/user-edit-drawer.vue` |
 | `NIcon` | 12 | 可换 Lucide，但图标选择器是一整块 | `components/icon-select.vue` |
 | `NForm` / `NFormItem` | 10 / 10 | 手写表单；目标是 `useVbenForm` 或后续原子表单 | `views/schedule/job/edit-drawer.vue` |
 | `useDialog` | 0 | 页面上的布尔确认已改 `ConfirmAction` | — |
@@ -103,7 +116,7 @@
 | `NInputNumber` | 6 | NumberField 已在套件内 | `views/schedule/job/edit-drawer.vue` |
 | `NModal` | 4 | Dialog 已有；存量居中弹层按页迁 | `views/system/menu/index.vue` |
 | `NDropdown` | 3 | DropdownMenu 已在套件内 | `views/system/role/index.vue` |
-| `NCheckboxGroup` | 3 | 成组选择还没有应用路径 | `views/schedule/job/edit-drawer.vue` |
+| `NCheckboxGroup` | 0 | 页面和表单 `CheckboxGroup` 已改为 Checkbox 列表 | — |
 | `NPopover` | 2 | Popover 已在套件内 | `views/schedule/job/index.vue` |
 | `NTabs` / `NTabPane` | 2 / 2 | Tabs 已在套件内 | `views/system/role/index.vue` |
 | `NDescriptions` / `NDescriptionsItem` | 2 / 2 | 需要描述列表模式 | `views/system/user/components/user-detail-drawer.vue` |
@@ -114,7 +127,7 @@
 | `NPagination` | 1 | 这页的分页跟手写表在一起，随表格迁 | `views/system/role/index.vue` |
 | `NSteps` / `NList` / `NTimeline` / `NScrollbar` | 各 1–3 | 套件里有的还没做应用路径 | 见对应页面 |
 
-`adapter/component/index.ts` 里，提交/重置按钮、单行 Input、单个 Checkbox 已经换成原子控件，空值仍是 `null`（`adapter/form.ts`）。Divider、InputNumber、Radio、Select、Space、Switch，以及文本域 Input，仍动态加载 Naive。整表替换 Select 会碰到 `options` 和重置行为。
+`adapter/component/index.ts` 里，提交/重置按钮、单行 Input、Checkbox、CheckboxGroup、Select 已经换成原子控件，空值仍是 `null`（`adapter/form.ts`）。Select 的清除和多选清空回写 `null`。Divider、InputNumber、Radio、Space、Switch，文本域 Input，以及 `ApiSelect` 里的 `NSelect`，仍动态加载 Naive。
 
 ## 暂留
 
@@ -122,7 +135,7 @@
 
 | Naive | 文件数 | 例子 |
 |-------|--------|------|
-| `NDataTable` + `DataTableColumns` | 14 / 13 | `views/system/notice/index.vue`、`views/system/user/index.vue`、`views/demos/table/index.vue` |
+| `NDataTable` + `DataTableColumns` | 14 / 13 | 本波确认整页都不是薄包装，继续留着。例子：`views/system/notice/index.vue`、`views/system/user/index.vue`、`views/system/role/components/role-permission.vue`、`views/demos/table/index.vue` |
 | `NDatePicker` | 5 | `views/monitor/log/login-log.vue` |
 | `NTreeSelect` | 3 | `views/system/menu/index.vue` |
 | `NSplit` | 3 | `views/system/user/index.vue`、`views/system/config/index.vue` |

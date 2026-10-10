@@ -1,15 +1,10 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import {
-  NCard,
-  NSpace,
-  NCheckboxGroup,
-  NCheckbox,
-  NRadioGroup,
-  NRadio,
-} from 'naive-ui';
+import { NCard, NSpace, NRadioGroup, NRadio } from 'naive-ui';
 import { $t } from '@vben/locales';
 import { Button } from '#/ui/button';
+import { Checkbox } from '#/ui/checkbox';
+import { isValueChecked, toggleCheckedValue } from '#/ui/checkbox/group';
 import { Separator } from '#/ui/separator';
 import { Switch } from '#/ui/switch';
 import { message } from '#/adapter/naive';
@@ -125,17 +120,26 @@ const noticeTypeOptions = [
           {{ $t('page.profile.notification.noticeTypes') }}
         </h4>
 
-        <NCheckboxGroup v-model:value="noticeTypes">
-          <NSpace vertical :size="12">
-            <NCheckbox
-              v-for="option in noticeTypeOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </NCheckbox>
-          </NSpace>
-        </NCheckboxGroup>
+        <div class="flex flex-col gap-3">
+          <label
+            v-for="option in noticeTypeOptions"
+            :key="option.value"
+            class="inline-flex cursor-pointer items-center gap-2 text-sm"
+          >
+            <Checkbox
+              :model-value="isValueChecked(noticeTypes, option.value)"
+              @update:model-value="
+                (checked) =>
+                  (noticeTypes = toggleCheckedValue(
+                    noticeTypes,
+                    option.value,
+                    checked === true,
+                  ))
+              "
+            />
+            <span>{{ option.label }}</span>
+          </label>
+        </div>
       </NCard>
 
       <!-- 告警级别 -->

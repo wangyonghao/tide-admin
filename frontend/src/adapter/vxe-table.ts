@@ -9,7 +9,9 @@ import {
   useVbenVxeGrid as useGrid,
 } from '@vben/plugins/vxe-table';
 
-import { NButton, NImage } from 'naive-ui';
+import { NImage } from 'naive-ui';
+
+import { Button } from '#/ui/button';
 
 import { useVbenForm } from './form';
 
@@ -57,8 +59,8 @@ setupVbenVxeTable({
       renderTableDefault(renderOpts) {
         const { props } = renderOpts;
         return h(
-          NButton,
-          { size: 'small', type: 'primary', quaternary: true },
+          Button,
+          { size: 'sm', type: 'button', variant: 'link' },
           { default: () => props?.text },
         );
       },

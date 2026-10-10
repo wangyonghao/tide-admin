@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { NButton, NCard, useMessage } from 'naive-ui';
+import { NCard, useMessage } from 'naive-ui';
 
 import { useVbenForm } from '#/adapter/form';
+import { Button } from '#/ui/button';
 import { menuApi } from '#/api/system/menu';
 
 import modalDemo from './modal.vue';
@@ -168,10 +169,10 @@ const [Modal, modalApi] = useVbenModal({
   >
     <NCard title="基础表单" header-extra-class="gap-4">
       <template #header-extra>
-        <NButton type="primary" @click="setFormValues">设置表单值</NButton>
-        <NButton type="primary" @click="modalApi.open()" class="ml-2">
+        <Button type="button" @click="setFormValues">设置表单值</Button>
+        <Button type="button" class="ml-2" @click="modalApi.open()">
           打开弹窗
-        </NButton>
+        </Button>
       </template>
       <Form />
     </NCard>
