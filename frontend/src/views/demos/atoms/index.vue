@@ -31,8 +31,8 @@ function notify(type: 'error' | 'info' | 'success' | 'warning') {
 
 <template>
   <Page
-    description="按钮和提示已改成原子控件与 Sonner。这里不再依赖 Naive 的 Message / Notification。"
-    title="组件使用演示"
+    description="按钮、消息和通知使用原子控件与 Sonner。"
+    title="原子控件"
   >
     <Card class="mb-5">
       <CardHeader>

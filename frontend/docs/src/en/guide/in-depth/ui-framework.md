@@ -1,5 +1,11 @@
 # UI Framework Switching
 
+::: tip This repository
+
+Tide Admin’s product UI is shadcn-vue / Vben atoms (`#/ui`, `#/ui-patterns`). This section is upstream Vben’s UI-library switching guide.
+
+:::
+
 `Vue Admin` supports your freedom to choose the UI framework. The default UI framework for the demo site is `Ant Design Vue`, consistent with the older version. The framework also has built-in versions for `Element Plus` and `Naive UI`, allowing you to choose according to your preference.
 
 ## Adding a New UI Framework
