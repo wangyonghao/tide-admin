@@ -1,7 +1,7 @@
 import { useUserStore } from '#/store/user';
 import axios, { type AxiosInstance, type AxiosRequestConfig, type AxiosResponse, type InternalAxiosRequestConfig } from 'axios';
 import { preferences } from '@vben/preferences';
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import { $t } from '#/locales';
 
 interface HttpConfig {
@@ -234,7 +234,7 @@ http.init({
     return userStore.token ?? '';
   },              // 动态获取最新 Token
   getLocale: () => preferences.app.locale,      // 动态获取语言
-  onError: (msg) => message.error(msg,{duration:5000 })
+  onError: (msg) => toast.error(msg, { duration: 5000 })
 });
 
 export default http;

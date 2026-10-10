@@ -1,13 +1,15 @@
 <script setup lang="ts">
 import { ref } from 'vue';
-import { NCard, NRadioGroup, NRadio } from 'naive-ui';
+import { NCard } from 'naive-ui';
+
+import FormRadioGroup from '#/adapter/component/FormRadioGroup.vue';
 import { $t } from '@vben/locales';
 import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
 import { isValueChecked, toggleCheckedValue } from '#/ui/checkbox/group';
 import { Separator } from '#/ui/separator';
 import { Switch } from '#/ui/switch';
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 
 // 通知设置
 const notificationSettings = ref({
@@ -28,7 +30,7 @@ const alertLevel = ref('warning');
 
 // 保存设置
 const handleSave = () => {
-  message.success($t('page.profile.notification.saveSuccess'));
+  toast.success($t('page.profile.notification.saveSuccess'));
 };
 
 // 告警级别选项
@@ -148,17 +150,7 @@ const noticeTypeOptions = [
           {{ $t('page.profile.notification.alertLevel') }}
         </h4>
 
-        <NRadioGroup v-model:value="alertLevel">
-          <div class="flex flex-col gap-3">
-            <NRadio
-              v-for="option in alertLevelOptions"
-              :key="option.value"
-              :value="option.value"
-            >
-              {{ option.label }}
-            </NRadio>
-          </div>
-        </NRadioGroup>
+        <FormRadioGroup v-model:value="alertLevel" :options="alertLevelOptions" />
       </NCard>
 
       <!-- 保存按钮 -->

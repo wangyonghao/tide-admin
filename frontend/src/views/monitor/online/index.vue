@@ -11,7 +11,7 @@ import { useAccessStore } from '@vben/stores';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { onlineApi } from '#/api/monitor/online';
 import { Button } from '#/ui/button';
-import { toast } from '#/ui/sonner';
+import { toast } from '#/ui-patterns/toast';
 import {
   ConfirmAction,
   type ConfirmActionExpose,

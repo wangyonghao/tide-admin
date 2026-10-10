@@ -5,7 +5,7 @@ import { z } from '@vben/common-ui';
 
 import { VbenButton, VbenInputPassword } from '@vben-core/shadcn-ui';
 
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import { authApi } from '#/api/auth';
 import { encryptByRsa } from '#/utils/crypto';
 
@@ -130,7 +130,7 @@ const handleSubmit = async (event?: Event) => {
       confirmPassword: encryptByRsa(confirmPassword.value) || '',
     });
 
-    message.success('密码修改成功');
+    toast.success('密码修改成功');
     emit('success', token);
   } catch (error: any) {
     // Check if it's a password mismatch error
@@ -138,10 +138,10 @@ const handleSubmit = async (event?: Event) => {
       error?.message?.includes('密码') ||
       error?.message?.includes('password')
     ) {
-      message.error('用户名或密码不匹配');
+      toast.error('用户名或密码不匹配');
       validationErrors.value.oldPassword = '用户名或密码不匹配';
     } else {
-      message.error(error?.message || '密码修改失败');
+      toast.error(error?.message || '密码修改失败');
     }
   } finally {
     submitting.value = false;

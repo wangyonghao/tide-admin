@@ -9,18 +9,17 @@ import { ref } from 'vue';
 import { Page } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { smsLogApi } from '#/api/system/sms-log';
 import { useDownload } from '#/hooks/app/useDownload';
 import { Button } from '#/ui/button';
+import { toast } from '#/ui-patterns/toast';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
 
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 function useSmsLogGridSearchFormSchema(): VbenFormSchema[] {
@@ -158,7 +157,7 @@ const handleDelete = async (row: SmsLogResp) => {
   if (!ok) return;
   try {
     await smsLogApi.delete(row.id);
-    message.success($t('pages.common.deleteSuccess'));
+    toast.success($t('pages.common.deleteSuccess'));
     await tableGridApi.query();
   } catch {
     // 错误已在拦截器处理

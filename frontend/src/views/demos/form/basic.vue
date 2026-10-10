@@ -1,15 +1,15 @@
 <script lang="ts" setup>
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { NCard, useMessage } from 'naive-ui';
+import { NCard } from 'naive-ui';
 
 import { useVbenForm } from '#/adapter/form';
 import { Button } from '#/ui/button';
 import { menuApi } from '#/api/system/menu';
 
 import modalDemo from './modal.vue';
+import { toast } from '#/ui-patterns/toast';
 
-const message = useMessage();
 
 const [Form, formApi] = useVbenForm({
   commonConfig: {
@@ -22,7 +22,7 @@ const [Form, formApi] = useVbenForm({
   // 大屏一行显示3个，中屏一行显示2个，小屏一行显示1个
   wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
   handleSubmit: (values) => {
-    message.success(`表单数据：${JSON.stringify(values)}`);
+    toast.success(`表单数据：${JSON.stringify(values)}`);
   },
   schema: [
     {

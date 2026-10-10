@@ -5,9 +5,8 @@ import type { OperationLogResp } from '#/api/monitor/log';
 
 import { ref } from 'vue';
 
+import { useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
-
-import { NDrawer, NDrawerContent } from 'naive-ui';
 
 import { formatDateTimeRange } from '#/adapter/component/date-range';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -64,9 +63,14 @@ function operationQuery(formValues: Record<string, unknown>) {
   };
 }
 
-const detailDrawerVisible = ref(false);
 const detailData = ref<null | Record<string, any>>(null);
 const detailLoading = ref(false);
+
+const [DetailDrawer, detailDrawerApi] = useVbenDrawer({
+  class: 'w-[600px]',
+  footer: false,
+  title: '操作日志详情',
+});
 
 const [Grid, gridApi] = useVbenVxeGrid({
   formOptions: {
@@ -133,7 +137,7 @@ async function handleExport() {
 }
 
 async function handleDetail(row: OperationLogResp) {
-  detailDrawerVisible.value = true;
+  detailDrawerApi.open();
   detailLoading.value = true;
   try {
     detailData.value = await logApi.detail(row.id);
@@ -156,8 +160,15 @@ function extraText(extra: unknown) {
   <div class="h-full">
     <Grid>
       <template #toolbar-tools>
-        <Button type="button" variant="outline" @click="handleExport">
-          <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
+        <Button
+          type="button"
+          variant="outline"
+          @click="handleExport"
+        >
+          <IconifyIcon
+            icon="lucide:download"
+            class="mr-1 size-4"
+          />
           导出
         </Button>
       </template>
@@ -165,7 +176,7 @@ function extraText(extra: unknown) {
         <Badge
           :variant="
             badgeVariantForTag(operationLabel(row.operation).type) ||
-            'secondary'
+              'secondary'
           "
         >
           {{ operationLabel(row.operation).label }}
@@ -184,60 +195,102 @@ function extraText(extra: unknown) {
       </template>
     </Grid>
 
-    <NDrawer v-model:show="detailDrawerVisible" :width="600">
-      <NDrawerContent title="操作日志详情" closable>
-        <div v-if="detailLoading" class="flex h-64 items-center justify-center">
-          加载中...
-        </div>
-        <div v-else-if="detailData" class="space-y-4">
-          <div class="grid grid-cols-2 gap-4">
-            <div>
-              <div class="text-muted-foreground mb-1 text-sm">操作人</div>
-              <div class="font-medium">{{ detailData.operatorName }}</div>
+    <DetailDrawer>
+      <div
+        v-if="detailLoading"
+        class="flex h-64 items-center justify-center"
+      >
+        加载中...
+      </div>
+      <div
+        v-else-if="detailData"
+        class="space-y-4"
+      >
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <div class="text-muted-foreground mb-1 text-sm">
+              操作人
             </div>
-            <div>
-              <div class="text-muted-foreground mb-1 text-sm">操作时间</div>
-              <div class="font-medium">{{ detailData.operateTime }}</div>
-            </div>
-            <div>
-              <div class="text-muted-foreground mb-1 text-sm">操作类型</div>
-              <div class="font-medium">{{ detailData.operation }}</div>
-            </div>
-            <div>
-              <div class="text-muted-foreground mb-1 text-sm">业务对象</div>
-              <div class="font-medium">{{ detailData.objectType }}</div>
-            </div>
-            <div>
-              <div class="text-muted-foreground mb-1 text-sm">IP地址</div>
-              <div class="font-medium">{{ detailData.operatorIp }}</div>
-            </div>
-            <div>
-              <div class="text-muted-foreground mb-1 text-sm">操作地点</div>
-              <div class="font-medium">{{ detailData.operatorLocation }}</div>
-            </div>
-            <div class="col-span-2">
-              <div class="text-muted-foreground mb-1 text-sm">状态</div>
-              <Badge
-                :variant="
-                  detailData.status === 'success' ? 'success' : 'destructive'
-                "
-              >
-                {{ detailData.status === 'success' ? '成功' : '失败' }}
-              </Badge>
-            </div>
-            <div v-if="detailData.remark" class="col-span-2">
-              <div class="text-muted-foreground mb-1 text-sm">备注</div>
-              <div class="font-medium">{{ detailData.remark }}</div>
-            </div>
-            <div v-if="detailData.extra" class="col-span-2">
-              <div class="text-muted-foreground mb-1 text-sm">额外信息</div>
-              <pre class="bg-muted overflow-auto rounded p-3 text-sm">{{
-                extraText(detailData.extra)
-              }}</pre>
+            <div class="font-medium">
+              {{ detailData.operatorName }}
             </div>
           </div>
+          <div>
+            <div class="text-muted-foreground mb-1 text-sm">
+              操作时间
+            </div>
+            <div class="font-medium">
+              {{ detailData.operateTime }}
+            </div>
+          </div>
+          <div>
+            <div class="text-muted-foreground mb-1 text-sm">
+              操作类型
+            </div>
+            <div class="font-medium">
+              {{ detailData.operation }}
+            </div>
+          </div>
+          <div>
+            <div class="text-muted-foreground mb-1 text-sm">
+              业务对象
+            </div>
+            <div class="font-medium">
+              {{ detailData.objectType }}
+            </div>
+          </div>
+          <div>
+            <div class="text-muted-foreground mb-1 text-sm">
+              IP地址
+            </div>
+            <div class="font-medium">
+              {{ detailData.operatorIp }}
+            </div>
+          </div>
+          <div>
+            <div class="text-muted-foreground mb-1 text-sm">
+              操作地点
+            </div>
+            <div class="font-medium">
+              {{ detailData.operatorLocation }}
+            </div>
+          </div>
+          <div class="col-span-2">
+            <div class="text-muted-foreground mb-1 text-sm">
+              状态
+            </div>
+            <Badge
+              :variant="
+                detailData.status === 'success' ? 'success' : 'destructive'
+              "
+            >
+              {{ detailData.status === 'success' ? '成功' : '失败' }}
+            </Badge>
+          </div>
+          <div
+            v-if="detailData.remark"
+            class="col-span-2"
+          >
+            <div class="text-muted-foreground mb-1 text-sm">
+              备注
+            </div>
+            <div class="font-medium">
+              {{ detailData.remark }}
+            </div>
+          </div>
+          <div
+            v-if="detailData.extra"
+            class="col-span-2"
+          >
+            <div class="text-muted-foreground mb-1 text-sm">
+              额外信息
+            </div>
+            <pre class="bg-muted overflow-auto rounded p-3 text-sm">{{
+                extraText(detailData.extra)
+            }}</pre>
+          </div>
         </div>
-      </NDrawerContent>
-    </NDrawer>
+      </div>
+    </DetailDrawer>
   </div>
 </template>

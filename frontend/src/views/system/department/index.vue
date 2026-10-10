@@ -9,7 +9,6 @@ import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { useDebounceFn } from '@vueuse/core';
-import { useMessage } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deptApi } from '#/api/system/dept';
@@ -25,9 +24,9 @@ import { FilterInput } from '#/ui-patterns/filter-input';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import EditModal from './department-drawer.vue';
+import { toast } from '#/ui-patterns/toast';
 
 const keyword = ref('');
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 const expanded = ref(true);
@@ -145,7 +144,7 @@ async function handleDelete(row: DeptResult) {
   if (!ok) return;
   try {
     await deptApi.delete(row.id);
-    message.success($t('pages.common.deleteSuccess'));
+    toast.success($t('pages.common.deleteSuccess'));
     await gridApi.query();
   } catch (error) {
     console.error('Failed to delete dept:', error);

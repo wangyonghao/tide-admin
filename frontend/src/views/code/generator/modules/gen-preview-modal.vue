@@ -13,13 +13,12 @@ import {
   NIcon,
   NScrollbar,
   NTree,
-  useMessage,
 } from 'naive-ui';
 
 import { downloadCode, generateCode, genPreview } from '#/api/code';
 import { CnCodeView } from '#/components/code-view';
+import { toast } from '#/ui-patterns/toast';
 
-const message = useMessage();
 const { copy, copied } = useClipboard();
 
 const genPreviewList = ref<GeneratePreviewResp[]>([]);
@@ -119,7 +118,7 @@ const onDownload = async () => {
 const onGenerator = async () => {
   const tableNames = previewTableNames.value;
   await generateCode(tableNames);
-  message.success('代码生成成功');
+  toast.success('代码生成成功');
 };
 
 // 校验文件类型
@@ -135,7 +134,7 @@ const onCopy = () => {
 };
 watch(copied, () => {
   if (copied.value) {
-    message.success('复制成功');
+    toast.success('复制成功');
   }
 });
 

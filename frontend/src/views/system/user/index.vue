@@ -6,11 +6,11 @@ import type { Option } from '#/types/global';
 
 import { computed, onMounted, ref } from 'vue';
 
-import { ColPage } from '@vben/common-ui';
+import { ColPage, useVbenModal } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
-import { NIcon, NInput, NModal, useMessage } from 'naive-ui';
+import { NIcon, NInput } from 'naive-ui';
 
 import { filterRawTree } from '#/adapter/component/tree-select-value';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -32,6 +32,8 @@ import {
 } from '#/ui-patterns/confirm-action';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
+import { toast } from '#/ui-patterns/toast';
+
 import UserDetailDrawer from './components/user-detail-drawer.vue';
 import UserEditDrawer from './components/user-edit-drawer.vue';
 import {
@@ -42,7 +44,6 @@ import {
   userStatus,
 } from './data';
 
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 const deptSearchKeyword = ref('');
@@ -208,8 +209,17 @@ function handleEditSuccess() {
   gridApi.query();
 }
 
-const resetPasswordDialogVisible = ref(false);
 const newPassword = ref('');
+
+const [PasswordModal, passwordModalApi] = useVbenModal({
+  centered: true,
+  title: '密码重置成功',
+  showCancelButton: false,
+  confirmText: '确定',
+  onConfirm() {
+    passwordModalApi.close();
+  },
+});
 
 async function handleResetPassword(row: UserResp) {
   const ok = await confirmAction.value?.ask({
@@ -221,20 +231,20 @@ async function handleResetPassword(row: UserResp) {
   try {
     const password = await userApi.resetPassword(row.id);
     newPassword.value = password;
-    resetPasswordDialogVisible.value = true;
+    passwordModalApi.open();
   } catch (error) {
     console.error('重置密码失败:', error);
-    message.error('重置密码失败');
+    toast.error('重置密码失败');
   }
 }
 
 async function handleCopyPassword() {
   try {
     await navigator.clipboard.writeText(newPassword.value);
-    message.success('密码已复制到剪贴板');
+    toast.success('密码已复制到剪贴板');
   } catch (error) {
     console.error('复制失败:', error);
-    message.error('复制失败');
+    toast.error('复制失败');
   }
 }
 
@@ -247,11 +257,11 @@ async function handleDelete(row: UserResp) {
   if (!ok) return;
   try {
     await userApi.delete(row.id);
-    message.success('删除成功');
+    toast.success('删除成功');
     await gridApi.query();
   } catch (error) {
     console.error('删除用户失败:', error);
-    message.error('删除失败');
+    toast.error('删除失败');
   }
 }
 
@@ -437,13 +447,7 @@ onMounted(() => {
         @success="handleEditSuccess"
       />
 
-      <NModal
-        v-model:show="resetPasswordDialogVisible"
-        preset="dialog"
-        title="密码重置成功"
-        positive-text="确定"
-        @positive-click="resetPasswordDialogVisible = false"
-      >
+      <PasswordModal class="w-[420px]">
         <div class="space-y-4">
           <div class="flex items-center gap-2 text-orange-500">
             <IconifyIcon
@@ -471,7 +475,7 @@ onMounted(() => {
             </Button>
           </div>
         </div>
-      </NModal>
+      </PasswordModal>
     </template>
   </ColPage>
 </template>

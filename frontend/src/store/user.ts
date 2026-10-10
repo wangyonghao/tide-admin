@@ -16,7 +16,7 @@ import {
 
 import { defineStore } from 'pinia';
 
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import { AuthTypeConstants } from '#/api';
 import { authApi } from '#/api/auth';
 import { $t } from '#/locales';
@@ -84,7 +84,7 @@ export const useUserStore = defineStore(
           : await router.push(preferences.app.defaultHomePath);
 
         if (user.value?.displayName) {
-          message.success(
+          toast.success(
             `${$t('authentication.loginSuccessDesc')}:${user.value?.displayName}`,
           );
         }

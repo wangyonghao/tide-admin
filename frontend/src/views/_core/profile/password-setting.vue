@@ -5,7 +5,7 @@ import { computed } from 'vue';
 
 import { ProfilePasswordSetting, z } from '@vben/common-ui';
 
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 
 const formSchema = computed((): VbenFormSchema[] => {
   return [
@@ -51,7 +51,7 @@ const formSchema = computed((): VbenFormSchema[] => {
 });
 
 function handleSubmit() {
-  message.success('密码修改成功');
+  toast.success('密码修改成功');
 }
 </script>
 <template>

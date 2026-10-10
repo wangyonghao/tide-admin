@@ -28,12 +28,12 @@ import type { FormDividerProps } from './divider-props';
 import type { FormSpaceProps } from './space-layout';
 import type { FormTreeSelectProps } from './tree-select-value';
 
-import { defineAsyncComponent, defineComponent, h, ref } from 'vue';
+import { defineComponent, h, ref } from 'vue';
 
 import { ApiComponent, globalShareState, IconPicker } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import { Button } from '#/ui/button';
 import { DatePicker } from '#/ui/date-picker';
 
@@ -50,10 +50,6 @@ import FormTextInput from './FormTextInput.vue';
 import FormTimePicker from './FormTimePicker.vue';
 import FormTreeSelect from './FormTreeSelect.vue';
 import FormUpload from './FormUpload.vue';
-
-const NInput = defineAsyncComponent(() =>
-  import('naive-ui/es/input').then((res) => res.NInput),
-);
 
 const withDefaultPlaceholder = <T extends Component>(
   component: T,
@@ -201,10 +197,7 @@ async function initComponentAdapter() {
       );
     },
     Divider: FormDivider,
-    IconPicker: withDefaultPlaceholder(IconPicker, 'select', {
-      iconSlot: 'suffix',
-      inputComponent: NInput,
-    }),
+    IconPicker: withDefaultPlaceholder(IconPicker, 'select'),
     Input: withDefaultPlaceholder(FormTextInput, 'input'),
     InputNumber: withDefaultPlaceholder(FormInputNumber, 'input'),
     RadioGroup: FormRadioGroup,
@@ -224,7 +217,7 @@ async function initComponentAdapter() {
   globalShareState.defineMessage({
     // 复制成功消息提示
     copyPreferencesSuccess: (title, content) => {
-      message.success(content || title, {
+      toast.success(content || title, {
         duration: 0,
       });
     },

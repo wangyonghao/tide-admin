@@ -9,7 +9,6 @@ import { ref } from 'vue';
 import { Page, useVbenModal } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { useMessage } from 'naive-ui';
 
 import { Badge } from '#/ui/badge';
 
@@ -24,11 +23,11 @@ import {
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import MyMessageDetailModal from './my-message-detail-modal.vue';
+import { toast } from '#/ui-patterns/toast';
 
 defineOptions({ name: 'UserMyMessage' });
 
 const { message_type_enum } = useDict('message_type_enum');
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 function useTenantGridSearchFormSchema(): VbenFormSchema[] {
@@ -163,7 +162,7 @@ const getCheckBoxRecordIds = () => {
 const onDelete = () => {
   const selectedKeys = getCheckBoxRecordIds();
   if (selectedKeys.length === 0) {
-    return message.warning('请选择数据');
+    return toast.warning('请选择数据');
   }
   userMessageApi.delete(selectedKeys);
   tableGridApi.reload();
@@ -173,10 +172,10 @@ const onDelete = () => {
 const onRead = async () => {
   const selectedKeys = getCheckBoxRecordIds();
   if (selectedKeys.length === 0) {
-    return message.warning('请选择数据');
+    return toast.warning('请选择数据');
   }
   await userMessageApi.read(selectedKeys);
-  message.success('操作成功');
+  toast.success('操作成功');
   tableGridApi.reload();
 };
 
@@ -195,7 +194,7 @@ const onReadAll = async () => {
 // 全部已读
 const readAll = async () => {
   await userMessageApi.readAll();
-  message.success('操作成功');
+  toast.success('操作成功');
   tableGridApi.reload();
 };
 

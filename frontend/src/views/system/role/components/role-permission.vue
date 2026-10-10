@@ -9,7 +9,7 @@ import { $t } from '@vben/locales';
 import { roleApi } from '#/api/system/role';
 import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
-import { toast } from '#/ui/sonner';
+import { toast } from '#/ui-patterns/toast';
 
 import {
   collectNodeKeys,

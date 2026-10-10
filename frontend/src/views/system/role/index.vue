@@ -16,7 +16,6 @@ import {
   NSpin,
   NTabPane,
   NTabs,
-  useMessage,
 } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -31,10 +30,10 @@ import {
 
 import RoleEditDrawer from './components/role-edit-drawer.vue';
 import RolePermission from './components/role-permission.vue';
+import { toast } from '#/ui-patterns/toast';
 
 defineOptions({ name: 'SystemRole' });
 
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 
@@ -71,7 +70,7 @@ const loadRoles = async () => {
       selectRole(firstRole);
     }
   } catch {
-    message.error('加载角色列表失败');
+    toast.error('加载角色列表失败');
   } finally {
     roleLoading.value = false;
   }
@@ -139,7 +138,7 @@ const showRoleDeleteDialog = async (role: RoleResp) => {
   if (!ok || !role.id) return;
   try {
     await roleApi.delete(role.id);
-    message.success($t('pages.common.deleteSuccess'));
+    toast.success($t('pages.common.deleteSuccess'));
     const wasSelected = selectedRoleId.value === role.id;
     await loadRoles();
 
@@ -298,7 +297,7 @@ const [UserGrid, userGridApi] = useVbenVxeGrid({
               total: pageResult.total || 0,
             };
           } catch (error) {
-            message.warning('加载用户数据失败');
+            toast.warning('加载用户数据失败');
             console.error('加载用户数据失败:', error);
             return { records: [], total: 0 };
           }
@@ -377,7 +376,7 @@ const showUserDeleteDialog = async (row: RoleUserResp) => {
   if (!ok || !roleDetail.value?.id) return;
   try {
     await roleApi.removeMember(roleDetail.value.id, [row.id]);
-    message.success($t('pages.common.deleteSuccess'));
+    toast.success($t('pages.common.deleteSuccess'));
     if (typeof userGridApi.grid?.commitProxy === 'function') {
       await userGridApi.query();
     }
