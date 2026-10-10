@@ -23,6 +23,8 @@
     "reinstall": "pnpm clean --del-lock && pnpm install",
     "dev:docs": "pnpm -F @tide/docs run dev",
     "build:docs": "pnpm -F @tide/docs run build",
+    "dev:ds": "pnpm -F @tide/design-system run dev",
+    "build:ds": "pnpm -F @tide/design-system run build",
     "test:unit": "vitest run --dom",
     "check": "pnpm run typecheck && pnpm run lint",
     "bootstrap": "pnpm install",

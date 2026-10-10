@@ -31,8 +31,11 @@ cd backend && mvn -pl tide-bootstrap -am spring-boot:run
 # 单元测试（默认开启；临时跳过 -DskipUnitTests=true）
 cd backend && mvn -pl platform/job,platform/iam -am test
 
-# 前端主应用
+# 前端主应用（产品后台，入口仍是 frontend/src）
 cd frontend && pnpm install && pnpm dev
+# 文档站 / 组件演示
+cd frontend && pnpm dev:docs
+cd frontend && pnpm dev:ds
 ```
 
 配置：`backend/tide-bootstrap/src/main/resources/config/application-dev.yml`  
@@ -62,6 +65,8 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 | 开放 API | `backend/interfaces/open-api` |
 | 系统壳 / 仪表盘等 | `backend/biz/biz-system` |
 | 前端页面 / API | `frontend/src/views`、`frontend/src/api` |
+| 文档站 | `frontend/apps/docs`（`@tide/docs`） |
+| 组件演示 | `frontend/apps/design-system`（只演示 `@tide/ui` / `@tide/ui-patterns`） |
 | UI 原子 / 页面模式 | `frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）。应用仍可用 `#/ui`、`#/ui-patterns` |
 
 完整表见 [`docs/agent/repo-map.md`](docs/agent/repo-map.md)。

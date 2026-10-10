@@ -46,7 +46,7 @@
 | 框架 | Vue | 3.5.32 |
 | 语言 | TypeScript | 6.0.2 |
 | 构建 | Vite | 8.0.8 |
-| Monorepo | pnpm workspace（`vendor/@core/*`、`packages/*`、`docs`） | catalog 在 `frontend/pnpm-workspace.yaml`；无独立工程配置包 |
+| Monorepo | pnpm workspace（`vendor/@core/*`、`packages/*`、`apps/*`） | catalog 在 `frontend/pnpm-workspace.yaml`；无独立工程配置包 |
 | UI（主应用） | shadcn-vue / Vben 原子 | 应用包 `@tide/ui`、`@tide/ui-patterns` 5.7.0（`frontend/packages/*`）。导入别名 `#/ui`、`#/ui-patterns`，也可写包名。底子 `@vben-core/shadcn-ui` 5.7.0。基座 reka-ui 2.9.5、CVA 0.7.1、vue-sonner 2.0.9。`naive-ui` 已移除 |
 | 路由 / 状态 | Vue Router / Pinia | 5.0.4 / 3.0.4（含 persistedstate） |
 | 请求 / 工具 | Axios、VueUse、Day.js | 1.15.0 / 14.2.1 / 1.11.20 |
@@ -58,7 +58,7 @@
 | 质量工具 | ESLint、Stylelint、oxfmt、oxlint、Commitlint、Lefthook | 见 catalog |
 | 测试 | Vitest、Playwright、@vue/test-utils | 4.1.4 / 1.59.1 等 |
 
-主应用：`frontend/`（入口 `src/`）。共享 UI 在 `packages/ui`（`@tide/ui`）、`packages/ui-patterns`（`@tide/ui-patterns`）；壳在 `src/vben/`，UI 内核在 `vendor/@core`；工程配置在根目录配置文件（无 `configs/` 目录）。
+主应用：`frontend/`（入口仍是 `src/`，尚未迁入 `apps/admin`）。共享 UI 在 `packages/ui`（`@tide/ui`）、`packages/ui-patterns`（`@tide/ui-patterns`）。可部署面在 `apps/`：`apps/docs`（`@tide/docs`，VitePress）、`apps/design-system`（`@tide/design-system`，只演示上述两个包）。壳在 `src/vben/`，UI 内核在 `vendor/@core`；工程配置在根目录配置文件（无 `configs/` 目录）。脚本：`pnpm dev`（后台）、`pnpm dev:docs`、`pnpm dev:ds`。
 
 ## Architecture
 
@@ -90,11 +90,13 @@ platform/*              # 平台能力
 ### Frontend package layout
 
 ```
-frontend/src             # 业务应用（入口 src/；views / api / …）
-  └── vben/              # 内联壳（@vben/*），直接依赖 vendor
+frontend/src                    # 业务应用（入口 src/；views / api / …）。尚未迁入 apps/admin
+  └── vben/                     # 内联壳（@vben/*），直接依赖 vendor
+frontend/apps/docs              # @tide/docs 5.7.0；VitePress
+frontend/apps/design-system     # @tide/design-system；只演示 @tide/ui 与 @tide/ui-patterns
 frontend/packages/ui-patterns   # @tide/ui-patterns 5.7.0；依赖 @tide/ui；应用别名 #/ui-patterns
 frontend/packages/ui            # @tide/ui 5.7.0；依赖 @vben-core/shadcn-ui；应用别名 #/ui
-vendor/@core             # UI 内核（慎改）
+vendor/@core                    # UI 内核（慎改）
 ```
 
 ### Delivery shape
@@ -110,7 +112,7 @@ vendor/@core             # UI 内核（慎改）
 3. **新增依赖先登记版本**：后端写入根 `pom.xml` 的 `properties` / `dependencyManagement`；前端写入 catalog，禁止应用内随意钉死游离版本。
 4. **数据库变更走 Liquibase**：脚本放在 `db/changelog/postgresql/`，禁止只改库不改 changelog。
 5. **任务调度以 Quartz（platform-job）为准**：勿回退或并行引入另一套分布式调度框架，除非宪法与 roadmap 明确变更。
-6. **前端主 UI 为 shadcn-vue / Vben 原子**：源码在 `@tide/ui`、`@tide/ui-patterns`（`frontend/packages/*`）。业务页用别名 `#/ui`、`#/ui-patterns`，或直接写包名。勿默认新开平行 UI 应用，也不要再引入 `naive-ui`。
+6. **前端主 UI 为 shadcn-vue / Vben 原子**：源码在 `@tide/ui`、`@tide/ui-patterns`（`frontend/packages/*`）。业务页用别名 `#/ui`、`#/ui-patterns`，或直接写包名。组件演示是 `frontend/apps/design-system`，只消费这两个包，不放业务页。勿默认再开平行产品应用，也不要再引入 `naive-ui`。
 7. **慎改 `@core`**：共享核心包变更影响面大；应用特有逻辑放 `frontend/src`，共享原子放 `frontend/packages/ui`，页面模式放 `frontend/packages/ui-patterns`，壳层封装在 `frontend/src/vben`。
 8. **配置集中**：运行配置以 `tide-bootstrap/src/main/resources/config/` 为准；敏感项用环境变量覆盖。
 

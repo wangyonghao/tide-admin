@@ -2,6 +2,7 @@ import type { PwaOptions } from '@vite-pwa/vitepress';
 import type { HeadConfig } from 'vitepress';
 
 import { resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 
 import { lazyImport, VxeResolver } from 'vite-plugin-lazy-import';
 
@@ -27,12 +28,16 @@ import {
   groupIconVitePlugin,
 } from 'vitepress-plugin-group-icons';
 
-import { createVbenAliases } from '../../../vben.aliases.mts';
+import { installDocsSsrDom, uninstallDocsSsrDom } from '../ssr-dom';
+import { createVbenAliases } from '../../../../vben.aliases.mts';
 import { demoPreviewPlugin } from './plugins/demo-preview';
 import { search as zhSearch } from './zh.mts';
 
 export const shared = defineConfig({
   appearance: 'dark',
+  buildEnd() {
+    uninstallDocsSsrDom();
+  },
   head: head(),
   markdown: {
     preConfig(md) {
@@ -78,6 +83,25 @@ export const shared = defineConfig({
       stringify: true,
     },
     plugins: [
+      (() => {
+        let ssrBuild = false;
+        return {
+          name: 'tide-docs-ssr-dom',
+          apply: 'build' as const,
+          configResolved(config: { build: { ssr?: boolean | string } }) {
+            ssrBuild = Boolean(config.build.ssr);
+          },
+          closeBundle: {
+            order: 'post' as const,
+            sequential: true,
+            handler() {
+              // 客户端 bundle（含 PWA）先完成。只在 SSR bundle 结束、
+              // 开始预渲染页面之前补 DOM，避免 service worker 拿到 http location。
+              if (ssrBuild) installDocsSsrDom();
+            },
+          },
+        };
+      })(),
       tailwindcss(),
       GitChangelog({
         mapAuthors: [
@@ -104,11 +128,14 @@ export const shared = defineConfig({
     resolve: {
       alias: {
         ...createVbenAliases(),
+        'vue-json-viewer': fileURLToPath(
+          new URL('../shims/vue-json-viewer.ts', import.meta.url),
+        ),
       },
     },
     server: {
       fs: {
-        allow: ['../..'],
+        allow: ['../../..'],
       },
       host: true,
       port: 6173,

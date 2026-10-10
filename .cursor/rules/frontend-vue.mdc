@@ -1,5 +1,5 @@
 ---
-description: 前端 Vue3/TS 单应用约定
+description: 前端 Vue3/TS 约定
 globs: frontend/**/*.{vue,ts,tsx}
 alwaysApply: false
 ---
@@ -7,6 +7,7 @@ alwaysApply: false
 # Frontend Vue
 
 - 业务代码在 `frontend/src`。新 UI 优先 `#/ui/<atom>` 与 `#/ui-patterns/<pattern>`（源码在 `packages/ui`、`packages/ui-patterns`，包名 `@tide/ui`、`@tide/ui-patterns`）。不要新增 `naive-ui`。表格用 Vxe。
+- `apps/design-system` 只演示这两个包，不要引用产品页面或接口。文档站在 `apps/docs`。
 - 慎改 `vendor/@core`；原子底子已在 `@vben-core/shadcn-ui/src/ui`，应用包只做路径再导出或本地控件。壳层在 `src/vben`（`@vben/*` alias）；工程配置在根目录配置文件。
 - `<script setup lang="ts">` + Composition API；避免 `any`。
 - 组件 PascalCase；文件名 kebab-case；Tailwind 优先。

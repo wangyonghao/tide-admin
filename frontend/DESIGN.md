@@ -107,7 +107,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 
 实现以 **Vben 封装**（`Page`、`useVbenForm`、`useVbenDrawer`、`useVbenVxeGrid`）和 `#/ui` 原子为准。颜色走本文件 token，经 `src/styles/theme.css` 的 `--color-*` 接到 Tailwind。
 
-**原子层：** 新代码按路径导入 `@tide/ui/<atom>` 或别名 `#/ui/<atom>`（Button、Input、Label、Checkbox、Switch、Dialog、AlertDialog、Badge、Skeleton、Sonner、Select、Popover、Card、Tabs 等）。源码在 `frontend/packages/ui`；底子留在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA + `cn`）。页面组合放 `frontend/packages/ui-patterns`（`@tide/ui-patterns`，别名 `#/ui-patterns`），按目录路径导入，不建总桶。`naive-ui` 已从依赖里去掉。清单见 [`docs/agent/naive-migration-inventory.md`](../docs/agent/naive-migration-inventory.md)。
+**原子层：** 新代码按路径导入 `@tide/ui/<atom>` 或别名 `#/ui/<atom>`（Button、Input、Label、Checkbox、Switch、Dialog、AlertDialog、Badge、Skeleton、Sonner、Select、Popover、Card、Tabs 等）。源码在 `frontend/packages/ui`；底子留在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA + `cn`）。页面组合放 `frontend/packages/ui-patterns`（`@tide/ui-patterns`，别名 `#/ui-patterns`），按目录路径导入，不建总桶。组件演示在 `frontend/apps/design-system`，只消费这两个包。`naive-ui` 已从依赖里去掉。清单见 [`docs/agent/naive-migration-inventory.md`](../docs/agent/naive-migration-inventory.md)。
 
 ### Buttons
 

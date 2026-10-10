@@ -8,11 +8,13 @@
 
 ### Added
 
+- 前端增加组件演示 `@tide/design-system`（`pnpm dev:ds`）。页面只展示按钮、输入、确认和 toast 等原子与页面模式，不包含业务页。
 - 前端可按路径使用 shadcn-vue 原子（按钮、输入、对话框、徽标、骨架屏、Sonner 等）；表格继续用 Vxe。
 - 列表筛选可使用无前缀的 `FilterInput`（清除后为空字符串）。
 
 ### Changed
 
+- 文档站 `@tide/docs` 迁到 `frontend/apps/docs`。`pnpm dev:docs` / `pnpm build:docs` 仍启动同一套 VitePress。产品后台仍用 `pnpm dev`，入口还在 `frontend/src`。
 - 前端原子与页面模式抽到工作区包 `@tide/ui`、`@tide/ui-patterns`。页面仍可用 `#/ui`、`#/ui-patterns` 导入，界面行为不变。
 - 开放应用列表工具栏的「新建 / 导出」改为原子按钮。
 - 开放应用列表的成功/失败提示改为 Sonner。

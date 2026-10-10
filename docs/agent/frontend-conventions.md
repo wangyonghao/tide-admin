@@ -28,14 +28,17 @@ import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 ```
 frontend/
-├── src/                 # 业务 + src/vben 壳 + src/styles/theme.css
+├── src/                 # 业务 + src/vben 壳 + src/styles/theme.css（尚未迁入 apps/admin）
+├── apps/
+│   ├── docs/            # @tide/docs：VitePress，pnpm dev:docs
+│   └── design-system/   # @tide/design-system：只演示 ui / ui-patterns，pnpm dev:ds
 ├── packages/
 │   ├── ui/              # @tide/ui：原子路径（再导出 @vben-core/shadcn-ui，或本地控件）
 │   └── ui-patterns/     # @tide/ui-patterns：页面组合，按目录导入
 └── vendor/@core         # UI 内核（慎改；原子实现已在 shadcn-ui）
 ```
 
-- 业务代码 → `frontend/src/`（不含 `vben/`）
+- 业务代码 → `frontend/src/`（不含 `vben/`）。不要放进 `apps/design-system`
 - 壳层封装 → `frontend/src/vben/`
 - 工程配置 → 根目录 `vite.config.ts` / `eslint.config.mjs` / `tsconfig.json` 等
 - **慎改** `vendor/@core`

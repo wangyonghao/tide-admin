@@ -2,7 +2,7 @@ import type { DefaultTheme } from 'vitepress';
 
 import { defineConfig } from 'vitepress';
 
-import { version } from '../../../package.json';
+import { version } from '../../../../package.json';
 
 export const zh = defineConfig({
   description: 'Tide Admin & 企业级管理系统',
