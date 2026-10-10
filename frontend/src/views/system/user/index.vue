@@ -1,51 +1,53 @@
 <script setup lang="ts">
-import type { DataTableColumns } from 'naive-ui';
-
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { DeptResult } from '#/api/system/dept';
 import type { UserResp } from '#/api/system/user';
 import type { Option } from '#/types/global';
 
-import { computed, h, onMounted, ref } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 
 import { ColPage } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
-import {
-  NDataTable,
-  NDropdown,
-  NIcon,
-  NInput,
-  NModal,
-  useMessage,
-} from 'naive-ui';
+import { NIcon, NInput, NModal, useMessage } from 'naive-ui';
 
 import { filterRawTree } from '#/adapter/component/tree-select-value';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { deptApi, roleApi, userApi } from '#/api/system';
 import { Badge } from '#/ui/badge';
 import { badgeVariantForTag } from '#/ui/badge/variant';
-import { VbenTree } from '#/ui/tree';
-
 import { Button } from '#/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuSeparator,
+  DropdownMenuTrigger,
+} from '#/ui/dropdown-menu';
+import { VbenTree } from '#/ui/tree';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
-import { deptApi, roleApi, userApi } from '#/api/system';
-
 import UserDetailDrawer from './components/user-detail-drawer.vue';
 import UserEditDrawer from './components/user-edit-drawer.vue';
+import {
+  displayCell,
+  useUserColumns,
+  useUserSearchSchema,
+  userKeyword,
+  userStatus,
+} from './data';
 
 const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 
-// ==================== 部门树逻辑 ====================
 const deptSearchKeyword = ref('');
 const deptData = ref<DeptTreeNode[]>([]);
 const selectedDeptId = ref<string | undefined>(undefined);
-
-// ==================== 角色数据 ====================
 const roleOptions = ref<Option[]>([]);
 
 interface DeptTreeNode {
@@ -74,25 +76,6 @@ const treeModel = computed(() =>
     : undefined,
 );
 
-function onDeptSelect(value: unknown) {
-  const next =
-    typeof value === 'string' || typeof value === 'number'
-      ? String(value)
-      : undefined;
-  // 搜索把已选部门滤掉时，树会回写空值。这时不要清掉右侧列表的部门条件。
-  if (
-    next == null &&
-    selectedDeptId.value &&
-    !treeHasKey(visibleDept.value, selectedDeptId.value)
-  ) {
-    return;
-  }
-  if (next === selectedDeptId.value) return;
-  selectedDeptId.value = next;
-  handlePageChange(1);
-}
-
-// 加载部门列表
 async function loadDeptData() {
   try {
     const deptArray = await deptApi.tree({});
@@ -129,200 +112,77 @@ async function loadRoleOptions() {
   }
 }
 
-// ==================== 用户列表逻辑 ====================
-const userSearchForm = ref({ description: '' });
-const userData = ref<UserResp[]>([]);
-const userLoading = ref(false);
-const userPagination = ref({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [10, 20, 50],
-  onChange: (page: number) => {
-    userPagination.value.page = page;
-    loadUserData();
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    schema: useUserSearchSchema(),
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
   },
-  onUpdatePageSize: (pageSize: number) => {
-    userPagination.value.pageSize = pageSize;
-    userPagination.value.page = 1;
-    loadUserData();
-  },
+  gridOptions: {
+    columns: useUserColumns(),
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: {
+      pageSize: 10,
+      pageSizes: [10, 20, 50],
+    },
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues) => {
+          return await userApi.list({
+            page: page.currentPage,
+            pageSize: page.pageSize,
+            deptId: selectedDeptId.value,
+            keyword: userKeyword(formValues?.keyword) || undefined,
+          });
+        },
+      },
+    },
+    rowConfig: {
+      keyField: 'id',
+    },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: { code: 'query' },
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<UserResp>,
 });
 
-const userColumns: DataTableColumns<UserResp> = [
-  {
-    title: '序号',
-    key: 'index',
-    width: 60,
-    fixed: 'left',
-    render: (_row, index) =>
-      (userPagination.value.page - 1) * userPagination.value.pageSize +
-      index +
-      1,
-  },
-  { title: '显示名称', key: 'displayName', minWidth: 100, fixed: 'left' },
-  { title: '用户名', key: 'username', minWidth: 100 },
-  {
-    title: '部门',
-    key: 'deptName',
-    minWidth: 100,
-    render(row) {
-      return row.deptName || '-';
-    },
-  },
-  {
-    title: '角色',
-    key: 'roleNames',
-    width: 120,
-    render(row) {
-      return row.roleNames || '-';
-    },
-  },
-  {
-    title: '手机号',
-    key: 'phone',
-    width: 120,
-    render(row) {
-      return row.phone || '-';
-    },
-  },
-  {
-    title: '状态',
-    key: 'status',
-    width: 80,
-    render(row) {
-      const statusMap: Record<
-        number,
-        { label: string; type: 'error' | 'info' | 'success' | 'warning' }
-      > = {
-        0: { type: 'error', label: '禁用' },
-        1: { type: 'success', label: '启用' },
-        2: { type: 'warning', label: '待审核' },
-        3: { type: 'error', label: '审核拒绝' },
-      };
-      const status = statusMap[row.status] || { type: 'info', label: '未知' };
-      return h(
-        Badge,
-        { variant: badgeVariantForTag(status.type) ?? 'secondary' },
-        { default: () => status.label },
-      );
-    },
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 130,
-    fixed: 'right',
-    render(row) {
-      const dropdownOptions = [
-        {
-          label: '详情',
-          key: 'detail',
-          icon: () => h(IconifyIcon, { icon: 'lucide:eye' }),
-        },
-        {
-          label: '修改',
-          key: 'edit',
-          icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }),
-        },
-        {
-          label: '重置密码',
-          key: 'resetPwd',
-          icon: () => h(IconifyIcon, { icon: 'lucide:key' }),
-        },
-        { type: 'divider', key: 'divider' },
-        {
-          label: '删除',
-          key: 'delete',
-          icon: () =>
-            h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }),
-        },
-      ];
-
-      return h('div', { class: 'flex items-center gap-2' }, [
-        h(
-          Button,
-          {
-            type: 'button',
-            variant: 'link',
-            size: 'sm',
-            class: 'h-auto px-1',
-            onClick: () => handleDetail(row),
-          },
-          { default: () => '详情' },
-        ),
-        h(
-          Button,
-          {
-            type: 'button',
-            variant: 'link',
-            size: 'sm',
-            class: 'h-auto px-1',
-            onClick: () => handleEdit(row),
-          },
-          { default: () => '修改' },
-        ),
-        h(
-          NDropdown,
-          {
-            options: dropdownOptions.slice(2),
-            onSelect: (key: string) => handleDropdownSelect(key, row),
-          },
-          {
-            default: () =>
-              h(
-                Button,
-                {
-                  type: 'button',
-                  variant: 'link',
-                  size: 'sm',
-                  class: 'h-auto px-1',
-                },
-                { default: () => '更多' },
-              ),
-          },
-        ),
-      ]);
-    },
-  },
-];
-
-async function loadUserData() {
-  userLoading.value = true;
-  try {
-    const res = await userApi.list({
-      page: userPagination.value.page,
-      pageSize: userPagination.value.pageSize,
-      deptId: selectedDeptId.value,
-      keyword: userSearchForm.value.description || undefined,
-    });
-    userData.value = res.records ?? [];
-    userPagination.value.itemCount = res.total;
-  } catch (error) {
-    console.error('加载用户数据失败:', error);
-  } finally {
-    userLoading.value = false;
+function onDeptSelect(value: unknown) {
+  const next =
+    typeof value === 'string' || typeof value === 'number'
+      ? String(value)
+      : undefined;
+  // 搜索把已选部门滤掉时，树会回写空值。这时不要清掉右侧列表的部门条件。
+  if (
+    next == null &&
+    selectedDeptId.value &&
+    !treeHasKey(visibleDept.value, selectedDeptId.value)
+  ) {
+    return;
+  }
+  if (next === selectedDeptId.value) return;
+  selectedDeptId.value = next;
+  if (typeof gridApi.grid?.commitProxy === 'function') {
+    gridApi.reload();
   }
 }
 
-function handleSearch() {
-  handlePageChange(1);
+async function handleExport() {
+  const values = await gridApi.formApi.getValues();
+  userApi.export({
+    deptId: selectedDeptId.value,
+    keyword: userKeyword(values?.keyword) || undefined,
+  });
 }
 
 function handleImport() {
   // TODO: 实现导入用户功能
 }
 
-function handleExport() {
-  userApi.export({
-    deptId: selectedDeptId.value,
-    keyword: userSearchForm.value.description || undefined,
-  });
-}
-
-// ==================== 用户操作逻辑 ====================
-// 详情抽屉
 const detailDrawerVisible = ref(false);
 const detailUserId = ref<string>();
 
@@ -331,7 +191,6 @@ function handleDetail(row: UserResp) {
   detailDrawerVisible.value = true;
 }
 
-// 编辑抽屉
 const editDrawerVisible = ref(false);
 const editUserId = ref<string>();
 
@@ -346,10 +205,9 @@ function handleEdit(row: UserResp) {
 }
 
 function handleEditSuccess() {
-  loadUserData();
+  gridApi.query();
 }
 
-// 重置密码
 const resetPasswordDialogVisible = ref(false);
 const newPassword = ref('');
 
@@ -370,7 +228,6 @@ async function handleResetPassword(row: UserResp) {
   }
 }
 
-// 复制密码
 async function handleCopyPassword() {
   try {
     await navigator.clipboard.writeText(newPassword.value);
@@ -391,43 +248,16 @@ async function handleDelete(row: UserResp) {
   try {
     await userApi.delete(row.id);
     message.success('删除成功');
-    loadUserData();
+    await gridApi.query();
   } catch (error) {
     console.error('删除用户失败:', error);
     message.error('删除失败');
   }
 }
 
-function handleDropdownSelect(key: string, row: UserResp) {
-  switch (key) {
-    case 'delete': {
-      handleDelete(row);
-      break;
-    }
-    case 'detail': {
-      handleDetail(row);
-      break;
-    }
-    case 'edit': {
-      handleEdit(row);
-      break;
-    }
-    case 'resetPwd': {
-      handleResetPassword(row);
-      break;
-    }
-  }
-}
-
-function handlePageChange(page: number) {
-  userPagination.value.page = page;
-  loadUserData();
-}
-
 onMounted(() => {
   loadDeptData();
   loadRoleOptions();
-  loadUserData();
 });
 </script>
 
@@ -479,87 +309,125 @@ onMounted(() => {
     </template>
     <template #default>
       <ConfirmAction ref="confirmAction" />
-      <div class="h-full bg-background p-4">
-        <!-- 用户搜索和操作栏 -->
-        <div class="flex items-center justify-between mb-4 gap-3">
-          <div class="flex items-center gap-2">
-            <NInput
-              v-model:value="userSearchForm.description"
-              placeholder="搜索关键字（用户名/显示名称）"
-              clearable
-              class="w-[240px]"
-              @keyup.enter="handleSearch"
+      <div class="h-full min-h-0 bg-background">
+        <Grid>
+          <template #toolbar-tools>
+            <ToolbarActions>
+              <Button
+                type="button"
+                @click="handleAdd"
+              >
+                <IconifyIcon
+                  icon="lucide:plus"
+                  class="mr-1 size-4"
+                />
+                新增
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                @click="handleImport"
+              >
+                <IconifyIcon
+                  icon="lucide:upload"
+                  class="mr-1 size-4"
+                />
+                导入
+              </Button>
+              <Button
+                type="button"
+                variant="outline"
+                @click="handleExport"
+              >
+                <IconifyIcon
+                  icon="lucide:download"
+                  class="mr-1 size-4"
+                />
+                导出
+              </Button>
+            </ToolbarActions>
+          </template>
+          <template #deptName="{ row }">
+            {{ displayCell(row.deptName) }}
+          </template>
+          <template #roleNames="{ row }">
+            {{ displayCell(row.roleNames) }}
+          </template>
+          <template #phone="{ row }">
+            {{ displayCell(row.phone) }}
+          </template>
+          <template #status="{ row }">
+            <Badge
+              :variant="
+                badgeVariantForTag(userStatus(row.status).type) ?? 'secondary'
+              "
             >
-              <template #prefix>
-                <NIcon><SearchOutline /></NIcon>
-              </template>
-            </NInput>
-            <Button
-              type="button"
-              @click="handleSearch"
-            >
-              <IconifyIcon
-                icon="lucide:search"
-                class="mr-1 size-4"
-              />
-              查询
-            </Button>
-          </div>
-          <ToolbarActions>
-            <Button
-              type="button"
-              @click="handleAdd"
-            >
-              <IconifyIcon
-                icon="lucide:plus"
-                class="mr-1 size-4"
-              />
-              新增
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              @click="handleImport"
-            >
-              <IconifyIcon
-                icon="lucide:upload"
-                class="mr-1 size-4"
-              />
-              导入
-            </Button>
-            <Button
-              type="button"
-              variant="outline"
-              @click="handleExport"
-            >
-              <IconifyIcon
-                icon="lucide:download"
-                class="mr-1 size-4"
-              />
-              导出
-            </Button>
-          </ToolbarActions>
-        </div>
-        <!-- 用户表格 -->
-        <NDataTable
-          :columns="userColumns"
-          :data="userData"
-          :loading="userLoading"
-          :row-key="(row) => row.id"
-          :pagination="userPagination"
-          scroll-x="1000px"
-          remote
-        />
+              {{ userStatus(row.status).label }}
+            </Badge>
+          </template>
+          <template #action="{ row }">
+            <div class="inline-flex items-center gap-2">
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
+                class="h-auto px-1"
+                @click="handleDetail(row)"
+              >
+                详情
+              </Button>
+              <Button
+                type="button"
+                variant="link"
+                size="sm"
+                class="h-auto px-1"
+                @click="handleEdit(row)"
+              >
+                修改
+              </Button>
+              <DropdownMenu>
+                <DropdownMenuTrigger as-child>
+                  <Button
+                    type="button"
+                    variant="link"
+                    size="sm"
+                    class="h-auto px-1"
+                  >
+                    更多
+                  </Button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end">
+                  <DropdownMenuItem @select="handleResetPassword(row)">
+                    <IconifyIcon
+                      icon="lucide:key"
+                      class="mr-2 size-4"
+                    />
+                    重置密码
+                  </DropdownMenuItem>
+                  <DropdownMenuSeparator />
+                  <DropdownMenuItem
+                    class="text-destructive"
+                    @select="handleDelete(row)"
+                  >
+                    <IconifyIcon
+                      icon="lucide:trash-2"
+                      class="mr-2 size-4"
+                    />
+                    删除
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </div>
+          </template>
+        </Grid>
       </div>
 
-      <!-- 用户详情抽屉 -->
       <UserDetailDrawer
         v-model:visible="detailDrawerVisible"
         :user-id="detailUserId"
         @edit="handleEdit"
       />
 
-      <!-- 用户编辑抽屉 -->
       <UserEditDrawer
         v-model:visible="editDrawerVisible"
         :user-id="editUserId"
@@ -569,7 +437,6 @@ onMounted(() => {
         @success="handleEditSuccess"
       />
 
-      <!-- 重置密码对话框 -->
       <NModal
         v-model:show="resetPasswordDialogVisible"
         preset="dialog"
@@ -578,7 +445,7 @@ onMounted(() => {
         @positive-click="resetPasswordDialogVisible = false"
       >
         <div class="space-y-4">
-          <div class="text-orange-500 flex items-center gap-2">
+          <div class="flex items-center gap-2 text-orange-500">
             <IconifyIcon
               icon="lucide:alert-triangle"
               class="text-lg"
@@ -586,7 +453,7 @@ onMounted(() => {
             <span class="font-medium">新密码只显示一次，请妥善保管！</span>
           </div>
           <div
-            class="flex items-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded"
+            class="flex items-center gap-2 rounded bg-gray-100 p-3 dark:bg-gray-800"
           >
             <span class="flex-1 font-mono text-lg select-all">{{
               newPassword

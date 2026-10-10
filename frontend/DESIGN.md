@@ -181,7 +181,7 @@ Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰�
 ```
 
 - 列表页：纵向「筛选 → 工具栏+表 → 分页」一条节奏。
-- 树+表：`NSplit` 左约 `200–320px`，左右同为 `bg-background` + 对称 `p-4`。
+- 树+表：`ColPage` 左约 16%–32%，左右同为 `bg-background`。右侧是 Vxe。
 - 最大内容宽：跟壳走，**不**为后台页设营销站式 `max-w-7xl` 居中。
 
 ### Whitespace
@@ -260,7 +260,7 @@ stack:         Vue3 + Naive UI + Page + useVbenVxeGrid + useVbenForm + useVbenDr
 
 1. **新 CRUD 页：**「按 `frontend/DESIGN.md` 与 `docs/agent/ui-patterns.md` 的 CRUD List 范式，以 `views/open/app` 为样板，实现 xxx 列表（Page + VxeGrid + Drawer + data.ts），不要手写 NDataTable。」
 2. **改已有页视觉：**「只使用 design tokens / 语义 Tailwind；禁止硬编码色值；保持与 open/app 工具栏按钮顺序一致。」
-3. **树+表页：**「左右 NSplit，左 200–320px 部门/组织树，右 Vxe 或过渡期 NDataTable；两侧 `bg-background p-4`。」
+3. **树+表页：**「左右 `ColPage`，左约 16%–32% 部门/组织树，右 `useVbenVxeGrid`；两侧 `bg-background`。」
 4. **审查：**「对照 DESIGN.md §7 Do/Don't 与 ui-patterns checklist 检查本页。」
 
 ### File map for agents

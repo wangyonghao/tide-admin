@@ -17,6 +17,8 @@ async function initSetupVbenForm() {
       // Select / Radio、树选择和日期把 null 显示成未选，清除后回写 null。
       // 日期没有 valueFormat 时提交时间戳；有 valueFormat 时提交格式化字符串。
       // InputNumber 清空回写 null，0 仍是数字。Switch 把 null 显示为关。
+      // TimePicker 清空回写 null，0 仍是时间戳；有 valueFormat 时提交格式化字符串。
+      // Upload 的 fileList 为空时回写 null，不回写空数组。
       emptyStateValue: null,
       baseModelPropName: 'value',
       modelPropNameMap: {

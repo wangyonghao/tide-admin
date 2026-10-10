@@ -24,14 +24,14 @@
 | ID | 名称 | 何时用 | 黄金样板 | 状态 |
 |----|------|--------|----------|------|
 | P-CRUD | CRUD 列表 | 标准资源列表 + 筛选 + 增删改查 | `views/open/app/` | **canonical** |
-| P-TREE-TABLE | 树 + 表 | 左组织/分类树，右列表 | `views/system/user/` | transitional（宜迁到 Vxe） |
+| P-TREE-TABLE | 树 + 表 | 左组织/分类树，右列表 | `views/system/user/` | **canonical**（右表 Vxe） |
 | P-JOB-GRID | 调度/日志网格 | 与 CRUD 同构，搜索 `submitOnChange` | `views/schedule/job/` | canonical 变体 |
 | P-DASH | 仪表盘 | 卡片栅格、图表、工作台 | `views/dashboard/` | canonical |
 | P-AUTH | 认证页 | 登录/注册/改密 | `views/_core/authentication/` | canonical（跟 Vben） |
 | P-FALLBACK | 空态/错误 | 403/404/500/offline | `views/_core/fallback/` | canonical |
 | P-PROFILE | 个人中心 | Tab + 分组表单 | `views/user/profile/`、`views/_core/profile/` | 宜收敛到一种 |
 | P-CONFIG | 配置/字典 | 分组表单或可编辑表 | `views/system/option/`、`config/` | 按模块对齐 CRUD 或 Form |
-| P-LEGACY-TABLE | 手写 NDataTable | **仅存量** | `views/system/user/`、`views/system/role/` | **禁止新建**。系统选项、在线用户、公告、日志三 Tab、文件列表已改 P-CRUD |
+| P-LEGACY-TABLE | 手写 NDataTable | **仅存量** | `views/system/role/components/role-permission.vue` | **禁止新建**。用户右表、角色用户分配、系统选项、在线用户、公告、日志三 Tab、文件列表已改 Vxe |
 
 ---
 
@@ -90,23 +90,21 @@ views/<domain>/<feature>/
 ### 骨架
 
 ```
-Page
-└── NSplit (horizontal, left 200–320px)
-    ├── #1  左：搜索输入 + NTree（bg-background p-4）
-    └── #2  右：筛选 + 操作 + 表格（bg-background p-4）
-        └── Drawers
+ColPage (auto-content-height, 左约 16%–32%)
+├── #left  搜索输入 + VbenTree（bg-background p-4）
+└── #default  Grid（useVbenVxeGrid）
+    └── Drawers
 ```
 
 ### 约定
 
-- 左右内边距对称（`p-4`）；选中树节点刷新右侧列表。
-- **目标态：** 右侧改为 `useVbenVxeGrid`（与 P-CRUD 一致）。
-- **现状：** `system/user` 仍为 `NDataTable` + 本地分页 → 标为 transitional，迁移时按 P-CRUD 右栏替换。
+- 左右都是 `bg-background`。选中树节点让右侧表格回到第一页。
+- 右侧用 `useVbenVxeGrid`（搜索 schema、远程分页、行操作），和 P-CRUD 同一套。
+- 宽度用 `ColPage` 的百分比。像素分割不要再新开 `NSplit`。
 
 ### 参考
 
-- `views/system/user/index.vue`（布局参考）
-- 迁移完成后更新本表「黄金样板」路径
+- `views/system/user/index.vue`
 
 ---
 
@@ -163,10 +161,9 @@ Page 或纯容器
 
 | 区域 | 示例 |
 |------|------|
-| system | `user`（表侧）、`dept` / `menu` / `role`（树或权限矩阵） |
-| user | `operation-logs`（个人中心里的一块，不是独立 Page） |
+| system | `role/components/role-permission.vue`（菜单列加权限列） |
 
-已迁到 `useVbenVxeGrid`：`views/system/option/`、`views/monitor/online/`、`views/system/notice/`、`views/monitor/log/`（登录 / 操作 / 短信三个 Tab）、`views/system/file/`。`views/demos/table` 仍是 Naive 示例。
+已迁到 `useVbenVxeGrid`：`views/system/option/`、`views/system/user/`（右表）、`views/system/role/`（用户分配）、`views/monitor/online/`、`views/system/notice/`、`views/monitor/log/`（登录 / 操作 / 短信三个 Tab）、`views/system/file/`、`views/system/department/`、`views/system/menu/`、`views/user/profile/components/operation-logs.vue`。`views/demos/table` 仍是 Naive 示例。
 
 **规则：** 新功能、大改版列表 → 升为 P-CRUD；小 bugfix 可不强制迁移。
 
@@ -179,7 +176,7 @@ Page 或纯容器
         │否
 仪表盘/工作台？ ──是──► P-DASH
         │否
-左树右表？ ──是──► P-TREE-TABLE（右表目标 Vxe）
+左树右表？ ──是──► P-TREE-TABLE（右表 Vxe）
         │否
 标准资源 CRUD / 日志列表？ ──是──► P-CRUD（或 P-JOB-GRID）
         │否
