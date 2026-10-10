@@ -1,60 +1,27 @@
 <script setup lang="ts">
 import type {
-  DataTableColumns,
   DropdownOption,
   UploadCustomRequestOptions,
   UploadFileInfo,
 } from 'naive-ui';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { FileCategory, FileResult } from '#/api/system/file';
 
-import { computed, h, onMounted, reactive, ref, watch } from 'vue';
+import { h, ref, watch } from 'vue';
 
-import { IconifyIcon } from '@vben/icons';
 import { Page } from '@vben/common-ui';
+import { IconifyIcon } from '@vben/icons';
 
-import { SearchOutline } from '@vicons/ionicons5';
-import {
-  NCard,
-  NCascader,
-  NDataTable,
-  NDropdown,
-  NIcon,
-  NInput,
-  NSpace,
-  NUpload,
-  useMessage,
-} from 'naive-ui';
+import { NCascader, NDropdown, NUpload } from 'naive-ui';
 
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { fileApi, resolveFilePreviewUrl } from '#/api/system/file';
 import { Button } from '#/ui/button';
+import { toast } from '#/ui/sonner';
 
-const message = useMessage();
-
-const searchKeyword = ref('');
 const category = ref<FileCategory>('ALL');
-const sortOrder = ref<'asc' | 'desc'>('desc');
-const checkedRowKeys = ref<string[]>([]);
-const tableData = ref<FileResult[]>([]);
-const tableLoading = ref(false);
 const uploadFileList = ref<UploadFileInfo[]>([]);
-
-const pagination = reactive({
-  page: 1,
-  pageSize: 20,
-  itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [20, 50, 100],
-  prefix: ({ itemCount }: { itemCount?: number }) => `共 ${itemCount ?? 0} 项`,
-  onChange: (page: number) => {
-    pagination.page = page;
-    loadTableData();
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    pagination.pageSize = pageSize;
-    pagination.page = 1;
-    loadTableData();
-  },
-});
+const checkedCount = ref(0);
 
 const categoryOptions = [
   { label: '全部', value: 'ALL' },
@@ -74,12 +41,8 @@ const categoryOptions = [
   { label: '多媒体', value: 'MEDIA' },
 ];
 
-const hasSelection = computed(() => checkedRowKeys.value.length > 0);
-
 function getExtension(fileName?: string) {
-  if (!fileName || !fileName.includes('.')) {
-    return '';
-  }
+  if (!fileName || !fileName.includes('.')) return '';
   return fileName.slice(fileName.lastIndexOf('.') + 1).toLowerCase();
 }
 
@@ -100,16 +63,14 @@ function getFileIcon(row: FileResult) {
   if (['ppt', 'pptx'].includes(ext)) {
     return { icon: 'vscode-icons:file-type-powerpoint', color: '' };
   }
-  if (ext === 'pdf') {
-    return { icon: 'vscode-icons:file-type-pdf2', color: '' };
-  }
+  if (ext === 'pdf') return { icon: 'vscode-icons:file-type-pdf2', color: '' };
   if (['zip', 'rar', '7z', 'tar', 'gz'].includes(ext)) {
     return { icon: 'vscode-icons:file-type-zip', color: '' };
   }
   if (['mp4', 'avi', 'mov', 'mkv', 'mp3', 'wav'].includes(ext)) {
     return { icon: 'vscode-icons:file-type-video', color: '' };
   }
-  return { icon: 'lucide:file', color: 'text-gray-400' };
+  return { icon: 'lucide:file', color: 'text-muted-foreground' };
 }
 
 function formatFileSize(bytes?: number) {
@@ -163,7 +124,111 @@ function resolveStorageLabel(row: FileResult) {
   return storage.description || '-';
 }
 
-function rowActions(row: FileResult): DropdownOption[] {
+function textValue(value: unknown) {
+  return typeof value === 'string' ? value.trim() : '';
+}
+
+function currentSelection(): FileResult[] {
+  return (gridApi.grid?.getCheckboxRecords?.() ?? []) as FileResult[];
+}
+
+function syncChecked() {
+  checkedCount.value = currentSelection().length;
+}
+
+const [Grid, gridApi] = useVbenVxeGrid({
+  gridEvents: {
+    checkboxAll: syncChecked,
+    checkboxChange: syncChecked,
+  },
+  formOptions: {
+    schema: [
+      {
+        component: 'Input',
+        fieldName: 'fileName',
+        label: '文件名',
+        componentProps: {
+          placeholder: '搜索文件名',
+        },
+      },
+    ],
+    showCollapseButton: false,
+    submitOnChange: true,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  },
+  gridOptions: {
+    columns: [
+      { type: 'checkbox', width: 48, fixed: 'left' },
+      {
+        field: 'fileName',
+        title: '文件',
+        minWidth: 220,
+        align: 'left',
+        slots: { default: 'fileName' },
+      },
+      {
+        field: 'fileSize',
+        title: '大小',
+        width: 100,
+        slots: { default: 'fileSize' },
+      },
+      {
+        field: 'createTime',
+        title: '时间',
+        width: 160,
+        sortable: true,
+        slots: { default: 'createTime' },
+      },
+      {
+        field: 'storageType',
+        title: '存储',
+        width: 140,
+        slots: { default: 'storage' },
+      },
+      {
+        field: 'action',
+        title: '操作',
+        width: 80,
+        fixed: 'right',
+        slots: { default: 'action' },
+      },
+    ],
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: { pageSize: 20 },
+    sortConfig: {
+      defaultSort: { field: 'createTime', order: 'desc' },
+      remote: true,
+    },
+    proxyConfig: {
+      ajax: {
+        query: async ({ page, sorts }, formValues) => {
+          const order = sorts?.find(
+            (item) => item.field === 'createTime',
+          )?.order;
+          const fileName = textValue(formValues?.fileName);
+          return await fileApi.page({
+            fileName: fileName || undefined,
+            category: category.value === 'ALL' ? undefined : category.value,
+            sortOrder: order === 'asc' ? 'asc' : 'desc',
+            page: page.currentPage,
+            pageSize: page.pageSize,
+          });
+        },
+      },
+    },
+    rowConfig: { keyField: 'id' },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: { code: 'query' },
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<FileResult>,
+});
+
+function rowActions(): DropdownOption[] {
   return [
     {
       label: '下载',
@@ -180,180 +245,68 @@ function rowActions(row: FileResult): DropdownOption[] {
       label: '删除',
       key: 'delete',
       icon: () =>
-        h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }),
+        h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-destructive' }),
     },
   ];
 }
 
 async function handleRowAction(key: string | number, row: FileResult) {
   switch (String(key)) {
-    case 'download':
+    case 'download': {
       await fileApi.download(row.id, row.fileName);
       break;
+    }
     case 'preview': {
       const url = resolveFilePreviewUrl(row.id);
       if (url) window.open(url, '_blank');
       break;
     }
-    case 'delete':
+    case 'delete': {
       await handleDelete(row);
       break;
+    }
   }
 }
 
-const columns = computed<DataTableColumns<FileResult>>(() => [
-  { type: 'selection', width: 48 },
-  {
-    title: '文件',
-    key: 'fileName',
-    ellipsis: { tooltip: true },
-    render: (row) => {
-      const meta = getFileIcon(row);
-      return h('div', { class: 'flex min-w-0 items-center gap-2' }, [
-        h(IconifyIcon, {
-          icon: meta.icon,
-          class: `text-xl shrink-0 ${meta.color}`,
-        }),
-        h('span', { class: 'truncate', title: row.fileName }, row.fileName),
-      ]);
-    },
-  },
-  {
-    title: '大小',
-    key: 'fileSize',
-    width: 100,
-    render: (row) => formatFileSize(row.fileSize),
-  },
-  {
-    title: () =>
-      h(
-        'button',
-        {
-          class: 'inline-flex items-center gap-1 hover:text-primary',
-          onClick: toggleSortOrder,
-        },
-        [
-          '时间',
-          h(IconifyIcon, {
-            icon:
-              sortOrder.value === 'desc'
-                ? 'lucide:arrow-down-narrow-wide'
-                : 'lucide:arrow-up-narrow-wide',
-            class: 'text-sm',
-          }),
-        ],
-      ),
-    key: 'createTime',
-    width: 140,
-    render: (row) => formatRelativeTime(row.createTime),
-  },
-  {
-    title: '存储',
-    key: 'storageType',
-    ellipsis: { tooltip: true },
-    width: 140,
-    render: (row) => resolveStorageLabel(row),
-  },
-  {
-    title: '操作',
-    key: 'actions',
-    width: 100,
-    render: (row) =>
-      h(
-        NDropdown,
-        {
-          trigger: 'click',
-          options: rowActions(row),
-          onSelect: (key: string | number) => handleRowAction(key, row),
-        },
-        {
-          default: () =>
-            h(
-              Button,
-              { type: 'button', variant: 'ghost', size: 'icon' },
-              {
-                default: () =>
-                  h(IconifyIcon, {
-                    icon: 'lucide:ellipsis',
-                    class: 'size-4',
-                  }),
-              },
-            ),
-        },
-      ),
-  },
-]);
-
-function toggleSortOrder() {
-  sortOrder.value = sortOrder.value === 'desc' ? 'asc' : 'desc';
-  pagination.page = 1;
-  loadTableData();
+async function reload() {
+  await gridApi.query();
+  gridApi.grid?.clearCheckboxRow?.();
+  checkedCount.value = 0;
 }
-
-async function loadTableData() {
-  try {
-    tableLoading.value = true;
-    const response = await fileApi.page({
-      fileName: searchKeyword.value || undefined,
-      category: category.value === 'ALL' ? undefined : category.value,
-      sortOrder: sortOrder.value,
-      page: pagination.page,
-      pageSize: pagination.pageSize,
-    });
-    tableData.value = response.records;
-    pagination.itemCount = response.total;
-  } catch (error) {
-    message.error('加载文件列表失败');
-    console.error(error);
-  } finally {
-    tableLoading.value = false;
-  }
-}
-
-watch(searchKeyword, () => {
-  pagination.page = 1;
-  loadTableData();
-});
-
-watch(category, () => {
-  pagination.page = 1;
-  loadTableData();
-});
 
 async function handleDelete(row: FileResult) {
   try {
     await fileApi.delete(row.id);
-    message.success('删除成功');
-    checkedRowKeys.value = checkedRowKeys.value.filter((id) => id !== row.id);
-    await loadTableData();
+    toast.success('删除成功');
+    await reload();
   } catch (error) {
-    message.error('删除失败');
+    toast.error('删除失败');
     console.error(error);
   }
 }
 
 async function handleBatchDelete() {
-  const ids = checkedRowKeys.value.filter((id) => id.length > 0);
+  const ids = currentSelection()
+    .map((row) => row.id)
+    .filter((id) => id);
   if (!ids.length) return;
   try {
     await fileApi.batchDelete(ids);
-    message.success('批量删除成功');
-    checkedRowKeys.value = [];
-    await loadTableData();
+    toast.success('批量删除成功');
+    await reload();
   } catch (error) {
-    message.error('批量删除失败');
+    toast.error('批量删除失败');
     console.error(error);
   }
 }
 
 async function handleBatchDownload() {
-  const selectedIds = new Set(checkedRowKeys.value);
-  const rows = tableData.value.filter((item) => selectedIds.has(item.id));
+  const rows = currentSelection();
   if (!rows.length) return;
   for (const row of rows) {
     await fileApi.download(row.id, row.fileName);
   }
-  message.success(`已开始下载 ${rows.length} 个文件`);
+  toast.success(`已开始下载 ${rows.length} 个文件`);
 }
 
 async function handleUpload({
@@ -367,42 +320,38 @@ async function handleUpload({
   }
   try {
     await fileApi.upload(file.file as File);
-    message.success('上传成功');
+    toast.success('上传成功');
     onFinish();
     uploadFileList.value = [];
-    await loadTableData();
+    await reload();
   } catch (error) {
-    message.error('上传失败');
+    toast.error('上传失败');
     console.error(error);
     onError();
   }
 }
 
-onMounted(() => {
-  loadTableData();
+watch(category, () => {
+  gridApi.reload();
 });
 </script>
 
 <template>
   <Page auto-content-height>
-    <NCard
-      :bordered="false"
-      class="h-full"
-      content-style="display:flex;flex-direction:column;gap:12px;height:100%"
-    >
-      <div class="flex flex-wrap items-center justify-between gap-3">
-        <NSpace align="center">
+    <Grid>
+      <template #toolbar-actions>
+        <div class="flex flex-wrap items-center gap-2">
           <Button
             type="button"
             variant="outline"
-            :disabled="!hasSelection"
+            :disabled="checkedCount === 0"
             @click="handleBatchDownload"
           >
             <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
             下载
           </Button>
           <NCascader
-            v-model:value="category"
+            :value="category"
             :options="categoryOptions"
             :show-path="false"
             check-strategy="child"
@@ -410,55 +359,61 @@ onMounted(() => {
             placeholder="筛选"
             clearable
             class="w-40"
-            @update:value="(v) => (category = (v as FileCategory) || 'ALL')"
+            @update:value="
+              (value) => (category = (value as FileCategory) || 'ALL')
+            "
           />
           <Button
-            v-if="hasSelection"
+            v-if="checkedCount > 0"
             type="button"
             variant="destructive"
             @click="handleBatchDelete"
           >
-            删除所选 ({{ checkedRowKeys.length }})
+            删除所选 ({{ checkedCount }})
           </Button>
-        </NSpace>
-
-        <NSpace>
-          <NInput
-            v-model:value="searchKeyword"
-            clearable
-            placeholder="搜索文件名"
-            class="w-56"
-          >
-            <template #prefix>
-              <NIcon :component="SearchOutline" />
-            </template>
-          </NInput>
-          <NUpload
-            v-model:file-list="uploadFileList"
-            :show-file-list="false"
-            :custom-request="handleUpload"
-          >
-            <Button type="button">
-              <IconifyIcon icon="lucide:upload" class="mr-1 size-4" />
-              上传
-            </Button>
-          </NUpload>
-        </NSpace>
-      </div>
-
-      <NDataTable
-        v-model:checked-row-keys="checkedRowKeys"
-        :columns="columns"
-        :data="tableData"
-        :loading="tableLoading"
-        :pagination="pagination"
-        :row-key="(row) => String(row.id)"
-        :bordered="false"
-        :single-line="false"
-        flex-height
-        class="flex-1"
-        size="small"
-      />
-    </NCard>
+        </div>
+      </template>
+      <template #toolbar-tools>
+        <NUpload
+          v-model:file-list="uploadFileList"
+          :show-file-list="false"
+          :custom-request="handleUpload"
+        >
+          <Button type="button">
+            <IconifyIcon icon="lucide:upload" class="mr-1 size-4" />
+            上传
+          </Button>
+        </NUpload>
+      </template>
+      <template #fileName="{ row }">
+        <div class="flex min-w-0 items-center gap-2">
+          <IconifyIcon
+            :icon="getFileIcon(row).icon"
+            :class="['shrink-0 text-xl', getFileIcon(row).color]"
+          />
+          <span class="truncate" :title="row.fileName">{{ row.fileName }}</span>
+        </div>
+      </template>
+      <template #fileSize="{ row }">
+        {{ formatFileSize(row.fileSize) }}
+      </template>
+      <template #createTime="{ row }">
+        {{ formatRelativeTime(row.createTime) }}
+      </template>
+      <template #storage="{ row }">
+        {{ resolveStorageLabel(row) }}
+      </template>
+      <template #action="{ row }">
+        <NDropdown
+          trigger="click"
+          :options="rowActions()"
+          @select="(key) => handleRowAction(key, row)"
+        >
+          <Button type="button" variant="ghost" size="icon">
+            <IconifyIcon icon="lucide:ellipsis" class="size-4" />
+          </Button>
+        </NDropdown>
+      </template>
+    </Grid>
   </Page>
 </template>

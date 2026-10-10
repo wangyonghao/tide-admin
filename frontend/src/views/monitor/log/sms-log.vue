@@ -1,173 +1,122 @@
 <script setup lang="ts">
-import type { DataTableColumns } from 'naive-ui';
+import type { VbenFormSchema } from '#/adapter/form';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { SmsLogResp } from '#/api/system/sms-log';
 
-import { h, onMounted, ref } from 'vue';
+import { ref } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 
-import { SearchOutline } from '@vicons/ionicons5';
-import { NDataTable, NIcon, NInput, NTag, useMessage } from 'naive-ui';
-
-import FormSelect from '#/adapter/component/FormSelect.vue';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { smsLogApi } from '#/api/system/sms-log';
+import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
+import { toast } from '#/ui/sonner';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
-import { FilterInput } from '#/ui-patterns/filter-input';
-import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 
-// ==================== 搜索表单 ====================
-const searchForm = ref({
-  configId: '',
-  phone: '',
-  status: null as number | null,
-});
-
-// ==================== 表格数据 ====================
-const tableData = ref<SmsLogResp[]>([]);
-const tableLoading = ref(false);
-const tablePagination = ref({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [10, 20, 50, 100],
-  onChange: (page: number) => {
-    tablePagination.value.page = page;
-    loadTableData();
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    tablePagination.value.pageSize = pageSize;
-    tablePagination.value.page = 1;
-    loadTableData();
-  },
-});
-
-// ==================== 状态选项 ====================
-const statusOptions = [
-  { label: '成功', value: 1 },
-  { label: '失败', value: 0 },
-];
-
-// ==================== 表格列定义 ====================
-const tableColumns: DataTableColumns<SmsLogResp> = [
-  {
-    title: '序号',
-    key: 'index',
-    width: 60,
-    render: (_row, index) =>
-      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
-      index +
-      1,
-  },
-  {
-    title: '手机号',
-    key: 'phone',
-    minWidth: 120,
-  },
-  {
-    title: '参数配置',
-    key: 'params',
-    minWidth: 200,
-  },
-  {
-    title: '发送状态',
-    key: 'status',
-    minWidth: 100,
-    render(row) {
-      return h(
-        NTag,
-        {
-          type: row.status === 1 ? 'success' : 'error',
-          size: 'small',
-        },
-        { default: () => (row.status === 1 ? '成功' : '失败') },
-      );
+function useSearchSchema(): VbenFormSchema[] {
+  return [
+    { component: 'Input', fieldName: 'configId', label: '配置ID' },
+    { component: 'Input', fieldName: 'phone', label: '手机号' },
+    {
+      component: 'Select',
+      fieldName: 'status',
+      label: '发送状态',
+      componentProps: {
+        clearable: true,
+        options: [
+          { label: '成功', value: 1 },
+          { label: '失败', value: 0 },
+        ],
+      },
     },
-  },
-  {
-    title: '返回数据',
-    key: 'resMsg',
-    minWidth: 200,
-  },
-  {
-    title: '创建人',
-    key: 'createUserString',
-    minWidth: 120,
-  },
-  {
-    title: '创建时间',
-    key: 'createTime',
-    minWidth: 160,
-    sorter: 'default',
-  },
-  {
-    title: '操作',
-    key: 'action',
-    width: 100,
-    fixed: 'right',
-    render(row) {
-      return h(
-        Button,
-        {
-          type: 'button',
-          variant: 'link',
-          size: 'sm',
-          class: 'text-destructive h-auto px-1',
-          onClick: () => handleDelete(row),
-        },
-        { default: () => '删除' },
-      );
-    },
-  },
-];
-
-// ==================== 加载数据 ====================
-async function loadTableData() {
-  tableLoading.value = true;
-  try {
-    const res = await smsLogApi.list({
-      page: tablePagination.value.page,
-      pageSize: tablePagination.value.pageSize,
-      configId: searchForm.value.configId || undefined,
-      phone: searchForm.value.phone || undefined,
-      status: searchForm.value.status ?? undefined,
-      sort: ['createTime,desc'],
-    });
-
-    tableData.value = res.records;
-    tablePagination.value.itemCount = res.total;
-  } catch (error) {
-    console.error('加载短信日志失败:', error);
-    message.error('加载数据失败');
-  } finally {
-    tableLoading.value = false;
-  }
+  ];
 }
 
-// ==================== 搜索 ====================
-function handleSearch() {
-  tablePagination.value.page = 1;
-  loadTableData();
+function textValue(value: unknown) {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
-// ==================== 重置 ====================
-function handleReset() {
-  searchForm.value = {
-    configId: '',
-    phone: '',
-    status: null,
+function smsQuery(formValues: Record<string, unknown>) {
+  const configId = textValue(formValues.configId);
+  const phone = textValue(formValues.phone);
+  const status = formValues.status;
+  return {
+    configId: configId || undefined,
+    phone: phone || undefined,
+    status: status === 0 || status === 1 ? status : undefined,
+    sort: ['createTime,desc'] as string[],
   };
-  handleSearch();
 }
 
-// ==================== 删除 ====================
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    schema: useSearchSchema(),
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
+  },
+  gridOptions: {
+    columns: [
+      { type: 'seq', width: 70, fixed: 'left' },
+      { field: 'phone', title: '手机号', minWidth: 120 },
+      { field: 'params', title: '参数配置', minWidth: 200, align: 'left' },
+      {
+        field: 'status',
+        title: '发送状态',
+        minWidth: 100,
+        slots: { default: 'status' },
+      },
+      { field: 'resMsg', title: '返回数据', minWidth: 200, align: 'left' },
+      { field: 'createUserString', title: '创建人', minWidth: 120 },
+      {
+        field: 'createTime',
+        title: '创建时间',
+        minWidth: 160,
+        sortable: true,
+      },
+      {
+        field: 'action',
+        title: '操作',
+        width: 100,
+        fixed: 'right',
+        slots: { default: 'action' },
+      },
+    ],
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: { pageSize: 10 },
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues) => {
+          return await smsLogApi.list({
+            page: page.currentPage,
+            pageSize: page.pageSize,
+            ...smsQuery(formValues ?? {}),
+          });
+        },
+      },
+    },
+    rowConfig: { keyField: 'id' },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: { code: 'query' },
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<SmsLogResp>,
+});
+
+async function handleExport() {
+  const formValues = (await gridApi.formApi?.getValues?.()) ?? {};
+  smsLogApi.export(smsQuery(formValues));
+}
+
 async function handleDelete(row: SmsLogResp) {
   const ok = await confirmAction.value?.ask({
     title: '删除确认',
@@ -177,89 +126,41 @@ async function handleDelete(row: SmsLogResp) {
   if (!ok) return;
   try {
     await smsLogApi.delete(row.id);
-    message.success('删除成功');
-    await loadTableData();
+    toast.success('删除成功');
+    await gridApi.query();
   } catch (error) {
     console.error('删除短信日志失败:', error);
-    message.error('删除失败');
+    toast.error('删除失败');
   }
 }
-
-// ==================== 导出 ====================
-function handleExport() {
-  smsLogApi.export({
-    configId: searchForm.value.configId || undefined,
-    phone: searchForm.value.phone || undefined,
-    status: searchForm.value.status ?? undefined,
-    sort: ['createTime,desc'],
-  });
-}
-
-// ==================== 初始化 ====================
-onMounted(() => {
-  loadTableData();
-});
 </script>
 
 <template>
   <div class="h-full">
     <ConfirmAction ref="confirmAction" />
-    <!-- 搜索和操作栏 -->
-    <div class="mb-4">
-      <!-- 搜索表单 - 响应式网格布局 -->
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3"
-      >
-        <NInput
-          v-model:value="searchForm.configId"
-          placeholder="配置ID"
-          clearable
-          @keyup.enter="handleSearch"
-        >
-          <template #prefix>
-            <NIcon><SearchOutline /></NIcon>
-          </template>
-        </NInput>
-        <FilterInput
-          v-model="searchForm.phone"
-          placeholder="手机号"
-          @keyup.enter="handleSearch"
-        />
-        <FormSelect
-          v-model:value="searchForm.status"
-          :options="statusOptions"
-          placeholder="发送状态"
-          clearable
-        />
-      </div>
-
-      <!-- 操作按钮 -->
-      <ToolbarActions>
-        <Button type="button" @click="handleSearch">
-          <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
-          查询
-        </Button>
-        <Button type="button" variant="outline" @click="handleReset">
-          <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
-          重置
-        </Button>
+    <Grid>
+      <template #toolbar-tools>
         <Button type="button" variant="outline" @click="handleExport">
           <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
           导出
         </Button>
-      </ToolbarActions>
-    </div>
-
-    <!-- 数据表格 -->
-    <NDataTable
-      :columns="tableColumns"
-      :data="tableData"
-      :loading="tableLoading"
-      :row-key="(row) => row.id"
-      :pagination="tablePagination"
-      scroll-x="1200px"
-    />
+      </template>
+      <template #status="{ row }">
+        <Badge :variant="row.status === 1 ? 'success' : 'destructive'">
+          {{ row.status === 1 ? '成功' : '失败' }}
+        </Badge>
+      </template>
+      <template #action="{ row }">
+        <Button
+          type="button"
+          variant="link"
+          size="sm"
+          class="text-destructive h-auto px-1"
+          @click="handleDelete(row)"
+        >
+          删除
+        </Button>
+      </template>
+    </Grid>
   </div>
 </template>
-
-<style lang="scss" scoped></style>

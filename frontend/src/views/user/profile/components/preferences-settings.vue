@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { NCard, NSpace, NRadioGroup, NRadio, NInput } from 'naive-ui';
+import { NCard, NRadioGroup, NRadio, NInput } from 'naive-ui';
 import FormSelect from '#/adapter/component/FormSelect.vue';
 import { $t } from '#/locales';
 import { Button } from '#/ui/button';
@@ -127,12 +127,12 @@ const presetColors = [
       {{ $t('page.profile.tabs.preferences') }}
     </h3>
 
-    <NSpace vertical :size="24">
+    <div class="flex flex-col gap-6">
       <!-- 基础设置 -->
       <NCard :bordered="false" class="shadow-sm">
         <h4 class="font-medium mb-4">基础设置</h4>
 
-        <NSpace vertical :size="16">
+        <div class="flex flex-col gap-4">
           <div class="setting-item">
             <div class="setting-label">
               {{ $t('page.profile.preferences.language') }}
@@ -178,20 +178,20 @@ const presetColors = [
               />
             </div>
           </div>
-        </NSpace>
+        </div>
       </NCard>
 
       <!-- 布局设置 -->
       <NCard :bordered="false" class="shadow-sm">
         <h4 class="font-medium mb-4">布局设置</h4>
 
-        <NSpace vertical :size="16">
+        <div class="flex flex-col gap-4">
           <div class="setting-item">
             <div class="setting-label">
               {{ $t('page.profile.preferences.layoutMode') }}
             </div>
             <NRadioGroup v-model:value="settings.layout">
-              <NSpace vertical :size="8">
+              <div class="flex flex-col gap-2">
                 <NRadio
                   v-for="option in layoutOptions"
                   :key="option.value"
@@ -199,7 +199,7 @@ const presetColors = [
                 >
                   {{ option.label }}
                 </NRadio>
-              </NSpace>
+              </div>
             </NRadioGroup>
           </div>
 
@@ -228,14 +228,14 @@ const presetColors = [
             </div>
             <Switch v-model="settings.compactMode" />
           </div>
-        </NSpace>
+        </div>
       </NCard>
 
       <!-- 显示设置 -->
       <NCard :bordered="false" class="shadow-sm">
         <h4 class="font-medium mb-4">显示设置</h4>
 
-        <NSpace vertical :size="16">
+        <div class="flex flex-col gap-4">
           <div class="setting-item">
             <div class="setting-label">
               {{ $t('page.profile.preferences.showBreadcrumb') }}
@@ -260,7 +260,7 @@ const presetColors = [
             </div>
             <Switch v-model="settings.showFooter" />
           </div>
-        </NSpace>
+        </div>
       </NCard>
 
       <!-- 首页设置 -->
@@ -291,7 +291,7 @@ const presetColors = [
           {{ $t('page.profile.basic.save') }}
         </Button>
       </div>
-    </NSpace>
+    </div>
   </div>
 </template>
 

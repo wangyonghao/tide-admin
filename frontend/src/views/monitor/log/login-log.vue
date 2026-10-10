@@ -1,265 +1,180 @@
 <script setup lang="ts">
-import type { DataTableColumns } from 'naive-ui';
-import type { LoginLogResult } from '#/api/auth';
+import type { VbenFormSchema } from '#/adapter/form';
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
+import type { LoginLogQuery, LoginLogResult } from '#/api/auth';
 
-import { h, onMounted, ref } from 'vue';
-
-import { $t } from '#/locales';
 import { IconifyIcon } from '@vben/icons';
-import { SearchOutline } from '@vicons/ionicons5';
-import { NDataTable, NDatePicker, NIcon, NInput, NTag } from 'naive-ui';
 
-import FormSelect from '#/adapter/component/FormSelect.vue';
+import { formatDateTimeRange } from '#/adapter/component/date-range';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { authApi } from '#/api/auth';
+import { $t } from '#/locales';
+import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
-import { FilterInput } from '#/ui-patterns/filter-input';
-import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
-// ==================== 搜索表单 ====================
-const searchForm = ref({
-  username: '',
-  ipAddress: '',
-  loginStatus: null as 'SUCCESS' | 'FAILURE' | null,
-  loginTime: null as [number, number] | null,
-});
+const deviceTypeMap: Record<string, string> = {
+  MOBILE: '应用程序',
+  WEB: '网页端',
+  OTHER: '其他',
+};
 
-// ==================== 表格数据 ====================
-const tableData = ref<LoginLogResult[]>([]);
-const tableLoading = ref(false);
-const tablePagination = ref({
-  page: 1,
-  pageSize: 10,
-  itemCount: 0,
-  showSizePicker: true,
-  pageSizes: [10, 20, 50, 100],
-  onChange: (page: number) => {
-    tablePagination.value.page = page;
-    loadTableData();
-  },
-  onUpdatePageSize: (pageSize: number) => {
-    tablePagination.value.pageSize = pageSize;
-    tablePagination.value.page = 1;
-    loadTableData();
-  },
-});
-
-// ==================== 登录状态选项 ====================
-const loginStatusOptions = [
-  { label: '成功', value: 'SUCCESS' },
-  { label: '失败', value: 'FAILURE' },
-];
-
-// ==================== 表格列定义 ====================
-const tableColumns: DataTableColumns<LoginLogResult> = [
-  {
-    title: '序号',
-    key: 'index',
-    width: 60,
-    render: (_row, index) =>
-      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
-      index +
-      1,
-  },
-  { title: '用户名', key: 'username', minWidth: 100 },
-  {
-    title: $t('monitor.loginLog.loginTime'),
-    key: 'loginTime',
-    minWidth: 160,
-    sorter: 'default',
-  },
-
-  {
-    title: $t('monitor.loginLog.loginStatus'),
-    key: 'loginStatus',
-    minWidth: 100,
-    render(row) {
-      return h(
-        NTag,
-        {
-          type: row.loginStatus === 'SUCCESS' ? 'success' : 'error',
-          size: 'small',
-        },
-        { default: () => (row.loginStatus === 'SUCCESS' ? '成功' : '失败') },
-      );
+function useSearchSchema(): VbenFormSchema[] {
+  return [
+    {
+      component: 'Input',
+      fieldName: 'username',
+      label: '用户名',
     },
-  },
-  { title: $t('monitor.loginLog.ipAddress'), key: 'ipAddress', minWidth: 100 },
-  { title: $t('monitor.loginLog.location'), key: 'location', minWidth: 120 },
-  {
-    title: $t('monitor.loginLog.deviceType'),
-    key: 'deviceType',
-    minWidth: 100,
-    render(row) {
-      const deviceTypeMap: Record<string, string> = {
-        MOBILE: '应用程序',
-        WEB: '网页端',
-        OTHER: '其他',
-      };
-      return deviceTypeMap[row.deviceType] || row.deviceType;
+    {
+      component: 'Input',
+      fieldName: 'ipAddress',
+      label: 'IP地址',
     },
-  },
-  { title: $t('monitor.loginLog.browser'), key: 'browser', minWidth: 150 },
-  { title: $t('monitor.loginLog.os'), key: 'os', minWidth: 120 },
-  {
-    title: $t('monitor.loginLog.failureReason'),
-    key: 'failureReason',
-    minWidth: 180,
-    render(row) {
-      return row.failureReason || '-';
+    {
+      component: 'Select',
+      fieldName: 'loginStatus',
+      label: $t('monitor.loginLog.loginStatus'),
+      componentProps: {
+        clearable: true,
+        options: [
+          { label: '成功', value: 'SUCCESS' },
+          { label: '失败', value: 'FAILURE' },
+        ],
+      },
     },
-  },
-];
-
-// ==================== 加载数据 ====================
-async function loadTableData() {
-  tableLoading.value = true;
-  try {
-    let loginTimeStart: string | undefined;
-    let loginTimeEnd: string | undefined;
-
-    if (searchForm.value.loginTime) {
-      loginTimeStart = new Date(searchForm.value.loginTime[0])
-        .toISOString()
-        .slice(0, 19)
-        .replace('T', ' ');
-      loginTimeEnd = new Date(searchForm.value.loginTime[1])
-        .toISOString()
-        .slice(0, 19)
-        .replace('T', ' ');
-    }
-
-    const res = await authApi.listLoginLog({
-      page: tablePagination.value.page,
-      pageSize: tablePagination.value.pageSize,
-      username: searchForm.value.username || undefined,
-      ipAddress: searchForm.value.ipAddress || undefined,
-      loginStatus: searchForm.value.loginStatus || undefined,
-      loginTimeStart,
-      loginTimeEnd,
-    });
-
-    tableData.value = res.records;
-    tablePagination.value.itemCount = res.total;
-  } finally {
-    tableLoading.value = false;
-  }
+    {
+      component: 'DatePicker',
+      fieldName: 'loginTime',
+      label: $t('monitor.loginLog.loginTime'),
+      componentProps: {
+        type: 'datetimerange',
+        clearable: true,
+        format: 'yyyy-MM-dd HH:mm:ss',
+      },
+    },
+  ];
 }
 
-// ==================== 搜索 ====================
-function handleSearch() {
-  tablePagination.value.page = 1;
-  loadTableData();
+function textValue(value: unknown) {
+  return typeof value === 'string' ? value.trim() : '';
 }
 
-// ==================== 重置 ====================
-function handleReset() {
-  searchForm.value = {
-    username: '',
-    ipAddress: '',
-    loginStatus: null,
-    loginTime: null,
+function loginQuery(formValues: Record<string, unknown>): LoginLogQuery {
+  const range = formatDateTimeRange(formValues.loginTime);
+  const username = textValue(formValues.username);
+  const ipAddress = textValue(formValues.ipAddress);
+  const loginStatus = formValues.loginStatus;
+  return {
+    username: username || undefined,
+    ipAddress: ipAddress || undefined,
+    loginStatus:
+      loginStatus === 'SUCCESS' || loginStatus === 'FAILURE'
+        ? loginStatus
+        : undefined,
+    loginTimeStart: range.start,
+    loginTimeEnd: range.end,
   };
-  handleSearch();
 }
 
-// ==================== 导出 ====================
-function handleExport() {
-  let loginTimeStart: string | undefined;
-  let loginTimeEnd: string | undefined;
-
-  if (searchForm.value.loginTime) {
-    loginTimeStart = new Date(searchForm.value.loginTime[0])
-      .toISOString()
-      .slice(0, 19)
-      .replace('T', ' ');
-    loginTimeEnd = new Date(searchForm.value.loginTime[1])
-      .toISOString()
-      .slice(0, 19)
-      .replace('T', ' ');
-  }
-
-  authApi.exportLoginLog({
-    username: searchForm.value.username || undefined,
-    ipAddress: searchForm.value.ipAddress || undefined,
-    loginStatus: searchForm.value.loginStatus || undefined,
-    loginTimeStart,
-    loginTimeEnd,
-  });
-}
-
-// ==================== 初始化 ====================
-onMounted(() => {
-  loadTableData();
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    schema: useSearchSchema(),
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-4',
+  },
+  gridOptions: {
+    columns: [
+      { type: 'seq', width: 70, fixed: 'left' },
+      { field: 'username', title: '用户名', minWidth: 100 },
+      {
+        field: 'loginTime',
+        title: $t('monitor.loginLog.loginTime'),
+        minWidth: 160,
+        sortable: true,
+      },
+      {
+        field: 'loginStatus',
+        title: $t('monitor.loginLog.loginStatus'),
+        minWidth: 100,
+        slots: { default: 'status' },
+      },
+      {
+        field: 'ipAddress',
+        title: $t('monitor.loginLog.ipAddress'),
+        minWidth: 120,
+      },
+      {
+        field: 'location',
+        title: $t('monitor.loginLog.location'),
+        minWidth: 120,
+      },
+      {
+        field: 'deviceType',
+        title: $t('monitor.loginLog.deviceType'),
+        minWidth: 100,
+        formatter: ({ cellValue }) =>
+          deviceTypeMap[String(cellValue ?? '')] || cellValue || '-',
+      },
+      {
+        field: 'browser',
+        title: $t('monitor.loginLog.browser'),
+        minWidth: 150,
+      },
+      { field: 'os', title: $t('monitor.loginLog.os'), minWidth: 120 },
+      {
+        field: 'failureReason',
+        title: $t('monitor.loginLog.failureReason'),
+        minWidth: 180,
+        formatter: ({ cellValue }) => cellValue || '-',
+      },
+    ],
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: { pageSize: 10 },
+    proxyConfig: {
+      ajax: {
+        query: async ({ page }, formValues) => {
+          return await authApi.listLoginLog({
+            page: page.currentPage,
+            pageSize: page.pageSize,
+            ...loginQuery(formValues ?? {}),
+          });
+        },
+      },
+    },
+    rowConfig: { keyField: 'id' },
+    toolbarConfig: {
+      custom: true,
+      export: false,
+      refresh: { code: 'query' },
+      search: true,
+      zoom: true,
+    },
+  } as VxeTableGridOptions<LoginLogResult>,
 });
+
+async function handleExport() {
+  const formValues = (await gridApi.formApi?.getValues?.()) ?? {};
+  authApi.exportLoginLog(loginQuery(formValues));
+}
 </script>
 
 <template>
-  <div class="h-full bg-background p-4">
-    <!-- 搜索和操作栏 -->
-    <div class="mb-4">
-      <!-- 搜索表单 - 响应式网格布局 -->
-      <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3"
-      >
-        <NInput
-          v-model:value="searchForm.username"
-          placeholder="用户名"
-          clearable
-          @keyup.enter="handleSearch"
-        >
-          <template #prefix>
-            <NIcon><SearchOutline /></NIcon>
-          </template>
-        </NInput>
-        <FilterInput
-          v-model="searchForm.ipAddress"
-          placeholder="IP地址"
-          @keyup.enter="handleSearch"
-        />
-        <FormSelect
-          v-model:value="searchForm.loginStatus"
-          :options="loginStatusOptions"
-          placeholder="登录状态"
-          clearable
-        />
-        <div class="sm:col-span-2 lg:col-span-1 xl:col-span-1">
-          <NDatePicker
-            v-model:value="searchForm.loginTime"
-            type="datetimerange"
-            clearable
-            class="w-full"
-            format="yyyy-MM-dd HH:mm:ss"
-          />
-        </div>
-      </div>
-
-      <!-- 操作按钮 -->
-      <ToolbarActions>
-        <Button type="button" @click="handleSearch">
-          <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
-          查询
-        </Button>
-        <Button type="button" variant="outline" @click="handleReset">
-          <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
-          重置
-        </Button>
+  <div class="h-full">
+    <Grid>
+      <template #toolbar-tools>
         <Button type="button" variant="outline" @click="handleExport">
           <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
           导出
         </Button>
-      </ToolbarActions>
-    </div>
-
-    <!-- 数据表格 -->
-    <NDataTable
-      :columns="tableColumns"
-      :data="tableData"
-      :loading="tableLoading"
-      :row-key="(row) => row.id"
-      :pagination="tablePagination"
-      scroll-x="1400px"
-    />
+      </template>
+      <template #status="{ row }">
+        <Badge
+          :variant="row.loginStatus === 'SUCCESS' ? 'success' : 'destructive'"
+        >
+          {{ row.loginStatus === 'SUCCESS' ? '成功' : '失败' }}
+        </Badge>
+      </template>
+    </Grid>
   </div>
 </template>
-
-<style lang="scss" scoped></style>

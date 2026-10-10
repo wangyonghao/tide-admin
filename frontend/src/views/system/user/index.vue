@@ -18,11 +18,12 @@ import {
   NInput,
   NModal,
   NSplit,
-  NTag,
   NTree,
   useMessage,
 } from 'naive-ui';
 
+import { Badge } from '#/ui/badge';
+import { badgeVariantForTag } from '#/ui/badge/variant';
 import { Button } from '#/ui/button';
 import {
   ConfirmAction,
@@ -171,8 +172,8 @@ const userColumns: DataTableColumns<UserResp> = [
       };
       const status = statusMap[row.status] || { type: 'info', label: '未知' };
       return h(
-        NTag,
-        { type: status.type, size: 'small' },
+        Badge,
+        { variant: badgeVariantForTag(status.type) ?? 'secondary' },
         { default: () => status.label },
       );
     },

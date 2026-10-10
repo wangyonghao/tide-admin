@@ -38,7 +38,11 @@ import { Button } from '#/ui/button';
 
 import FormCheckbox from './FormCheckbox.vue';
 import FormCheckboxGroup from './FormCheckboxGroup.vue';
+import FormInputNumber from './FormInputNumber.vue';
+import FormRadioGroup from './FormRadioGroup.vue';
 import FormSelect from './FormSelect.vue';
+import FormSwitch from './FormSwitch.vue';
+import FormTextarea from './FormTextarea.vue';
 import FormTextInput from './FormTextInput.vue';
 
 const NDatePicker = defineAsyncComponent(() =>
@@ -50,23 +54,8 @@ const NDivider = defineAsyncComponent(() =>
 const NInput = defineAsyncComponent(() =>
   import('naive-ui/es/input').then((res) => res.NInput),
 );
-const NInputNumber = defineAsyncComponent(() =>
-  import('naive-ui/es/input-number').then((res) => res.NInputNumber),
-);
-const NRadio = defineAsyncComponent(() =>
-  import('naive-ui/es/radio').then((res) => res.NRadio),
-);
-const NRadioButton = defineAsyncComponent(() =>
-  import('naive-ui/es/radio').then((res) => res.NRadioButton),
-);
-const NRadioGroup = defineAsyncComponent(() =>
-  import('naive-ui/es/radio').then((res) => res.NRadioGroup),
-);
 const NSpace = defineAsyncComponent(() =>
   import('naive-ui/es/space').then((res) => res.NSpace),
-);
-const NSwitch = defineAsyncComponent(() =>
-  import('naive-ui/es/switch').then((res) => res.NSwitch),
 );
 const NTimePicker = defineAsyncComponent(() =>
   import('naive-ui/es/time-picker').then((res) => res.NTimePicker),
@@ -127,6 +116,7 @@ export type ComponentType =
   | 'Select'
   | 'Space'
   | 'Switch'
+  | 'Textarea'
   | 'TimePicker'
   | 'TreeSelect'
   | 'Upload'
@@ -149,6 +139,7 @@ export interface ComponentPropsMap {
   Select: SelectProps;
   Space: SpaceProps;
   Switch: SwitchProps;
+  Textarea: InputProps;
   TimePicker: TimePickerProps;
   TreeSelect: TreeSelectProps;
   Upload: UploadProps;
@@ -214,32 +205,12 @@ async function initComponentAdapter() {
       inputComponent: NInput,
     }),
     Input: withDefaultPlaceholder(FormTextInput, 'input'),
-    InputNumber: withDefaultPlaceholder(NInputNumber, 'input'),
-    RadioGroup: (props, { attrs, slots }) => {
-      let defaultSlot;
-      if (Reflect.has(slots, 'default')) {
-        defaultSlot = slots.default;
-      } else {
-        const { options } = attrs;
-        if (Array.isArray(options)) {
-          defaultSlot = () =>
-            options.map((option) =>
-              h(attrs.isButton ? NRadioButton : NRadio, option),
-            );
-        }
-      }
-      const groupRender = h(
-        NRadioGroup,
-        { ...props, ...attrs },
-        { default: defaultSlot },
-      );
-      return attrs.isButton
-        ? h(NSpace, { vertical: true }, () => groupRender)
-        : groupRender;
-    },
+    InputNumber: withDefaultPlaceholder(FormInputNumber, 'input'),
+    RadioGroup: FormRadioGroup,
     Select: withDefaultPlaceholder(FormSelect, 'select'),
     Space: NSpace,
-    Switch: NSwitch,
+    Switch: FormSwitch,
+    Textarea: withDefaultPlaceholder(FormTextarea, 'input'),
     TimePicker: NTimePicker,
     TreeSelect: withDefaultPlaceholder(NTreeSelect, 'select'),
     Upload: NUpload,

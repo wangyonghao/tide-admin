@@ -1,14 +1,9 @@
 <script setup lang="ts">
 import { ref, onMounted, h } from 'vue';
-import {
-  NCard,
-  NDataTable,
-  NTag,
-  NDatePicker,
-  type DataTableColumns,
-} from 'naive-ui';
+import { NDataTable, NDatePicker, type DataTableColumns } from 'naive-ui';
 import FormSelect from '#/adapter/component/FormSelect.vue';
 import { $t } from '#/locales';
+import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
 import { useUserStore } from '#/store/user';
 import { authApi, type LoginLogResult } from '#/api/auth';
@@ -48,13 +43,13 @@ const columns: DataTableColumns<LoginLogResult> = [
     render: (row) => {
       return row.loginStatus === 'SUCCESS'
         ? h(
-            NTag,
-            { type: 'success', size: 'small' },
+            Badge,
+            { variant: 'success' },
             { default: () => $t('page.profile.logs.login') },
           )
         : h(
-            NTag,
-            { type: 'error', size: 'small' },
+            Badge,
+            { variant: 'destructive' },
             { default: () => $t('page.profile.logs.failure') },
           );
     },

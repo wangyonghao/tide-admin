@@ -1,6 +1,8 @@
 <script setup lang="ts">
 import { computed } from 'vue';
-import { NCard, NTag, NSpace, NText } from 'naive-ui';
+import { NCard, NText } from 'naive-ui';
+import { Badge } from '#/ui/badge';
+import { badgeVariantForTag } from '#/ui/badge/variant';
 import { Separator } from '#/ui/separator';
 import { VbenAvatar } from '@vben-core/shadcn-ui';
 import { $t } from '#/locales';
@@ -94,16 +96,16 @@ const maskedEmail = computed(() => {
 
       <!-- 账号状态 -->
       <div class="mt-4">
-        <NTag :type="accountStatus.type" size="small">
+        <Badge :variant="badgeVariantForTag(accountStatus.type) || 'secondary'">
           {{ accountStatus.text }}
-        </NTag>
+        </Badge>
       </div>
     </div>
 
     <Separator class="my-4" />
 
     <!-- 基本信息 -->
-    <NSpace vertical :size="12">
+    <div class="flex flex-col gap-3">
       <div class="info-item">
         <span class="info-label">{{ $t('page.profile.basic.gender') }}</span>
         <span class="info-value">{{ genderText }}</span>
@@ -130,7 +132,7 @@ const maskedEmail = computed(() => {
         }}</span>
         <span class="info-value">{{ userInfo?.registrationDate || '-' }}</span>
       </div>
-    </NSpace>
+    </div>
 
     <Separator class="my-4" />
 
@@ -140,13 +142,13 @@ const maskedEmail = computed(() => {
         <span class="text-sm text-gray-600">{{
           $t('page.profile.summary.securityLevel')
         }}</span>
-        <NTag :type="securityLevel.type" size="small">
+        <Badge :variant="badgeVariantForTag(securityLevel.type) || 'secondary'">
           {{ securityLevel.text }}
-        </NTag>
+        </Badge>
       </div>
 
       <!-- 绑定状态 -->
-      <NSpace vertical :size="8" class="mt-3">
+      <div class="mt-3 flex flex-col gap-2">
         <div class="flex items-center text-xs">
           <span :class="userInfo?.phone ? 'text-green-600' : 'text-gray-400'">
             <span
@@ -175,7 +177,7 @@ const maskedEmail = computed(() => {
             }}
           </span>
         </div>
-      </NSpace>
+      </div>
     </div>
   </NCard>
 </template>

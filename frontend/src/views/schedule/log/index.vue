@@ -7,9 +7,9 @@ import { useRoute } from 'vue-router';
 
 import { Page } from '@vben/common-ui';
 
-import { NTag } from 'naive-ui';
-
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
+import { Badge } from '#/ui/badge';
+import { badgeVariantForTag } from '#/ui/badge/variant';
 import { listJobLog } from '#/api/schedule';
 
 import { useGridFieldColumns, useGridSearchFormSchema } from './data-scope';
@@ -76,9 +76,13 @@ onMounted(async () => {
         {{ row.triggerType === 'MANUAL' ? '手动' : '调度' }}
       </template>
       <template #status="{ row }">
-        <NTag :type="statusLabel(row.status).type" size="small">
+        <Badge
+          :variant="
+            badgeVariantForTag(statusLabel(row.status).type) || 'secondary'
+          "
+        >
           {{ statusLabel(row.status).text }}
-        </NTag>
+        </Badge>
       </template>
     </TableGrid>
   </Page>

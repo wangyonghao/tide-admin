@@ -31,7 +31,7 @@
 | P-FALLBACK | 空态/错误 | 403/404/500/offline | `views/_core/fallback/` | canonical |
 | P-PROFILE | 个人中心 | Tab + 分组表单 | `views/user/profile/`、`views/_core/profile/` | 宜收敛到一种 |
 | P-CONFIG | 配置/字典 | 分组表单或可编辑表 | `views/system/option/`、`config/` | 按模块对齐 CRUD 或 Form |
-| P-LEGACY-TABLE | 手写 NDataTable | **仅存量** | `views/system/notice/` 等 | **禁止新建**。系统选项、在线用户已改 P-CRUD |
+| P-LEGACY-TABLE | 手写 NDataTable | **仅存量** | `views/system/user/`、`views/system/role/` | **禁止新建**。系统选项、在线用户、公告、日志三 Tab、文件列表已改 P-CRUD |
 
 ---
 
@@ -163,11 +163,10 @@ Page 或纯容器
 
 | 区域 | 示例 |
 |------|------|
-| system | `notice`、`user`（表侧）、`dept` / `menu` / `role`（树或权限矩阵）、`file` |
-| monitor | `log/*`（登录 / 操作 / 短信在同一个 Tab） |
-| user | `operation-logs`（个人中心里的一块） |
+| system | `user`（表侧）、`dept` / `menu` / `role`（树或权限矩阵） |
+| user | `operation-logs`（个人中心里的一块，不是独立 Page） |
 
-已迁到 `useVbenVxeGrid`：`views/system/option/`、`views/monitor/online/`。`views/demos/table` 仍是 Naive 示例。
+已迁到 `useVbenVxeGrid`：`views/system/option/`、`views/monitor/online/`、`views/system/notice/`、`views/monitor/log/`（登录 / 操作 / 短信三个 Tab）、`views/system/file/`。`views/demos/table` 仍是 Naive 示例。
 
 **规则：** 新功能、大改版列表 → 升为 P-CRUD；小 bugfix 可不强制迁移。
 
