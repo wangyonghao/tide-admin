@@ -2,7 +2,7 @@
 
 > 与 [`frontend/DESIGN.md`](../../frontend/DESIGN.md) 配套。  
 > **目的：** 用固定页面骨架消灭「每页一种写法」。视觉细节以 DESIGN.md 为准。  
-> **主应用：** `frontend/src`
+> **主应用：** `frontend/apps/admin`（`@tide/admin`）
 
 ## 组件分层
 
@@ -75,7 +75,7 @@ views/<domain>/<feature>/
 
 ### 参考实现
 
-- 完整：`src/views/open/app/index.vue` + `data.ts` + `modules/*`
+- 完整：`frontend/apps/admin/src/views/open/app/index.vue` + `data.ts` + `modules/*`
 - 变体（搜索即时提交）：`views/schedule/job/index.vue`
 
 ### Checklist（新页 / PR）

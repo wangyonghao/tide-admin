@@ -33,57 +33,9 @@
     "lib": ["ESNext", "DOM", "DOM.Iterable"],
     "useDefineForClassFields": true,
     "types": ["vite/client"],
-    "declaration": false,
-    "paths": {
-      "#/ui/badge/variant": ["./packages/ui/src/badge/variant.ts"],
-      "#/ui/checkbox/group": ["./packages/ui/src/checkbox/group.ts"],
-      "#/ui/date-picker/date-value": [
-        "./packages/ui/src/date-picker/date-value.ts"
-      ],
-      "#/ui-patterns/*": ["./packages/ui-patterns/src/*"],
-      "#/ui/*": ["./packages/ui/src/*"],
-      "#/*": ["./src/*"],
-      "@tide/ui-patterns/*": ["./packages/ui-patterns/src/*"],
-      "@tide/ui/*": ["./packages/ui/src/*"],
-      "@vben/tailwind-config/theme": ["./src/styles/theme.css"],
-      "@vben/tailwind-config": ["./src/styles/theme.css"],
-      "@vben/styles/global": ["./src/vben/styles/global/index.scss"],
-      "@vben/styles": ["./src/vben/styles/index.ts"],
-      "@vben/plugins/echarts": ["./src/vben/plugins/echarts/index.ts"],
-      "@vben/plugins/tiptap": ["./src/vben/plugins/tiptap/index.ts"],
-      "@vben/plugins/vxe-table": ["./src/vben/plugins/vxe-table/index.ts"],
-      "@vben/plugins/motion": ["./src/vben/plugins/motion/index.ts"],
-      "@vben/plugins": ["./src/vben/plugins/index.ts"],
-      "@vben/common-ui/es/tippy": [
-        "./src/vben/common-ui/components/tippy/index.ts"
-      ],
-      "@vben/common-ui/es/loading": [
-        "./src/vben/common-ui/components/loading/index.ts"
-      ],
-      "@vben/common-ui": ["./src/vben/common-ui/index.ts"],
-      "@vben/types/global": ["./src/vben/types/global.d.ts"],
-      "@vben/types": ["./src/vben/types/index.ts"],
-      "@vben/constants": ["./src/vben/constants/index.ts"],
-      "@vben/utils": ["./src/vben/utils/index.ts"],
-      "@vben/icons": ["./src/vben/icons/index.ts"],
-      "@vben/stores": ["./src/vben/stores/index.ts"],
-      "@vben/preferences": ["./src/vben/preferences/index.ts"],
-      "@vben/locales": ["./src/vben/locales/index.ts"],
-      "@vben/request": ["./src/vben/request/index.ts"],
-      "@vben/hooks": ["./src/vben/hooks/index.ts"],
-      "@vben/layouts": ["./src/vben/layouts/index.ts"]
-    }
+    "declaration": false
   },
-  "include": [
-    "src/**/*.ts",
-    "src/**/*.tsx",
-    "src/**/*.vue",
-    "src/vben/types/global.d.ts",
-    "packages/ui/src/**/*.ts",
-    "packages/ui/src/**/*.vue",
-    "packages/ui-patterns/src/**/*.ts",
-    "packages/ui-patterns/src/**/*.vue"
-  ],
+  "include": [],
   "exclude": ["**/node_modules/**", "**/dist/**"],
   "references": [{ "path": "./tsconfig.node.json" }]
 }

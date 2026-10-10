@@ -17,7 +17,7 @@ defineOptions({ name: 'NotesDemo' });
       <CardTitle>范围</CardTitle>
       <CardDescription>
         这个应用只演示原子和页面模式。产品页面仍在后台
-        <code>frontend/src</code>。
+        <code>frontend/apps/admin</code>。
       </CardDescription>
     </CardHeader>
     <CardContent>

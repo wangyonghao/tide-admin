@@ -14,7 +14,8 @@
 
 ### Changed
 
-- 文档站 `@tide/docs` 迁到 `frontend/apps/docs`。`pnpm dev:docs` / `pnpm build:docs` 仍启动同一套 VitePress。产品后台仍用 `pnpm dev`，入口还在 `frontend/src`。
+- 文档站 `@tide/docs` 迁到 `frontend/apps/docs`。`pnpm dev:docs` / `pnpm build:docs` 仍启动同一套 VitePress。
+- 产品后台迁到 `frontend/apps/admin`（`@tide/admin`）。在 `frontend/` 执行 `pnpm dev` / `pnpm build` 仍启动产品，与 `pnpm dev:admin` / `pnpm build:admin` 相同。
 - 前端原子与页面模式抽到工作区包 `@tide/ui`、`@tide/ui-patterns`。页面仍可用 `#/ui`、`#/ui-patterns` 导入，界面行为不变。
 - 开放应用列表工具栏的「新建 / 导出」改为原子按钮。
 - 开放应用列表的成功/失败提示改为 Sonner。

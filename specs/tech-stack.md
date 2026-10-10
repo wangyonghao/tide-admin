@@ -58,7 +58,7 @@
 | 质量工具 | ESLint、Stylelint、oxfmt、oxlint、Commitlint、Lefthook | 见 catalog |
 | 测试 | Vitest、Playwright、@vue/test-utils | 4.1.4 / 1.59.1 等 |
 
-主应用：`frontend/`（入口仍是 `src/`，尚未迁入 `apps/admin`）。共享 UI 在 `packages/ui`（`@tide/ui`）、`packages/ui-patterns`（`@tide/ui-patterns`）。可部署面在 `apps/`：`apps/docs`（`@tide/docs`，VitePress）、`apps/design-system`（`@tide/design-system`，只演示上述两个包）。壳在 `src/vben/`，UI 内核在 `vendor/@core`；工程配置在根目录配置文件（无 `configs/` 目录）。脚本：`pnpm dev`（后台）、`pnpm dev:docs`、`pnpm dev:ds`。
+主应用：`frontend/apps/admin`（`@tide/admin`）。共享 UI 在 `packages/ui`（`@tide/ui`）、`packages/ui-patterns`（`@tide/ui-patterns`）。可部署面在 `apps/`：`apps/admin`（产品后台）、`apps/docs`（`@tide/docs`，VitePress）、`apps/design-system`（`@tide/design-system`，只演示上述两个包）。壳在 `apps/admin/src/vben/`，UI 内核在 `vendor/@core`。应用构建配置在 `apps/admin`（Vite、env、tsconfig）；仓库级 ESLint / Stylelint 仍在 `frontend/` 根目录（无 `configs/` 目录）。脚本：在 `frontend/` 下 `pnpm dev` / `pnpm build` 与 `pnpm dev:admin` / `pnpm build:admin` 相同，都启动产品后台；另有 `pnpm dev:docs`、`pnpm dev:ds`。
 
 ## Architecture
 
@@ -90,8 +90,8 @@ platform/*              # 平台能力
 ### Frontend package layout
 
 ```
-frontend/src                    # 业务应用（入口 src/；views / api / …）。尚未迁入 apps/admin
-  └── vben/                     # 内联壳（@vben/*），直接依赖 vendor
+frontend/apps/admin             # @tide/admin；产品后台（入口 src/；views / api / …）
+  └── src/vben/                 # 内联壳（@vben/*），直接依赖 vendor
 frontend/apps/docs              # @tide/docs 5.7.0；VitePress
 frontend/apps/design-system     # @tide/design-system；只演示 @tide/ui 与 @tide/ui-patterns
 frontend/packages/ui-patterns   # @tide/ui-patterns 5.7.0；依赖 @tide/ui；应用别名 #/ui-patterns
@@ -113,7 +113,7 @@ vendor/@core                    # UI 内核（慎改）
 4. **数据库变更走 Liquibase**：脚本放在 `db/changelog/postgresql/`，禁止只改库不改 changelog。
 5. **任务调度以 Quartz（platform-job）为准**：勿回退或并行引入另一套分布式调度框架，除非宪法与 roadmap 明确变更。
 6. **前端主 UI 为 shadcn-vue / Vben 原子**：源码在 `@tide/ui`、`@tide/ui-patterns`（`frontend/packages/*`）。业务页用别名 `#/ui`、`#/ui-patterns`，或直接写包名。组件演示是 `frontend/apps/design-system`，只消费这两个包，不放业务页。勿默认再开平行产品应用，也不要再引入 `naive-ui`。
-7. **慎改 `@core`**：共享核心包变更影响面大；应用特有逻辑放 `frontend/src`，共享原子放 `frontend/packages/ui`，页面模式放 `frontend/packages/ui-patterns`，壳层封装在 `frontend/src/vben`。
+7. **慎改 `@core`**：共享核心包变更影响面大；应用特有逻辑放 `frontend/apps/admin/src`，共享原子放 `frontend/packages/ui`，页面模式放 `frontend/packages/ui-patterns`，壳层封装在 `frontend/apps/admin/src/vben`。
 8. **配置集中**：运行配置以 `tide-bootstrap/src/main/resources/config/` 为准；敏感项用环境变量覆盖。
 
 ## Deliberate exclusions

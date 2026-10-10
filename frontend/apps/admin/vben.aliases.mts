@@ -1,7 +1,12 @@
 import { fileURLToPath } from 'node:url';
 
-/** Absolute path under frontend/ */
+/** Absolute path under frontend/ (packages and vendor stay at the workspace root). */
 export function frontendPath(...parts: string[]) {
+  return fileURLToPath(new URL(`../../${parts.join('/')}`, import.meta.url));
+}
+
+/** Absolute path under frontend/apps/admin/. */
+export function adminPath(...parts: string[]) {
   return fileURLToPath(new URL(`./${parts.join('/')}`, import.meta.url));
 }
 
@@ -23,19 +28,19 @@ export function createTideUiAliases() {
   ];
 }
 
-/** Absolute path under frontend/src/vben/<pkg>/... */
+/** Absolute path under frontend/apps/admin/src/vben/<pkg>/... */
 export function vbenSrc(...parts: string[]) {
-  return frontendPath('src/vben', ...parts);
+  return adminPath('src/vben', ...parts);
 }
 
 /**
- * Maps former @vben/* workspace packages to src/vben / configs.
+ * Maps former @vben/* workspace packages to apps/admin/src/vben.
  * More-specific subpaths must come before the package root entry.
  */
 export function createVbenAliases() {
   return {
-    '@vben/tailwind-config/theme': frontendPath('src/styles/theme.css'),
-    '@vben/tailwind-config': frontendPath('src/styles/theme.css'),
+    '@vben/tailwind-config/theme': adminPath('src/styles/theme.css'),
+    '@vben/tailwind-config': adminPath('src/styles/theme.css'),
 
     '@vben/styles/naive': vbenSrc('styles/naive/index.css'),
     '@vben/styles/global': vbenSrc('styles/global/index.scss'),

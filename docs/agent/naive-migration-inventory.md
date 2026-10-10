@@ -1,6 +1,6 @@
 # Naive UI 迁移清单
 
-原子与页面模式的源码现已在 `frontend/packages/ui`（`@tide/ui`）和 `frontend/packages/ui-patterns`（`@tide/ui-patterns`）。下文里的 `frontend/src/ui` 是迁移当时的路径；应用导入 `#/ui`、`#/ui-patterns` 仍然可用。
+原子与页面模式的源码现已在 `frontend/packages/ui`（`@tide/ui`）和 `frontend/packages/ui-patterns`（`@tide/ui-patterns`）。产品页面在 `frontend/apps/admin/src`。下文里的 `frontend/src` 是迁移当时的路径；应用导入 `#/ui`、`#/ui-patterns` 仍然可用。
 
 统计范围：`frontend/src` 里 `from 'naive-ui'` 的具名导入。一个文件导入一次记 1。共 **50** 个文件。  
 `adapter/component/index.ts` 另有 `naive-ui/es/*` 动态导入，给 `useVbenForm` 供控件，不计入上表，但在下面单独标出。
@@ -286,7 +286,7 @@ Naive 包不删。
 
 ## 目录选择
 
-原子实现继续放在 `@vben-core/shadcn-ui/src/ui`（已有 reka-ui、CVA、`cn()`，颜色经 `frontend/src/styles/theme.css` 的 `--color-*` 接 HSL token）。  
+原子实现继续放在 `@vben-core/shadcn-ui/src/ui`（已有 reka-ui、CVA、`cn()`，颜色经 `frontend/apps/admin/src/styles/theme.css` 的 `--color-*` 接 HSL token）。  
 应用侧只加路径入口，避免第二套 Button：
 
 | 层 | 路径 | 导入 |

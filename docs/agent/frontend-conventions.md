@@ -1,6 +1,6 @@
 # Frontend conventions
 
-配合 `.cursor/rules/frontend-vue.mdc`。主应用在 `frontend/src`：新 UI 走 shadcn-vue 原子与 Vben 封装。
+配合 `.cursor/rules/frontend-vue.mdc`。主应用在 `frontend/apps/admin`（`@tide/admin`）：新 UI 走 shadcn-vue 原子与 Vben 封装。
 
 **UI 风格与页面骨架（写页面必读）：**
 
@@ -20,7 +20,7 @@ import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 - 源码：`frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）
 - 应用在这一版仍可写 `#/ui/<atom>`、`#/ui-patterns/<pattern>`。这两条路径是别名，指向包源码，不是第二套实现
-- 原子底子：`@vben-core/shadcn-ui/src/ui`（`cn` + CVA + reka-ui）。颜色用现有 HSL token，经 `src/styles/theme.css` 的 `--color-*`（`@source` 包含 `packages/`）
+- 原子底子：`@vben-core/shadcn-ui/src/ui`（`cn` + CVA + reka-ui）。颜色用现有 HSL token，经 `apps/admin/src/styles/theme.css` 的 `--color-*`（`@source` 包含 `packages/`、`vendor/` 和 `apps/`）
 - 新组件不要导入 `naive-ui`。表格用 Vxe。清单见 [`docs/agent/naive-migration-inventory.md`](naive-migration-inventory.md)。
 - 壳层可以继续用 `@vben-core/shadcn-ui` 根导出里的 `Vben*` 封装；业务页不要再复制一套同名原子
 
@@ -28,8 +28,9 @@ import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 ```
 frontend/
-├── src/                 # 业务 + src/vben 壳 + src/styles/theme.css（尚未迁入 apps/admin）
 ├── apps/
+│   ├── admin/           # @tide/admin：产品后台。pnpm dev 与 pnpm dev:admin 相同
+│   │   └── src/         # 业务 + src/vben 壳 + src/styles/theme.css
 │   ├── docs/            # @tide/docs：VitePress，pnpm dev:docs
 │   └── design-system/   # @tide/design-system：只演示 ui / ui-patterns，pnpm dev:ds
 ├── packages/
@@ -38,9 +39,10 @@ frontend/
 └── vendor/@core         # UI 内核（慎改；原子实现已在 shadcn-ui）
 ```
 
-- 业务代码 → `frontend/src/`（不含 `vben/`）。不要放进 `apps/design-system`
-- 壳层封装 → `frontend/src/vben/`
-- 工程配置 → 根目录 `vite.config.ts` / `eslint.config.mjs` / `tsconfig.json` 等
+- 业务代码 → `frontend/apps/admin/src/`（不含 `vben/`）。不要放进 `apps/design-system`
+- 壳层封装 → `frontend/apps/admin/src/vben/`
+- 应用构建 → `frontend/apps/admin` 的 `vite.config.ts`、env、`tsconfig.json`
+- 仓库级检查 → 根目录 `eslint.config.mjs`、`stylelint.config.mjs`、`vitest.config.ts`
 - **慎改** `vendor/@core`
 
 ## Naming

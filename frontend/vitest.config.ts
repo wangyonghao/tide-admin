@@ -2,7 +2,7 @@ import Vue from '@vitejs/plugin-vue';
 import VueJsx from '@vitejs/plugin-vue-jsx';
 import { configDefaults, defineConfig } from 'vitest/config';
 
-import { createTideUiAliases } from './vben.aliases.mts';
+import { createTideUiAliases } from './apps/admin/vben.aliases.mts';
 
 export default defineConfig({
   plugins: [Vue(), VueJsx()],

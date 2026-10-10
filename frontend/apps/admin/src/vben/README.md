@@ -2,7 +2,7 @@
 
 原 workspace 薄包 + `effects`（layouts / request / hooks / common-ui / plugins 等）。
 
-通过根目录 [`vben.aliases.mts`](../../vben.aliases.mts) 以 `@vben/*` 解析；**业务代码仍用 `@vben/...` import，不必改业务文件。**
+通过本应用的 [`vben.aliases.mts`](../../vben.aliases.mts) 以 `@vben/*` 解析；**业务代码仍用 `@vben/...` import，不必改业务文件。**
 
 | 目录 | 原包名 |
 |------|--------|

@@ -212,6 +212,10 @@ export default defineConfig(async ({ command, mode }) => {
       ],
     },
     server: {
+      fs: {
+        // packages/ and vendor/ live above this app.
+        allow: ['../..'],
+      },
       host: true,
       port,
       proxy: {
