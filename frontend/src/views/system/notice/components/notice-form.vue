@@ -8,13 +8,14 @@ import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import {
-  NDatePicker,
   NForm,
   NFormItem,
   NInput,
   NRadioGroup,
   useMessage,
 } from 'naive-ui';
+
+import { DatePicker } from '#/ui/date-picker';
 
 import { VbenTiptap } from '@vben/plugins/tiptap';
 
@@ -268,7 +269,10 @@ watch(
           />
         </NFormItem>
 
-        <NFormItem :label="$t('system.notice.type')" path="type">
+        <NFormItem
+          :label="$t('system.notice.type')"
+          path="type"
+        >
           <FormSelect
             v-model:value="formData.type"
             :options="notice_type"
@@ -276,10 +280,16 @@ watch(
           />
         </NFormItem>
 
-        <NFormItem :label="$t('system.notice.noticeScope')" path="noticeScope">
+        <NFormItem
+          :label="$t('system.notice.noticeScope')"
+          path="noticeScope"
+        >
           <NRadioGroup v-model:value="formData.noticeScope">
             <div class="flex flex-wrap items-center gap-2">
-              <template v-for="item in notice_scope_enum" :key="item.value">
+              <template
+                v-for="item in notice_scope_enum"
+                :key="item.value"
+              >
                 <Button
                   type="button"
                   :variant="
@@ -342,10 +352,16 @@ watch(
           </div>
         </NFormItem>
 
-        <NFormItem :label="$t('system.notice.isTiming')" path="isTiming">
+        <NFormItem
+          :label="$t('system.notice.isTiming')"
+          path="isTiming"
+        >
           <NRadioGroup v-model:value="formData.isTiming">
             <div class="flex flex-wrap items-center gap-2">
-              <template v-for="item in yesNoOptions" :key="item.value">
+              <template
+                v-for="item in yesNoOptions"
+                :key="item.value"
+              >
                 <Button
                   type="button"
                   :variant="
@@ -365,7 +381,7 @@ watch(
           :label="$t('system.notice.publishTime')"
           path="publishTime"
         >
-          <NDatePicker
+          <DatePicker
             v-model:value="formData.publishTime"
             type="datetime"
             :placeholder="$t('system.notice.publishTime')"
@@ -374,10 +390,16 @@ watch(
           />
         </NFormItem>
 
-        <NFormItem :label="$t('system.notice.isTop')" path="isTop">
+        <NFormItem
+          :label="$t('system.notice.isTop')"
+          path="isTop"
+        >
           <NRadioGroup v-model:value="formData.isTop">
             <div class="flex flex-wrap items-center gap-2">
-              <template v-for="item in yesNoOptions" :key="item.value">
+              <template
+                v-for="item in yesNoOptions"
+                :key="item.value"
+              >
                 <Button
                   type="button"
                   :variant="
@@ -397,7 +419,10 @@ watch(
           path="content"
           class="md:col-span-2"
         >
-          <VbenTiptap v-model="formData.content" :min-height="400" />
+          <VbenTiptap
+            v-model="formData.content"
+            :min-height="400"
+          />
         </NFormItem>
       </div>
     </NForm>
@@ -411,7 +436,10 @@ watch(
         :loading="loading"
         @click="handleSubmit(1)"
       >
-        <IconifyIcon icon="lucide:save" class="mr-1 size-4" />
+        <IconifyIcon
+          icon="lucide:save"
+          class="mr-1 size-4"
+        />
         保存为草稿
       </Button>
       <Button
@@ -420,7 +448,10 @@ watch(
         :loading="loading"
         @click="handleSubmit(3)"
       >
-        <IconifyIcon icon="lucide:send" class="mr-1 size-4" />
+        <IconifyIcon
+          icon="lucide:send"
+          class="mr-1 size-4"
+        />
         发布
       </Button>
       <Button
@@ -430,7 +461,10 @@ watch(
         :disabled="loading"
         @click="handleReset"
       >
-        <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
+        <IconifyIcon
+          icon="lucide:rotate-ccw"
+          class="mr-1 size-4"
+        />
         重置
       </Button>
       <Button
@@ -439,7 +473,10 @@ watch(
         :disabled="loading"
         @click="emit('cancel')"
       >
-        <IconifyIcon icon="lucide:x" class="mr-1 size-4" />
+        <IconifyIcon
+          icon="lucide:x"
+          class="mr-1 size-4"
+        />
         取消
       </Button>
       <Button

@@ -5,25 +5,26 @@ import type { DeptResult } from '#/api/system/dept';
 import type { UserResp } from '#/api/system/user';
 import type { Option } from '#/types/global';
 
-import { h, onMounted, ref } from 'vue';
+import { computed, h, onMounted, ref } from 'vue';
 
+import { ColPage } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
-import { Page } from '@vben/common-ui';
 import {
   NDataTable,
   NDropdown,
   NIcon,
   NInput,
   NModal,
-  NSplit,
-  NTree,
   useMessage,
 } from 'naive-ui';
 
+import { filterRawTree } from '#/adapter/component/tree-select-value';
 import { Badge } from '#/ui/badge';
 import { badgeVariantForTag } from '#/ui/badge/variant';
+import { VbenTree } from '#/ui/tree';
+
 import { Button } from '#/ui/button';
 import {
   ConfirmAction,
@@ -41,28 +42,55 @@ const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 // ==================== 部门树逻辑 ====================
 const deptSearchKeyword = ref('');
-const deptData = ref<DeptResult[]>([]);
-const selectedDeptKeys = ref<string[]>([]);
+const deptData = ref<DeptTreeNode[]>([]);
 const selectedDeptId = ref<string | undefined>(undefined);
 
 // ==================== 角色数据 ====================
 const roleOptions = ref<Option[]>([]);
 
-const deptNodeProps = ({ option }: { option: any }) => {
-  return {
-    onClick() {
-      const id = option.id as string;
-      if (selectedDeptId.value === id) {
-        selectedDeptId.value = undefined;
-        selectedDeptKeys.value = [];
-      } else {
-        selectedDeptId.value = id;
-        selectedDeptKeys.value = [id];
-      }
-      handlePageChange(1);
-    },
-  };
-};
+interface DeptTreeNode {
+  children?: DeptTreeNode[];
+  id: string;
+  key: string;
+  label: string;
+  name: string;
+  value: string;
+}
+
+const visibleDept = computed(() =>
+  filterRawTree(deptData.value, deptSearchKeyword.value, 'name', 'children'),
+);
+
+function treeHasKey(nodes: DeptTreeNode[], key: string | undefined): boolean {
+  if (!key) return false;
+  return nodes.some(
+    (node) => node.key === key || treeHasKey(node.children ?? [], key),
+  );
+}
+
+const treeModel = computed(() =>
+  treeHasKey(visibleDept.value, selectedDeptId.value)
+    ? selectedDeptId.value
+    : undefined,
+);
+
+function onDeptSelect(value: unknown) {
+  const next =
+    typeof value === 'string' || typeof value === 'number'
+      ? String(value)
+      : undefined;
+  // 搜索把已选部门滤掉时，树会回写空值。这时不要清掉右侧列表的部门条件。
+  if (
+    next == null &&
+    selectedDeptId.value &&
+    !treeHasKey(visibleDept.value, selectedDeptId.value)
+  ) {
+    return;
+  }
+  if (next === selectedDeptId.value) return;
+  selectedDeptId.value = next;
+  handlePageChange(1);
+}
 
 // 加载部门列表
 async function loadDeptData() {
@@ -74,13 +102,16 @@ async function loadDeptData() {
   }
 }
 
-// 转换为TreeSelect需要的格式
-function convertToTreeOptions(depts: DeptResult[]): TreeSelectOption[] {
+function convertToTreeOptions(depts: DeptResult[]): DeptTreeNode[] {
   return depts.map((dept) => ({
+    id: dept.id,
     name: dept.name,
+    label: dept.name,
     key: dept.id,
     value: dept.id,
-    children: dept.children ? convertToTreeOptions(dept.children) : undefined,
+    children: dept.children?.length
+      ? convertToTreeOptions(dept.children)
+      : undefined,
   }));
 }
 
@@ -286,7 +317,7 @@ function handleImport() {
 function handleExport() {
   userApi.export({
     deptId: selectedDeptId.value,
-    description: userSearchForm.value.description || undefined,
+    keyword: userSearchForm.value.description || undefined,
   });
 }
 
@@ -401,137 +432,179 @@ onMounted(() => {
 </script>
 
 <template>
-  <Page>
-    <ConfirmAction ref="confirmAction" />
-    <NSplit
-      direction="horizontal"
-      default-size="200px"
-      min="200px"
-      max="320px"
-      :resizable="true"
-      class="h-full p-2"
-    >
-      <template #1>
-        <!-- 左侧部门树 -->
-        <div class="h-full bg-background p-4">
-          <NInput
-            v-model:value="deptSearchKeyword"
-            placeholder="搜索部门"
-            clearable
-            class="mb-4"
-          >
-            <template #prefix>
-              <NIcon><SearchOutline /></NIcon>
-            </template>
-          </NInput>
-          <NTree
-            :data="deptData"
-            :show-irrelevant-nodes="false"
-            :pattern="deptSearchKeyword"
-            :default-expand-all="true"
-            :selected-keys="selectedDeptKeys"
-            :node-props="deptNodeProps"
-            key-field="id"
+  <ColPage
+    auto-content-height
+    :left-width="20"
+    :left-min-width="16"
+    :left-max-width="32"
+    :right-width="80"
+    resizable
+    split-line
+    split-handle
+    content-class="p-0"
+  >
+    <template #left>
+      <div class="flex h-full flex-col bg-background p-4">
+        <NInput
+          v-model:value="deptSearchKeyword"
+          placeholder="搜索部门"
+          clearable
+          class="mb-4"
+        >
+          <template #prefix>
+            <NIcon><SearchOutline /></NIcon>
+          </template>
+        </NInput>
+        <div class="min-h-0 flex-1 overflow-auto">
+          <VbenTree
+            v-if="visibleDept.length"
+            :tree-data="visibleDept"
+            :model-value="treeModel"
+            value-field="key"
             label-field="name"
             children-field="children"
-            selectable
-            block-line
+            :default-expanded-level="99"
+            allow-clear
+            :show-icon="false"
+            @update:model-value="onDeptSelect"
           />
-        </div>
-      </template>
-      <template #2>
-        <!-- 右侧用户列表 -->
-        <div class="h-full bg-background p-4">
-          <!-- 用户搜索和操作栏 -->
-          <div class="flex items-center justify-between mb-4 gap-3">
-            <div class="flex items-center gap-2">
-              <NInput
-                v-model:value="userSearchForm.description"
-                placeholder="搜索关键字（用户名/显示名称）"
-                clearable
-                class="w-[240px]"
-                @keyup.enter="handleSearch"
-              >
-                <template #prefix>
-                  <NIcon><SearchOutline /></NIcon>
-                </template>
-              </NInput>
-              <Button type="button" @click="handleSearch">
-                <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
-                查询
-              </Button>
-            </div>
-            <ToolbarActions>
-              <Button type="button" @click="handleAdd">
-                <IconifyIcon icon="lucide:plus" class="mr-1 size-4" />
-                新增
-              </Button>
-              <Button type="button" variant="outline" @click="handleImport">
-                <IconifyIcon icon="lucide:upload" class="mr-1 size-4" />
-                导入
-              </Button>
-              <Button type="button" variant="outline" @click="handleExport">
-                <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
-                导出
-              </Button>
-            </ToolbarActions>
-          </div>
-          <!-- 用户表格 -->
-          <NDataTable
-            :columns="userColumns"
-            :data="userData"
-            :loading="userLoading"
-            :row-key="(row) => row.id"
-            :pagination="userPagination"
-            scroll-x="1000px"
-            remote
-          />
-        </div>
-      </template>
-    </NSplit>
-
-    <!-- 用户详情抽屉 -->
-    <UserDetailDrawer
-      v-model:visible="detailDrawerVisible"
-      :user-id="detailUserId"
-      @edit="handleEdit"
-    />
-
-    <!-- 用户编辑抽屉 -->
-    <UserEditDrawer
-      v-model:visible="editDrawerVisible"
-      :user-id="editUserId"
-      :dept-data="deptData"
-      :role-options="roleOptions"
-      :default-dept-id="selectedDeptId"
-      @success="handleEditSuccess"
-    />
-
-    <!-- 重置密码对话框 -->
-    <NModal
-      v-model:show="resetPasswordDialogVisible"
-      preset="dialog"
-      title="密码重置成功"
-      positive-text="确定"
-      @positive-click="resetPasswordDialogVisible = false"
-    >
-      <div class="space-y-4">
-        <div class="text-orange-500 flex items-center gap-2">
-          <IconifyIcon icon="lucide:alert-triangle" class="text-lg" />
-          <span class="font-medium">新密码只显示一次，请妥善保管！</span>
-        </div>
-        <div
-          class="flex items-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded"
-        >
-          <span class="flex-1 font-mono text-lg select-all">{{
-            newPassword
-          }}</span>
-          <Button type="button" size="sm" @click="handleCopyPassword">
-            <IconifyIcon icon="lucide:copy" class="mr-1 size-4" />
-            复制
-          </Button>
+          <p
+            v-else
+            class="text-muted-foreground py-6 text-center text-sm"
+          >
+            无数据
+          </p>
         </div>
       </div>
-    </NModal>
-  </Page>
+    </template>
+    <template #default>
+      <ConfirmAction ref="confirmAction" />
+      <div class="h-full bg-background p-4">
+        <!-- 用户搜索和操作栏 -->
+        <div class="flex items-center justify-between mb-4 gap-3">
+          <div class="flex items-center gap-2">
+            <NInput
+              v-model:value="userSearchForm.description"
+              placeholder="搜索关键字（用户名/显示名称）"
+              clearable
+              class="w-[240px]"
+              @keyup.enter="handleSearch"
+            >
+              <template #prefix>
+                <NIcon><SearchOutline /></NIcon>
+              </template>
+            </NInput>
+            <Button
+              type="button"
+              @click="handleSearch"
+            >
+              <IconifyIcon
+                icon="lucide:search"
+                class="mr-1 size-4"
+              />
+              查询
+            </Button>
+          </div>
+          <ToolbarActions>
+            <Button
+              type="button"
+              @click="handleAdd"
+            >
+              <IconifyIcon
+                icon="lucide:plus"
+                class="mr-1 size-4"
+              />
+              新增
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              @click="handleImport"
+            >
+              <IconifyIcon
+                icon="lucide:upload"
+                class="mr-1 size-4"
+              />
+              导入
+            </Button>
+            <Button
+              type="button"
+              variant="outline"
+              @click="handleExport"
+            >
+              <IconifyIcon
+                icon="lucide:download"
+                class="mr-1 size-4"
+              />
+              导出
+            </Button>
+          </ToolbarActions>
+        </div>
+        <!-- 用户表格 -->
+        <NDataTable
+          :columns="userColumns"
+          :data="userData"
+          :loading="userLoading"
+          :row-key="(row) => row.id"
+          :pagination="userPagination"
+          scroll-x="1000px"
+          remote
+        />
+      </div>
+
+      <!-- 用户详情抽屉 -->
+      <UserDetailDrawer
+        v-model:visible="detailDrawerVisible"
+        :user-id="detailUserId"
+        @edit="handleEdit"
+      />
+
+      <!-- 用户编辑抽屉 -->
+      <UserEditDrawer
+        v-model:visible="editDrawerVisible"
+        :user-id="editUserId"
+        :dept-data="deptData"
+        :role-options="roleOptions"
+        :default-dept-id="selectedDeptId"
+        @success="handleEditSuccess"
+      />
+
+      <!-- 重置密码对话框 -->
+      <NModal
+        v-model:show="resetPasswordDialogVisible"
+        preset="dialog"
+        title="密码重置成功"
+        positive-text="确定"
+        @positive-click="resetPasswordDialogVisible = false"
+      >
+        <div class="space-y-4">
+          <div class="text-orange-500 flex items-center gap-2">
+            <IconifyIcon
+              icon="lucide:alert-triangle"
+              class="text-lg"
+            />
+            <span class="font-medium">新密码只显示一次，请妥善保管！</span>
+          </div>
+          <div
+            class="flex items-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded"
+          >
+            <span class="flex-1 font-mono text-lg select-all">{{
+              newPassword
+            }}</span>
+            <Button
+              type="button"
+              size="sm"
+              @click="handleCopyPassword"
+            >
+              <IconifyIcon
+                icon="lucide:copy"
+                class="mr-1 size-4"
+              />
+              复制
+            </Button>
+          </div>
+        </div>
+      </NModal>
+    </template>
+  </ColPage>
 </template>

@@ -14,11 +14,11 @@ import {
   NFormItem,
   NInput,
   NInputNumber,
-  NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
 import FormSelect from '#/adapter/component/FormSelect.vue';
+import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
 import { deptApi } from '#/api/system/dept';
 import { Button } from '#/ui/button';
 import { Switch } from '#/ui/switch';
@@ -215,7 +215,10 @@ watch(
     :width="600"
     :on-update:show="(val: boolean) => emits('update:visible', val)"
   >
-    <NDrawerContent :title="drawerTitle" closable>
+    <NDrawerContent
+      :title="drawerTitle"
+      closable
+    >
       <NForm
         ref="formRef"
         :model="formModel"
@@ -224,8 +227,11 @@ watch(
         label-width="100"
         require-mark-placement="right-hanging"
       >
-        <NFormItem :label="$t('system.dept.parentId')" path="parentId">
-          <NTreeSelect
+        <NFormItem
+          :label="$t('system.dept.parentId')"
+          path="parentId"
+        >
+          <FormTreeSelect
             v-model:value="formModel.parentId"
             :options="deptOptions"
             :placeholder="$t('ui.formRules.selectRequired')"
@@ -233,19 +239,28 @@ watch(
             default-expand-all
           />
         </NFormItem>
-        <NFormItem :label="$t('system.dept.code')" path="code">
+        <NFormItem
+          :label="$t('system.dept.code')"
+          path="code"
+        >
           <NInput
             v-model:value="formModel.code"
             :placeholder="$t('ui.formRules.required')"
           />
         </NFormItem>
-        <NFormItem :label="$t('system.dept.name')" path="name">
+        <NFormItem
+          :label="$t('system.dept.name')"
+          path="name"
+        >
           <NInput
             v-model:value="formModel.name"
             :placeholder="$t('ui.formRules.required')"
           />
         </NFormItem>
-        <NFormItem :label="$t('system.dept.type')" path="type">
+        <NFormItem
+          :label="$t('system.dept.type')"
+          path="type"
+        >
           <FormSelect
             v-model:value="formModel.type"
             :options="dept_type"
@@ -253,7 +268,10 @@ watch(
             clearable
           />
         </NFormItem>
-        <NFormItem :label="$t('system.dept.sort')" path="sort">
+        <NFormItem
+          :label="$t('system.dept.sort')"
+          path="sort"
+        >
           <NInputNumber
             v-model:value="formModel.sort"
             :placeholder="$t('ui.formRules.required')"
@@ -261,7 +279,10 @@ watch(
             :min="0"
           />
         </NFormItem>
-        <NFormItem :label="$t('system.dept.description')" path="description">
+        <NFormItem
+          :label="$t('system.dept.description')"
+          path="description"
+        >
           <NInput
             v-model:value="formModel.description"
             type="textarea"
@@ -269,7 +290,10 @@ watch(
             :rows="3"
           />
         </NFormItem>
-        <NFormItem :label="$t('system.dept.status')" path="status">
+        <NFormItem
+          :label="$t('system.dept.status')"
+          path="status"
+        >
           <div class="flex items-center gap-2">
             <Switch
               v-model="formModel.status"
@@ -289,10 +313,18 @@ watch(
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button type="button" variant="outline" @click="handleClose">
+          <Button
+            type="button"
+            variant="outline"
+            @click="handleClose"
+          >
             {{ $t('common.cancel') }}
           </Button>
-          <Button type="button" :loading="loading" @click="handleSubmit">
+          <Button
+            type="button"
+            :loading="loading"
+            @click="handleSubmit"
+          >
             {{ $t('common.confirm') }}
           </Button>
         </div>
