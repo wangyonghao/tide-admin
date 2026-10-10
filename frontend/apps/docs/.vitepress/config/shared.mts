@@ -27,7 +27,7 @@ import {
   groupIconVitePlugin,
 } from 'vitepress-plugin-group-icons';
 
-import { createVbenAliases } from '../../../vben.aliases.mts';
+import { createVbenAliases } from '../../../../vben.aliases.mts';
 import { demoPreviewPlugin } from './plugins/demo-preview';
 import { search as zhSearch } from './zh.mts';
 
@@ -108,7 +108,7 @@ export const shared = defineConfig({
     },
     server: {
       fs: {
-        allow: ['../..'],
+        allow: ['../../..'],
       },
       host: true,
       port: 6173,

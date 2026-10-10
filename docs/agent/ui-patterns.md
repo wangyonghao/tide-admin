@@ -13,6 +13,8 @@
 
 `#/ui` 与 `#/ui-patterns` 是应用侧别名，源码在上面的包里。也可以直接写 `@tide/ui/<atom>`、`@tide/ui-patterns/<pattern>`。不从包根桶整包引入，也不要再包一层 `Foo` / `FooShadcn`。
 
+组件活文档在 `frontend/apps/design-system`，只演示原子和模式，不放业务页。
+
 原子底子在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA）。应用代码走上面的路径。
 
 **新代码：** 优先 `#/ui/*`。不要新增 `naive-ui` 导入。表格用 Vxe。清单见 [`naive-migration-inventory.md`](naive-migration-inventory.md)。

@@ -11,7 +11,7 @@ wyh-admin/
 │   ├── interfaces/    # tide-web、open-api
 │   ├── biz/           # 业务插件（如 biz-system）
 │   └── platform/      # cmn-* 基础设施 + 平台域
-├── frontend/          # Vite 应用 + packages/ui + vendor 壳
+├── frontend/          # 产品后台（src/）+ apps + packages/ui + vendor 壳
 ├── specs/             # SDD 宪法
 ├── skills/            # Agent 工作流技能
 ├── docs/agent/        # Agent 补充文档（本目录）
@@ -76,6 +76,8 @@ tide-bootstrap
 | API | `frontend/src/api/` |
 | 壳 / 内核 | `frontend/src/vben/`（`@vben/*`）；`frontend/vendor/@core`（慎改） |
 | 原子 / 页面模式 | `frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）。应用导入仍可用 `#/ui`、`#/ui-patterns` |
+| 文档站 | `frontend/apps/docs`（`@tide/docs`，VitePress）。`pnpm dev:docs` / `pnpm build:docs` |
+| 组件演示 | `frontend/apps/design-system`（`@tide/design-system`）。只演示上述两个包，不放业务页。`pnpm dev:ds` / `pnpm build:ds` |
 | 工程配置 | 根目录 `vite.config.ts`、`eslint.config.mjs`、`tsconfig.json` 等 |
 
-开发：`cd frontend && pnpm dev`
+开发：`cd frontend && pnpm dev`（产品后台，入口仍是 `src/`，尚未迁入 `apps/admin`）

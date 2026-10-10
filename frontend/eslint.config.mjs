@@ -14,7 +14,7 @@ export default [
       '**/.nitro/**',
       '**/.output/**',
       '**/coverage/**',
-      'docs/**',
+      'apps/docs/**',
       '**/*.min.*',
       '**/pnpm-lock.yaml',
     ],

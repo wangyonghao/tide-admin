@@ -8,7 +8,7 @@
 @source '../**/*.{vue,ts,tsx}';
 @source '../../packages/**/*.{vue,ts,tsx}';
 @source '../../vendor/**/*.{vue,ts,tsx}';
-@source '../../docs/**/*.{vue,ts,tsx}';
+@source '../../apps/**/*.{vue,ts,tsx}';
 
 /* Dark mode uses .dark class selector, not prefers-color-scheme */
 @custom-variant dark (&:is(.dark *));

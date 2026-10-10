@@ -59,7 +59,7 @@ jobs:
           server: ${{ secrets.PRO_FTP_HOST }}
           username: ${{ secrets.WEBSITE_FTP_ACCOUNT }}
           password: ${{ secrets.WEBSITE_FTP_PASSWORD }}
-          local-dir: ./docs/.vitepress/dist/
+          local-dir: ./apps/docs/.vitepress/dist/
 
   deploy-antd-ftp:
     name: Deploy Push Antd Ftp

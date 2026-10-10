@@ -2,7 +2,7 @@ import type { DefaultTheme } from 'vitepress';
 
 import { defineConfig } from 'vitepress';
 
-import { version } from '../../../package.json';
+import { version } from '../../../../package.json';
 
 export const en = defineConfig({
   description: 'Vben Admin & Enterprise level management system framework',

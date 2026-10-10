@@ -1,0 +1,5 @@
+/* Same HSL token map as the admin shell (frontend/src/styles/theme.css). */
+@import '../../../src/styles/theme.css';
+
+/* This app is outside the admin source tree. */
+@source '../**/*.{vue,ts}';

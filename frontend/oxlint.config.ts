@@ -13,7 +13,7 @@ export default defineConfig({
   ignorePatterns: [
     '**/dist/**',
     '**/node_modules/**',
-    'docs/**',
+    'apps/docs/**',
     '**/*.json',
     '**/*.md',
   ],

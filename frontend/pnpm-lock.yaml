@@ -836,11 +836,45 @@ importers:
         specifier: 'catalog:'
         version: 2.0.0
 
-  docs:
+  apps/design-system:
+    dependencies:
+      '@tide/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@tide/ui-patterns':
+        specifier: workspace:*
+        version: link:../../packages/ui-patterns
+      '@vben-core/design':
+        specifier: workspace:*
+        version: link:../../vendor/@core/base/design
+      vue:
+        specifier: ^3.5.32
+        version: 3.5.32(typescript@6.0.2)
+    devDependencies:
+      '@tailwindcss/vite':
+        specifier: 'catalog:'
+        version: 4.2.2(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(less@4.6.4)(sass-embedded@1.99.0)(sass@1.99.0)(terser@5.46.1)(yaml@2.8.3))
+      '@vitejs/plugin-vue':
+        specifier: 'catalog:'
+        version: 6.0.6(vite@8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(less@4.6.4)(sass-embedded@1.99.0)(sass@1.99.0)(terser@5.46.1)(yaml@2.8.3))(vue@3.5.32(typescript@6.0.2))
+      tailwindcss:
+        specifier: 'catalog:'
+        version: 4.2.2
+      typescript:
+        specifier: 'catalog:'
+        version: 6.0.2
+      vite:
+        specifier: 'catalog:'
+        version: 8.0.8(@types/node@25.6.0)(esbuild@0.27.7)(jiti@2.6.1)(less@4.6.4)(sass-embedded@1.99.0)(sass@1.99.0)(terser@5.46.1)(yaml@2.8.3)
+      vue-tsc:
+        specifier: 'catalog:'
+        version: 3.2.6(typescript@6.0.2)
+
+  apps/docs:
     dependencies:
       '@vben-core/shadcn-ui':
         specifier: workspace:*
-        version: link:../vendor/@core/ui-kit/shadcn-ui
+        version: link:../../vendor/@core/ui-kit/shadcn-ui
       ant-design-vue:
         specifier: 'catalog:'
         version: 4.2.6(vue@3.5.32(typescript@6.0.2))
