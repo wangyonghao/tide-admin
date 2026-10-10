@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import type {
-  EmailConfig,
+  MailConfig,
   LoginConfig,
   RegisterConfig,
   SecurityConfig,
@@ -29,12 +29,6 @@ import { Separator } from '#/ui/separator';
 import { toast } from '#/ui-patterns/toast';
 
 import { useConfigForms } from './use-config-forms';
-import {
-  ConfirmAction,
-  type ConfirmActionExpose,
-} from '#/ui-patterns/confirm-action';
-
-const confirmAction = ref<ConfirmActionExpose | null>(null);
 
 // ==================== 配置类型定义 ====================
 interface ConfigItem {
@@ -73,7 +67,6 @@ const configList: ConfigItem[] = [
 const selectedConfigKey = ref<string>('site');
 const loading = ref(false);
 const saving = ref(false);
-const sendingTestEmail = ref(false);
 const [EmailDrawer, emailDrawerApi] = useVbenDrawer({
   class: 'w-[600px]',
   title: '邮件配置',
@@ -118,7 +111,7 @@ const registerForm = ref<RegisterConfig>({
   defaultRoleId: '',
 });
 
-const emailForm = ref<EmailConfig>({
+const emailForm = ref<MailConfig>({
   host: '',
   port: 465,
   username: '',
@@ -332,25 +325,6 @@ onUnmounted(() => {
   }
 });
 
-// ==================== 发送测试邮件 ====================
-async function handleSendTestEmail() {
-  const ok = await confirmAction.value?.ask({
-    title: '发送测试邮件',
-    description: '系统将发送测试邮件到您的邮箱，确认继续吗？',
-    confirmText: '确认',
-  });
-  if (!ok) return;
-  sendingTestEmail.value = true;
-  try {
-    await configApi.sendTestEmail();
-    toast.success('测试邮件已发送，请查收您的邮箱');
-  } catch (error: any) {
-    toast.error(error.message || '发送失败');
-  } finally {
-    sendingTestEmail.value = false;
-  }
-}
-
 // ==================== 打开邮件配置抽屉 ====================
 async function handleOpenEmailDrawer() {
   emailVerified.value = false;
@@ -465,7 +439,6 @@ async function handleVerifyCode() {
     resizable
     split-line
   >
-    <ConfirmAction ref="confirmAction" />
     <template #left>
       <!-- 左侧配置列表 -->
       <div class="space-y-2">

@@ -80,7 +80,7 @@ const [Form, formApi] = useVbenForm({
       fieldName: 'type',
       label: $t('system.notice.type'),
       componentProps: () => ({
-        options: dictOptions(notice_type.value),
+        options: dictOptions(notice_type?.value),
         placeholder: $t('system.notice.type'),
       }),
       rules: 'selectRequired',
@@ -92,7 +92,7 @@ const [Form, formApi] = useVbenForm({
       defaultValue: '1',
       componentProps: () => ({
         isButton: true,
-        options: dictOptions(notice_scope_enum.value),
+        options: dictOptions(notice_scope_enum?.value),
       }),
       rules: 'selectRequired',
     },
@@ -111,9 +111,8 @@ const [Form, formApi] = useVbenForm({
       dependencies: {
         if: (values) => values.noticeScope === '2',
         triggerFields: ['noticeScope'],
-        rules: z
-          .array(z.union([z.string(), z.number()]))
-          .min(1, '请选择通知用户'),
+        rules: () =>
+          z.array(z.union([z.string(), z.number()])).min(1, '请选择通知用户'),
       },
     },
     {
@@ -123,7 +122,7 @@ const [Form, formApi] = useVbenForm({
       formItemClass: 'md:col-span-2',
       defaultValue: [],
       componentProps: () => ({
-        options: dictOptions(notice_method_enum.value),
+        options: dictOptions(notice_method_enum?.value),
       }),
       rules: z.array(z.union([z.string(), z.number()])).min(1, '请选择通知方式'),
     },
@@ -148,10 +147,11 @@ const [Form, formApi] = useVbenForm({
       dependencies: {
         if: (values) => values.isTiming === 'true',
         triggerFields: ['isTiming'],
-        rules: z.number({
-          required_error: '请选择发布时间',
-          invalid_type_error: '请选择发布时间',
-        }),
+        rules: () =>
+          z.number({
+            required_error: '请选择发布时间',
+            invalid_type_error: '请选择发布时间',
+          }),
       },
     },
     {

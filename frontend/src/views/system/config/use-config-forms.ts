@@ -1,5 +1,5 @@
 import type {
-  EmailConfig,
+  MailConfig,
   LoginConfig,
   RegisterConfig,
   SecurityConfig,
@@ -72,7 +72,7 @@ const formShell = {
 };
 
 export function useConfigForms(options: {
-  email: Ref<EmailConfig>;
+  email: Ref<MailConfig>;
   emailVerified: Ref<boolean>;
   login: Ref<LoginConfig>;
   register: Ref<RegisterConfig>;
