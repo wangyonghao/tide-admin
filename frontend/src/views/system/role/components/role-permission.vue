@@ -1,41 +1,37 @@
 <script setup lang="ts">
-import type { DataTableColumns } from 'naive-ui';
-
 import type { RoleDetailResp } from '#/api/system/role';
 
-import { computed, h, ref, watch } from 'vue';
+import { computed, ref, watch } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
-import { NDataTable, useMessage } from 'naive-ui';
-
 import { roleApi } from '#/api/system/role';
 import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
+import { toast } from '#/ui/sonner';
 
-interface Permission {
-  id: string;
-  label: string;
-  checked: boolean;
-}
-
-interface MenuNode {
-  id: string;
-  label: string;
-  title?: string;
-  name?: string;
-  children?: MenuNode[];
-  permissions?: Permission[];
-  type?: number;
-  icon?: string;
-  checked?: boolean;
-}
+import {
+  collectNodeKeys,
+  countChecked,
+  isAllMenusChecked,
+  isSomeMenusChecked,
+  permissionSavePayload,
+  processMenuTree,
+  setCheckedByKeys,
+  toggleAllCheck,
+  toggleMenuCheck,
+  togglePermissionCheck,
+  visibleMenuRows,
+  type MenuNode,
+  type Permission,
+  type RawMenu,
+} from './permission-tree';
 
 interface Props {
   roleId?: string;
   roleDetail?: null | Partial<RoleDetailResp>;
-  menuTree?: any[];
+  menuTree?: RawMenu[];
   selectKeys?: string[];
 }
 
@@ -48,9 +44,6 @@ const props = withDefaults(defineProps<Props>(), {
 
 const emits = defineEmits(['refresh']);
 
-const message = useMessage();
-
-// 本地状态
 const localRoleId = ref<string>();
 const localRoleDetail = ref<RoleDetailResp>();
 const localMenuTree = ref<MenuNode[]>([]);
@@ -58,183 +51,10 @@ const selectedMenuIds = ref<Set<string>>(new Set());
 const expandedRowKeys = ref<string[]>([]);
 const saving = ref(false);
 
-// 处理菜单树数据，提取权限
-function processMenuTree(menus: any[]): MenuNode[] {
-  return menus.map((menu) => {
-    const node: MenuNode = {
-      id: String(menu.id),
-      label: menu.title || menu.name || '',
-      title: menu.title,
-      name: menu.name,
-      type: menu.type,
-      icon: menu.icon,
-      permissions: [],
-      children: [],
-      checked: false,
-    };
-
-    // 如果是菜单类型(type=2)且有子节点
-    if (menu.type === 2 && menu.children && menu.children.length > 0) {
-      // 检查是否有按钮类型的子节点
-      const hasButton = menu.children.some((child: any) => child.type === 3);
-
-      if (hasButton) {
-        // 如果包含按钮，将所有子节点都作为权限
-        node.permissions = menu.children.map((child: any) => ({
-          id: String(child.id),
-          label: child.title || child.name || '',
-          checked: false,
-        }));
-      } else {
-        // 否则递归处理子节点
-        node.children = processMenuTree(menu.children);
-      }
-    } else if (menu.children && menu.children.length > 0) {
-      // 其他类型（目录等）递归处理子节点
-      node.children = processMenuTree(menu.children);
-    }
-
-    return node;
-  });
+function commitSelection(next: Set<string>) {
+  selectedMenuIds.value = new Set(next);
 }
 
-// 获取所有选中的ID（包括菜单和权限）
-function getAllCheckedIds(): string[] {
-  const ids: string[] = [];
-
-  function collectIds(nodes: MenuNode[]) {
-    nodes.forEach((node) => {
-      if (selectedMenuIds.value.has(node.id)) {
-        ids.push(node.id);
-      }
-
-      if (node.permissions) {
-        node.permissions.forEach((perm) => {
-          if (perm.checked) {
-            ids.push(perm.id);
-          }
-        });
-      }
-
-      if (node.children && node.children.length > 0) {
-        collectIds(node.children);
-      }
-    });
-  }
-
-  collectIds(localMenuTree.value);
-  return ids;
-}
-
-// 根据keys设置选中状态
-function setCheckedByKeys(keys: string[]) {
-  const keySet = new Set(keys.map(String));
-  selectedMenuIds.value = new Set();
-
-  function updateNodes(nodes: MenuNode[]) {
-    nodes.forEach((node) => {
-      if (keySet.has(node.id)) {
-        selectedMenuIds.value.add(node.id);
-        node.checked = true;
-      } else {
-        node.checked = false;
-      }
-
-      if (node.permissions) {
-        node.permissions.forEach((perm) => {
-          perm.checked = keySet.has(perm.id);
-        });
-      }
-
-      if (node.children && node.children.length > 0) {
-        updateNodes(node.children);
-      }
-    });
-  }
-
-  updateNodes(localMenuTree.value);
-}
-
-// 切换菜单选中状态
-function toggleMenuCheck(node: MenuNode, checked: boolean) {
-  node.checked = checked;
-  if (checked) {
-    selectedMenuIds.value.add(node.id);
-  } else {
-    selectedMenuIds.value.delete(node.id);
-  }
-
-  // 如果是节点关联模式
-  if (localRoleDetail.value?.menuCheckStrictly) {
-    // 选中/取消选中所有子节点
-    toggleChildrenCheck(node, checked);
-    // 选中/取消选中所有权限
-    if (node.permissions) {
-      node.permissions.forEach((perm) => {
-        perm.checked = checked;
-      });
-    }
-  }
-}
-
-// 递归切换子节点选中状态
-function toggleChildrenCheck(node: MenuNode, checked: boolean) {
-  if (node.children && node.children.length > 0) {
-    node.children.forEach((child) => {
-      child.checked = checked;
-      if (checked) {
-        selectedMenuIds.value.add(child.id);
-      } else {
-        selectedMenuIds.value.delete(child.id);
-      }
-
-      // 递归处理子节点的权限
-      if (child.permissions) {
-        child.permissions.forEach((perm) => {
-          perm.checked = checked;
-        });
-      }
-
-      toggleChildrenCheck(child, checked);
-    });
-  }
-}
-
-// 切换权限选中状态
-function togglePermissionCheck(
-  node: MenuNode,
-  permission: Permission,
-  checked: boolean,
-) {
-  permission.checked = checked;
-
-  // 如果是节点关联模式，选中权限时也选中菜单
-  if (localRoleDetail.value?.menuCheckStrictly && checked) {
-    node.checked = true;
-    selectedMenuIds.value.add(node.id);
-  }
-}
-
-// 计算选中数量
-const checkedCount = computed(() => {
-  let count = selectedMenuIds.value.size;
-
-  function countPermissions(nodes: MenuNode[]) {
-    nodes.forEach((node) => {
-      if (node.permissions) {
-        count += node.permissions.filter((p) => p.checked).length;
-      }
-      if (node.children && node.children.length > 0) {
-        countPermissions(node.children);
-      }
-    });
-  }
-
-  countPermissions(localMenuTree.value);
-  return count;
-});
-
-// 初始化数据
 function initData() {
   if (props.roleId != null && props.roleId !== '') {
     localRoleId.value = props.roleId;
@@ -246,24 +66,27 @@ function initData() {
     localMenuTree.value = processMenuTree(props.menuTree);
   }
   if (props.selectKeys && props.selectKeys.length > 0) {
-    setCheckedByKeys(props.selectKeys.map(String));
+    commitSelection(
+      setCheckedByKeys(localMenuTree.value, props.selectKeys.map(String)),
+    );
   }
-  // 默认展开所有节点
-  expandedRowKeys.value = getAllNodeKeys(localMenuTree.value);
+  expandedRowKeys.value = collectNodeKeys(localMenuTree.value);
 }
 
-// 保存权限
 async function handleSave() {
   if (!localRoleId.value || !localRoleDetail.value) return;
 
   saving.value = true;
   try {
-    const menuIds = getAllCheckedIds();
-    await roleApi.updatePermission(localRoleId.value.toString(), {
-      menuIds,
-      menuCheckStrictly: localRoleDetail.value.menuCheckStrictly,
-    });
-    message.success($t('system.role.saveSuccess'));
+    await roleApi.updatePermission(
+      localRoleId.value.toString(),
+      permissionSavePayload(
+        localMenuTree.value,
+        selectedMenuIds.value,
+        localRoleDetail.value.menuCheckStrictly,
+      ),
+    );
+    toast.success($t('system.role.saveSuccess'));
     emits('refresh');
   } catch (error) {
     console.error(error);
@@ -272,7 +95,6 @@ async function handleSave() {
   }
 }
 
-// 监听props变化
 watch(
   () => [props.roleId, props.roleDetail, props.menuTree, props.selectKeys],
   () => {
@@ -281,201 +103,75 @@ watch(
   { immediate: true, deep: true },
 );
 
-// 获取所有节点的key
-function getAllNodeKeys(nodes: MenuNode[]): string[] {
-  const keys: string[] = [];
-
-  function collect(nodes: MenuNode[]) {
-    nodes.forEach((node) => {
-      keys.push(node.id);
-      if (node.children && node.children.length > 0) {
-        collect(node.children);
-      }
-    });
-  }
-
-  collect(nodes);
-  return keys;
-}
-
-// 展开/折叠全部
 const expandAll = () => {
-  expandedRowKeys.value = getAllNodeKeys(localMenuTree.value);
+  expandedRowKeys.value = collectNodeKeys(localMenuTree.value);
 };
 
 const collapseAll = () => {
   expandedRowKeys.value = [];
 };
 
-/**
- * 通过回调更新 无法通过v-model
- * @param value 菜单选择是否严格模式
- */
 function handleMenuCheckStrictlyChange(value: boolean) {
   if (localRoleDetail.value) {
     localRoleDetail.value.menuCheckStrictly = value;
   }
 }
 
-// 全选/取消全选
-const allChecked = computed(() => {
-  if (localMenuTree.value.length === 0) return false;
+const checkedCount = computed(() =>
+  countChecked(localMenuTree.value, selectedMenuIds.value),
+);
 
-  function checkAllNodes(nodes: MenuNode[]): boolean {
-    return nodes.every((node) => {
-      const nodeChecked = node.checked || false;
-      const childrenChecked =
-        node.children && node.children.length > 0
-          ? checkAllNodes(node.children)
-          : true;
-      return nodeChecked && childrenChecked;
-    });
-  }
+const allChecked = computed(() => isAllMenusChecked(localMenuTree.value));
 
-  return checkAllNodes(localMenuTree.value);
-});
+const someChecked = computed(() => isSomeMenusChecked(localMenuTree.value));
 
-const someChecked = computed(() => {
-  if (localMenuTree.value.length === 0) return false;
-  if (allChecked.value) return false;
+const expandedIds = computed(() => new Set(expandedRowKeys.value));
 
-  function hasSomeChecked(nodes: MenuNode[]): boolean {
-    return nodes.some((node) => {
-      if (node.checked) return true;
-      if (node.children && node.children.length > 0) {
-        return hasSomeChecked(node.children);
-      }
-      return false;
-    });
-  }
+const rows = computed(() =>
+  visibleMenuRows(localMenuTree.value, expandedIds.value),
+);
 
-  return hasSomeChecked(localMenuTree.value);
-});
-
-function toggleAllCheck(checked: boolean) {
-  function updateAll(nodes: MenuNode[]) {
-    nodes.forEach((node) => {
-      node.checked = checked;
-      if (checked) {
-        selectedMenuIds.value.add(node.id);
-      } else {
-        selectedMenuIds.value.delete(node.id);
-      }
-
-      // 更新权限
-      if (node.permissions) {
-        node.permissions.forEach((perm) => {
-          perm.checked = checked;
-        });
-      }
-
-      // 递归更新子节点
-      if (node.children && node.children.length > 0) {
-        updateAll(node.children);
-      }
-    });
-  }
-
-  updateAll(localMenuTree.value);
+function onToggleAll(checked: boolean | 'indeterminate') {
+  toggleAllCheck(localMenuTree.value, checked === true, selectedMenuIds.value);
+  commitSelection(selectedMenuIds.value);
 }
 
-// 表格列配置
-const columns = computed<DataTableColumns<MenuNode>>(() => [
-  {
-    key: 'checkbox',
-    width: 50,
-    align: 'center',
-    title: () => {
-      return h(Checkbox, {
-        modelValue: allChecked.value
-          ? true
-          : someChecked.value
-            ? 'indeterminate'
-            : false,
-        indeterminate: someChecked.value,
-        'onUpdate:modelValue': (checked: boolean | 'indeterminate') => {
-          toggleAllCheck(checked === true);
-        },
-      });
-    },
-    render: (row) => {
-      return h(Checkbox, {
-        modelValue: row.checked === true,
-        'onUpdate:modelValue': (checked: boolean | 'indeterminate') => {
-          toggleMenuCheck(row, checked === true);
-        },
-      });
-    },
-  },
-  {
-    title: '菜单',
-    key: 'label',
-    width: 180,
-    minWidth: 180,
-    tree: true,
-    resizable: true,
-    ellipsis: { tooltip: true },
-    render: (row) => {
-      const children = [];
+function onToggleMenu(node: MenuNode, checked: boolean | 'indeterminate') {
+  toggleMenuCheck(
+    node,
+    checked === true,
+    selectedMenuIds.value,
+    Boolean(localRoleDetail.value?.menuCheckStrictly),
+  );
+  commitSelection(selectedMenuIds.value);
+}
 
-      if (row.icon) {
-        children.push(
-          h(IconifyIcon, { icon: row.icon, class: 'w-4 h-4 flex-shrink-0' }),
-        );
-      }
-      children.push(h('span', { class: 'truncate' }, row.label));
+function onTogglePermission(
+  node: MenuNode,
+  permission: Permission,
+  checked: boolean | 'indeterminate',
+) {
+  togglePermissionCheck(
+    node,
+    permission,
+    checked === true,
+    selectedMenuIds.value,
+    Boolean(localRoleDetail.value?.menuCheckStrictly),
+  );
+  commitSelection(selectedMenuIds.value);
+}
 
-      return h('div', { class: 'flex items-center gap-2 min-w-0' }, children);
-    },
-  },
-  {
-    title: '权限',
-    key: 'permissions',
-    minWidth: 300,
-    render: (row) => {
-      if (!row.permissions || row.permissions.length === 0) {
-        return null;
-      }
-
-      return h(
-        'div',
-        { class: 'flex flex-wrap gap-x-4 gap-y-2' },
-        row.permissions.map((perm) =>
-          h(
-            'label',
-            {
-              class:
-                'flex cursor-pointer items-center gap-1.5 text-sm whitespace-nowrap',
-              onClick: (e: Event) => {
-                e.stopPropagation();
-              },
-            },
-            [
-              h(Checkbox, {
-                modelValue: perm.checked,
-                'onUpdate:modelValue': (checked: boolean | 'indeterminate') =>
-                  togglePermissionCheck(row, perm, checked === true),
-              }),
-              h('span', {}, perm.label),
-            ],
-          ),
-        ),
-      );
-    },
-  },
-]);
-
-// 行key
-function rowKey(row: MenuNode) {
-  return String(row.id);
+function toggleExpand(id: string) {
+  expandedRowKeys.value = expandedRowKeys.value.includes(id)
+    ? expandedRowKeys.value.filter((key) => key !== id)
+    : [...expandedRowKeys.value, id];
 }
 </script>
 
 <template>
-  <div class="h-full flex flex-col">
-    <!-- 操作栏 -->
+  <div class="flex h-full flex-col">
     <div
-      class="flex items-center justify-between px-3 py-3 border-b bg-card rounded-t-lg"
+      class="flex items-center justify-between rounded-t-lg border-b bg-card px-3 py-3"
     >
       <div class="flex items-center gap-4">
         <div class="rounded-md bg-blue-50 px-3 py-1 text-sm dark:bg-blue-950">
@@ -529,40 +225,90 @@ function rowKey(row: MenuNode) {
       </div>
     </div>
 
-    <!-- 权限树形表格 -->
-    <div class="flex-1 overflow-hidden">
-      <NDataTable
-        v-model:expanded-row-keys="expandedRowKeys"
-        :columns="columns"
-        :data="localMenuTree"
-        :row-key="rowKey"
-        :pagination="false"
-        :bordered="false"
-        max-height="calc(100vh - 280px)"
-        :scroll-x="800"
-        size="small"
-        class="permission-tree-table"
-      />
+    <div class="flex-1 overflow-auto" style="max-height: calc(100vh - 280px)">
+      <table class="w-full min-w-[800px] border-collapse text-sm">
+        <thead class="sticky top-0 z-10 bg-card">
+          <tr class="border-b border-border">
+            <th class="w-12 px-3 py-2 text-center font-semibold">
+              <Checkbox
+                :model-value="
+                  allChecked ? true : someChecked ? 'indeterminate' : false
+                "
+                :indeterminate="someChecked"
+                @update:model-value="onToggleAll"
+              />
+            </th>
+            <th class="w-44 px-3 py-2 text-left font-semibold">菜单</th>
+            <th class="px-3 py-2 text-left font-semibold">权限</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr
+            v-for="row in rows"
+            :key="row.node.id"
+            class="border-b border-border"
+          >
+            <td class="px-3 py-2 text-center">
+              <Checkbox
+                :model-value="row.node.checked === true"
+                @update:model-value="
+                  (checked) => onToggleMenu(row.node, checked)
+                "
+              />
+            </td>
+            <td class="px-3 py-2">
+              <div
+                class="flex min-w-0 items-center gap-2"
+                :style="{ paddingLeft: `${row.depth * 16}px` }"
+              >
+                <button
+                  v-if="row.hasChildren"
+                  type="button"
+                  class="text-muted-foreground inline-flex size-4 shrink-0 items-center justify-center"
+                  :aria-expanded="expandedIds.has(row.node.id)"
+                  @click="toggleExpand(row.node.id)"
+                >
+                  <IconifyIcon
+                    :icon="
+                      expandedIds.has(row.node.id)
+                        ? 'lucide:chevron-down'
+                        : 'lucide:chevron-right'
+                    "
+                    class="size-3.5"
+                  />
+                </button>
+                <span v-else class="inline-block size-4 shrink-0"></span>
+                <IconifyIcon
+                  v-if="row.node.icon"
+                  :icon="row.node.icon"
+                  class="size-4 shrink-0"
+                />
+                <span class="truncate">{{ row.node.label }}</span>
+              </div>
+            </td>
+            <td class="px-3 py-2">
+              <div
+                v-if="row.node.permissions?.length"
+                class="flex flex-wrap gap-x-4 gap-y-2"
+              >
+                <label
+                  v-for="perm in row.node.permissions"
+                  :key="perm.id"
+                  class="flex cursor-pointer items-center gap-1.5 whitespace-nowrap"
+                >
+                  <Checkbox
+                    :model-value="perm.checked"
+                    @update:model-value="
+                      (checked) => onTogglePermission(row.node, perm, checked)
+                    "
+                  />
+                  <span>{{ perm.label }}</span>
+                </label>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
     </div>
   </div>
 </template>
-
-<style scoped>
-:deep(.permission-tree-table .n-data-table-td) {
-  padding: 8px 12px;
-}
-
-:deep(.permission-tree-table .n-data-table-th) {
-  font-weight: 600;
-}
-
-/* 确保树形结构的缩进正确显示 */
-:deep(.permission-tree-table .n-data-table-td--tree-col) {
-  padding-left: 12px !important;
-}
-
-/* 树形展开按钮样式 */
-:deep(.permission-tree-table .n-data-table-expand-trigger) {
-  margin-right: 8px;
-}
-</style>

@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import type { ColPageProps } from './types';
 
-import { computed, ref, useSlots } from 'vue';
+import { computed, ref, useAttrs, useSlots } from 'vue';
 
 import {
   ResizableHandle,
@@ -10,6 +10,8 @@ import {
 } from '@vben-core/shadcn-ui';
 
 import Page from '../page/page.vue';
+
+import { resolveSplitPanes } from './split-size';
 
 defineOptions({
   name: 'ColPage',
@@ -20,12 +22,52 @@ const props = withDefaults(defineProps<ColPageProps>(), {
   leftWidth: 30,
   rightWidth: 70,
   resizable: true,
+  leftSizeUnit: '%',
+  rightSizeUnit: '%',
 });
 
+const attrs = useAttrs();
+
 const delegatedProps = computed(() => {
-  const { leftWidth: _, ...delegated } = props;
-  return delegated;
+  const {
+    leftWidth: _leftWidth,
+    leftMinWidth: _leftMinWidth,
+    leftMaxWidth: _leftMaxWidth,
+    leftCollapsedWidth: _leftCollapsedWidth,
+    leftCollapsible: _leftCollapsible,
+    leftSizeUnit: _leftSizeUnit,
+    rightWidth: _rightWidth,
+    rightMinWidth: _rightMinWidth,
+    rightMaxWidth: _rightMaxWidth,
+    rightCollapsedWidth: _rightCollapsedWidth,
+    rightCollapsible: _rightCollapsible,
+    rightSizeUnit: _rightSizeUnit,
+    resizable: _resizable,
+    splitLine: _splitLine,
+    splitHandle: _splitHandle,
+    ...pageProps
+  } = props;
+  return pageProps;
 });
+
+const panes = computed(() =>
+  resolveSplitPanes({
+    left: {
+      width: props.leftWidth,
+      minWidth: props.leftMinWidth,
+      maxWidth: props.leftMaxWidth,
+      collapsedWidth: props.leftCollapsedWidth,
+      sizeUnit: props.leftSizeUnit,
+    },
+    right: {
+      width: props.rightWidth,
+      minWidth: props.rightMinWidth,
+      maxWidth: props.rightMaxWidth,
+      collapsedWidth: props.rightCollapsedWidth,
+      sizeUnit: props.rightSizeUnit,
+    },
+  }),
+);
 
 const slots = useSlots();
 
@@ -56,7 +98,7 @@ defineExpose({
 });
 </script>
 <template>
-  <Page v-bind="delegatedProps">
+  <Page v-bind="{ ...delegatedProps, ...attrs }">
     <!-- 继承默认的slot -->
     <template
       v-for="slotName in delegatedSlots"
@@ -66,14 +108,15 @@ defineExpose({
       <slot :name="slotName" v-bind="slotProps"></slot>
     </template>
 
-    <ResizablePanelGroup class="w-full" direction="horizontal">
+    <ResizablePanelGroup class="h-full w-full" direction="horizontal">
       <ResizablePanel
         ref="leftPanelRef"
-        :collapsed-size="leftCollapsedWidth"
+        :collapsed-size="panes.left.collapsedSize"
         :collapsible="leftCollapsible"
-        :default-size="leftWidth"
-        :max-size="leftMaxWidth"
-        :min-size="leftMinWidth"
+        :default-size="panes.left.defaultSize"
+        :max-size="panes.left.maxSize"
+        :min-size="panes.left.minSize"
+        :size-unit="panes.left.sizeUnit"
       >
         <template #default="slotProps">
           <slot
@@ -92,11 +135,12 @@ defineExpose({
         :with-handle="splitHandle"
       />
       <ResizablePanel
-        :collapsed-size="rightCollapsedWidth"
+        :collapsed-size="panes.right.collapsedSize"
         :collapsible="rightCollapsible"
-        :default-size="rightWidth"
-        :max-size="rightMaxWidth"
-        :min-size="rightMinWidth"
+        :default-size="panes.right.defaultSize"
+        :max-size="panes.right.maxSize"
+        :min-size="panes.right.minSize"
+        :size-unit="panes.right.sizeUnit"
       >
         <template #default>
           <slot></slot>
