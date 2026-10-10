@@ -11,8 +11,9 @@ import {
 } from './text-mode';
 
 describe('form text field mode', () => {
-  it('keeps pair inputs on the naive path and sends textarea to shadcn', () => {
+  it('detects pair inputs separately from textarea', () => {
     expect(textUsesPair({ pair: true })).toBe(true);
+    expect(textUsesPair({ pair: false })).toBe(false);
     expect(textUsesPair({})).toBe(false);
     expect(textUsesTextarea({ type: 'textarea' })).toBe(true);
     expect(textUsesTextarea({ textarea: true })).toBe(true);

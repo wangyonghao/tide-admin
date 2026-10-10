@@ -6,7 +6,6 @@
 import type {
   CheckboxGroupProps,
   CheckboxProps,
-  DatePickerProps,
   DividerProps,
   InputNumberProps,
   InputProps,
@@ -15,7 +14,6 @@ import type {
   SpaceProps,
   SwitchProps,
   TimePickerProps,
-  TreeSelectProps,
   UploadProps,
 } from 'naive-ui';
 
@@ -28,6 +26,10 @@ import type {
 } from '@vben/common-ui';
 import type { Recordable } from '@vben/types';
 
+import type { FormDatePickerProps } from '#/ui/date-picker/date-value';
+
+import type { FormTreeSelectProps } from './tree-select-value';
+
 import { defineAsyncComponent, defineComponent, h, ref } from 'vue';
 
 import { ApiComponent, globalShareState, IconPicker } from '@vben/common-ui';
@@ -35,6 +37,7 @@ import { $t } from '@vben/locales';
 
 import { message } from '#/adapter/naive';
 import { Button } from '#/ui/button';
+import { DatePicker } from '#/ui/date-picker';
 
 import FormCheckbox from './FormCheckbox.vue';
 import FormCheckboxGroup from './FormCheckboxGroup.vue';
@@ -44,10 +47,8 @@ import FormSelect from './FormSelect.vue';
 import FormSwitch from './FormSwitch.vue';
 import FormTextarea from './FormTextarea.vue';
 import FormTextInput from './FormTextInput.vue';
+import FormTreeSelect from './FormTreeSelect.vue';
 
-const NDatePicker = defineAsyncComponent(() =>
-  import('naive-ui/es/date-picker').then((res) => res.NDatePicker),
-);
 const NDivider = defineAsyncComponent(() =>
   import('naive-ui/es/divider').then((res) => res.NDivider),
 );
@@ -59,9 +60,6 @@ const NSpace = defineAsyncComponent(() =>
 );
 const NTimePicker = defineAsyncComponent(() =>
   import('naive-ui/es/time-picker').then((res) => res.NTimePicker),
-);
-const NTreeSelect = defineAsyncComponent(() =>
-  import('naive-ui/es/tree-select').then((res) => res.NTreeSelect),
 );
 const NUpload = defineAsyncComponent(() =>
   import('naive-ui/es/upload').then((res) => res.NUpload),
@@ -127,10 +125,10 @@ export type ComponentType =
  */
 export interface ComponentPropsMap {
   ApiSelect: ApiComponentSharedProps & SelectProps;
-  ApiTreeSelect: ApiComponentSharedProps & TreeSelectProps;
+  ApiTreeSelect: ApiComponentSharedProps & FormTreeSelectProps;
   Checkbox: CheckboxProps;
   CheckboxGroup: CheckboxGroupProps;
-  DatePicker: DatePickerProps;
+  DatePicker: FormDatePickerProps;
   Divider: DividerProps;
   IconPicker: IconPickerProps;
   Input: InputProps;
@@ -141,7 +139,7 @@ export interface ComponentPropsMap {
   Switch: SwitchProps;
   Textarea: InputProps;
   TimePicker: TimePickerProps;
-  TreeSelect: TreeSelectProps;
+  TreeSelect: FormTreeSelectProps;
   Upload: UploadProps;
 }
 
@@ -170,7 +168,7 @@ async function initComponentAdapter() {
       },
       'select',
       {
-        component: NTreeSelect,
+        component: FormTreeSelect,
         nodeKey: 'value',
         loadingSlot: 'arrow',
         keyField: 'value',
@@ -181,7 +179,7 @@ async function initComponentAdapter() {
     ),
     Checkbox: FormCheckbox,
     CheckboxGroup: FormCheckboxGroup,
-    DatePicker: NDatePicker,
+    DatePicker: withDefaultPlaceholder(DatePicker, 'select'),
     // 提交/重置。content、show 是表单动作元数据，不能落到 DOM 上。
     DefaultButton: (props, { attrs, slots }) => {
       const { content: _content, show: _show, ...rest } = props ?? {};
@@ -212,7 +210,7 @@ async function initComponentAdapter() {
     Switch: FormSwitch,
     Textarea: withDefaultPlaceholder(FormTextarea, 'input'),
     TimePicker: NTimePicker,
-    TreeSelect: withDefaultPlaceholder(NTreeSelect, 'select'),
+    TreeSelect: withDefaultPlaceholder(FormTreeSelect, 'select'),
     Upload: NUpload,
   };
 

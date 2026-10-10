@@ -17,12 +17,12 @@ import {
   NInput,
   NRadio,
   NRadioGroup,
-  NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
 import { asSelectList } from '#/adapter/component/select-value';
 import FormSelect from '#/adapter/component/FormSelect.vue';
+import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
 import { userApi } from '#/api/system/user';
 import { Button } from '#/ui/button';
 
@@ -207,7 +207,10 @@ function handleAfterLeave() {
     @update:show="handleClose"
     @after-leave="handleAfterLeave"
   >
-    <NDrawerContent :title="isUpdate ? '编辑用户' : '新增用户'" closable>
+    <NDrawerContent
+      :title="isUpdate ? '编辑用户' : '新增用户'"
+      closable
+    >
       <NForm
         ref="formRef"
         :model="formData"
@@ -215,20 +218,30 @@ function handleAfterLeave() {
         label-placement="left"
         label-width="80"
       >
-        <NFormItem label="用户名" path="username">
+        <NFormItem
+          label="用户名"
+          path="username"
+        >
           <NInput
             v-model:value="formData.username"
             placeholder="请输入用户名"
             :disabled="isUpdate"
           />
         </NFormItem>
-        <NFormItem label="显示名称" path="displayName">
+        <NFormItem
+          label="显示名称"
+          path="displayName"
+        >
           <NInput
             v-model:value="formData.displayName"
             placeholder="请输入显示名称"
           />
         </NFormItem>
-        <NFormItem v-if="!isUpdate" label="密码" path="password">
+        <NFormItem
+          v-if="!isUpdate"
+          label="密码"
+          path="password"
+        >
           <NInput
             v-model:value="formData.password"
             type="password"
@@ -236,21 +249,45 @@ function handleAfterLeave() {
             placeholder="请输入密码"
           />
         </NFormItem>
-        <NFormItem label="性别" path="gender">
+        <NFormItem
+          label="性别"
+          path="gender"
+        >
           <NRadioGroup v-model:value="formData.gender">
-            <NRadio :value="0">未知</NRadio>
-            <NRadio :value="1">男</NRadio>
-            <NRadio :value="2">女</NRadio>
+            <NRadio :value="0">
+              未知
+            </NRadio>
+            <NRadio :value="1">
+              男
+            </NRadio>
+            <NRadio :value="2">
+              女
+            </NRadio>
           </NRadioGroup>
         </NFormItem>
-        <NFormItem label="邮箱" path="email">
-          <NInput v-model:value="formData.email" placeholder="请输入邮箱" />
+        <NFormItem
+          label="邮箱"
+          path="email"
+        >
+          <NInput
+            v-model:value="formData.email"
+            placeholder="请输入邮箱"
+          />
         </NFormItem>
-        <NFormItem label="手机号" path="phone">
-          <NInput v-model:value="formData.phone" placeholder="请输入手机号" />
+        <NFormItem
+          label="手机号"
+          path="phone"
+        >
+          <NInput
+            v-model:value="formData.phone"
+            placeholder="请输入手机号"
+          />
         </NFormItem>
-        <NFormItem label="部门" path="deptId">
-          <NTreeSelect
+        <NFormItem
+          label="部门"
+          path="deptId"
+        >
+          <FormTreeSelect
             v-model:value="formData.deptId"
             :options="deptData"
             key-field="id"
@@ -258,9 +295,13 @@ function handleAfterLeave() {
             children-field="children"
             placeholder="请选择部门"
             clearable
+            default-expand-all
           />
         </NFormItem>
-        <NFormItem label="角色" path="roleIds">
+        <NFormItem
+          label="角色"
+          path="roleIds"
+        >
           <FormSelect
             :value="formData.roleIds"
             :options="roleSelectOptions"
@@ -271,13 +312,23 @@ function handleAfterLeave() {
             @update:value="formData.roleIds = asSelectList($event).map(String)"
           />
         </NFormItem>
-        <NFormItem label="状态" path="status">
+        <NFormItem
+          label="状态"
+          path="status"
+        >
           <NRadioGroup v-model:value="formData.status">
-            <NRadio :value="1">启用</NRadio>
-            <NRadio :value="0">禁用</NRadio>
+            <NRadio :value="1">
+              启用
+            </NRadio>
+            <NRadio :value="0">
+              禁用
+            </NRadio>
           </NRadioGroup>
         </NFormItem>
-        <NFormItem label="描述" path="description">
+        <NFormItem
+          label="描述"
+          path="description"
+        >
           <NInput
             v-model:value="formData.description"
             type="textarea"
@@ -289,10 +340,18 @@ function handleAfterLeave() {
 
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button type="button" variant="outline" @click="handleClose">
+          <Button
+            type="button"
+            variant="outline"
+            @click="handleClose"
+          >
             取消
           </Button>
-          <Button type="button" :loading="submitLoading" @click="handleSubmit">
+          <Button
+            type="button"
+            :loading="submitLoading"
+            @click="handleSubmit"
+          >
             确定
           </Button>
         </div>

@@ -11,9 +11,9 @@ export interface TextFieldAttrs {
   type?: unknown;
 }
 
-/** 成对输入是 Naive 才有的形态，套件里没有对应控件。 */
+/** 成对输入由 FormTextInput 画成两个原子 Input，不走文本域或密码。 */
 export function textUsesPair(attrs: TextFieldAttrs): boolean {
-  return attrs.pair != null;
+  return attrs.pair != null && attrs.pair !== false;
 }
 
 export function textUsesTextarea(attrs: TextFieldAttrs): boolean {

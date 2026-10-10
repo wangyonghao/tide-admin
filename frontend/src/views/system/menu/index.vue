@@ -1,80 +1,79 @@
 <script setup lang="ts">
-import type {
-  DataTableColumns,
-  FormInst,
-  FormRules,
-  TreeSelectOption,
-} from 'naive-ui';
+import type { FormInst, FormRules } from 'naive-ui';
 
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { Menu } from '#/api/system/menu';
 
-import { computed, h, onMounted, reactive, ref } from 'vue';
+import { computed, nextTick, reactive, ref } from 'vue';
 
+import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import { AddOutline, SearchOutline } from '@vicons/ionicons5';
 import {
-  NCard,
-  NDataTable,
   NForm,
   NFormItem,
-  NIcon,
   NInput,
   NInputNumber,
   NModal,
   NRadio,
   NRadioGroup,
-  NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
-import FormSelect from '#/adapter/component/FormSelect.vue';
+import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { menuApi } from '#/api/system/menu';
+import IconSelect from '#/components/icon-select.vue';
+import { useUserStore } from '#/store/user';
 import { Badge } from '#/ui/badge';
-import { badgeVariantForTag } from '#/ui/badge/variant';
 import { Button } from '#/ui/button';
 import { Switch } from '#/ui/switch';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
-import IconSelect from '#/components/icon-select.vue';
-import { useUserStore } from '#/store/user';
 
 const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 
-// 搜索表单
-const searchForm = reactive({ name: '', status: null as null | number });
-
-// 状态选项
 const statusOptions = [
   { label: '启用', value: 1 },
   { label: '禁用', value: 0 },
 ];
 
-// 菜单类型
 const typeMap: Record<
   number,
-  { text: string; type: 'info' | 'success' | 'warning' }
+  { text: string; variant: 'default' | 'success' | 'warning' }
 > = {
-  1: { text: '目录', type: 'info' },
-  2: { text: '菜单', type: 'success' },
-  3: { text: '按钮', type: 'warning' },
+  1: { text: '目录', variant: 'default' },
+  2: { text: '菜单', variant: 'success' },
+  3: { text: '按钮', variant: 'warning' },
 };
 
-// 表格数据
-const tableData = ref<Menu[]>([]);
-const loading = ref(false);
+type MenuRow = Menu & { visible?: number };
 
-// 菜单选项（用于选择上级）
-const menuOptions = computed<TreeSelectOption[]>(() => {
-  const options: TreeSelectOption[] = [{ key: 0, label: '顶级菜单' }];
+const tableData = ref<MenuRow[]>([]);
 
-  function convert(menus: Menu[]): TreeSelectOption[] {
+function presentTree(nodes: Menu[]): MenuRow[] {
+  return nodes.map((node) => ({
+    ...node,
+    children: node.children?.length ? presentTree(node.children) : undefined,
+  }));
+}
+
+interface MenuOption {
+  children?: MenuOption[];
+  key: number | string;
+  label: string;
+}
+
+const menuOptions = computed(() => {
+  const options: MenuOption[] = [{ key: 0, label: '顶级菜单' }];
+
+  function convert(menus: Menu[]): MenuOption[] {
     return menus
-      .filter((m) => m.type !== 3) // 按钮不能作为上级
+      .filter((menu) => menu.type !== 3)
       .map((menu) => ({
         key: menu.id,
         label: menu.name,
@@ -86,161 +85,114 @@ const menuOptions = computed<TreeSelectOption[]>(() => {
   return options;
 });
 
-// 表格列
-const columns: DataTableColumns<Menu> = [
-  {
-    title: '菜单名称',
-    key: 'name',
-    width: 200,
-    render(row) {
-      if (!row.icon) return row.name;
-      return h(
-        'div',
-        {
-          style: {
-            display: 'inline-flex',
-            alignItems: 'center',
-            gap: '6px', // 图标和文字间距
-          },
+const [Grid, gridApi] = useVbenVxeGrid({
+  formOptions: {
+    schema: [
+      {
+        component: 'Input',
+        fieldName: 'name',
+        label: '菜单名称',
+        componentProps: { placeholder: '请输入菜单名称' },
+      },
+      {
+        component: 'Select',
+        fieldName: 'status',
+        label: '状态',
+        componentProps: {
+          options: statusOptions,
+          placeholder: '请选择状态',
+          clearable: true,
         },
-        [h(IconifyIcon, { icon: row.icon }), row.name],
-      );
-    },
+      },
+    ],
+    showCollapseButton: false,
+    wrapperClass: 'grid-cols-1 md:grid-cols-2 lg:grid-cols-3',
   },
-  {
-    title: '类型',
-    key: 'type',
-    width: 80,
-    render(row) {
-      const info = typeMap[row.type] ?? {
-        text: String(row.type),
-        type: 'default' as const,
-      };
-      return h(
-        Badge,
-        { variant: badgeVariantForTag(info.type) ?? 'secondary' },
-        { default: () => info.text },
-      );
+  gridOptions: {
+    columns: [
+      {
+        field: 'name',
+        title: '菜单名称',
+        treeNode: true,
+        align: 'left',
+        minWidth: 220,
+        slots: { default: 'name' },
+      },
+      {
+        field: 'type',
+        title: '类型',
+        width: 90,
+        slots: { default: 'type' },
+      },
+      { field: 'path', title: '路由地址', minWidth: 140 },
+      { field: 'component', title: '组件路径', minWidth: 140 },
+      { field: 'permission', title: '权限标识', minWidth: 160 },
+      { field: 'sort', title: '排序', width: 80 },
+      {
+        field: 'visible',
+        title: '可见',
+        width: 90,
+        slots: { default: 'visible' },
+      },
+      {
+        field: 'status',
+        title: '状态',
+        width: 90,
+        slots: { default: 'status' },
+      },
+      {
+        field: 'action',
+        title: '操作',
+        width: 180,
+        fixed: 'right',
+        slots: { default: 'action' },
+      },
+    ],
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: { enabled: false },
+    rowConfig: { keyField: 'id' },
+    treeConfig: {
+      childrenField: 'children',
+      expandAll: true,
+      rowField: 'id',
     },
-  },
-  {
-    title: '路由地址',
-    key: 'path',
-    width: 120,
-    render(row) {
-      return row.path || '-';
+    toolbarConfig: {
+      custom: true,
+      refresh: true,
+      zoom: true,
     },
-  },
-  {
-    title: '组件路径',
-    key: 'component',
-    width: 100,
-    render(row) {
-      return row.component || '-';
+    proxyConfig: {
+      ajax: {
+        query: async (_page, formValues) => {
+          const name =
+            typeof formValues?.name === 'string' ? formValues.name.trim() : '';
+          const status =
+            typeof formValues?.status === 'number' ? formValues.status : undefined;
+          const res = await menuApi.tree({
+            title: name || undefined,
+            status,
+          });
+          tableData.value = presentTree(res ?? []);
+          return { records: tableData.value, total: tableData.value.length };
+        },
+        querySuccess: async () => {
+          await nextTick();
+          gridApi.grid?.setAllTreeExpand?.(true);
+        },
+      },
     },
-  },
-  {
-    title: '权限标识',
-    key: 'permission',
-    width: 120,
-    render(row) {
-      return row.permission || '-';
-    },
-  },
-  { title: '排序', key: 'sort', width: 80 },
-  {
-    title: '可见',
-    key: 'visible',
-    width: 80,
-    render(row) {
-      if (row.type === 3) return '-';
-      return h(
-        Badge,
-        { variant: row.visible === 1 ? 'success' : 'secondary' },
-        { default: () => (row.visible === 1 ? '是' : '否') },
-      );
-    },
-  },
-  {
-    title: '状态',
-    key: 'status',
-    width: 80,
-    render(row) {
-      return h(
-        Badge,
-        { variant: row.status === 1 ? 'success' : 'destructive' },
-        { default: () => (row.status === 1 ? '启用' : '禁用') },
-      );
-    },
-  },
-  {
-    title: '操作',
-    key: 'actions',
-    width: 200,
-    fixed: 'right',
-    render(row) {
-      const buttons = [];
-      if (row.type !== 3 && userStore.hasPermission('system:menu:create')) {
-        buttons.push(
-          h(
-            Button,
-            {
-              type: 'button',
-              variant: 'link',
-              size: 'sm',
-              class: 'h-auto px-1',
-              onClick: () => handleAdd(row.id),
-            },
-            { default: () => '新增' },
-          ),
-        );
-      }
-      if (userStore.hasPermission('system:menu:edit')) {
-        buttons.push(
-          h(
-            Button,
-            {
-              type: 'button',
-              variant: 'link',
-              size: 'sm',
-              class: 'h-auto px-1',
-              onClick: () => handleEdit(row),
-            },
-            { default: () => '编辑' },
-          ),
-        );
-      }
-      if (userStore.hasPermission('system:menu:delete')) {
-        buttons.push(
-          h(
-            Button,
-            {
-              type: 'button',
-              variant: 'link',
-              size: 'sm',
-              class: 'text-destructive h-auto px-1',
-              onClick: () => handleDelete(row),
-            },
-            { default: () => '删除' },
-          ),
-        );
-      }
-      return buttons.length > 0
-        ? h('div', { class: 'flex items-center gap-2' }, buttons)
-        : '-';
-    },
-  },
-];
+  } as VxeTableGridOptions<MenuRow>,
+});
 
-// 弹窗
 const modalVisible = ref(false);
 const modalTitle = ref('新增菜单');
 const formRef = ref<FormInst | null>(null);
 const submitLoading = ref(false);
 
-const formData = reactive<Menu>({
-  id: undefined,
-  parentId: '0',
+const formData = reactive({
+  id: undefined as string | undefined,
+  parentId: '0' as number | string,
   name: '',
   type: 1,
   path: '',
@@ -265,28 +217,6 @@ const rules: FormRules = {
   ],
 };
 
-// 加载数据
-async function loadData() {
-  loading.value = true;
-  try {
-    const res = await menuApi.tree({
-      title: searchForm.name || undefined,
-      status: searchForm.status ?? undefined,
-    });
-    tableData.value = res;
-  } catch {
-    // 错误已在拦截器处理
-  } finally {
-    loading.value = false;
-  }
-}
-
-// 搜索
-function handleSearch() {
-  loadData();
-}
-
-// 新增
 function handleAdd(parentId?: string) {
   modalTitle.value = '新增菜单';
   Object.assign(formData, {
@@ -306,14 +236,12 @@ function handleAdd(parentId?: string) {
   modalVisible.value = true;
 }
 
-// 编辑
-function handleEdit(row: Menu) {
+function handleEdit(row: MenuRow) {
   modalTitle.value = '编辑菜单';
   Object.assign(formData, { ...row });
   modalVisible.value = true;
 }
 
-// 提交
 async function handleSubmit() {
   try {
     await formRef.value?.validate();
@@ -328,7 +256,7 @@ async function handleSubmit() {
     }
 
     modalVisible.value = false;
-    loadData();
+    await gridApi.query();
   } catch {
     // 错误已在拦截器处理
   } finally {
@@ -336,8 +264,7 @@ async function handleSubmit() {
   }
 }
 
-// 删除
-async function handleDelete(row: Menu) {
+async function handleDelete(row: MenuRow) {
   const ok = await confirmAction.value?.ask({
     title: '提示',
     description: `确定要删除菜单"${row.name}"吗？`,
@@ -347,72 +274,98 @@ async function handleDelete(row: Menu) {
   try {
     await menuApi.delete(row.id);
     message.success('删除成功');
-    loadData();
+    await gridApi.query();
   } catch {
     // 错误已在拦截器处理
   }
 }
 
-onMounted(() => {
-  loadData();
-});
+function typeText(row: Menu) {
+  return typeMap[row.type] ?? { text: '-', variant: 'default' as const };
+}
 </script>
 
 <template>
-  <div class="page-container">
+  <Page auto-content-height>
     <ConfirmAction ref="confirmAction" />
-    <NCard class="page-layout">
-      <!-- 搜索表单 -->
-      <div class="search-form">
-        <NForm inline :model="searchForm" label-placement="left">
-          <NFormItem label="菜单名称">
-            <NInput
-              v-model:value="searchForm.name"
-              placeholder="请输入菜单名称"
-              clearable
-            />
-          </NFormItem>
-          <NFormItem label="状态">
-            <FormSelect
-              v-model:value="searchForm.status"
-              placeholder="请选择状态"
-              :options="statusOptions"
-              clearable
-              style="width: 120px"
-            />
-          </NFormItem>
-          <NFormItem>
-            <Button type="button" @click="handleSearch">
-              <NIcon><SearchOutline /></NIcon>
-              搜索
-            </Button>
-          </NFormItem>
-        </NForm>
-      </div>
-
-      <!-- 工具栏 -->
-      <div class="table-toolbar">
+    <Grid>
+      <template #toolbar-tools>
         <Button
           v-if="userStore.hasPermission('system:menu:add')"
           type="button"
           @click="handleAdd()"
         >
-          <NIcon><AddOutline /></NIcon>
+          <IconifyIcon
+            icon="lucide:plus"
+            class="mr-1 size-4"
+          />
           新增菜单
         </Button>
-      </div>
+      </template>
+      <template #name="{ row }">
+        <span class="inline-flex items-center gap-1.5">
+          <IconifyIcon
+            v-if="row.icon"
+            :icon="row.icon"
+          />
+          {{ row.name }}
+        </span>
+      </template>
+      <template #type="{ row }">
+        <Badge :variant="typeText(row).variant">
+          {{ typeText(row).text }}
+        </Badge>
+      </template>
+      <template #visible="{ row }">
+        <span v-if="row.type === 3">-</span>
+        <Badge
+          v-else
+          :variant="row.visible === 1 ? 'success' : 'secondary'"
+        >
+          {{ row.visible === 1 ? '是' : '否' }}
+        </Badge>
+      </template>
+      <template #status="{ row }">
+        <Badge :variant="row.status === 1 ? 'success' : 'destructive'">
+          {{ row.status === 1 ? '启用' : '禁用' }}
+        </Badge>
+      </template>
+      <template #action="{ row }">
+        <div class="flex items-center justify-center gap-2">
+          <Button
+            v-if="row.type !== 3 && userStore.hasPermission('system:menu:create')"
+            type="button"
+            variant="link"
+            size="sm"
+            class="h-auto px-1"
+            @click="handleAdd(row.id)"
+          >
+            新增
+          </Button>
+          <Button
+            v-if="userStore.hasPermission('system:menu:edit')"
+            type="button"
+            variant="link"
+            size="sm"
+            class="h-auto px-1"
+            @click="handleEdit(row)"
+          >
+            编辑
+          </Button>
+          <Button
+            v-if="userStore.hasPermission('system:menu:delete')"
+            type="button"
+            variant="link"
+            size="sm"
+            class="text-destructive h-auto px-1"
+            @click="handleDelete(row)"
+          >
+            删除
+          </Button>
+        </div>
+      </template>
+    </Grid>
 
-      <!-- 表格 -->
-      <NDataTable
-        :columns="columns"
-        :data="tableData"
-        :loading="loading"
-        :row-key="(row: Menu) => row.id"
-        default-expand-all
-      />
-    </NCard>
-
-    <!-- 新增/编辑弹窗 -->
     <NModal
       v-model:show="modalVisible"
       :title="modalTitle"
@@ -428,8 +381,11 @@ onMounted(() => {
         label-width="80"
         class="modal-form"
       >
-        <NFormItem label="上级菜单" path="parentId">
-          <NTreeSelect
+        <NFormItem
+          label="上级菜单"
+          path="parentId"
+        >
+          <FormTreeSelect
             v-model:value="formData.parentId"
             :options="menuOptions"
             placeholder="请选择上级菜单"
@@ -437,17 +393,36 @@ onMounted(() => {
             clearable
           />
         </NFormItem>
-        <NFormItem label="菜单类型" path="type">
+        <NFormItem
+          label="菜单类型"
+          path="type"
+        >
           <NRadioGroup v-model:value="formData.type">
-            <NRadio :value="1">目录</NRadio>
-            <NRadio :value="2">菜单</NRadio>
-            <NRadio :value="3">按钮</NRadio>
+            <NRadio :value="1">
+              目录
+            </NRadio>
+            <NRadio :value="2">
+              菜单
+            </NRadio>
+            <NRadio :value="3">
+              按钮
+            </NRadio>
           </NRadioGroup>
         </NFormItem>
-        <NFormItem label="菜单名称" path="name">
-          <NInput v-model:value="formData.name" placeholder="请输入菜单名称" />
+        <NFormItem
+          label="菜单名称"
+          path="name"
+        >
+          <NInput
+            v-model:value="formData.name"
+            placeholder="请输入菜单名称"
+          />
         </NFormItem>
-        <NFormItem v-if="formData.type !== 3" label="是否外链" path="isFrame">
+        <NFormItem
+          v-if="formData.type !== 3"
+          label="是否外链"
+          path="isFrame"
+        >
           <div class="flex items-center gap-2">
             <Switch
               v-model="formData.isFrame"
@@ -467,7 +442,10 @@ onMounted(() => {
           label="路由地址"
           path="path"
         >
-          <NInput v-model:value="formData.path" placeholder="请输入路由地址" />
+          <NInput
+            v-model:value="formData.path"
+            placeholder="请输入路由地址"
+          />
         </NFormItem>
         <NFormItem
           v-if="formData.type !== 3 && formData.isFrame"
@@ -499,17 +477,28 @@ onMounted(() => {
             placeholder="请输入权限标识，如：system:user:create"
           />
         </NFormItem>
-        <NFormItem v-if="formData.type !== 3" label="图标" path="icon">
+        <NFormItem
+          v-if="formData.type !== 3"
+          label="图标"
+          path="icon"
+        >
           <IconSelect v-model="formData.icon" />
         </NFormItem>
-        <NFormItem label="排序" path="sort">
+        <NFormItem
+          label="排序"
+          path="sort"
+        >
           <NInputNumber
             v-model:value="formData.sort"
             :min="0"
             style="width: 100%"
           />
         </NFormItem>
-        <NFormItem v-if="formData.type !== 3" label="是否可见" path="visible">
+        <NFormItem
+          v-if="formData.type !== 3"
+          label="是否可见"
+          path="visible"
+        >
           <div class="flex items-center gap-2">
             <Switch
               v-model="formData.visible"
@@ -521,7 +510,10 @@ onMounted(() => {
             </span>
           </div>
         </NFormItem>
-        <NFormItem label="状态" path="status">
+        <NFormItem
+          label="状态"
+          path="status"
+        >
           <div class="flex items-center gap-2">
             <Switch
               v-model="formData.status"
@@ -536,16 +528,22 @@ onMounted(() => {
       </NForm>
       <template #footer>
         <div class="flex justify-end gap-2">
-          <Button type="button" variant="outline" @click="modalVisible = false">
+          <Button
+            type="button"
+            variant="outline"
+            @click="modalVisible = false"
+          >
             取消
           </Button>
-          <Button type="button" :loading="submitLoading" @click="handleSubmit">
+          <Button
+            type="button"
+            :loading="submitLoading"
+            @click="handleSubmit"
+          >
             确定
           </Button>
         </div>
       </template>
     </NModal>
-  </div>
+  </Page>
 </template>
-
-<style lang="scss" scoped></style>

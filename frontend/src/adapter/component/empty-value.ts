@@ -18,3 +18,21 @@ export function commitFormText(value: unknown): string {
 export function displayFormChecked(value: unknown): boolean {
   return value === true;
 }
+
+/**
+ * 成对输入把 null 画成两段空字符串。
+ * 两段都空时回写 null，和表单重置一致；只填一段时保留另一段空字符串。
+ */
+export function displayPairText(value: unknown): [string, string] {
+  if (!Array.isArray(value)) return ['', ''];
+  return [displayFormText(value[0]), displayFormText(value[1])];
+}
+
+export function commitPairText(
+  left: unknown,
+  right: unknown,
+): null | [string, string] {
+  const pair: [string, string] = [commitFormText(left), commitFormText(right)];
+  if (pair[0] === '' && pair[1] === '') return null;
+  return pair;
+}

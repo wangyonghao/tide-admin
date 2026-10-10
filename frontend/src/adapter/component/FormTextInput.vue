@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, defineAsyncComponent, ref, useAttrs } from 'vue';
+import { computed, ref, useAttrs } from 'vue';
 
 import { IconifyIcon } from '@vben/icons';
 
@@ -7,7 +7,12 @@ import { Button } from '#/ui/button';
 import { Input } from '#/ui/input';
 import { Textarea } from '#/ui/textarea';
 
-import { commitFormText, displayFormText } from './empty-value';
+import {
+  commitFormText,
+  commitPairText,
+  displayFormText,
+  displayPairText,
+} from './empty-value';
 import {
   textCountLabel,
   textMaxLength,
@@ -25,21 +30,17 @@ defineOptions({
 
 const props = defineProps<{
   textarea?: boolean;
-  value?: null | number | string;
+  value?: null | number | string | [unknown, unknown];
 }>();
 
 const emit = defineEmits<{
-  'update:value': [value: null | string];
+  'update:value': [value: null | string | [string, string]];
 }>();
-
-const NInput = defineAsyncComponent(() =>
-  import('naive-ui/es/input').then((res) => res.NInput),
-);
 
 const attrs = useAttrs();
 const inputRef = ref<{ $el?: { focus?: () => void } } | null>(null);
 const areaRef = ref<{ $el?: { focus?: () => void } } | null>(null);
-const naiveRef = ref<{ focus?: () => void } | null>(null);
+const pairRef = ref<{ $el?: { focus?: () => void } } | null>(null);
 const revealed = ref(false);
 
 const OMIT = new Set([
@@ -52,6 +53,7 @@ const OMIT = new Set([
   'onUpdate:value',
   'pair',
   'rows',
+  'separator',
   'showCount',
   'showPasswordOn',
   'showWordLimit',
@@ -65,19 +67,36 @@ const fieldAttrs = computed(() => ({
   textarea: props.textarea,
 }));
 
-const pairOnly = computed(() => textUsesPair(fieldAttrs.value));
+const pairMode = computed(() => textUsesPair(fieldAttrs.value));
 const asTextarea = computed(
-  () => !pairOnly.value && textUsesTextarea(fieldAttrs.value),
+  () => !pairMode.value && textUsesTextarea(fieldAttrs.value),
 );
 const asPassword = computed(
   () =>
-    !pairOnly.value && !asTextarea.value && textUsesPassword(fieldAttrs.value),
+    !pairMode.value && !asTextarea.value && textUsesPassword(fieldAttrs.value),
 );
 const maxLength = computed(() => textMaxLength(fieldAttrs.value));
 const showCount = computed(() => textShowsCount(fieldAttrs.value));
 const rows = computed(() => textRows(fieldAttrs.value));
 const shown = computed(() => displayFormText(props.value));
 const countLabel = computed(() => textCountLabel(shown.value, maxLength.value));
+const pairText = computed(() => displayPairText(props.value));
+const pairPlaceholder = computed(() => {
+  const raw = attrs.placeholder;
+  if (Array.isArray(raw)) {
+    return [
+      raw[0] == null ? '' : String(raw[0]),
+      raw[1] == null ? '' : String(raw[1]),
+    ];
+  }
+  const text = typeof raw === 'string' ? raw : '';
+  return [text, text];
+});
+const separator = computed(() => {
+  return typeof attrs.separator === 'string' && attrs.separator
+    ? attrs.separator
+    : '-';
+});
 
 const plainAttrs = computed(() => {
   const next: Record<string, unknown> = {};
@@ -87,27 +106,6 @@ const plainAttrs = computed(() => {
   }
   return next;
 });
-
-const naiveAttrs = computed(() => {
-  const next: Record<string, unknown> = {};
-  for (const [key, val] of Object.entries(attrs)) {
-    if (
-      key === 'modelValue' ||
-      key === 'onUpdate:modelValue' ||
-      key === 'textarea' ||
-      key === 'value' ||
-      key === 'onUpdate:value'
-    ) {
-      continue;
-    }
-    next[key] = val;
-  }
-  return next;
-});
-
-const naiveValue = computed(() =>
-  props.value == null ? null : String(props.value),
-);
 
 const inputType = computed(() => {
   if (asPassword.value) return revealed.value ? 'text' : 'password';
@@ -120,14 +118,17 @@ function onText(value: number | string) {
   emit('update:value', commitFormText(value));
 }
 
-function onNaive(value: null | string) {
-  emit('update:value', value);
+function onPair(index: 0 | 1, next: unknown) {
+  const current = displayPairText(props.value);
+  const left = index === 0 ? next : current[0];
+  const right = index === 1 ? next : current[1];
+  emit('update:value', commitPairText(left, right));
 }
 
 defineExpose({
   focus: () => {
-    if (pairOnly.value) {
-      naiveRef.value?.focus?.();
+    if (pairMode.value) {
+      pairRef.value?.$el?.focus?.();
       return;
     }
     const target = asTextarea.value ? areaRef.value : inputRef.value;
@@ -137,14 +138,31 @@ defineExpose({
 </script>
 
 <template>
-  <NInput
-    v-if="pairOnly"
-    ref="naiveRef"
-    v-bind="naiveAttrs"
-    :value="naiveValue"
-    @update:value="onNaive"
-  />
-  <div v-else class="w-full">
+  <div
+    v-if="pairMode"
+    class="flex w-full min-w-0 items-center gap-2"
+    :class="attrs.class"
+    :style="attrs.style"
+  >
+    <Input
+      ref="pairRef"
+      :model-value="pairText[0]"
+      :placeholder="pairPlaceholder[0]"
+      :disabled="plainAttrs.disabled === true"
+      @update:model-value="onPair(0, $event)"
+    />
+    <span class="text-muted-foreground shrink-0 text-sm">{{ separator }}</span>
+    <Input
+      :model-value="pairText[1]"
+      :placeholder="pairPlaceholder[1]"
+      :disabled="plainAttrs.disabled === true"
+      @update:model-value="onPair(1, $event)"
+    />
+  </div>
+  <div
+    v-else
+    class="w-full"
+  >
     <div :class="asPassword ? 'relative' : undefined">
       <Textarea
         v-if="asTextarea"
@@ -180,7 +198,10 @@ defineExpose({
         />
       </Button>
     </div>
-    <div v-if="showCount" class="text-muted-foreground mt-1 text-right text-xs">
+    <div
+      v-if="showCount"
+      class="text-muted-foreground mt-1 text-right text-xs"
+    >
       {{ countLabel }}
     </div>
   </div>

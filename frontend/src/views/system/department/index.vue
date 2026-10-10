@@ -1,17 +1,17 @@
 <script setup lang="ts">
-import type { DataTableColumns } from 'naive-ui';
-
+import type { VxeTableGridOptions } from '#/adapter/vxe-table';
 import type { DeptResult } from '#/api/system/dept';
 
-import { h, ref, watch } from 'vue';
+import { nextTick, ref, watch } from 'vue';
 
 import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
 
 import { useDebounceFn } from '@vueuse/core';
-import { NDataTable, NInput, useMessage } from 'naive-ui';
+import { useMessage } from 'naive-ui';
 
+import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { deptApi } from '#/api/system/dept';
 import { useDownload } from '#/hooks/app/useDownload';
 import { useUserStore } from '#/store/user';
@@ -21,153 +21,120 @@ import {
   ConfirmAction,
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
+import { FilterInput } from '#/ui-patterns/filter-input';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
-import EditModal from './dept-drawer.vue';
+import EditModal from './department-drawer.vue';
 
-// 搜索表单
-const searchForm = ref({
-  name: '',
-});
-
+const keyword = ref('');
 const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
-const loading = ref(false);
-const tableData = ref<DeptResp[]>([]);
-const expandedRowKeys = ref<string[]>([]);
-
-// 创建列配置
-const createColumns = (): DataTableColumns<DeptResult> => {
-  return [
-    { title: $t('system.dept.name'), key: 'name', align: 'left', width: 300 },
-    { title: $t('system.dept.code'), key: 'code', align: 'left', width: 140 },
-    {
-      title: $t('system.dept.status'),
-      key: 'status',
-      align: 'center',
-      width: 100,
-      render: (row) => {
-        return h(
-          Badge,
-          { variant: row.status === 1 ? 'success' : 'destructive' },
-          () =>
-            row.status === 1 ? $t('common.enabled') : $t('common.disabled'),
-        );
-      },
-    },
-    {
-      title: $t('system.dept.description'),
-      key: 'description',
-      align: 'left',
-      ellipsis: { tooltip: true },
-    },
-    {
-      title: $t('pages.common.operation'),
-      key: 'action',
-      align: 'center',
-      width: 150,
-      fixed: 'right',
-      render: (row) => {
-        const actions = [];
-        if (userStore.hasPermission('system:dept:update')) {
-          actions.push(
-            h(
-              Button,
-              {
-                type: 'button',
-                variant: 'ghost',
-                size: 'icon',
-                onClick: () => handleEdit(row),
-              },
-              {
-                default: () =>
-                  h(IconifyIcon, { icon: 'lucide:pencil', class: 'size-4' }),
-              },
-            ),
-          );
-        }
-        if (userStore.hasPermission('system:dept:delete')) {
-          actions.push(
-            h(
-              Button,
-              {
-                type: 'button',
-                variant: 'ghost',
-                size: 'icon',
-                class: 'text-destructive',
-                onClick: () => handleDelete(row),
-              },
-              {
-                default: () =>
-                  h(IconifyIcon, { icon: 'lucide:trash-2', class: 'size-4' }),
-              },
-            ),
-          );
-        }
-        return h(
-          'div',
-          { class: 'flex items-center justify-center gap-2' },
-          actions,
-        );
-      },
-    },
-  ];
-};
-
-const columns = ref(createColumns());
-
-// 加载数据
-async function loadData() {
-  try {
-    loading.value = true;
-    const res = await deptApi.tree({ keyword: searchForm.value.name });
-    tableData.value = res;
-    // 默认展开所有节点
-    if (res.length > 0) {
-      expandAllNodes(res);
-    }
-  } catch (error) {
-    console.error('Failed to load dept data:', error);
-  } finally {
-    loading.value = false;
-  }
-}
-
-// 递归展开所有节点
-function expandAllNodes(data: DeptResult[]) {
-  const keys: string[] = [];
-  const traverse = (items: DeptResult[]) => {
-    items.forEach((item) => {
-      if (item.children && item.children.length > 0) {
-        keys.push(item.id);
-        traverse(item.children);
-      }
-    });
-  };
-  traverse(data);
-  expandedRowKeys.value = keys;
-}
-
-// 折叠所有节点
-function collapseAllNodes() {
-  expandedRowKeys.value = [];
-}
-
+const expanded = ref(true);
 const editModalVisible = ref(false);
-const editModalData = ref<DeptResp | undefined>(undefined);
+const editModalData = ref<DeptResult | undefined>(undefined);
 
-const handleEdit = (record: DeptResp) => {
+function presentTree(nodes: DeptResult[]): DeptResult[] {
+  return nodes.map((node) => ({
+    ...node,
+    children: node.children?.length ? presentTree(node.children) : undefined,
+  })) as DeptResult[];
+}
+
+const [Grid, gridApi] = useVbenVxeGrid({
+  showSearchForm: false,
+  gridOptions: {
+    columns: [
+      {
+        field: 'name',
+        title: $t('system.dept.name'),
+        treeNode: true,
+        align: 'left',
+        minWidth: 240,
+      },
+      {
+        field: 'code',
+        title: $t('system.dept.code'),
+        align: 'left',
+        width: 140,
+      },
+      {
+        field: 'status',
+        title: $t('system.dept.status'),
+        width: 100,
+        slots: { default: 'status' },
+      },
+      {
+        field: 'description',
+        title: $t('system.dept.description'),
+        align: 'left',
+        minWidth: 160,
+      },
+      {
+        field: 'action',
+        title: $t('pages.common.operation'),
+        width: 120,
+        fixed: 'right',
+        slots: { default: 'action' },
+      },
+    ],
+    height: 'auto',
+    keepSource: true,
+    pagerConfig: { enabled: false },
+    rowConfig: { keyField: 'id' },
+    treeConfig: {
+      childrenField: 'children',
+      expandAll: true,
+      rowField: 'id',
+    },
+    toolbarConfig: {
+      custom: true,
+      refresh: true,
+      zoom: true,
+    },
+    proxyConfig: {
+      ajax: {
+        query: async () => {
+          const res = await deptApi.tree({
+            keyword: keyword.value.trim() || undefined,
+          });
+          const records = presentTree(res ?? []);
+          return { records, total: records.length };
+        },
+        querySuccess: async () => {
+          expanded.value = true;
+          await nextTick();
+          gridApi.grid?.setAllTreeExpand?.(true);
+        },
+      },
+    },
+  } as VxeTableGridOptions<DeptResult>,
+});
+
+const reload = useDebounceFn(() => {
+  gridApi.reload();
+}, 300);
+
+watch(keyword, () => {
+  reload();
+});
+
+function toggleExpand() {
+  expanded.value = !expanded.value;
+  gridApi.grid?.setAllTreeExpand?.(expanded.value);
+}
+
+function handleEdit(record: DeptResult) {
   editModalData.value = record;
   editModalVisible.value = true;
-};
+}
 
-const handleAdd = () => {
+function handleAdd() {
   editModalData.value = undefined;
   editModalVisible.value = true;
-};
+}
 
-const handleDelete = async (row: DeptResp) => {
+async function handleDelete(row: DeptResult) {
   const ok = await confirmAction.value?.ask({
     title: $t('system.dept.deleteTitle'),
     description: $t('ui.actionMessage.deleteConfirm', [row.name]),
@@ -179,80 +146,63 @@ const handleDelete = async (row: DeptResp) => {
   try {
     await deptApi.delete(row.id);
     message.success($t('pages.common.deleteSuccess'));
-    await loadData();
+    await gridApi.query();
   } catch (error) {
     console.error('Failed to delete dept:', error);
   }
-};
+}
 
-const handleExport = () => {
+function handleExport() {
   useDownload(() =>
-    deptApi.export({ description: searchForm.value.name || undefined }),
+    deptApi.export({ keyword: keyword.value.trim() || undefined }),
   );
-};
-
-// 搜索（防抖）
-const handleSearch = useDebounceFn(() => {
-  loadData();
-}, 300);
-
-// 监听搜索表单变化
-watch(
-  () => searchForm.value.name,
-  () => {
-    handleSearch();
-  },
-);
-
-// 树列表折叠状态
-const expanded = ref<boolean>(true);
-const handleExpand = () => {
-  expanded.value = !expanded.value;
-  if (expanded.value) {
-    expandAllNodes(tableData.value);
-  } else {
-    collapseAllNodes();
-  }
-};
-
-// 初始加载
-loadData();
+}
 </script>
 
 <template>
   <Page auto-content-height>
     <ConfirmAction ref="confirmAction" />
-    <div class="flex flex-col h-full bg-background p-4">
-      <!-- 工具栏 -->
-      <div class="flex items-center justify-between w-full pb-4 gap-4">
-        <!-- 左侧搜索框 -->
-        <div class="w-64">
-          <NInput
-            v-model:value="searchForm.name"
-            :placeholder="$t('system.dept.name')"
-            clearable
-          >
-            <template #prefix>
-              <IconifyIcon icon="lucide:search" class="w-4 h-4" />
-            </template>
-          </NInput>
-        </div>
-
-        <!-- 右侧操作按钮 -->
+    <Grid>
+      <template #toolbar-actions>
+        <FilterInput
+          v-model="keyword"
+          class="w-64"
+          :placeholder="$t('system.dept.name')"
+        />
+      </template>
+      <template #toolbar-tools>
         <ToolbarActions>
           <span v-access:code="['system:dept:create']">
-            <Button type="button" variant="secondary" @click="handleAdd">
-              <IconifyIcon icon="lucide:plus" class="mr-1 size-4" />
+            <Button
+              type="button"
+              variant="secondary"
+              @click="handleAdd"
+            >
+              <IconifyIcon
+                icon="lucide:plus"
+                class="mr-1 size-4"
+              />
               {{ $t('pages.common.add') }}
             </Button>
           </span>
           <span v-access:code="['system:dept:export']">
-            <Button type="button" variant="secondary" @click="handleExport">
-              <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
+            <Button
+              type="button"
+              variant="secondary"
+              @click="handleExport"
+            >
+              <IconifyIcon
+                icon="lucide:download"
+                class="mr-1 size-4"
+              />
               {{ $t('pages.common.export') }}
             </Button>
           </span>
-          <Button type="button" variant="secondary" @click="handleExpand">
+          <Button
+            type="button"
+            variant="secondary"
+            @click="toggleExpand"
+          >
             <IconifyIcon
               :icon="expanded ? 'lucide:chevrons-up' : 'lucide:chevrons-down'"
               class="mr-1 size-4"
@@ -262,39 +212,47 @@ loadData();
             }}
           </Button>
         </ToolbarActions>
-      </div>
-
-      <!-- 表格 -->
-      <div class="flex-1 overflow-hidden">
-        <NDataTable
-          :columns="columns"
-          :data="tableData"
-          :loading="loading"
-          :row-key="(row: DeptResult) => row.id"
-          :expanded-row-keys="expandedRowKeys"
-          @update:expanded-row-keys="
-            (keys) => (expandedRowKeys = keys as string[])
-          "
-          children-key="children"
-          striped
-          bordered
-          scroll-x="800"
-          size="small"
-          flex-height
-        />
-      </div>
-    </div>
+      </template>
+      <template #status="{ row }">
+        <Badge :variant="row.status === 1 ? 'success' : 'destructive'">
+          {{ row.status === 1 ? $t('common.enabled') : $t('common.disabled') }}
+        </Badge>
+      </template>
+      <template #action="{ row }">
+        <div class="flex items-center justify-center gap-2">
+          <Button
+            v-if="userStore.hasPermission('system:dept:update')"
+            type="button"
+            variant="ghost"
+            size="icon"
+            @click="handleEdit(row)"
+          >
+            <IconifyIcon
+              icon="lucide:pencil"
+              class="size-4"
+            />
+          </Button>
+          <Button
+            v-if="userStore.hasPermission('system:dept:delete')"
+            type="button"
+            variant="ghost"
+            size="icon"
+            class="text-destructive"
+            @click="handleDelete(row)"
+          >
+            <IconifyIcon
+              icon="lucide:trash-2"
+              class="size-4"
+            />
+          </Button>
+        </div>
+      </template>
+    </Grid>
 
     <EditModal
       v-model:visible="editModalVisible"
       :data="editModalData"
-      @success="loadData()"
+      @success="gridApi.query()"
     />
   </Page>
 </template>
-
-<style scoped>
-:deep(.n-data-table) {
-  height: 100%;
-}
-</style>
