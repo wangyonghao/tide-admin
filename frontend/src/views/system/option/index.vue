@@ -18,6 +18,7 @@ import {
 } from 'naive-ui';
 
 import { optionApi } from '#/api/system';
+import { Button } from '#/ui/button';
 
 import OptionEditDrawer from './components/option-edit-drawer.vue';
 
@@ -250,9 +251,7 @@ onMounted(() => {
             </template>
           </NInput>
         </div>
-        <NSpace>
-          <NButton type="primary" @click="handleAdd">新建选项</NButton>
-        </NSpace>
+        <Button type="button" @click="handleAdd">新建选项</Button>
       </div>
       <NDataTable
         :columns="columns"

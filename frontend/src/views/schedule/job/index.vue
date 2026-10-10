@@ -19,8 +19,14 @@ import {
 } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { deleteJob, listJob, triggerJob, updateJobStatus } from '#/api/schedule';
+import {
+  deleteJob,
+  listJob,
+  triggerJob,
+  updateJobStatus,
+} from '#/api/schedule';
 import { useUserStore } from '#/store/user';
+import { Button } from '#/ui/button';
 
 import { useGridFieldColumns, useGridSearchFormSchema } from './data-scope';
 import JobEditDrawer from './edit-drawer.vue';
@@ -119,11 +125,9 @@ onMounted(() => {
   <Page auto-content-height>
     <TableGrid>
       <template #toolbar-tools>
-        <NSpace>
-          <span v-access:code="['schedule:job:create']">
-            <NButton type="primary" @click="handleAdd">新增</NButton>
-          </span>
-        </NSpace>
+        <span v-access:code="['schedule:job:create']">
+          <Button type="button" @click="handleAdd">新增</Button>
+        </span>
       </template>
       <template #scheduleLabel="{ row }">
         <NPopover placement="bottom" style="width: 240px">

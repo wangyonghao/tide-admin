@@ -8,7 +8,6 @@ import { $t } from '#/locales';
 import { IconifyIcon } from '@vben/icons';
 import { SearchOutline } from '@vicons/ionicons5';
 import {
-  NButton,
   NDataTable,
   NDatePicker,
   NIcon,
@@ -18,6 +17,9 @@ import {
 } from 'naive-ui';
 
 import { authApi } from '#/api/auth';
+import { Button } from '#/ui/button';
+import { FilterInput } from '#/ui-patterns/filter-input';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 // ==================== 搜索表单 ====================
 const searchForm = ref({
@@ -55,13 +57,27 @@ const loginStatusOptions = [
 
 // ==================== 表格列定义 ====================
 const tableColumns: DataTableColumns<LoginLogResult> = [
-  { title: '序号', key: 'index', width: 60,
-    render: (_row, index) => (tablePagination.value.page - 1) * tablePagination.value.pageSize + index + 1,
+  {
+    title: '序号',
+    key: 'index',
+    width: 60,
+    render: (_row, index) =>
+      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
+      index +
+      1,
   },
-  { title: '用户名', key: 'username', minWidth: 100, },
-  { title: $t('monitor.loginLog.loginTime'), key: 'loginTime', minWidth: 160, sorter: 'default', },
+  { title: '用户名', key: 'username', minWidth: 100 },
+  {
+    title: $t('monitor.loginLog.loginTime'),
+    key: 'loginTime',
+    minWidth: 160,
+    sorter: 'default',
+  },
 
-  { title: $t('monitor.loginLog.loginStatus'), key: 'loginStatus', minWidth: 100,
+  {
+    title: $t('monitor.loginLog.loginStatus'),
+    key: 'loginStatus',
+    minWidth: 100,
     render(row) {
       return h(
         NTag,
@@ -73,9 +89,12 @@ const tableColumns: DataTableColumns<LoginLogResult> = [
       );
     },
   },
-  { title: $t('monitor.loginLog.ipAddress'), key: 'ipAddress', minWidth: 100, },
-  { title: $t('monitor.loginLog.location'), key: 'location', minWidth: 120, },
-  { title: $t('monitor.loginLog.deviceType'), key: 'deviceType', minWidth: 100,
+  { title: $t('monitor.loginLog.ipAddress'), key: 'ipAddress', minWidth: 100 },
+  { title: $t('monitor.loginLog.location'), key: 'location', minWidth: 120 },
+  {
+    title: $t('monitor.loginLog.deviceType'),
+    key: 'deviceType',
+    minWidth: 100,
     render(row) {
       const deviceTypeMap: Record<string, string> = {
         MOBILE: '应用程序',
@@ -85,10 +104,15 @@ const tableColumns: DataTableColumns<LoginLogResult> = [
       return deviceTypeMap[row.deviceType] || row.deviceType;
     },
   },
-  { title: $t('monitor.loginLog.browser'), key: 'browser', minWidth: 150, },
-  { title: $t('monitor.loginLog.os'), key: 'os', minWidth: 120, },
-  { title: $t('monitor.loginLog.failureReason'), key: 'failureReason', minWidth: 180,
-    render(row) { return row.failureReason || '-'; },
+  { title: $t('monitor.loginLog.browser'), key: 'browser', minWidth: 150 },
+  { title: $t('monitor.loginLog.os'), key: 'os', minWidth: 120 },
+  {
+    title: $t('monitor.loginLog.failureReason'),
+    key: 'failureReason',
+    minWidth: 180,
+    render(row) {
+      return row.failureReason || '-';
+    },
   },
 ];
 
@@ -100,8 +124,14 @@ async function loadTableData() {
     let loginTimeEnd: string | undefined;
 
     if (searchForm.value.loginTime) {
-      loginTimeStart = new Date(searchForm.value.loginTime[0]) .toISOString() .slice(0, 19) .replace('T', ' ');
-      loginTimeEnd = new Date(searchForm.value.loginTime[1]) .toISOString() .slice(0, 19) .replace('T', ' ');
+      loginTimeStart = new Date(searchForm.value.loginTime[0])
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
+      loginTimeEnd = new Date(searchForm.value.loginTime[1])
+        .toISOString()
+        .slice(0, 19)
+        .replace('T', ' ');
     }
 
     const res = await authApi.listLoginLog({
@@ -174,7 +204,9 @@ onMounted(() => {
     <!-- 搜索和操作栏 -->
     <div class="mb-4">
       <!-- 搜索表单 - 响应式网格布局 -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3"
+      >
         <NInput
           v-model:value="searchForm.username"
           placeholder="用户名"
@@ -185,10 +217,9 @@ onMounted(() => {
             <NIcon><SearchOutline /></NIcon>
           </template>
         </NInput>
-        <NInput
-          v-model:value="searchForm.ipAddress"
+        <FilterInput
+          v-model="searchForm.ipAddress"
           placeholder="IP地址"
-          clearable
           @keyup.enter="handleSearch"
         />
         <NSelect
@@ -207,22 +238,22 @@ onMounted(() => {
           />
         </div>
       </div>
-      
+
       <!-- 操作按钮 -->
-      <div class="flex items-center gap-2 flex-wrap">
-        <NButton type="primary" @click="handleSearch">
-          <template #icon><IconifyIcon icon="lucide:search" /></template>
+      <ToolbarActions>
+        <Button type="button" @click="handleSearch">
+          <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
           查询
-        </NButton>
-        <NButton @click="handleReset">
-          <template #icon><IconifyIcon icon="lucide:rotate-ccw" /></template>
+        </Button>
+        <Button type="button" variant="outline" @click="handleReset">
+          <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
           重置
-        </NButton>
-        <NButton @click="handleExport">
-          <template #icon><IconifyIcon icon="lucide:download" /></template>
+        </Button>
+        <Button type="button" variant="outline" @click="handleExport">
+          <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
           导出
-        </NButton>
-      </div>
+        </Button>
+      </ToolbarActions>
     </div>
 
     <!-- 数据表格 -->

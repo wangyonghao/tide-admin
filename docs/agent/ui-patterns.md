@@ -15,7 +15,7 @@
 
 **新代码：** 优先 `#/ui/*`。不要在新组件里新增 `naive-ui` 导入，除非该控件属于暂留类（表、树、复杂选择器，见 [`naive-migration-inventory.md`](naive-migration-inventory.md)）。Naive 保持安装；Vxe Grid 仍是表格默认。
 
-已有模式壳：`ui-patterns/toolbar-actions`（工具栏按钮簇，`inline-flex` + `gap-2`）。
+已有模式壳：`ui-patterns/toolbar-actions`（两个及以上工具栏按钮，`inline-flex` + `gap-2`）；`ui-patterns/filter-input`（无前缀的字符串筛选框，清除后为空字符串）。
 
 ---
 

@@ -1,9 +1,25 @@
-# Naive UI 迁移清单（Phase 1）
+# Naive UI 迁移清单
 
 统计范围：`frontend/src` 里 `from 'naive-ui'` 的具名导入。一个文件导入一次记 1。共 **50** 个文件。  
 `adapter/component/index.ts` 另有 `naive-ui/es/*` 动态导入，给 `useVbenForm` 供控件，不计入上表，但在下面单独标出。
 
-Naive **保持安装**。本阶段只建立原子层，并改了开放应用列表的工具栏按钮。
+下面表格是 **Phase 2 之后仍在导入** 的数量。Naive **保持安装**。Vxe / `NDataTable` 与表单适配器未动。
+
+## Phase 2 已换
+
+同一 PR 在 Phase 1 原子层上继续换页面，不改架构。
+
+- **工具栏按钮**：列表页里 `#toolbar-tools` 或明显的主/次操作按钮改为 `#/ui/button`。两个及以上按钮用 `ToolbarActions`。只给这些按钮留白的 `NSpace` 去掉。单按钮工具栏直接放 `Button`。
+- **筛选框**：无前缀、字符串、清除后当空的搜索框改为 `FilterInput`（登录日志 IP、操作日志的操作类型与 IP、短信日志手机号）。带 `#prefix`、密码、文本域、写在 `NForm` / `useVbenForm` 里的输入未动。
+- **勾选**：代码生成配置抽屉里四个列表勾选改为 `#/ui/checkbox`，绑定是 `v-model`，不是 Naive 的 `v-model:checked`。
+- **反馈**：只改 `views/open/app/index.vue`。成功/失败从 `useMessage` 换成 `#/ui/sonner` 的 `toast`。`useDialog` 仍留在该页。没有新增确认框模式。
+- **未做 drop-in**：部门/角色上的 `NBadge` 是圆点加自定义颜色，不是 Badge 胶囊。
+
+`NButton` 具名导入 34 → **31**，正文里的 `NButton` 出现次数 265 → **189**。`NSpace` 具名导入 22 → **20**。`useMessage` 27 → **26**。`NCheckbox` 6 → **5**。`NInput` 的文件数仍是 23（换掉的四个框所在文件还留着别的 `NInput`）。
+
+彻底不再导入 `NButton` 的页面：`views/code/generator/index.vue`、`views/monitor/log/login-log.vue`、`views/user/profile/components/operation-logs.vue`。不再导入 `NSpace` 的：代码生成列表、`views/user/message/components/my-message.vue`。
+
+仍跳过：表单适配器与 Vxe `CellLink`；带 `:loading` 的抽屉/弹层底栏；`NPopconfirm` 里的行内文字按钮；`demos/naive`；带前缀的搜索框；角色权限树勾选；`NSwitch` 的 `1/0`。
 
 ## 目录选择
 
@@ -13,7 +29,7 @@ Naive **保持安装**。本阶段只建立原子层，并改了开放应用列�
 | 层 | 路径 | 导入 |
 |----|------|------|
 | 原子 | `frontend/src/ui/<atom>` | `import { Button } from '#/ui/button'` |
-| 模式 | `frontend/src/ui-patterns/<pattern>` | `import { ToolbarActions } from '#/ui-patterns/toolbar-actions'` |
+| 模式 | `frontend/src/ui-patterns/<pattern>` | `ToolbarActions`、`FilterInput` |
 
 包增加子路径 `./ui/*`，新原子（Skeleton、Sonner）**不**进入 `@vben-core/shadcn-ui` 根桶，避免壳层整包把 `vue-sonner` 带进去。
 
@@ -25,17 +41,17 @@ Naive **保持安装**。本阶段只建立原子层，并改了开放应用列�
 
 | Naive | 文件数 | 换成 | 例子 |
 |-------|--------|------|------|
-| `NButton` | 34 | `#/ui/button` | `views/open/app/index.vue` 工具栏（本阶段）；`views/code/generator/index.vue` |
-| `NSpace` | 22 | `flex` + `gap-*` | `views/schedule/job/index.vue` |
-| `NInput` | 23 | `#/ui/input` | `views/system/user/index.vue` 搜索框。无清除、密码、字数统计 |
+| `NButton` | 31 | `#/ui/button` | 行内文字按钮，如 `views/schedule/job/index.vue`；工具栏大多已换 |
+| `NSpace` | 20 | `flex` + `gap-*` 或 `ToolbarActions` | 仍包着选择器或行内操作的，如 `views/system/file/index.vue` |
+| `NInput` | 23 | `#/ui/input` 或 `FilterInput` | 带前缀的搜索框仍是 Naive，如 `views/system/user/index.vue`。无前缀筛选用 `FilterInput` |
 | `NCard` | 12 | 已有 Card（`#/ui` 尚未再导出，需要时再加路径） | `views/demos/naive/index.vue` |
 | `NDivider` | 5 | 已有 Separator | `views/system/config/index.vue` |
-| `NCheckbox` | 6 | `#/ui/checkbox` | `views/system/role/components/role-permission.vue`。绑定是 `checked`，不是 Naive 的 `value` |
+| `NCheckbox` | 5 | `#/ui/checkbox` | `views/system/role/components/role-permission.vue`。绑定用 `v-model`（`modelValue`） |
 | `NBadge` | 2 | `#/ui/badge` | `views/system/role/index.vue` |
 | `NSpin` | 1 | 已有 Spinner | 单页用量 |
 | `NText` | 1 | 排版类（`text-foreground` 等） | 单页用量 |
 
-`NButton` 的 34 含表格渲染 `adapter/vxe-table.ts` 的 `CellLink`。那一处跟 Vxe 渲染绑在一起，跟页面工具栏分开换。
+`NButton` 的 31 仍含 `adapter/vxe-table.ts` 的 `CellLink`。那一处跟 Vxe 渲染绑在一起，跟页面工具栏分开换。
 
 ## 后换
 
@@ -43,7 +59,7 @@ Naive **保持安装**。本阶段只建立原子层，并改了开放应用列�
 
 | Naive | 文件数 | 原因 | 例子 |
 |-------|--------|------|------|
-| `useMessage` | 27 | Sonner 已挂到 `app.vue`，调用点仍是 Naive | `views/open/app/index.vue` |
+| `useMessage` | 26 | Sonner 已挂到 `app.vue`；开放应用列表已改 `toast`，其余调用点仍是 Naive | `views/schedule/job/index.vue` |
 | `NTag` | 18 | Badge 已补 `success` / `warning`，字典色映射还未收成模式 | `views/schedule/log/index.vue` |
 | `NSelect` | 12 | shadcn Select 已有，表单 schema 仍走 Naive | `views/monitor/log/login-log.vue` |
 | `NIcon` | 12 | 可换 Lucide，但图标选择器是一整块 | `components/icon-select.vue` |

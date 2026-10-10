@@ -14,14 +14,9 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { getPopupContainer } from '@vben/utils';
 
-import {
-  NCheckbox,
-  NInput,
-  NSelect,
-  useMessage,
-  NSteps,
-  NStep,
-} from 'naive-ui';
+import { NInput, NSelect, useMessage, NSteps, NStep } from 'naive-ui';
+
+import { Checkbox } from '#/ui/checkbox';
 
 const message = useMessage();
 
@@ -433,20 +428,17 @@ const getDrawerTitle = computed(() => {
             <NInput v-model:value="row.comment" />
           </template>
           <template #showInList="{ row }">
-            <NCheckbox v-model:checked="row.showInList" />
+            <Checkbox v-model="row.showInList" />
           </template>
           <template #showInForm="{ row }">
-            <NCheckbox v-model:checked="row.showInForm" />
+            <Checkbox v-model="row.showInForm" />
           </template>
           <template #isRequired="{ row }">
-            <NCheckbox
-              v-if="row.showInForm"
-              v-model:checked="row.isRequired"
-            />
-            <NCheckbox v-else disabled />
+            <Checkbox v-if="row.showInForm" v-model="row.isRequired" />
+            <Checkbox v-else disabled />
           </template>
           <template #showInQuery="{ row }">
-            <NCheckbox v-model:checked="row.showInQuery" />
+            <Checkbox v-model="row.showInQuery" />
           </template>
           <template #formType="{ row }">
             <NSelect

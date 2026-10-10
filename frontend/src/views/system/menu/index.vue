@@ -35,6 +35,7 @@ import {
 } from 'naive-ui';
 
 import { menuApi } from '#/api/system/menu';
+import { Button } from '#/ui/button';
 import IconSelect from '#/components/icon-select.vue';
 import { useUserStore } from '#/store/user';
 
@@ -359,30 +360,24 @@ onMounted(() => {
             />
           </NFormItem>
           <NFormItem>
-            <NSpace>
-              <NButton type="primary" @click="handleSearch">
-                <template #icon>
-                  <NIcon><SearchOutline /></NIcon>
-                </template>
-                搜索
-              </NButton>
-            </NSpace>
+            <Button type="button" @click="handleSearch">
+              <NIcon><SearchOutline /></NIcon>
+              搜索
+            </Button>
           </NFormItem>
         </NForm>
       </div>
 
       <!-- 工具栏 -->
       <div class="table-toolbar">
-        <NButton
+        <Button
           v-if="userStore.hasPermission('system:menu:add')"
-          type="primary"
+          type="button"
           @click="handleAdd()"
         >
-          <template #icon>
-            <NIcon><AddOutline /></NIcon>
-          </template>
+          <NIcon><AddOutline /></NIcon>
           新增菜单
-        </NButton>
+        </Button>
       </div>
 
       <!-- 表格 -->
@@ -439,7 +434,9 @@ onMounted(() => {
             <template #checked>是</template>
             <template #unchecked>否</template>
           </NSwitch>
-          <span style="margin-left: 8px; font-size: 12px; color: #999">外链点击后将在新窗口打开</span>
+          <span style="margin-left: 8px; font-size: 12px; color: #999"
+            >外链点击后将在新窗口打开</span
+          >
         </NFormItem>
         <NFormItem
           v-if="formData.type !== 3 && !formData.isFrame"

@@ -20,6 +20,7 @@ import {
 } from 'naive-ui';
 
 import { onlineApi } from '#/api/monitor/online';
+import { Button } from '#/ui/button';
 
 const message = useMessage();
 const dialog = useDialog();
@@ -61,16 +62,22 @@ const tableColumns: DataTableColumns<OnlineUser> = [
     key: 'index',
     width: 60,
     render: (_row, index) =>
-      (tablePagination.value.page - 1) * tablePagination.value.pageSize + index + 1,
+      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
+      index +
+      1,
   },
   { title: '用户名', key: 'loginName', minWidth: 120 },
   { title: 'IP地址', key: 'ip', minWidth: 140 },
-  { title: '登录地点', key: 'location', minWidth: 150, },
-  { title: '浏览器', key: 'browser', minWidth: 150, },
-  { title: '操作系统', key: 'os', minWidth: 120, },
-  { title: '登录时间', key: 'loginTime', minWidth: 160, },
-  { title: '最后活跃时间', key: 'lastActiveTime', minWidth: 160, },
-  { title: '操作', key: 'action', width: 100, fixed: 'right',
+  { title: '登录地点', key: 'location', minWidth: 150 },
+  { title: '浏览器', key: 'browser', minWidth: 150 },
+  { title: '操作系统', key: 'os', minWidth: 120 },
+  { title: '登录时间', key: 'loginTime', minWidth: 160 },
+  { title: '最后活跃时间', key: 'lastActiveTime', minWidth: 160 },
+  {
+    title: '操作',
+    key: 'action',
+    width: 100,
+    fixed: 'right',
     render(row) {
       return h(
         NPopconfirm,
@@ -177,10 +184,10 @@ onMounted(() => {
               <NIcon><SearchOutline /></NIcon>
             </template>
           </NInput>
-          <NButton type="primary" @click="handleSearch">
-            <template #icon><IconifyIcon icon="lucide:search" /></template>
+          <Button type="button" @click="handleSearch">
+            <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
             查询
-          </NButton>
+          </Button>
         </div>
       </div>
 
@@ -190,12 +197,21 @@ onMounted(() => {
         class="flex items-center justify-between mb-4 p-3 bg-primary/10 rounded"
       >
         <span class="text-sm">
-          已选中 <span class="font-bold text-primary">{{ selectedRowKeys.length }}</span> 项
+          已选中
+          <span class="font-bold text-primary">{{
+            selectedRowKeys.length
+          }}</span>
+          项
         </span>
-        <NButton type="error" @click="handleBatchKickout" size="small" >
-          <template #icon><IconifyIcon icon="lucide:user-x" /></template>
+        <Button
+          type="button"
+          size="sm"
+          variant="destructive"
+          @click="handleBatchKickout"
+        >
+          <IconifyIcon icon="lucide:user-x" class="mr-1 size-4" />
           批量强退
-        </NButton>
+        </Button>
       </div>
 
       <!-- 数据表格 -->

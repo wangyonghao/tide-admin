@@ -8,11 +8,12 @@ import type { OpenAppApi } from '#/api';
 import { Page, useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NButton, useDialog, useMessage } from 'naive-ui';
+import { NButton, useDialog } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { openAppApi } from '#/api/open';
 import { Button } from '#/ui/button';
+import { toast } from '#/ui/sonner';
 import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 import { useColumns, useGridFormSchema } from './data';
@@ -20,7 +21,6 @@ import AppDetail from './modules/detail.vue';
 import AppForm from './modules/form.vue';
 
 defineOptions({ name: 'OpenApp' });
-const message = useMessage();
 const dialog = useDialog();
 
 const [FormDrawer, formDrawerApi] = useVbenDrawer({
@@ -113,13 +113,14 @@ function onDetail(row: OpenAppApi.AppResp) {
 }
 
 function onDelete(row: OpenAppApi.AppResp) {
-  openAppApi.delete(row.id)
+  openAppApi
+    .delete(row.id)
     .then(() => {
-      message.success(`删除应用 "${row.name}" 成功`);
+      toast.success(`删除应用 "${row.name}" 成功`);
       onRefresh();
     })
     .catch(() => {
-      message.error(`删除应用 "${row.name}" 失败`);
+      toast.error(`删除应用 "${row.name}" 失败`);
     });
 }
 
@@ -128,7 +129,7 @@ async function onShowSecret(row: OpenAppApi.AppResp) {
     const { secretKey } = await openAppApi.getSecretKey(row.id);
     row.secretKey = secretKey;
   } catch {
-    message.error('获取密钥失败');
+    toast.error('获取密钥失败');
   }
 }
 
@@ -143,11 +144,11 @@ async function onResetSecret(row: OpenAppApi.AppResp) {
       '确认重置密钥',
     );
     await openAppApi.resetSecretKey(row.id);
-    message.success('密钥重置成功');
+    toast.success('密钥重置成功');
     gridApi.query();
   } catch (error: any) {
     if (error !== 'cancel') {
-      message.error('密钥重置失败');
+      toast.error('密钥重置失败');
     }
   }
 }
@@ -159,7 +160,7 @@ async function onResetSecret(row: OpenAppApi.AppResp) {
 async function onCopySecret(secretKey: string) {
   try {
     await navigator.clipboard.writeText(secretKey);
-    message.success('密钥已复制到剪贴板');
+    toast.success('密钥已复制到剪贴板');
   } catch {
     // 降级方案：使用传统的复制方法
     const textArea = document.createElement('textarea');
@@ -171,9 +172,9 @@ async function onCopySecret(secretKey: string) {
     textArea.select();
     try {
       document.execCommand('copy');
-      message.success('密钥已复制到剪贴板');
+      toast.success('密钥已复制到剪贴板');
     } catch {
-      message.error('复制失败，请手动复制');
+      toast.error('复制失败，请手动复制');
     } finally {
       textArea.remove();
     }
@@ -198,9 +199,9 @@ async function onExport() {
     link.download = '应用列表.xlsx';
     link.click();
     window.URL.revokeObjectURL(url);
-    message.success('导出成功');
+    toast.success('导出成功');
   } catch {
-    message.error('导出失败');
+    toast.error('导出失败');
   }
 }
 </script>

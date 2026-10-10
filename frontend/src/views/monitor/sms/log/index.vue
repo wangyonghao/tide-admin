@@ -10,8 +10,9 @@ import { $t } from '@vben/locales';
 import { NButton, useMessage, NPopconfirm, NSpace } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
-import { smsLogApi} from '#/api/system/sms-log';
+import { smsLogApi } from '#/api/system/sms-log';
 import { useDownload } from '#/hooks/app/useDownload';
+import { Button } from '#/ui/button';
 
 const message = useMessage();
 
@@ -161,13 +162,11 @@ const handleExport = () => {
   <Page auto-content-height>
     <TableGrid :table-title="$t('system.smsLog.listTitle')">
       <template #toolbar-tools>
-        <NSpace>
-          <span v-access:code="['system:smsLog:export']">
-            <NButton type="error" @click="handleExport">
-              {{ $t('pages.common.export') }}
-            </NButton>
-          </span>
-        </NSpace>
+        <span v-access:code="['system:smsLog:export']">
+          <Button type="button" variant="destructive" @click="handleExport">
+            {{ $t('pages.common.export') }}
+          </Button>
+        </span>
       </template>
       <template #action="{ row }">
         <NSpace>

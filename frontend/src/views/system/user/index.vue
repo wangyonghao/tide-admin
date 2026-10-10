@@ -10,10 +10,26 @@ import { h, onMounted, ref } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
-import { Page } from '@vben/common-ui'
-import { NButton, NDataTable, NDropdown, NIcon, NInput, NModal, NSpace, NSplit, NTag, NTree, useDialog, useMessage, } from 'naive-ui';
+import { Page } from '@vben/common-ui';
+import {
+  NButton,
+  NDataTable,
+  NDropdown,
+  NIcon,
+  NInput,
+  NModal,
+  NSpace,
+  NSplit,
+  NTag,
+  NTree,
+  useDialog,
+  useMessage,
+} from 'naive-ui';
 
-import { deptApi,roleApi,userApi } from '#/api/system';
+import { Button } from '#/ui/button';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
+
+import { deptApi, roleApi, userApi } from '#/api/system';
 
 import UserDetailDrawer from './components/user-detail-drawer.vue';
 import UserEditDrawer from './components/user-edit-drawer.vue';
@@ -66,7 +82,6 @@ function convertToTreeOptions(depts: DeptResult[]): TreeSelectOption[] {
   }));
 }
 
-
 async function loadRoleOptions() {
   try {
     const res = await roleApi.list({ status: 1 } as any);
@@ -103,16 +118,46 @@ const userPagination = ref({
 });
 
 const userColumns: DataTableColumns<UserResp> = [
-  { title: '序号', key: 'index', width: 60, fixed: 'left',
+  {
+    title: '序号',
+    key: 'index',
+    width: 60,
+    fixed: 'left',
     render: (_row, index) =>
-      (userPagination.value.page - 1) * userPagination.value.pageSize + index + 1,
+      (userPagination.value.page - 1) * userPagination.value.pageSize +
+      index +
+      1,
   },
   { title: '显示名称', key: 'displayName', minWidth: 100, fixed: 'left' },
   { title: '用户名', key: 'username', minWidth: 100 },
-  { title: '部门', key: 'deptName', minWidth: 100, render(row) { return row.deptName || '-'; } },
-  { title: '角色', key: 'roleNames', width: 120, render(row) { return row.roleNames || '-'; } },
-  { title: '手机号', key: 'phone', width: 120, render(row) { return row.phone || '-'; } },
-  { title: '状态', key: 'status', width: 80,
+  {
+    title: '部门',
+    key: 'deptName',
+    minWidth: 100,
+    render(row) {
+      return row.deptName || '-';
+    },
+  },
+  {
+    title: '角色',
+    key: 'roleNames',
+    width: 120,
+    render(row) {
+      return row.roleNames || '-';
+    },
+  },
+  {
+    title: '手机号',
+    key: 'phone',
+    width: 120,
+    render(row) {
+      return row.phone || '-';
+    },
+  },
+  {
+    title: '状态',
+    key: 'status',
+    width: 80,
     render(row) {
       const statusMap: Record<
         number,
@@ -131,14 +176,35 @@ const userColumns: DataTableColumns<UserResp> = [
       );
     },
   },
-  { title: '操作', key: 'action', width: 130, fixed: 'right',
+  {
+    title: '操作',
+    key: 'action',
+    width: 130,
+    fixed: 'right',
     render(row) {
       const dropdownOptions = [
-        { label: '详情', key: 'detail', icon: () => h(IconifyIcon, { icon: 'lucide:eye' }), },
-        { label: '修改', key: 'edit', icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }), },
-        { label: '重置密码', key: 'resetPwd', icon: () => h(IconifyIcon, { icon: 'lucide:key' }), },
-        { type: 'divider', key: 'divider', },
-        { label: '删除', key: 'delete', icon: () => h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }), },
+        {
+          label: '详情',
+          key: 'detail',
+          icon: () => h(IconifyIcon, { icon: 'lucide:eye' }),
+        },
+        {
+          label: '修改',
+          key: 'edit',
+          icon: () => h(IconifyIcon, { icon: 'lucide:pencil' }),
+        },
+        {
+          label: '重置密码',
+          key: 'resetPwd',
+          icon: () => h(IconifyIcon, { icon: 'lucide:key' }),
+        },
+        { type: 'divider', key: 'divider' },
+        {
+          label: '删除',
+          key: 'delete',
+          icon: () =>
+            h(IconifyIcon, { icon: 'lucide:trash-2', class: 'text-red-500' }),
+        },
       ];
 
       return h(
@@ -390,25 +456,25 @@ onMounted(() => {
                   <NIcon><SearchOutline /></NIcon>
                 </template>
               </NInput>
-              <NButton type="primary" @click="handleSearch">
-                <template #icon><IconifyIcon icon="lucide:search" /></template>
+              <Button type="button" @click="handleSearch">
+                <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
                 查询
-              </NButton>
+              </Button>
             </div>
-            <NSpace>
-              <NButton type="primary" @click="handleAdd">
-                <template #icon><IconifyIcon icon="lucide:plus" /></template>
+            <ToolbarActions>
+              <Button type="button" @click="handleAdd">
+                <IconifyIcon icon="lucide:plus" class="mr-1 size-4" />
                 新增
-              </NButton>
-              <NButton @click="handleImport">
-                <template #icon><IconifyIcon icon="lucide:upload" /></template>
+              </Button>
+              <Button type="button" variant="outline" @click="handleImport">
+                <IconifyIcon icon="lucide:upload" class="mr-1 size-4" />
                 导入
-              </NButton>
-              <NButton @click="handleExport">
-                <template #icon><IconifyIcon icon="lucide:download" /></template>
+              </Button>
+              <Button type="button" variant="outline" @click="handleExport">
+                <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
                 导出
-              </NButton>
-            </NSpace>
+              </Button>
+            </ToolbarActions>
           </div>
           <!-- 用户表格 -->
           <NDataTable
@@ -454,13 +520,13 @@ onMounted(() => {
           <IconifyIcon icon="lucide:alert-triangle" class="text-lg" />
           <span class="font-medium">新密码只显示一次，请妥善保管！</span>
         </div>
-        <div class="flex items-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded">
-          <span class="flex-1 font-mono text-lg select-all">{{ newPassword }}</span>
-          <NButton
-            type="primary"
-            size="small"
-            @click="handleCopyPassword"
-          >
+        <div
+          class="flex items-center gap-2 p-3 bg-gray-100 dark:bg-gray-800 rounded"
+        >
+          <span class="flex-1 font-mono text-lg select-all">{{
+            newPassword
+          }}</span>
+          <NButton type="primary" size="small" @click="handleCopyPassword">
             <template #icon>
               <IconifyIcon icon="lucide:copy" />
             </template>

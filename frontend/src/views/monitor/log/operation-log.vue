@@ -19,6 +19,9 @@ import {
 } from 'naive-ui';
 
 import { logApi } from '#/api/monitor/log';
+import { Button } from '#/ui/button';
+import { FilterInput } from '#/ui-patterns/filter-input';
+import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 
 // ==================== 搜索表单 ====================
 const searchForm = ref({
@@ -50,15 +53,29 @@ const tablePagination = ref({
 
 // ==================== 表格列定义 ====================
 const tableColumns: DataTableColumns<OperationLogResp> = [
-  { title: '序号', key: 'index', width: 60,
+  {
+    title: '序号',
+    key: 'index',
+    width: 60,
     render: (_row, index) =>
-      (tablePagination.value.page - 1) * tablePagination.value.pageSize + index + 1,
+      (tablePagination.value.page - 1) * tablePagination.value.pageSize +
+      index +
+      1,
   },
-  { title: '操作时间', key: 'operateTime', minWidth: 160, sorter: 'default', },
-  { title: '操作人', key: 'operatorName', minWidth: 120, },
-  { title: '操作类型', key: 'operation', minWidth: 120,
+  { title: '操作时间', key: 'operateTime', minWidth: 160, sorter: 'default' },
+  { title: '操作人', key: 'operatorName', minWidth: 120 },
+  {
+    title: '操作类型',
+    key: 'operation',
+    minWidth: 120,
     render(row) {
-      const typeMap: Record<string, { type: 'default' | 'error' | 'info' | 'success' | 'warning'; label: string }> = {
+      const typeMap: Record<
+        string,
+        {
+          type: 'default' | 'error' | 'info' | 'success' | 'warning';
+          label: string;
+        }
+      > = {
         create: { type: 'success', label: '新增' },
         update: { type: 'info', label: '修改' },
         delete: { type: 'error', label: '删除' },
@@ -66,14 +83,25 @@ const tableColumns: DataTableColumns<OperationLogResp> = [
         logout: { type: 'warning', label: '登出' },
         send: { type: 'info', label: '发送' },
       };
-      const config = typeMap[row.operation] || { type: 'default', label: row.operation };
-      return h(NTag, { type: config.type, size: 'small' }, { default: () => config.label });
+      const config = typeMap[row.operation] || {
+        type: 'default',
+        label: row.operation,
+      };
+      return h(
+        NTag,
+        { type: config.type, size: 'small' },
+        { default: () => config.label },
+      );
     },
   },
-  { title: '业务对象', key: 'objectType', minWidth: 120, },
-  { title: 'IP地址', key: 'operatorIp', minWidth: 140, },
-  { title: '操作地点', key: 'operatorLocation', minWidth: 150, },
-  { title: '操作', key: 'action', width: 100, fixed: 'right',
+  { title: '业务对象', key: 'objectType', minWidth: 120 },
+  { title: 'IP地址', key: 'operatorIp', minWidth: 140 },
+  { title: '操作地点', key: 'operatorLocation', minWidth: 150 },
+  {
+    title: '操作',
+    key: 'action',
+    width: 100,
+    fixed: 'right',
     render(row) {
       return h(
         NButton,
@@ -95,8 +123,14 @@ async function loadTableData() {
   try {
     const createTime = searchForm.value.createTime
       ? [
-          new Date(searchForm.value.createTime[0]).toISOString().slice(0, 19).replace('T', ' '),
-          new Date(searchForm.value.createTime[1]).toISOString().slice(0, 19).replace('T', ' '),
+          new Date(searchForm.value.createTime[0])
+            .toISOString()
+            .slice(0, 19)
+            .replace('T', ' '),
+          new Date(searchForm.value.createTime[1])
+            .toISOString()
+            .slice(0, 19)
+            .replace('T', ' '),
         ]
       : undefined;
 
@@ -137,8 +171,14 @@ function handleReset() {
 function handleExport() {
   const createTime = searchForm.value.createTime
     ? [
-        new Date(searchForm.value.createTime[0]).toISOString().slice(0, 19).replace('T', ' '),
-        new Date(searchForm.value.createTime[1]).toISOString().slice(0, 19).replace('T', ' '),
+        new Date(searchForm.value.createTime[0])
+          .toISOString()
+          .slice(0, 19)
+          .replace('T', ' '),
+        new Date(searchForm.value.createTime[1])
+          .toISOString()
+          .slice(0, 19)
+          .replace('T', ' '),
       ]
     : undefined;
 
@@ -175,7 +215,9 @@ onMounted(() => {
   <div class="h-full bg-background p-4">
     <!-- 搜索和操作栏 -->
     <div class="mb-4">
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3">
+      <div
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-3 mb-3"
+      >
         <NInput
           v-model:value="searchForm.operatorName"
           placeholder="操作人"
@@ -187,17 +229,15 @@ onMounted(() => {
             <NIcon><SearchOutline /></NIcon>
           </template>
         </NInput>
-        <NInput
-          v-model:value="searchForm.operation"
+        <FilterInput
+          v-model="searchForm.operation"
           placeholder="操作类型"
-          clearable
           class="w-[180px]"
           @keyup.enter="handleSearch"
         />
-        <NInput
-          v-model:value="searchForm.operatorIp"
+        <FilterInput
+          v-model="searchForm.operatorIp"
           placeholder="IP地址"
-          clearable
           class="w-[180px]"
           @keyup.enter="handleSearch"
         />
@@ -210,20 +250,20 @@ onMounted(() => {
             format="yyyy-MM-dd HH:mm:ss"
           />
         </div>
-        <div class="flex items-center gap-2 flex-wrap">
-          <NButton type="primary" @click="handleSearch">
-            <template #icon><IconifyIcon icon="lucide:search" /></template>
+        <ToolbarActions>
+          <Button type="button" @click="handleSearch">
+            <IconifyIcon icon="lucide:search" class="mr-1 size-4" />
             查询
-          </NButton>
-          <NButton @click="handleReset">
-            <template #icon><IconifyIcon icon="lucide:rotate-ccw" /></template>
+          </Button>
+          <Button type="button" variant="outline" @click="handleReset">
+            <IconifyIcon icon="lucide:rotate-ccw" class="mr-1 size-4" />
             重置
-          </NButton>
-          <NButton @click="handleExport">
-            <template #icon><IconifyIcon icon="lucide:download" /></template>
+          </Button>
+          <Button type="button" variant="outline" @click="handleExport">
+            <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
             导出
-          </NButton>
-        </div>
+          </Button>
+        </ToolbarActions>
       </div>
     </div>
 
@@ -271,7 +311,9 @@ onMounted(() => {
             </div>
             <div class="col-span-2">
               <div class="text-sm text-gray-500 mb-1">状态</div>
-              <NTag :type="detailData.status === 'success' ? 'success' : 'error'">
+              <NTag
+                :type="detailData.status === 'success' ? 'success' : 'error'"
+              >
                 {{ detailData.status === 'success' ? '成功' : '失败' }}
               </NTag>
             </div>
@@ -281,7 +323,12 @@ onMounted(() => {
             </div>
             <div v-if="detailData.extra" class="col-span-2">
               <div class="text-sm text-gray-500 mb-1">额外信息</div>
-              <pre class="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm overflow-auto">{{ JSON.stringify(JSON.parse(detailData.extra), null, 2) }}</pre>
+              <pre
+                class="bg-gray-100 dark:bg-gray-800 p-3 rounded text-sm overflow-auto"
+                >{{
+                  JSON.stringify(JSON.parse(detailData.extra), null, 2)
+                }}</pre
+              >
             </div>
           </div>
         </div>
