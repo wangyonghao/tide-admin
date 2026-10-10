@@ -2,6 +2,7 @@ packages:
   - vendor/@core/base/*
   - vendor/@core/ui-kit/*
   - vendor/@core/*
+  - packages/*
   - docs
 
 overrides:

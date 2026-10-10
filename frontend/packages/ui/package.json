@@ -1,0 +1,29 @@
+{
+  "name": "@tide/ui",
+  "version": "5.7.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    "./badge/variant": {
+      "types": "./src/badge/variant.ts",
+      "default": "./src/badge/variant.ts"
+    },
+    "./checkbox/group": {
+      "types": "./src/checkbox/group.ts",
+      "default": "./src/checkbox/group.ts"
+    },
+    "./date-picker/date-value": {
+      "types": "./src/date-picker/date-value.ts",
+      "default": "./src/date-picker/date-value.ts"
+    },
+    "./*": {
+      "types": "./src/*/index.ts",
+      "default": "./src/*/index.ts"
+    }
+  },
+  "dependencies": {
+    "@vben-core/icons": "workspace:*",
+    "@vben-core/shadcn-ui": "workspace:*",
+    "vue": "catalog:"
+  }
+}

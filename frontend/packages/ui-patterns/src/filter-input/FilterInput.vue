@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, useAttrs } from 'vue';
 
-import { Input } from '#/ui/input';
+import { Input } from '@tide/ui/input';
 
 defineOptions({ name: 'FilterInput', inheritAttrs: false });
 

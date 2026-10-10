@@ -2,8 +2,13 @@ import Vue from '@vitejs/plugin-vue';
 import VueJsx from '@vitejs/plugin-vue-jsx';
 import { configDefaults, defineConfig } from 'vitest/config';
 
+import { createTideUiAliases } from './vben.aliases.mts';
+
 export default defineConfig({
   plugins: [Vue(), VueJsx()],
+  resolve: {
+    alias: [...createTideUiAliases()],
+  },
   test: {
     environment: 'happy-dom',
     environmentOptions: {

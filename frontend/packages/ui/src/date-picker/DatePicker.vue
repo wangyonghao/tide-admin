@@ -3,10 +3,10 @@ import type { DatePart, DatePickerKind } from './date-value';
 
 import { computed, ref, useAttrs } from 'vue';
 
-import { IconifyIcon } from '@vben/icons';
+import { IconifyIcon } from '@vben-core/icons';
 
-import { Button } from '#/ui/button';
-import { Popover, PopoverContent, PopoverTrigger } from '#/ui/popover';
+import { Button } from '../button';
+import { Popover, PopoverContent, PopoverTrigger } from '../popover';
 
 import {
   applyTime,

@@ -35,7 +35,16 @@
     "types": ["vite/client"],
     "declaration": false,
     "paths": {
+      "#/ui/badge/variant": ["./packages/ui/src/badge/variant.ts"],
+      "#/ui/checkbox/group": ["./packages/ui/src/checkbox/group.ts"],
+      "#/ui/date-picker/date-value": [
+        "./packages/ui/src/date-picker/date-value.ts"
+      ],
+      "#/ui-patterns/*": ["./packages/ui-patterns/src/*"],
+      "#/ui/*": ["./packages/ui/src/*"],
       "#/*": ["./src/*"],
+      "@tide/ui-patterns/*": ["./packages/ui-patterns/src/*"],
+      "@tide/ui/*": ["./packages/ui/src/*"],
       "@vben/tailwind-config/theme": ["./src/styles/theme.css"],
       "@vben/tailwind-config": ["./src/styles/theme.css"],
       "@vben/styles/global": ["./src/vben/styles/global/index.scss"],
@@ -69,7 +78,11 @@
     "src/**/*.ts",
     "src/**/*.tsx",
     "src/**/*.vue",
-    "src/vben/types/global.d.ts"
+    "src/vben/types/global.d.ts",
+    "packages/ui/src/**/*.ts",
+    "packages/ui/src/**/*.vue",
+    "packages/ui-patterns/src/**/*.ts",
+    "packages/ui-patterns/src/**/*.vue"
   ],
   "exclude": ["**/node_modules/**", "**/dist/**"],
   "references": [{ "path": "./tsconfig.node.json" }]

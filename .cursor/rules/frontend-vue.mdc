@@ -6,8 +6,8 @@ alwaysApply: false
 
 # Frontend Vue
 
-- 业务代码在 `frontend/src`。新 UI 优先 `#/ui/<atom>` 与 `#/ui-patterns/<pattern>`。不要新增 `naive-ui`。表格用 Vxe。
-- 慎改 `vendor/@core`；原子实现已在 `@vben-core/shadcn-ui/src/ui`，应用侧只做路径再导出。壳层在 `src/vben`（`@vben/*` alias）；工程配置在根目录配置文件。
+- 业务代码在 `frontend/src`。新 UI 优先 `#/ui/<atom>` 与 `#/ui-patterns/<pattern>`（源码在 `packages/ui`、`packages/ui-patterns`，包名 `@tide/ui`、`@tide/ui-patterns`）。不要新增 `naive-ui`。表格用 Vxe。
+- 慎改 `vendor/@core`；原子底子已在 `@vben-core/shadcn-ui/src/ui`，应用包只做路径再导出或本地控件。壳层在 `src/vben`（`@vben/*` alias）；工程配置在根目录配置文件。
 - `<script setup lang="ts">` + Composition API；避免 `any`。
 - 组件 PascalCase；文件名 kebab-case；Tailwind 优先。
 - API 按 `api/modules` 组织，类型与后端对齐。

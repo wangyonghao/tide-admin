@@ -15,7 +15,7 @@ import { NodePackageImporter } from 'sass-embedded';
 import { defineConfig, loadEnv } from 'vite';
 import { lazyImport, VxeResolver } from 'vite-plugin-lazy-import';
 
-import { createVbenAliases } from './vben.aliases.mts';
+import { createTideUiAliases, createVbenAliases } from './vben.aliases.mts';
 
 function readEnvFlag(env: Record<string, string>, key: string) {
   return env[key] === 'true';
@@ -203,9 +203,13 @@ export default defineConfig(async ({ command, mode }) => {
     css: createGlobalScssOptions(),
     plugins,
     resolve: {
-      alias: {
-        ...createVbenAliases(),
-      },
+      alias: [
+        ...createTideUiAliases(),
+        ...Object.entries(createVbenAliases()).map(([find, replacement]) => ({
+          find,
+          replacement,
+        })),
+      ],
     },
     server: {
       host: true,
