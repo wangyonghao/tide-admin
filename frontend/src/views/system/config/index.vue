@@ -20,7 +20,6 @@ import {
   NFormItem,
   NInput,
   NInputNumber,
-  NSelect,
   NSplit,
   NDrawer,
   NDrawerContent,
@@ -29,6 +28,7 @@ import {
   useMessage,
 } from 'naive-ui';
 
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { configApi } from '#/api/system';
 import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
@@ -507,7 +507,7 @@ async function handleVerifyCode() {
                 </div>
               </NFormItem>
               <NFormItem label="验证码类型" path="captchaType">
-                <NSelect
+                <FormSelect
                   v-model:value="loginForm.captchaType"
                   :options="captchaTypeOptions"
                   placeholder="请选择验证码类型"
@@ -621,7 +621,7 @@ async function handleVerifyCode() {
               label-width="120"
             >
               <NFormItem label="服务商" path="provider">
-                <NSelect
+                <FormSelect
                   v-model:value="smsForm.provider"
                   :options="smsProviderOptions"
                   placeholder="请选择短信服务商"
@@ -659,7 +659,7 @@ async function handleVerifyCode() {
               label-width="120"
             >
               <NFormItem label="存储类型" path="type">
-                <NSelect
+                <FormSelect
                   v-model:value="storageForm.type"
                   :options="storageTypeOptions"
                   placeholder="请选择存储类型"
@@ -848,7 +848,7 @@ async function handleVerifyCode() {
                 />
               </NFormItem>
               <NFormItem label="加密方式" path="sslEnabled" required>
-                <NSelect
+                <FormSelect
                   v-model:value="emailForm.sslEnabled"
                   :options="emailProtectionOptions"
                   placeholder="请选择加密方式"

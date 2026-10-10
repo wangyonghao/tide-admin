@@ -38,8 +38,7 @@ export function normalizeSelectOptions(raw: unknown): NormalizedSelectOption[] {
     options.push({
       disabled: record.disabled === true,
       key: selectOptionKey(record.value),
-      label:
-        record.label == null ? String(record.value) : String(record.label),
+      label: record.label == null ? String(record.value) : String(record.label),
       value: record.value,
     });
   }
@@ -133,4 +132,29 @@ export function filterSelectOptions(
       String(option.value).toLowerCase().includes(keyword)
     );
   });
+}
+
+/**
+ * 手写表单的多选字段是数组。适配器清空回写 null，提交前收成数组，避免把 null 传给接口。
+ */
+export function asSelectList(value: unknown): SelectScalar[] {
+  if (!Array.isArray(value)) return [];
+  return value.filter(isSelectScalar);
+}
+
+/**
+ * `tag` 允许输入列表外的字符串。命中已有选项时回写原值（数字、布尔不改成字符串）。
+ * 命中项若禁用，不创建同名新值。
+ */
+export function commitTaggedQuery(
+  query: string,
+  options: readonly NormalizedSelectOption[],
+): null | SelectScalar {
+  const text = query.trim();
+  if (!text) return null;
+  const exact = options.find(
+    (option) => option.label === text || String(option.value) === text,
+  );
+  if (exact) return exact.disabled ? null : exact.value;
+  return text;
 }

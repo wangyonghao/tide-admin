@@ -62,9 +62,6 @@ const NRadioButton = defineAsyncComponent(() =>
 const NRadioGroup = defineAsyncComponent(() =>
   import('naive-ui/es/radio').then((res) => res.NRadioGroup),
 );
-const NSelect = defineAsyncComponent(() =>
-  import('naive-ui/es/select').then((res) => res.NSelect),
-);
 const NSpace = defineAsyncComponent(() =>
   import('naive-ui/es/space').then((res) => res.NSpace),
 );
@@ -170,7 +167,8 @@ async function initComponentAdapter() {
       },
       'select',
       {
-        component: NSelect,
+        component: FormSelect,
+        loadingSlot: 'arrow',
         modelPropName: 'value',
       },
     ),

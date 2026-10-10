@@ -7,15 +7,9 @@ import { h, onMounted, ref } from 'vue';
 import { IconifyIcon } from '@vben/icons';
 
 import { SearchOutline } from '@vicons/ionicons5';
-import {
-  NDataTable,
-  NIcon,
-  NInput,
-  NSelect,
-  NTag,
-  useMessage,
-} from 'naive-ui';
+import { NDataTable, NIcon, NInput, NTag, useMessage } from 'naive-ui';
 
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { smsLogApi } from '#/api/system/sms-log';
 import { Button } from '#/ui/button';
 import {
@@ -231,7 +225,7 @@ onMounted(() => {
           placeholder="手机号"
           @keyup.enter="handleSearch"
         />
-        <NSelect
+        <FormSelect
           v-model:value="searchForm.status"
           :options="statusOptions"
           placeholder="发送状态"

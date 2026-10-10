@@ -1,5 +1,10 @@
 <script setup lang="ts">
-import type { JobHandlerOption, JobResp, ScheduleMode, ScheduleSpec } from '#/api/schedule';
+import type {
+  JobHandlerOption,
+  JobResp,
+  ScheduleMode,
+  ScheduleSpec,
+} from '#/api/schedule';
 
 import { computed, reactive, ref } from 'vue';
 
@@ -10,10 +15,11 @@ import {
   NFormItem,
   NInput,
   NInputNumber,
-  NSelect,
   NTimePicker,
   useMessage,
 } from 'naive-ui';
+
+import FormSelect from '#/adapter/component/FormSelect.vue';
 
 import { addJob, listJobHandlers, updateJob } from '#/api/schedule';
 import { Checkbox } from '#/ui/checkbox';
@@ -164,20 +170,32 @@ const [Modal, drawerApi] = useVbenModal({
         <NInput v-model:value="form.name" placeholder="例如：每天发布公告" />
       </NFormItem>
       <NFormItem label="执行任务" required>
-        <NSelect
+        <FormSelect
           v-model:value="form.handlerCode"
           filterable
-          :options="handlers.map((item) => ({ label: item.name, value: item.code }))"
+          :options="
+            handlers.map((item) => ({ label: item.name, value: item.code }))
+          "
           placeholder="请选择已注册的任务"
         />
       </NFormItem>
-      <p v-if="selectedHandler?.description" class="text-secondary mb-3 ml-24 text-sm">
+      <p
+        v-if="selectedHandler?.description"
+        class="text-secondary mb-3 ml-24 text-sm"
+      >
         {{ selectedHandler.description }}
       </p>
       <NFormItem label="执行频率" required>
-        <NSelect v-model:value="form.mode" :options="modeOptions" />
+        <FormSelect v-model:value="form.mode" :options="modeOptions" />
       </NFormItem>
-      <NFormItem v-if="form.mode === 'DAILY' || form.mode === 'WEEKLY' || form.mode === 'MONTHLY'" label="时间">
+      <NFormItem
+        v-if="
+          form.mode === 'DAILY' ||
+          form.mode === 'WEEKLY' ||
+          form.mode === 'MONTHLY'
+        "
+        label="时间"
+      >
         <NTimePicker v-model:value="clockValue" format="HH:mm" />
       </NFormItem>
       <NFormItem v-if="form.mode === 'WEEKLY'" label="星期">
@@ -208,7 +226,7 @@ const [Modal, drawerApi] = useVbenModal({
       </NFormItem>
       <NFormItem v-if="form.mode === 'INTERVAL'" label="间隔">
         <NInputNumber v-model:value="form.interval" :min="1" class="w-28" />
-        <NSelect
+        <FormSelect
           v-model:value="form.intervalUnit"
           class="ml-2 w-28"
           :options="[

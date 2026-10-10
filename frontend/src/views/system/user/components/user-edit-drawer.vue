@@ -5,7 +5,7 @@ import type {
   SelectOption,
   TreeSelectOption,
 } from 'naive-ui';
-import { reactive, ref, watch } from 'vue';
+import { computed, reactive, ref, watch } from 'vue';
 
 import { $t } from '@vben/locales';
 
@@ -17,11 +17,12 @@ import {
   NInput,
   NRadio,
   NRadioGroup,
-  NSelect,
   NTreeSelect,
   useMessage,
 } from 'naive-ui';
 
+import { asSelectList } from '#/adapter/component/select-value';
+import FormSelect from '#/adapter/component/FormSelect.vue';
 import { userApi } from '#/api/system/user';
 import { Button } from '#/ui/button';
 
@@ -42,6 +43,16 @@ const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
 const message = useMessage();
+
+const roleSelectOptions = computed(() =>
+  props.roleOptions.flatMap((item) => {
+    if (item.label == null || item.value == null) return [];
+    if (typeof item.value !== 'string' && typeof item.value !== 'number') {
+      return [];
+    }
+    return [{ label: String(item.label), value: String(item.value) }];
+  }),
+);
 
 const formRef = ref<FormInst | null>(null);
 const submitLoading = ref(false);
@@ -250,13 +261,14 @@ function handleAfterLeave() {
           />
         </NFormItem>
         <NFormItem label="角色" path="roleIds">
-          <NSelect
-            v-model:value="formData.roleIds"
-            :options="roleOptions"
+          <FormSelect
+            :value="formData.roleIds"
+            :options="roleSelectOptions"
             placeholder="请选择角色"
             filterable
             multiple
             clearable
+            @update:value="formData.roleIds = asSelectList($event).map(String)"
           />
         </NFormItem>
         <NFormItem label="状态" path="status">
