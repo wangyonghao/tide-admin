@@ -11,7 +11,7 @@ import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { smsLogApi } from '#/api/system/sms-log';
 import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
-import { toast } from '#/ui/sonner';
+import { toast } from '#/ui-patterns/toast';
 import {
   ConfirmAction,
   type ConfirmActionExpose,

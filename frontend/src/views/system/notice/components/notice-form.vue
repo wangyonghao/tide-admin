@@ -12,7 +12,6 @@ import {
   NFormItem,
   NInput,
   NRadioGroup,
-  useMessage,
 } from 'naive-ui';
 
 import { DatePicker } from '#/ui/date-picker';
@@ -27,6 +26,7 @@ import { useDict } from '#/hooks';
 import { Button } from '#/ui/button';
 import { Checkbox } from '#/ui/checkbox';
 import { isValueChecked, toggleCheckedValue } from '#/ui/checkbox/group';
+import { toast } from '#/ui-patterns/toast';
 
 defineOptions({ name: 'NoticeForm' });
 
@@ -39,7 +39,6 @@ const emit = defineEmits<{
   cancel: [];
 }>();
 
-const message = useMessage();
 
 // ==================== 字典数据 ====================
 const { notice_type, notice_scope_enum, notice_method_enum } = useDict(
@@ -175,10 +174,10 @@ async function handleSubmit(_status: number) {
 
     if (isUpdate.value) {
       await noticeApi.update(props.noticeId!, submitData as NoticeUpdateReq);
-      message.success($t('pages.common.modifySuccess'));
+      toast.success($t('pages.common.modifySuccess'));
     } else {
       await noticeApi.create(submitData);
-      message.success($t('pages.common.addSuccess'));
+      toast.success($t('pages.common.addSuccess'));
     }
 
     emit('success');
@@ -228,7 +227,7 @@ async function loadData() {
     }
   } catch (error) {
     console.error('加载数据失败:', error);
-    message.error('加载数据失败');
+    toast.error('加载数据失败');
   } finally {
     loading.value = false;
   }

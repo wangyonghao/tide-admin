@@ -17,7 +17,6 @@ import {
   NModal,
   NRadio,
   NRadioGroup,
-  useMessage,
 } from 'naive-ui';
 
 import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
@@ -28,12 +27,12 @@ import { useUserStore } from '#/store/user';
 import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
 import { Switch } from '#/ui/switch';
+import { toast } from '#/ui-patterns/toast';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
 
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 
@@ -249,10 +248,10 @@ async function handleSubmit() {
 
     if (formData.id) {
       await menuApi.update({ ...formData }, formData.id);
-      message.success('更新成功');
+      toast.success('更新成功');
     } else {
       await menuApi.create({ ...formData });
-      message.success('创建成功');
+      toast.success('创建成功');
     }
 
     modalVisible.value = false;
@@ -273,7 +272,7 @@ async function handleDelete(row: MenuRow) {
   if (!ok) return;
   try {
     await menuApi.delete(row.id);
-    message.success('删除成功');
+    toast.success('删除成功');
     await gridApi.query();
   } catch {
     // 错误已在拦截器处理

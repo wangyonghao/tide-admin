@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, watch } from 'vue';
 
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import { fileApi, resolveFilePreviewUrl, toFileId } from '#/api/system/file';
 import { Button } from '#/ui/button';
 import { FileUpload } from '#/ui/upload';
@@ -35,7 +35,7 @@ async function handleUpload(files: File[]) {
     emit('update:modelValue', result.fileId);
   } catch (error) {
     console.error('上传失败', error);
-    message.error('上传失败');
+    toast.error('上传失败');
   }
 }
 

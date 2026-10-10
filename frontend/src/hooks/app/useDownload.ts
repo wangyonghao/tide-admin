@@ -1,4 +1,4 @@
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 
 /**
  * @description 接收数据流生成 blob，创建链接，下载文件
@@ -71,7 +71,7 @@ export const useDownload = async (
     }, 100);
   } catch (error) {
     const errorMsg = error instanceof Error ? error.message : '下载失败，请重试';
-    message.error(`下载失败: ${errorMsg}`);
+    toast.error(`下载失败: ${errorMsg}`);
     throw error;
   }
 };

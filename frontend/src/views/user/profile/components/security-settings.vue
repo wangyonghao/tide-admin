@@ -13,7 +13,7 @@ import {
 } from 'naive-ui';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
 import {
@@ -95,7 +95,7 @@ const fetchSocialAccounts = async () => {
 // 修改密码
 const handleChangePassword = async () => {
   if (passwordForm.value.newPassword !== passwordForm.value.confirmPassword) {
-    message.error('两次输入的密码不一致');
+    toast.error('两次输入的密码不一致');
     return;
   }
 
@@ -104,7 +104,7 @@ const handleChangePassword = async () => {
       oldPassword: encryptByRsa(passwordForm.value.oldPassword) || '',
       newPassword: encryptByRsa(passwordForm.value.newPassword) || '',
     });
-    message.success($t('page.profile.security.passwordChanged'));
+    toast.success($t('page.profile.security.passwordChanged'));
     showPasswordModal.value = false;
     passwordForm.value = {
       oldPassword: '',
@@ -128,7 +128,7 @@ const handleChangePhone = async () => {
       ...phoneForm.value,
       oldPassword: encryptByRsa(phoneForm.value.oldPassword) || '',
     });
-    message.success($t('page.profile.security.phoneChanged'));
+    toast.success($t('page.profile.security.phoneChanged'));
     showPhoneModal.value = false;
     phoneForm.value = { phone: '', captcha: '', oldPassword: '' };
     await userStore.fetchAuthInfo();
@@ -144,7 +144,7 @@ const handleChangeEmail = async () => {
       ...emailForm.value,
       oldPassword: encryptByRsa(emailForm.value.oldPassword) || '',
     });
-    message.success($t('page.profile.security.emailChanged'));
+    toast.success($t('page.profile.security.emailChanged'));
     showEmailModal.value = false;
     emailForm.value = { email: '', captcha: '', oldPassword: '' };
     await userStore.fetchAuthInfo();
@@ -169,7 +169,7 @@ const confirmUnbind = async (source: string) => {
 const handleUnbindSocial = async (source: string) => {
   try {
     await userProfileApi.unbindSocial(source);
-    message.success('解绑成功');
+    toast.success('解绑成功');
     await fetchSocialAccounts();
   } catch (error) {
     console.error('解绑失败:', error);
@@ -178,7 +178,7 @@ const handleUnbindSocial = async (source: string) => {
 
 // 退出所有设备
 const handleLogoutAllDevices = () => {
-  message.info('功能开发中');
+  toast.info('功能开发中');
 };
 
 onMounted(() => {

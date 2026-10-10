@@ -13,7 +13,7 @@ import { $t } from '@vben/locales';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { openAppApi } from '#/api/open';
 import { Button } from '#/ui/button';
-import { toast } from '#/ui/sonner';
+import { toast } from '#/ui-patterns/toast';
 import {
   ConfirmAction,
   type ConfirmActionExpose,

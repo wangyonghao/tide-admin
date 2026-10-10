@@ -8,7 +8,7 @@ import type {
 
 import { ref } from 'vue';
 
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import FormSelect from '#/adapter/component/FormSelect.vue';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { authApi } from '#/api/auth';
@@ -126,7 +126,7 @@ async function handleExport() {
       params.loginTimeEnd = new Date(filters.value.dateRange[1]).toISOString();
     }
     await authApi.exportLoginLog(params);
-    message.success($t('page.profile.logs.exportSuccess'));
+    toast.success($t('page.profile.logs.exportSuccess'));
   } catch (error) {
     console.error('导出失败:', error);
   }

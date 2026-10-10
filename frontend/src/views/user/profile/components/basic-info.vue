@@ -1,19 +1,17 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import {
-  NForm,
-  NFormItem,
-  NInput,
-  NRadioGroup,
-  NRadio,
-  NModal,
-} from 'naive-ui';
+
+import { useVbenModal } from '@vben/common-ui';
+
 import { VbenAvatar } from '@vben-core/shadcn-ui';
+import FormRadioGroup from '#/adapter/component/FormRadioGroup.vue';
 import { Button } from '#/ui/button';
+import { Input } from '#/ui/input';
+import { Label } from '#/ui/label';
 import { FileUpload } from '#/ui/upload';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import { userProfileApi } from '#/api/system/user-profile';
 import { resolveFilePreviewUrl } from '#/api/system/file';
 
@@ -29,9 +27,12 @@ const formData = ref({
 });
 
 // 头像上传
-const showAvatarModal = ref(false);
-const avatarUrl = ref('');
 const uploadingAvatar = ref(false);
+
+const [AvatarModal, avatarModalApi] = useVbenModal({
+  footer: false,
+  centered: true,
+});
 
 // 初始化表单数据
 const initFormData = () => {
@@ -59,7 +60,7 @@ const handleCancel = () => {
 const handleSave = async () => {
   try {
     await userProfileApi.updateBaseInfo(formData.value);
-    message.success($t('page.profile.basic.editSuccess'));
+    toast.success($t('page.profile.basic.editSuccess'));
     isEditing.value = false;
     // 刷新用户信息
     await userStore.fetchAuthInfo();
@@ -78,8 +79,8 @@ const handleAvatarUpload = async (files: File[]) => {
     body.append('avatarFile', avatarFile);
 
     await userProfileApi.uploadAvatar(body);
-    message.success($t('page.profile.basic.uploadSuccess'));
-    showAvatarModal.value = false;
+    toast.success($t('page.profile.basic.uploadSuccess'));
+    avatarModalApi.close();
 
     // 刷新用户信息
     await userStore.fetchAuthInfo();
@@ -89,6 +90,12 @@ const handleAvatarUpload = async (files: File[]) => {
     uploadingAvatar.value = false;
   }
 };
+
+function onGender(value: null | boolean | number | string) {
+  if (value === 0 || value === 1 || value === 2) {
+    formData.value.gender = value;
+  }
+}
 
 // 性别选项
 const genderOptions = [
@@ -104,8 +111,14 @@ const userInfo = computed(() => userStore.user);
 <template>
   <div class="basic-info">
     <div class="flex items-center justify-between mb-6">
-      <h3 class="text-lg font-semibold">{{ $t('page.profile.tabs.basic') }}</h3>
-      <Button v-if="!isEditing" type="button" @click="handleEdit">
+      <h3 class="text-lg font-semibold">
+        {{ $t('page.profile.tabs.basic') }}
+      </h3>
+      <Button
+        v-if="!isEditing"
+        type="button"
+        @click="handleEdit"
+      >
         {{ $t('page.profile.basic.edit') }}
       </Button>
     </div>
@@ -119,7 +132,7 @@ const userInfo = computed(() => userStore.user);
           :alt="userInfo?.displayName || 'User'"
           :size="100"
           class="mb-4 mx-auto"
-          @click="showAvatarModal = true"
+          @click="avatarModalApi.open()"
         />
         <div class="flex-1">
           <h4 class="font-medium mb-2">
@@ -132,7 +145,7 @@ const userInfo = computed(() => userStore.user);
             type="button"
             size="sm"
             variant="outline"
-            @click="showAvatarModal = true"
+            @click="avatarModalApi.open()"
           >
             {{ $t('page.profile.basic.changeAvatar') }}
           </Button>
@@ -140,71 +153,82 @@ const userInfo = computed(() => userStore.user);
       </div>
     </div>
 
-    <!-- 基本信息表单 -->
-    <NForm
-      :model="formData"
-      label-placement="left"
-      label-width="120"
-      :disabled="!isEditing"
-    >
-      <NFormItem :label="$t('page.profile.basic.username')">
-        <NInput :value="userInfo?.username" disabled />
-      </NFormItem>
-
-      <NFormItem :label="$t('page.profile.basic.displayName')">
-        <NInput
-          v-model:value="formData.displayName"
+    <div class="grid max-w-xl gap-4">
+      <div class="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+        <Label>{{ $t('page.profile.basic.username') }}</Label>
+        <Input
+          :model-value="userInfo?.username ?? ''"
+          disabled
+        />
+      </div>
+      <div class="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+        <Label>{{ $t('page.profile.basic.displayName') }}</Label>
+        <Input
+          v-model="formData.displayName"
+          :disabled="!isEditing"
           :placeholder="$t('page.profile.basic.displayName')"
         />
-      </NFormItem>
+      </div>
+      <div class="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+        <Label>{{ $t('page.profile.basic.gender') }}</Label>
+        <FormRadioGroup
+          :value="formData.gender"
+          :options="genderOptions"
+          :disabled="!isEditing"
+          @update:value="onGender"
+        />
+      </div>
+      <div class="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+        <Label>{{ $t('page.profile.basic.phone') }}</Label>
+        <Input
+          :model-value="userInfo?.phone ?? ''"
+          disabled
+        />
+      </div>
+      <div class="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+        <Label>{{ $t('page.profile.basic.email') }}</Label>
+        <Input
+          :model-value="userInfo?.email ?? ''"
+          disabled
+        />
+      </div>
+      <div class="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+        <Label>{{ $t('page.profile.basic.dept') }}</Label>
+        <Input
+          :model-value="userInfo?.deptName ?? ''"
+          disabled
+        />
+      </div>
+      <div class="grid grid-cols-[120px_minmax(0,1fr)] items-center gap-3">
+        <Label>{{ $t('page.profile.basic.registrationDate') }}</Label>
+        <Input
+          :model-value="userInfo?.registrationDate ?? ''"
+          disabled
+        />
+      </div>
+      <div
+        v-if="isEditing"
+        class="flex items-center gap-2 pl-[132px]"
+      >
+        <Button
+          type="button"
+          @click="handleSave"
+        >
+          {{ $t('page.profile.basic.save') }}
+        </Button>
+        <Button
+          type="button"
+          variant="outline"
+          @click="handleCancel"
+        >
+          {{ $t('page.profile.basic.cancel') }}
+        </Button>
+      </div>
+    </div>
 
-      <NFormItem :label="$t('page.profile.basic.gender')">
-        <NRadioGroup v-model:value="formData.gender">
-          <NRadio
-            v-for="option in genderOptions"
-            :key="option.value"
-            :value="option.value"
-          >
-            {{ option.label }}
-          </NRadio>
-        </NRadioGroup>
-      </NFormItem>
-
-      <NFormItem :label="$t('page.profile.basic.phone')">
-        <NInput :value="userInfo?.phone" disabled />
-      </NFormItem>
-
-      <NFormItem :label="$t('page.profile.basic.email')">
-        <NInput :value="userInfo?.email" disabled />
-      </NFormItem>
-
-      <NFormItem :label="$t('page.profile.basic.dept')">
-        <NInput :value="userInfo?.deptName" disabled />
-      </NFormItem>
-
-      <NFormItem :label="$t('page.profile.basic.registrationDate')">
-        <NInput :value="userInfo?.registrationDate" disabled />
-      </NFormItem>
-
-      <!-- 操作按钮 -->
-      <NFormItem v-if="isEditing" :show-label="false">
-        <div class="flex items-center gap-2">
-          <Button type="button" @click="handleSave">
-            {{ $t('page.profile.basic.save') }}
-          </Button>
-          <Button type="button" variant="outline" @click="handleCancel">
-            {{ $t('page.profile.basic.cancel') }}
-          </Button>
-        </div>
-      </NFormItem>
-    </NForm>
-
-    <!-- 头像上传弹窗 -->
-    <NModal
-      v-model:show="showAvatarModal"
-      preset="card"
+    <AvatarModal
+      class="w-[500px]"
       :title="$t('page.profile.basic.uploadAvatar')"
-      style="width: 500px"
     >
       <div class="text-center">
         <FileUpload
@@ -213,15 +237,18 @@ const userInfo = computed(() => userStore.user);
           :disabled="uploadingAvatar"
           @select="handleAvatarUpload"
         >
-          <Button type="button" :loading="uploadingAvatar">
+          <Button
+            type="button"
+            :loading="uploadingAvatar"
+          >
             {{ $t('page.profile.basic.uploadAvatar') }}
           </Button>
         </FileUpload>
-        <p class="text-sm text-gray-500 mt-4">
+        <p class="mt-4 text-sm text-gray-500">
           {{ $t('page.profile.basic.uploadTip') }}
         </p>
       </div>
-    </NModal>
+    </AvatarModal>
   </div>
 </template>
 

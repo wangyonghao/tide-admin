@@ -10,17 +10,19 @@ import { computed, reactive, ref } from 'vue';
 
 import { useVbenModal } from '@vben/common-ui';
 
-import { NForm, NFormItem, NInput, NInputNumber, useMessage } from 'naive-ui';
-
+import FormInputNumber from '#/adapter/component/FormInputNumber.vue';
 import FormSelect from '#/adapter/component/FormSelect.vue';
 import FormTimePicker from '#/adapter/component/FormTimePicker.vue';
+import { Input } from '#/ui/input';
+import { Label } from '#/ui/label';
+import { Textarea } from '#/ui/textarea';
 
 import { addJob, listJobHandlers, updateJob } from '#/api/schedule';
 import { Checkbox } from '#/ui/checkbox';
 import { isValueChecked, toggleCheckedValue } from '#/ui/checkbox/group';
+import { toast } from '#/ui-patterns/toast';
 
 const emits = defineEmits(['success']);
-const message = useMessage();
 const dataId = ref('');
 const handlers = ref<JobHandlerOption[]>([]);
 
@@ -109,11 +111,11 @@ const isUpdate = computed(() => !!dataId.value);
 const [Modal, drawerApi] = useVbenModal({
   async onConfirm() {
     if (!form.name.trim()) {
-      message.warning('请填写任务名称');
+      toast.warning('请填写任务名称');
       return false;
     }
     if (!form.handlerCode) {
-      message.warning('请选择要执行的任务');
+      toast.warning('请选择要执行的任务');
       return false;
     }
     drawerApi.lock();
@@ -128,10 +130,10 @@ const [Modal, drawerApi] = useVbenModal({
       };
       if (isUpdate.value) {
         await updateJob(payload, dataId.value);
-        message.success('修改成功');
+        toast.success('修改成功');
       } else {
         await addJob(payload);
-        message.success('新增成功，默认已停止，可在列表中激活');
+        toast.success('新增成功，默认已停止，可在列表中激活');
       }
       emits('success');
       drawerApi.close();
@@ -158,12 +160,20 @@ const [Modal, drawerApi] = useVbenModal({
 </script>
 
 <template>
-  <Modal :title="isUpdate ? '编辑任务' : '新增任务'" class="w-[560px]">
-    <NForm label-placement="left" label-width="96" class="pt-2">
-      <NFormItem label="任务名称" required>
-        <NInput v-model:value="form.name" placeholder="例如：每天发布公告" />
-      </NFormItem>
-      <NFormItem label="执行任务" required>
+  <Modal
+    :title="isUpdate ? '编辑任务' : '新增任务'"
+    class="w-[560px]"
+  >
+    <div class="grid gap-3 pt-2">
+      <div class="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2">
+        <Label>任务名称</Label>
+        <Input
+          v-model="form.name"
+          placeholder="例如：每天发布公告"
+        />
+      </div>
+      <div class="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2">
+        <Label>执行任务</Label>
         <FormSelect
           v-model:value="form.handlerCode"
           filterable
@@ -172,27 +182,39 @@ const [Modal, drawerApi] = useVbenModal({
           "
           placeholder="请选择已注册的任务"
         />
-      </NFormItem>
+      </div>
       <p
         v-if="selectedHandler?.description"
-        class="text-secondary mb-3 ml-24 text-sm"
+        class="text-muted-foreground ml-24 text-sm"
       >
         {{ selectedHandler.description }}
       </p>
-      <NFormItem label="执行频率" required>
-        <FormSelect v-model:value="form.mode" :options="modeOptions" />
-      </NFormItem>
-      <NFormItem
+      <div class="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2">
+        <Label>执行频率</Label>
+        <FormSelect
+          v-model:value="form.mode"
+          :options="modeOptions"
+        />
+      </div>
+      <div
         v-if="
           form.mode === 'DAILY' ||
-          form.mode === 'WEEKLY' ||
-          form.mode === 'MONTHLY'
+            form.mode === 'WEEKLY' ||
+            form.mode === 'MONTHLY'
         "
-        label="时间"
+        class="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2"
       >
-        <FormTimePicker v-model:value="clockValue" format="HH:mm" />
-      </NFormItem>
-      <NFormItem v-if="form.mode === 'WEEKLY'" label="星期">
+        <Label>时间</Label>
+        <FormTimePicker
+          v-model:value="clockValue"
+          format="HH:mm"
+        />
+      </div>
+      <div
+        v-if="form.mode === 'WEEKLY'"
+        class="grid grid-cols-[96px_minmax(0,1fr)] items-start gap-2"
+      >
+        <Label class="pt-1">星期</Label>
         <div class="flex flex-wrap items-center gap-x-4 gap-y-2">
           <label
             v-for="item in weekdayOptions"
@@ -213,28 +235,59 @@ const [Modal, drawerApi] = useVbenModal({
             <span>{{ item.label }}</span>
           </label>
         </div>
-      </NFormItem>
-      <NFormItem v-if="form.mode === 'MONTHLY'" label="每月">
-        <NInputNumber v-model:value="form.dayOfMonth" :min="1" :max="31" />
-        <span class="ml-2">号</span>
-      </NFormItem>
-      <NFormItem v-if="form.mode === 'INTERVAL'" label="间隔">
-        <NInputNumber v-model:value="form.interval" :min="1" class="w-28" />
-        <FormSelect
-          v-model:value="form.intervalUnit"
-          class="ml-2 w-28"
-          :options="[
-            { label: '分钟', value: 'MINUTE' },
-            { label: '小时', value: 'HOUR' },
-          ]"
+      </div>
+      <div
+        v-if="form.mode === 'MONTHLY'"
+        class="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2"
+      >
+        <Label>每月</Label>
+        <div class="flex items-center gap-2">
+          <FormInputNumber
+            v-model:value="form.dayOfMonth"
+            :min="1"
+            :max="31"
+          />
+          <span>号</span>
+        </div>
+      </div>
+      <div
+        v-if="form.mode === 'INTERVAL'"
+        class="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2"
+      >
+        <Label>间隔</Label>
+        <div class="flex items-center gap-2">
+          <FormInputNumber
+            v-model:value="form.interval"
+            :min="1"
+            class="w-28"
+          />
+          <FormSelect
+            v-model:value="form.intervalUnit"
+            class="w-28"
+            :options="[
+              { label: '分钟', value: 'MINUTE' },
+              { label: '小时', value: 'HOUR' },
+            ]"
+          />
+        </div>
+      </div>
+      <div
+        v-if="form.mode === 'CRON'"
+        class="grid grid-cols-[96px_minmax(0,1fr)] items-center gap-2"
+      >
+        <Label>Cron</Label>
+        <Input
+          v-model="form.cron"
+          placeholder="0 0 9 * * ?"
         />
-      </NFormItem>
-      <NFormItem v-if="form.mode === 'CRON'" label="Cron">
-        <NInput v-model:value="form.cron" placeholder="0 0 9 * * ?" />
-      </NFormItem>
-      <NFormItem label="备注">
-        <NInput v-model:value="form.remark" type="textarea" :rows="2" />
-      </NFormItem>
-    </NForm>
+      </div>
+      <div class="grid grid-cols-[96px_minmax(0,1fr)] items-start gap-2">
+        <Label class="pt-2">备注</Label>
+        <Textarea
+          v-model="form.remark"
+          rows="2"
+        />
+      </div>
+    </div>
   </Modal>
 </template>

@@ -9,8 +9,6 @@ import {
   useVbenVxeGrid as useGrid,
 } from '@vben/plugins/vxe-table';
 
-import { NImage } from 'naive-ui';
-
 import { Button } from '#/ui/button';
 
 import { useVbenForm } from './form';
@@ -50,7 +48,12 @@ setupVbenVxeTable({
       renderTableDefault(renderOpts, params) {
         const { props } = renderOpts;
         const { column, row } = params;
-        return h(NImage, { src: row[column.field], ...props });
+        return h('img', {
+          alt: '',
+          class: 'mx-auto h-10 max-w-24 object-contain',
+          src: row[column.field],
+          ...props,
+        });
       },
     });
 

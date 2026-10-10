@@ -17,7 +17,6 @@ import {
   NInput,
   NRadio,
   NRadioGroup,
-  useMessage,
 } from 'naive-ui';
 
 import { asSelectList } from '#/adapter/component/select-value';
@@ -25,6 +24,7 @@ import FormSelect from '#/adapter/component/FormSelect.vue';
 import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
 import { userApi } from '#/api/system/user';
 import { Button } from '#/ui/button';
+import { toast } from '#/ui-patterns/toast';
 
 interface Props {
   visible: boolean;
@@ -42,7 +42,6 @@ interface Emits {
 const props = defineProps<Props>();
 const emit = defineEmits<Emits>();
 
-const message = useMessage();
 
 const roleSelectOptions = computed(() =>
   props.roleOptions.flatMap((item) => {
@@ -144,7 +143,7 @@ async function loadUserDetail() {
     formData.password = '';
   } catch (error) {
     console.error('加载用户详情失败:', error);
-    message.error('加载用户详情失败');
+    toast.error('加载用户详情失败');
   }
 }
 
@@ -176,10 +175,10 @@ async function handleSubmit() {
       // 编辑时不传递 username
       const { username: _username, ...updateData } = formData;
       await userApi.update(updateData, props.userId);
-      message.success('修改成功');
+      toast.success('修改成功');
     } else {
       await userApi.create({ ...formData });
-      message.success('新增成功');
+      toast.success('新增成功');
     }
     handleClose();
     emit('success');

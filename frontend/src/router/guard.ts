@@ -9,7 +9,7 @@ import { IFrameView } from '@vben/layouts';
 import { preferences } from '@vben/preferences';
 import { startProgress, stopProgress } from '@vben/utils';
 
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 import { useUserStore } from '#/store';
 
 // 动态导入所有页面组件
@@ -157,7 +157,7 @@ function setupAccessGuard(router: Router) {
       await userStore.fetchAuthInfo();
       addRoutes(router, userStore.menus);
     } catch (error) {
-      message.error(`用户菜单加载失败！！！ ${error}`);
+      toast.error(`用户菜单加载失败！！！ ${error}`);
       return {
         path: LOGIN_PATH,
         query: { redirect: encodeURIComponent(to.fullPath) },

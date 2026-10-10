@@ -4,11 +4,9 @@ import type { NoticeDetailResp, NoticeResp } from '#/api/system/notice';
 
 import { ref } from 'vue';
 
-import { Page } from '@vben/common-ui';
+import { Page, useVbenDrawer } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 import { $t } from '@vben/locales';
-
-import { NDrawer, NDrawerContent } from 'naive-ui';
 
 import { joinDateTimeRange } from '#/adapter/component/date-range';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -17,7 +15,7 @@ import { useDict } from '#/hooks';
 import { Badge } from '#/ui/badge';
 import { badgeVariantForDictItem } from '#/ui/badge/variant';
 import { Button } from '#/ui/button';
-import { toast } from '#/ui/sonner';
+import { toast } from '#/ui-patterns/toast';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
@@ -41,9 +39,19 @@ const {
   'notice_status_enum',
 );
 
-const showFormDrawer = ref(false);
-const showViewDrawer = ref(false);
 const currentNoticeId = ref<string>();
+
+const [FormDrawer, formDrawerApi] = useVbenDrawer({
+  class: 'w-[1000px]',
+  footer: false,
+  destroyOnClose: true,
+});
+
+const [ViewDrawer, viewDrawerApi] = useVbenDrawer({
+  class: 'w-[900px]',
+  footer: false,
+  title: $t('common.detail'),
+});
 const currentNoticeDetail = ref<NoticeDetailResp>();
 
 function textValue(value: unknown) {
@@ -117,13 +125,13 @@ const [Grid, gridApi] = useVbenVxeGrid({
 
 function handleAdd() {
   currentNoticeId.value = undefined;
-  showFormDrawer.value = true;
+  formDrawerApi.setState({ title: $t('common.create') }).open();
 }
 
 async function handlePreview(row: NoticeResp) {
   try {
     currentNoticeDetail.value = await noticeApi.detail(row.id);
-    showViewDrawer.value = true;
+    viewDrawerApi.open();
   } catch (error) {
     console.error('加载公告详情失败:', error);
     toast.error('加载数据失败');
@@ -132,7 +140,7 @@ async function handlePreview(row: NoticeResp) {
 
 function handleEdit(row: NoticeResp) {
   currentNoticeId.value = row.id;
-  showFormDrawer.value = true;
+  formDrawerApi.setState({ title: $t('common.edit') }).open();
 }
 
 async function handleDelete(row: NoticeResp) {
@@ -158,7 +166,7 @@ async function handleExport() {
 }
 
 function handleFormSuccess() {
-  showFormDrawer.value = false;
+  formDrawerApi.close();
   gridApi.query();
 }
 
@@ -176,12 +184,25 @@ function methodItems(row: NoticeResp) {
     <Grid>
       <template #toolbar-tools>
         <ToolbarActions>
-          <Button type="button" @click="handleAdd">
-            <IconifyIcon icon="lucide:plus" class="mr-1 size-4" />
+          <Button
+            type="button"
+            @click="handleAdd"
+          >
+            <IconifyIcon
+              icon="lucide:plus"
+              class="mr-1 size-4"
+            />
             {{ $t('pages.common.add') }}
           </Button>
-          <Button type="button" variant="outline" @click="handleExport">
-            <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
+          <Button
+            type="button"
+            variant="outline"
+            @click="handleExport"
+          >
+            <IconifyIcon
+              icon="lucide:download"
+              class="mr-1 size-4"
+            />
             {{ $t('pages.common.export') }}
           </Button>
         </ToolbarActions>
@@ -203,7 +224,7 @@ function methodItems(row: NoticeResp) {
         >
           {{
             findDict(notice_scope_enum, row.noticeScope)?.label ||
-            row.noticeScope
+              row.noticeScope
           }}
         </Badge>
       </template>
@@ -246,7 +267,10 @@ function methodItems(row: NoticeResp) {
             class="h-auto px-1"
             @click="handlePreview(row)"
           >
-            <IconifyIcon icon="lucide:eye" class="mr-1 size-3.5" />
+            <IconifyIcon
+              icon="lucide:eye"
+              class="mr-1 size-3.5"
+            />
             预览
           </Button>
           <Button
@@ -256,7 +280,10 @@ function methodItems(row: NoticeResp) {
             class="h-auto px-1"
             @click="handleEdit(row)"
           >
-            <IconifyIcon icon="lucide:pencil" class="mr-1 size-3.5" />
+            <IconifyIcon
+              icon="lucide:pencil"
+              class="mr-1 size-3.5"
+            />
             编辑
           </Button>
           <Button
@@ -266,30 +293,31 @@ function methodItems(row: NoticeResp) {
             class="text-destructive h-auto px-1"
             @click="handleDelete(row)"
           >
-            <IconifyIcon icon="lucide:trash-2" class="mr-1 size-3.5" />
+            <IconifyIcon
+              icon="lucide:trash-2"
+              class="mr-1 size-3.5"
+            />
             删除
           </Button>
         </div>
       </template>
     </Grid>
 
-    <NDrawer v-model:show="showFormDrawer" :width="1000" placement="right">
-      <NDrawerContent
-        :title="currentNoticeId ? $t('common.edit') : $t('common.create')"
-        closable
-      >
-        <NoticeForm
-          :notice-id="currentNoticeId"
-          @success="handleFormSuccess"
-          @cancel="showFormDrawer = false"
-        />
-      </NDrawerContent>
-    </NDrawer>
+    <FormDrawer
+      :title="currentNoticeId ? $t('common.edit') : $t('common.create')"
+    >
+      <NoticeForm
+        :notice-id="currentNoticeId"
+        @success="handleFormSuccess"
+        @cancel="formDrawerApi.close()"
+      />
+    </FormDrawer>
 
-    <NDrawer v-model:show="showViewDrawer" :width="900" placement="right">
-      <NDrawerContent :title="$t('common.detail')" closable>
-        <NoticeView v-if="currentNoticeDetail" :notice="currentNoticeDetail" />
-      </NDrawerContent>
-    </NDrawer>
+    <ViewDrawer>
+      <NoticeView
+        v-if="currentNoticeDetail"
+        :notice="currentNoticeDetail"
+      />
+    </ViewDrawer>
   </Page>
 </template>

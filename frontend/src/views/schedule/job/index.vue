@@ -7,7 +7,7 @@ import { useRouter } from 'vue-router';
 
 import { Page, useVbenModal } from '@vben/common-ui';
 
-import { NPopover, NTimeline, NTimelineItem, useMessage } from 'naive-ui';
+import { NPopover, NTimeline, NTimelineItem } from 'naive-ui';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import {
@@ -26,8 +26,8 @@ import {
 
 import { useGridFieldColumns, useGridSearchFormSchema } from './data-scope';
 import JobEditDrawer from './edit-drawer.vue';
+import { toast } from '#/ui-patterns/toast';
 
-const message = useMessage();
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 const userStore = useUserStore();
 const router = useRouter();
@@ -92,13 +92,13 @@ async function handleDelete(row: JobResp) {
   });
   if (!ok) return;
   await deleteJob(row.id);
-  message.success('删除成功');
+  toast.success('删除成功');
   await tableGridApi.query();
 }
 
 function onTrigger(record: JobResp) {
   triggerJob(record.id).then(() => {
-    message.success('已触发执行');
+    toast.success('已触发执行');
   });
 }
 
@@ -115,7 +115,7 @@ function onUpdateStatus(record: JobResp, status: number) {
   record.status = status;
   updateJobStatus(status, record.id)
     .then(() => {
-      message.success(status === 1 ? '已激活' : '已停止');
+      toast.success(status === 1 ? '已激活' : '已停止');
     })
     .catch(() => {
       record.status = status === 1 ? 0 : 1;

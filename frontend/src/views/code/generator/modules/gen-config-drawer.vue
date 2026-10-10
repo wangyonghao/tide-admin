@@ -14,13 +14,12 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { getPopupContainer } from '@vben/utils';
 
-import { NInput, useMessage, NSteps, NStep } from 'naive-ui';
+import { NInput, NSteps, NStep } from 'naive-ui';
 
 import FormSelect from '#/adapter/component/FormSelect.vue';
 
 import { Checkbox } from '#/ui/checkbox';
 
-const message = useMessage();
 
 import { useVbenForm } from '#/adapter/form';
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
@@ -35,6 +34,7 @@ import { useDict } from '#/hooks/app';
 import { $t } from '#/locales';
 
 import { useFiledColumns } from '../data';
+import { toast } from '#/ui-patterns/toast';
 
 const emits = defineEmits(['success']);
 
@@ -354,7 +354,7 @@ const [Drawer, drawerApi] = useVbenDrawer({
         genConfig: firstFormApi.form.values,
         fieldConfigs: gridApi.grid.getFullData(),
       } as GeneratorConfigResp);
-      message.success('保存成功');
+      toast.success('保存成功');
       emits('success');
       drawerApi.close();
       return true;

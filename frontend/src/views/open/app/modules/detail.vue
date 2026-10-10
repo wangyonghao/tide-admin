@@ -6,13 +6,13 @@ import { computed, ref } from 'vue';
 import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import { NDescriptions, NDescriptionsItem, useMessage } from 'naive-ui';
+import { NDescriptions, NDescriptionsItem } from 'naive-ui';
 
 import { Badge } from '#/ui/badge';
 import { Button } from '#/ui/button';
+import { toast } from '#/ui-patterns/toast';
 
 const appData = ref<OpenAppApi.AppResp>();
-const message = useMessage();
 
 const [Drawer, drawerApi] = useVbenDrawer({
   onOpenChange(isOpen) {
@@ -35,10 +35,10 @@ const getDrawerTitle = computed(() => {
 const copyToClipboard = async (text: string) => {
   try {
     await navigator.clipboard.writeText(text);
-    message.success('复制成功');
+    toast.success('复制成功');
   } catch (error) {
     console.error('复制失败:', error);
-    message.error('复制失败');
+    toast.error('复制失败');
   }
 };
 </script>

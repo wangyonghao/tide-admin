@@ -8,12 +8,14 @@ import { h, ref, watch } from 'vue';
 import { Page } from '@vben/common-ui';
 import { IconifyIcon } from '@vben/icons';
 
-import { NCascader, NDropdown } from 'naive-ui';
+import { NDropdown } from 'naive-ui';
+
+import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
 
 import { useVbenVxeGrid } from '#/adapter/vxe-table';
 import { fileApi, resolveFilePreviewUrl } from '#/api/system/file';
 import { Button } from '#/ui/button';
-import { toast } from '#/ui/sonner';
+import { toast } from '#/ui-patterns/toast';
 import { FileUpload } from '#/ui/upload';
 
 const category = ref<FileCategory>('ALL');
@@ -334,17 +336,19 @@ watch(category, () => {
             :disabled="checkedCount === 0"
             @click="handleBatchDownload"
           >
-            <IconifyIcon icon="lucide:download" class="mr-1 size-4" />
+            <IconifyIcon
+              icon="lucide:download"
+              class="mr-1 size-4"
+            />
             下载
           </Button>
-          <NCascader
+          <FormTreeSelect
             :value="category"
             :options="categoryOptions"
-            :show-path="false"
-            check-strategy="child"
-            expand-trigger="hover"
+            key-field="value"
             placeholder="筛选"
             clearable
+            default-expand-all
             class="w-40"
             @update:value="
               (value) => (category = (value as FileCategory) || 'ALL')
@@ -363,7 +367,10 @@ watch(category, () => {
       <template #toolbar-tools>
         <FileUpload @select="handleUpload">
           <Button type="button">
-            <IconifyIcon icon="lucide:upload" class="mr-1 size-4" />
+            <IconifyIcon
+              icon="lucide:upload"
+              class="mr-1 size-4"
+            />
             上传
           </Button>
         </FileUpload>
@@ -374,7 +381,10 @@ watch(category, () => {
             :icon="getFileIcon(row).icon"
             :class="['shrink-0 text-xl', getFileIcon(row).color]"
           />
-          <span class="truncate" :title="row.fileName">{{ row.fileName }}</span>
+          <span
+            class="truncate"
+            :title="row.fileName"
+          >{{ row.fileName }}</span>
         </div>
       </template>
       <template #fileSize="{ row }">
@@ -392,8 +402,15 @@ watch(category, () => {
           :options="rowActions()"
           @select="(key) => handleRowAction(key, row)"
         >
-          <Button type="button" variant="ghost" size="icon">
-            <IconifyIcon icon="lucide:ellipsis" class="size-4" />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+          >
+            <IconifyIcon
+              icon="lucide:ellipsis"
+              class="size-4"
+            />
           </Button>
         </NDropdown>
       </template>

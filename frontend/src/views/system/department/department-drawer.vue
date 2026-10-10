@@ -1,28 +1,15 @@
 <script setup lang="ts">
-import type { FormInst, FormRules, TreeSelectOption } from 'naive-ui';
-
 import type { DeptResult } from '#/api/system/dept';
 
 import { computed, ref, watch } from 'vue';
 
+import { useVbenDrawer } from '@vben/common-ui';
 import { $t } from '@vben/locales';
 
-import {
-  NDrawer,
-  NDrawerContent,
-  NForm,
-  NFormItem,
-  NInput,
-  NInputNumber,
-  useMessage,
-} from 'naive-ui';
-
-import FormSelect from '#/adapter/component/FormSelect.vue';
-import FormTreeSelect from '#/adapter/component/FormTreeSelect.vue';
+import { useVbenForm } from '#/adapter/form';
 import { deptApi } from '#/api/system/dept';
-import { Button } from '#/ui/button';
-import { Switch } from '#/ui/switch';
 import { useDict } from '#/hooks/app';
+import { toast } from '#/ui-patterns/toast';
 
 interface Props {
   visible?: boolean;
@@ -39,76 +26,22 @@ const emits = defineEmits<{
   'update:visible': [value: boolean];
 }>();
 
-const message = useMessage();
-
-// 加载部门类型字典
 const { dept_type } = useDict('dept_type');
 
-// 状态
-const formRef = ref<FormInst | null>(null);
-const loading = ref(false);
-const deptOptions = ref<TreeSelectOption[]>([]);
+const recordId = ref('');
+const isUpdate = computed(() => !!recordId.value);
+const drawerTitle = computed(() =>
+  isUpdate.value ? $t('pages.common.edit') : $t('pages.common.add'),
+);
 
-const formModel = ref({
-  id: '',
-  parentId: undefined as string | undefined,
-  code: '',
-  name: '',
-  type: undefined as string | undefined,
-  sort: 1,
-  description: '',
-  status: 1,
-});
-
-const isUpdate = computed(() => !!formModel.value.id);
-
-const drawerTitle = computed(() => {
-  return isUpdate.value ? $t('pages.common.edit') : $t('pages.common.add');
-});
-
-const rules: FormRules = {
-  parentId: {
-    type: 'string',
-    required: true,
-    message: $t('ui.formRules.selectRequired'),
-    trigger: ['blur', 'change'],
-  },
-  code: {
-    required: true,
-    message: $t('ui.formRules.required'),
-    trigger: ['blur', 'input'],
-  },
-  name: {
-    required: true,
-    message: $t('ui.formRules.required'),
-    trigger: ['blur', 'input'],
-  },
-  type: {
-    type: 'string',
-    required: true,
-    message: $t('ui.formRules.selectRequired'),
-    trigger: ['blur', 'change'],
-  },
-  sort: {
-    type: 'number',
-    required: true,
-    message: $t('ui.formRules.required'),
-    trigger: ['blur', 'change'],
-  },
-};
-
-// 加载部门列表
-async function loadDeptOptions() {
-  try {
-    const deptArray = await deptApi.tree({});
-    deptOptions.value = convertToTreeSelectOptions(deptArray);
-  } catch (error) {
-    console.error('Failed to load dept options:', error);
-  }
+interface DeptTreeOption {
+  children?: DeptTreeOption[];
+  key: string;
+  label: string;
+  value: string;
 }
 
-// 转换为TreeSelect需要的格式
-function convertToTreeSelectOptions(depts: DeptResult[]): TreeSelectOption[] {
+function convertToTreeSelectOptions(depts: DeptResult[]): DeptTreeOption[] {
   return depts.map((dept) => ({
     label: dept.name,
     key: dept.id,
@@ -119,218 +52,220 @@ function convertToTreeSelectOptions(depts: DeptResult[]): TreeSelectOption[] {
   }));
 }
 
-// 重置表单
-function resetForm() {
-  formModel.value = {
-    id: '',
-    parentId: undefined,
+const [Form, formApi] = useVbenForm({
+  showDefaultActions: false,
+  layout: 'horizontal',
+  commonConfig: {
+    labelWidth: 100,
+    componentProps: { class: 'w-full' },
+  },
+  schema: [
+    {
+      component: 'TreeSelect',
+      fieldName: 'parentId',
+      label: $t('system.dept.parentId'),
+      componentProps: {
+        options: [],
+        clearable: true,
+        defaultExpandAll: true,
+        placeholder: $t('ui.formRules.selectRequired'),
+      },
+      rules: 'selectRequired',
+    },
+    {
+      component: 'Input',
+      fieldName: 'code',
+      label: $t('system.dept.code'),
+      componentProps: { placeholder: $t('ui.formRules.required') },
+      rules: 'required',
+    },
+    {
+      component: 'Input',
+      fieldName: 'name',
+      label: $t('system.dept.name'),
+      componentProps: { placeholder: $t('ui.formRules.required') },
+      rules: 'required',
+    },
+    {
+      component: 'Select',
+      fieldName: 'type',
+      label: $t('system.dept.type'),
+      componentProps: {
+        options: [],
+        clearable: true,
+        placeholder: $t('ui.formRules.selectRequired'),
+      },
+      rules: 'selectRequired',
+    },
+    {
+      component: 'InputNumber',
+      fieldName: 'sort',
+      label: $t('system.dept.sort'),
+      defaultValue: 1,
+      componentProps: {
+        min: 0,
+        placeholder: $t('ui.formRules.required'),
+      },
+      rules: 'required',
+    },
+    {
+      component: 'Textarea',
+      fieldName: 'description',
+      label: $t('system.dept.description'),
+      componentProps: {
+        rows: 3,
+        placeholder: $t('system.dept.description'),
+      },
+    },
+    {
+      component: 'Switch',
+      fieldName: 'status',
+      label: $t('system.dept.status'),
+      defaultValue: 1,
+      componentProps: {
+        checkedValue: 1,
+        uncheckedValue: 2,
+      },
+    },
+  ],
+});
+
+async function loadDeptOptions() {
+  try {
+    const deptArray = await deptApi.tree({});
+    formApi.updateSchema([
+      {
+        fieldName: 'parentId',
+        componentProps: {
+          options: convertToTreeSelectOptions(deptArray),
+          clearable: true,
+          defaultExpandAll: true,
+          placeholder: $t('ui.formRules.selectRequired'),
+        },
+      },
+      {
+        fieldName: 'type',
+        componentProps: {
+          options: dept_type?.value ?? [],
+          clearable: true,
+          placeholder: $t('ui.formRules.selectRequired'),
+        },
+      },
+    ]);
+  } catch (error) {
+    console.error('Failed to load dept options:', error);
+  }
+}
+
+async function resetForm() {
+  recordId.value = '';
+  await formApi.resetForm();
+  await formApi.setValues({
+    parentId: null,
     code: '',
     name: '',
-    type: undefined,
+    type: null,
     sort: 1,
     description: '',
     status: 1,
-  };
-  formRef.value?.restoreValidation();
+  });
 }
 
-// 加载部门详情
 async function loadDeptDetail(id: string) {
-  try {
-    loading.value = true;
-    const res = await deptApi.get(id);
-    formModel.value = {
-      id: String(res.id),
-      parentId:
-        res.parentId == null || res.parentId === ''
-          ? undefined
-          : String(res.parentId),
-      code: res.code,
-      name: res.name,
-      type: res.type?.toString(),
-      sort: res.sort,
-      description: res.description,
-      status: res.status,
-    };
-  } catch (error) {
-    console.error('Failed to load dept detail:', error);
-  } finally {
-    loading.value = false;
-  }
+  const res = await deptApi.get(id);
+  recordId.value = String(res.id);
+  await formApi.setValues({
+    parentId:
+      res.parentId == null || res.parentId === '' ? null : String(res.parentId),
+    code: res.code,
+    name: res.name,
+    type: res.type?.toString() ?? null,
+    sort: res.sort,
+    description: res.description ?? '',
+    status: res.status === 2 ? 2 : 1,
+  });
 }
 
-// 提交表单
-async function handleSubmit() {
-  try {
-    await formRef.value?.validate();
-    loading.value = true;
-
+const [Drawer, drawerApi] = useVbenDrawer({
+  class: 'w-[600px]',
+  async onConfirm() {
+    const { valid } = await formApi.validate();
+    if (!valid) return;
+    const values = await formApi.getValues();
     const submitData = {
-      ...formModel.value,
-      type: parseInt(formModel.value.type || '1'),
+      id: recordId.value,
+      parentId: values.parentId,
+      code: values.code,
+      name: values.name,
+      type: Number.parseInt(String(values.type || '1'), 10),
+      sort: typeof values.sort === 'number' ? values.sort : 1,
+      description: values.description ?? '',
+      status: values.status === 2 ? 2 : 1,
     };
-
-    if (isUpdate.value) {
-      await deptApi.update(submitData, formModel.value.id);
-      message.success($t('pages.common.modifySuccess'));
-    } else {
-      await deptApi.create(submitData);
-      message.success($t('pages.common.addSuccess'));
+    drawerApi.lock();
+    try {
+      if (isUpdate.value) {
+        await deptApi.update(submitData, recordId.value);
+        toast.success($t('pages.common.modifySuccess'));
+      } else {
+        await deptApi.create(submitData);
+        toast.success($t('pages.common.addSuccess'));
+      }
+      emits('success');
+      drawerApi.close();
+    } catch (error) {
+      console.error('Form validation or submission failed:', error);
+      drawerApi.unlock();
     }
-
-    emits('success');
-    handleClose();
-  } catch (error) {
-    console.error('Form validation or submission failed:', error);
-  } finally {
-    loading.value = false;
-  }
-}
-
-// 关闭抽屉
-function handleClose() {
-  emits('update:visible', false);
-  resetForm();
-}
-
-// 监听visible变化
-watch(
-  () => props.visible,
-  async (newVal) => {
-    if (newVal) {
+  },
+  async onOpenChange(isOpen) {
+    if (!isOpen) {
+      emits('update:visible', false);
+      await resetForm();
+      return;
+    }
+    drawerApi.setState({ loading: true });
+    try {
+      await resetForm();
       await loadDeptOptions();
       if (props.data?.id) {
         await loadDeptDetail(props.data.id);
-      } else {
-        resetForm();
       }
+    } catch (error) {
+      console.error('Failed to load dept detail:', error);
+    } finally {
+      drawerApi.setState({ loading: false });
     }
+  },
+});
+
+watch(
+  () => props.visible,
+  (open) => {
+    if (open) drawerApi.open();
+    else drawerApi.close();
+  },
+);
+
+watch(
+  () => dept_type?.value,
+  (options) => {
+    formApi.updateSchema([
+      {
+        fieldName: 'type',
+        componentProps: {
+          options: options ?? [],
+          clearable: true,
+          placeholder: $t('ui.formRules.selectRequired'),
+        },
+      },
+    ]);
   },
 );
 </script>
 
 <template>
-  <NDrawer
-    :show="visible"
-    :width="600"
-    :on-update:show="(val: boolean) => emits('update:visible', val)"
-  >
-    <NDrawerContent
-      :title="drawerTitle"
-      closable
-    >
-      <NForm
-        ref="formRef"
-        :model="formModel"
-        :rules="rules"
-        label-placement="left"
-        label-width="100"
-        require-mark-placement="right-hanging"
-      >
-        <NFormItem
-          :label="$t('system.dept.parentId')"
-          path="parentId"
-        >
-          <FormTreeSelect
-            v-model:value="formModel.parentId"
-            :options="deptOptions"
-            :placeholder="$t('ui.formRules.selectRequired')"
-            clearable
-            default-expand-all
-          />
-        </NFormItem>
-        <NFormItem
-          :label="$t('system.dept.code')"
-          path="code"
-        >
-          <NInput
-            v-model:value="formModel.code"
-            :placeholder="$t('ui.formRules.required')"
-          />
-        </NFormItem>
-        <NFormItem
-          :label="$t('system.dept.name')"
-          path="name"
-        >
-          <NInput
-            v-model:value="formModel.name"
-            :placeholder="$t('ui.formRules.required')"
-          />
-        </NFormItem>
-        <NFormItem
-          :label="$t('system.dept.type')"
-          path="type"
-        >
-          <FormSelect
-            v-model:value="formModel.type"
-            :options="dept_type"
-            :placeholder="$t('ui.formRules.selectRequired')"
-            clearable
-          />
-        </NFormItem>
-        <NFormItem
-          :label="$t('system.dept.sort')"
-          path="sort"
-        >
-          <NInputNumber
-            v-model:value="formModel.sort"
-            :placeholder="$t('ui.formRules.required')"
-            class="w-full"
-            :min="0"
-          />
-        </NFormItem>
-        <NFormItem
-          :label="$t('system.dept.description')"
-          path="description"
-        >
-          <NInput
-            v-model:value="formModel.description"
-            type="textarea"
-            :placeholder="$t('system.dept.description')"
-            :rows="3"
-          />
-        </NFormItem>
-        <NFormItem
-          :label="$t('system.dept.status')"
-          path="status"
-        >
-          <div class="flex items-center gap-2">
-            <Switch
-              v-model="formModel.status"
-              :checked-value="1"
-              :unchecked-value="2"
-            />
-            <span class="text-sm text-muted-foreground">
-              {{
-                formModel.status === 1
-                  ? $t('pages.common.enable')
-                  : $t('pages.common.disable')
-              }}
-            </span>
-          </div>
-        </NFormItem>
-      </NForm>
-
-      <template #footer>
-        <div class="flex justify-end gap-2">
-          <Button
-            type="button"
-            variant="outline"
-            @click="handleClose"
-          >
-            {{ $t('common.cancel') }}
-          </Button>
-          <Button
-            type="button"
-            :loading="loading"
-            @click="handleSubmit"
-          >
-            {{ $t('common.confirm') }}
-          </Button>
-        </div>
-      </template>
-    </NDrawerContent>
-  </NDrawer>
+  <Drawer :title="drawerTitle">
+    <Form />
+  </Drawer>
 </template>
-
-<style lang="scss" scoped></style>

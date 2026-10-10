@@ -169,10 +169,12 @@ import {
   WatchOutline,
   WifiOutline,
 } from '@vicons/ionicons5';
-import { NIcon, NInput, NPopover, NScrollbar } from 'naive-ui';
+import { NIcon, NPopover, NScrollbar } from 'naive-ui';
+
+import { Input } from '#/ui/input';
 
 defineOptions({ name: 'IconSelect' });
-const emit = defineEmits<{ (e: 'update:modelValue', value: string): void }>();
+const modelValue = defineModel<string>({ default: '' });
 const searchText = ref('');
 
 // 图标列表
@@ -641,12 +643,12 @@ function getIconComponent(name: string): Component | undefined {
 
 // 选择图标
 function handleSelect(name: string) {
-  emit('update:modelValue', name);
+  modelValue.value = name;
 }
 
 // 清除
 function handleClear() {
-  emit('update:modelValue', '');
+  modelValue.value = '';
 }
 
 // 导出获取图标方法供外部使用
@@ -654,38 +656,44 @@ defineExpose({ getIconComponent, iconMap });
 </script>
 
 <template>
-  <NPopover trigger="click" placement="bottom" :width="400">
+  <NPopover
+    trigger="click"
+    placement="bottom"
+    :width="400"
+  >
     <template #trigger>
-      <NInput
-        :value="modelValue"
-        placeholder="请选择图标"
-        readonly
-        style="cursor: pointer"
-      >
-        <template #prefix v-if="modelValue">
-          <NIcon :size="18">
-            <component :is="getIconComponent(modelValue)" />
-          </NIcon>
-        </template>
-        <template #suffix>
-          <NIcon
-            :size="14"
-            style="cursor: pointer"
-            @click.stop="handleClear"
-            v-if="modelValue"
-          >
+      <div class="relative">
+        <Input
+          :model-value="modelValue"
+          placeholder="请选择图标"
+          readonly
+          class="cursor-pointer"
+          :class="modelValue ? 'px-8' : undefined"
+        />
+        <NIcon
+          v-if="modelValue"
+          :size="18"
+          class="pointer-events-none absolute top-1/2 left-2 -translate-y-1/2"
+        >
+          <component :is="getIconComponent(modelValue)" />
+        </NIcon>
+        <button
+          v-if="modelValue"
+          type="button"
+          class="absolute top-1/2 right-2 -translate-y-1/2"
+          @click.stop="handleClear"
+        >
+          <NIcon :size="14">
             <CloseOutline />
           </NIcon>
-        </template>
-      </NInput>
+        </button>
+      </div>
     </template>
     <div class="icon-select-container">
-      <NInput
-        v-model:value="searchText"
+      <Input
+        v-model="searchText"
         placeholder="搜索图标"
-        clearable
-        size="small"
-        style="margin-bottom: 12px"
+        class="mb-3 h-8"
       />
       <NScrollbar style="max-height: 300px">
         <div class="icon-grid">
@@ -694,8 +702,8 @@ defineExpose({ getIconComponent, iconMap });
             :key="icon.name"
             class="icon-item"
             :class="{ active: modelValue === icon.name }"
-            @click="handleSelect(icon.name)"
             :title="icon.name"
+            @click="handleSelect(icon.name)"
           >
             <NIcon :size="22">
               <component :is="icon.component" />

@@ -1,6 +1,9 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
-import { NCard, NRadioGroup, NRadio, NInput } from 'naive-ui';
+import { NCard } from 'naive-ui';
+
+import FormRadioGroup from '#/adapter/component/FormRadioGroup.vue';
+import { Input } from '#/ui/input';
 import FormSelect from '#/adapter/component/FormSelect.vue';
 import { $t } from '#/locales';
 import { Button } from '#/ui/button';
@@ -11,7 +14,7 @@ import {
   type ConfirmActionExpose,
 } from '#/ui-patterns/confirm-action';
 import { preferences } from '@vben/preferences';
-import { message } from '#/adapter/naive';
+import { toast } from '#/ui-patterns/toast';
 
 const confirmAction = ref<ConfirmActionExpose | null>(null);
 
@@ -77,7 +80,7 @@ const handleSave = () => {
   // 更新首页路径
   preferences.app.defaultHomePath = settings.value.defaultHomePath;
 
-  message.success(t('page.profile.preferences.saveSuccess'));
+  toast.success($t('page.profile.preferences.saveSuccess'));
 };
 
 // 恢复默认
@@ -150,15 +153,10 @@ const presetColors = [
             <div class="setting-label">
               {{ $t('page.profile.preferences.themeMode') }}
             </div>
-            <NRadioGroup v-model:value="settings.themeMode">
-              <NRadio
-                v-for="option in themeModeOptions"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ option.label }}
-              </NRadio>
-            </NRadioGroup>
+            <FormRadioGroup
+              v-model:value="settings.themeMode"
+              :options="themeModeOptions"
+            />
           </div>
 
           <Separator class="my-2" />
@@ -190,17 +188,10 @@ const presetColors = [
             <div class="setting-label">
               {{ $t('page.profile.preferences.layoutMode') }}
             </div>
-            <NRadioGroup v-model:value="settings.layout">
-              <div class="flex flex-col gap-2">
-                <NRadio
-                  v-for="option in layoutOptions"
-                  :key="option.value"
-                  :value="option.value"
-                >
-                  {{ option.label }}
-                </NRadio>
-              </div>
-            </NRadioGroup>
+            <FormRadioGroup
+              v-model:value="settings.layout"
+              :options="layoutOptions"
+            />
           </div>
 
           <Separator class="my-2" />
@@ -209,15 +200,10 @@ const presetColors = [
             <div class="setting-label">
               {{ $t('page.profile.preferences.contentWidth') }}
             </div>
-            <NRadioGroup v-model:value="settings.contentWidth">
-              <NRadio
-                v-for="option in contentWidthOptions"
-                :key="option.value"
-                :value="option.value"
-              >
-                {{ option.label }}
-              </NRadio>
-            </NRadioGroup>
+            <FormRadioGroup
+              v-model:value="settings.contentWidth"
+              :options="contentWidthOptions"
+            />
           </div>
 
           <Separator class="my-2" />
@@ -273,10 +259,10 @@ const presetColors = [
           <div class="setting-label">
             {{ $t('page.profile.preferences.defaultHomePath') }}
           </div>
-          <NInput
-            v-model:value="settings.defaultHomePath"
+          <Input
+            v-model="settings.defaultHomePath"
             :placeholder="$t('page.profile.preferences.defaultHomePath')"
-            style="width: 300px"
+            class="w-[300px]"
           />
         </div>
       </NCard>
