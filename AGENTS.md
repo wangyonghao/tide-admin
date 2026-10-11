@@ -26,7 +26,9 @@ Cursor 同步加载 [`.cursor/skills/`](.cursor/skills/) 同名技能；编码�
 ## Commands
 
 ```bash
-# 后端
+# 本地全套（Postgres、Redis、邮件、MinIO、Vite、API）
+cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up
+# 只在宿主机起后端
 cd backend && mvn -pl tide-bootstrap -am spring-boot:run
 # 单元测试（默认开启；临时跳过 -DskipUnitTests=true）。范围与 .github/workflows/backend-build.yml 一致
 cd backend && mvn -pl platform/job,platform/iam,platform/cmn-crypto -am test
