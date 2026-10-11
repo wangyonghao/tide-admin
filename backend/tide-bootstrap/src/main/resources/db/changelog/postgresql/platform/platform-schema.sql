@@ -548,7 +548,7 @@ COMMENT ON COLUMN "sys_login_log"."tenant_id" IS '租户ID';
 COMMENT ON TABLE "sys_login_log" IS '登录日志表';
 
 -- 文件元数据
-CREATE TABLE IF NOT EXISTS "file"
+CREATE TABLE IF NOT EXISTS "sys_file"
 (
     "id"           BIGSERIAL PRIMARY KEY,
     "file_name"    VARCHAR(255) NOT NULL,
