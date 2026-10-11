@@ -4,6 +4,7 @@ package top.wyhao.department.domain.model;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.model.BaseEntity;
+import top.wyhao.tenant.core.TenantedEntity;
 
 /**
  * 部门实体
@@ -12,7 +13,7 @@ import top.wyhao.cmn.db.model.BaseEntity;
  */
 @Data
 @TableName("sys_department")
-public class SysDepartment extends BaseEntity {
+public class SysDepartment extends BaseEntity implements TenantedEntity {
     /**
      * 编码
      */
@@ -51,4 +52,8 @@ public class SysDepartment extends BaseEntity {
      * 是否为系统内置数据
      */
     private Boolean isBuiltin;
+    /**
+     * 租户 ID。行级隔离列，与当前登录租户一致。
+     */
+    private Long tenantId;
 }

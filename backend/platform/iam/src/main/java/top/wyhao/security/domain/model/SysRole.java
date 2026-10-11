@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.core.enums.DataScopeEnum;
+import top.wyhao.tenant.core.TenantedEntity;
 
 import java.time.LocalDateTime;
 
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName("sys_role")
-public class SysRole{
+public class SysRole implements TenantedEntity {
 
     @TableId
     private Long id;
@@ -86,4 +87,9 @@ public class SysRole{
      */
     @TableField(fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
+
+    /**
+     * 租户 ID。行级隔离列，与当前登录租户一致。
+     */
+    private Long tenantId;
 }

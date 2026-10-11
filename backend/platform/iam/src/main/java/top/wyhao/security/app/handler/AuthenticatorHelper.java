@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;
 import top.wyhao.security.client.AuthenticationException;
+import top.wyhao.security.adapter.web.vo.AuthenticationResult;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.department.client.DepartmentApi;
 import top.wyhao.security.app.service.AuthenticationLogService;
@@ -19,6 +20,7 @@ import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.identity.client.LoginUser;
 import top.wyhao.cmn.core.util.ExceptionUtils;
 import top.wyhao.cmn.core.util.IpUtils;
+import top.wyhao.tenant.context.TenantContextHolder;
 
 /**
  * 登录帮助类
@@ -45,7 +47,14 @@ public class AuthenticatorHelper {
         session.set("os", info.os());
         session.set("loginTime", System.currentTimeMillis());
         session.set("deviceType", deviceType);
+        Long tenantId = TenantContextHolder.getTenantId();
+        loginUser.setTenantId(tenantId);
+        session.set("tenantId", tenantId);
         session.set(LoginUtil.LOGIN_USER_KEY, loginUser);
+    }
+
+    public static AuthenticationResult successResult() {
+        return new AuthenticationResult("200", LoginUtil.getTokenValue(), TenantContextHolder.getTenantId());
     }
 
 

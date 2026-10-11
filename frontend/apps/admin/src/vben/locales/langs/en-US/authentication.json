@@ -9,6 +9,7 @@
   "username": "Username",
   "password": "Password",
   "usernameTip": "Please enter username",
+  "tenantIdTip": "Tenant ID (leave empty for the platform tenant)",
   "passwordErrorTip": "Password is incorrect",
   "passwordTip": "Please enter password",
   "verifyRequiredTip": "Please complete the verification first",

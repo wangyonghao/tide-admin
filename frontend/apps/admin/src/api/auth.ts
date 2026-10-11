@@ -1,11 +1,13 @@
+import type { AxiosRequestConfig } from 'axios';
+
 import http from '#/api/http';
 import type { Menu } from './system';
 import type { PageQuery, PageResult } from '#/types/api';
 
 /* ==================== API 定义 ==================== */
 export const authApi = {
-  login(params: AuthReq) {
-    return http.post<LoginResult>('/auth/login', params);
+  login(params: AuthReq, config?: AxiosRequestConfig) {
+    return http.post<LoginResult>('/auth/login', params, config);
   },
   /** 自助注册（成功后返回登录 token） */
   register(req: RegisterReq) {

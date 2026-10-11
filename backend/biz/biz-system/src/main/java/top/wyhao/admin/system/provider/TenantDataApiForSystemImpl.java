@@ -7,6 +7,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import com.baomidou.mybatisplus.core.conditions.Wrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.audit.mapper.SysOperationLogMapper;
@@ -34,6 +35,7 @@ import top.wyhao.tenant.client.PackageMenuApi;
 import top.wyhao.tenant.client.TenantApi;
 import top.wyhao.tenant.client.TenantBO;
 import top.wyhao.tenant.client.TenantDataApi;
+import top.wyhao.tenant.domain.PackageMenuBinding;
 import top.wyhao.tenant.util.TenantUtils;
 
 import java.time.LocalDateTime;
@@ -62,6 +64,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private final UserRoleRepository userRoleRepository;
     private final UserSocialRepository userSocialRepository;
     private final RoleService roleService;
+    private final PasswordEncoder passwordEncoder;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -72,8 +75,9 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
             Long departmentId = this.initDepartmentData(tenant);
             // 初始化角色
             Long roleId = this.initRoleData(tenant);
-            // 角色绑定菜单
-            List<Long> menuIds = packageMenuApi.listMenuIdsByPackageId(tenant.getPackageId());
+            // 角色绑定菜单：与套餐菜单一致，不多给也不少给
+            List<Long> menuIds = PackageMenuBinding.menusForTenantAdmin(
+                packageMenuApi.listMenuIdsByPackageId(tenant.getPackageId()));
             roleMenuRepository.replaceByRoleId(roleId, menuIds);
             // 初始化管理用户
             Long userId = this.initUserData(tenant, departmentId);
@@ -135,6 +139,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         department.setSort(1);
         department.setStatus(StatusEnum.ENABLE.getValue());
         department.setIsBuiltin(true);
+        department.setTenantId(tenant.getId());
         departmentRepository.insert(department);
         return department.getId();
     }
@@ -156,6 +161,7 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         role.setIsBuiltin(true);
         role.setMenuCheckStrictly(true);
         role.setDepartmentCheckStrictly(true);
+        role.setTenantId(tenant.getId());
         roleRepository.insert(role);
         return role.getId();
     }
@@ -177,13 +183,14 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
         SysUser user = new SysUser();
         user.setUsername(tenant.getAdminUsername());
         user.setDisplayName(RoleCodeEnum.TENANT_ADMIN.getDescription());
-        user.setPassword(rawPassword);
+        user.setPassword(passwordEncoder.encode(rawPassword));
         user.setGender(GenderEnum.UNKNOWN.getValue());
         user.setDescription("系统初始用户");
         user.setStatus(StatusEnum.ENABLE.getValue());
         user.setIsBuiltin(true);
         user.setPwdUpdateTime(LocalDateTime.now());
         user.setDepartmentId(departmentId);
+        user.setTenantId(tenant.getId());
         userRepository.insert(user);
         return user.getId();
     }

@@ -28,7 +28,6 @@ import top.wyhao.identity.client.UserApi;
 import top.wyhao.cmn.core.constant.SystemConstants;
 import top.wyhao.notification.client.MessageNotifyApi;
 import top.wyhao.security.client.RoleApi;
-import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.application.autoconfigure.ApplicationProperties;
 import top.wyhao.cmn.core.constant.RegexConstants;
 import top.wyhao.cmn.core.enums.GenderEnum;
@@ -115,7 +114,7 @@ public class SocialAuthenticator implements Authenticator {
         String userAgent = httpRequest != null ? httpRequest.getHeader("User-Agent") : null;
         AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
-        return new AuthenticationResult("200", LoginUtil.getTokenValue(), null);
+        return AuthenticatorHelper.successResult();
     }
 
     /**

@@ -1,10 +1,10 @@
 
 package top.wyhao.tenant.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import top.wyhao.tenant.domain.PackageMenuBinding;
 import top.wyhao.tenant.mapper.TenantPackageMenuMapper;
 import top.wyhao.tenant.model.entity.TenantPackageMenu;
 import top.wyhao.tenant.service.PackageMenuService;
@@ -35,13 +35,17 @@ public class PackageMenuServiceImpl implements PackageMenuService {
             .stream()
             .map(TenantPackageMenu::getMenuId)
             .toList();
-        if (CollUtil.isEmpty(CollUtil.disjunction(menuIds, oldMenuIdList))) {
+        if (!PackageMenuBinding.changed(oldMenuIdList, menuIds)) {
             return false;
         }
         // 删除原有关联
         baseMapper.lambdaUpdate().eq(TenantPackageMenu::getPackageId, packageId).remove();
+        List<Long> granted = PackageMenuBinding.menusForTenantAdmin(menuIds);
+        if (granted.isEmpty()) {
+            return true;
+        }
         // 保存最新关联
-        List<TenantPackageMenu> newList = CollUtils.mapToList(menuIds, menuId -> new TenantPackageMenu(packageId, menuId));
+        List<TenantPackageMenu> newList = CollUtils.mapToList(granted, menuId -> new TenantPackageMenu(packageId, menuId));
         return baseMapper.insertBatch(newList);
     }
 

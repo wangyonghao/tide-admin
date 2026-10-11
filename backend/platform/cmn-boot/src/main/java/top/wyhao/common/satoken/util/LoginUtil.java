@@ -178,7 +178,21 @@ public final class LoginUtil {
         if (loginUser == null) {
             return null;
         }
+        if (loginUser.getTenantId() != null) {
+            return loginUser.getTenantId();
+        }
         SaSession session = StpUtil.getTokenSession();
-        return session == null ? null : session.getLong("tenantId");
+        if (session == null) {
+            return null;
+        }
+        Object raw = session.get("tenantId");
+        if (raw == null) {
+            return null;
+        }
+        try {
+            return Long.valueOf(raw.toString());
+        } catch (NumberFormatException ex) {
+            return null;
+        }
     }
 }

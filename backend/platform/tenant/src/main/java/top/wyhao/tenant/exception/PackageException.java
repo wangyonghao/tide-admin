@@ -27,4 +27,12 @@ public class PackageException extends BizException {
     public static PackageException nameExists(String name) {
         return of("PACKAGE_NAME_EXISTS", StrUtil.format("名称为 [{}] 的套餐已存在", name));
     }
+
+    public static PackageException notFound() {
+        return of("PACKAGE_NOT_FOUND", "套餐不存在");
+    }
+
+    public static PackageException disabled() {
+        return of("PACKAGE_DISABLED", "套餐已被禁用");
+    }
 }

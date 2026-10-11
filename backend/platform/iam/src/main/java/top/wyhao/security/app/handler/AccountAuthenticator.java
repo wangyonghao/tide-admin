@@ -97,7 +97,7 @@ public class AccountAuthenticator implements Authenticator {
             // 9. 记录登录成功日志
             AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
-            return new AuthenticationResult("200", LoginUtil.getTokenValue(), null);
+            return AuthenticatorHelper.successResult();
         } catch (BizException e) {
             // 如果是业务异常且还没记录日志，记录失败日志
             if (!"USERNAME_PASSWORD_ERROR".equals(e.getCode())) {

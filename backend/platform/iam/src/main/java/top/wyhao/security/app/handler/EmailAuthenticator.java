@@ -14,7 +14,6 @@ import top.wyhao.security.app.assembler.LoginUserAssembler;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.UserApi;
 import top.wyhao.redisson.util.RedisUtils;
-import top.wyhao.common.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.web.http.ServletUtils;
 
@@ -65,6 +64,6 @@ public class EmailAuthenticator implements Authenticator {
         String userAgent = httpServletRequest != null ? httpServletRequest.getHeader("User-Agent") : null;
         AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
-        return new AuthenticationResult("200", LoginUtil.getTokenValue(), null);
+        return AuthenticatorHelper.successResult();
     }
 }

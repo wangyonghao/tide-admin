@@ -1,46 +1,61 @@
-
 package top.wyhao.tenant.model.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
+import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.cmn.db.model.BaseEntity;
 
 import java.time.LocalDateTime;
 
 /**
- * 租户实体
- *
-
-
- * @since 2024/11/26 17:20
+ * 租户实体。对应表 {@code tenant}（见 Liquibase platform-schema）。
  */
 @Data
-@TableName("sys_tenant")
+@TableName("tenant")
 public class Tenant extends BaseEntity {
+
     /**
      * 名称
      */
     private String name;
-    /** 简称 */
-    private String shortName;
-    /** 域名 */
+
+    /**
+     * 编码
+     */
+    private String code;
+
+    /**
+     * 域名
+     */
     private String domain;
-    /** 租户编号（由用户自定义，未定义时系统自动生成）*/
-    private String displayID;
-    /** 联系人名称 */
-    private String contactName;
-    /** 联系人邮箱 */
-    private String contactEmail;
-    /** 联系人手机 */
-    private String contactMobile;
-    /** 联系人邮编 */
-    private String postcode;
-    /** 联系地址 */
-    private String address;
-    /** 过期时间 */
+
+    /**
+     * 过期时间
+     */
     private LocalDateTime expireTime;
-    /** 备注 */
-    private String remark;
-    /** 状态 */
-    private Integer status;
+
+    /**
+     * 描述
+     */
+    private String description;
+
+    /**
+     * 状态
+     */
+    private StatusEnum status;
+
+    /**
+     * 套餐 ID
+     */
+    private Long packageId;
+
+    /**
+     * 管理员用户
+     */
+    private Long adminUser;
+
+    /**
+     * 管理员用户名
+     */
+    private String adminUsername;
 }

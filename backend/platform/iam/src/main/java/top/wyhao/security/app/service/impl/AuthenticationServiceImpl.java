@@ -98,7 +98,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
                 : null;
         AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);
 
-        return new AuthenticationResult("200", LoginUtil.getTokenValue(), null);
+        return AuthenticatorHelper.successResult();
     }
 
     @Override
