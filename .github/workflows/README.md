@@ -39,4 +39,4 @@ paths:
 
 - 密钥放在 GitHub Secrets，不要写进工作流。
 - `backend-build.yml` 会去掉 `backend/pom.xml` 里的镜像 `<repositories>`，让 CI 走 Maven Central。
-- 前端任务在 `ubuntu-latest`，时限 30 分钟，并用 pnpm 缓存。`HUSKY=0`，安装使用 `--frozen-lockfile`。
+- 前端任务在 `ubuntu-latest`，时限 30 分钟，并用 pnpm 缓存。`HUSKY=0`，`TZ=Asia/Shanghai`，安装使用 `--frozen-lockfile`。Vitest 使用与应用相同的 `@vben/*` 别名。

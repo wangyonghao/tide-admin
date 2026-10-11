@@ -11,6 +11,8 @@ on:
 env:
   HUSKY: '0'
   CI: 'true'
+  # date 单测要求 IANA 时区名（如 Asia/Shanghai），UTC 无法通过。
+  TZ: Asia/Shanghai
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
