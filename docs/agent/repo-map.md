@@ -5,7 +5,7 @@ Agent 按需阅读。完整目录树不必背诵；以本表与 `ls` / 搜索为
 ## Layout
 
 ```
-wyh-admin/
+tide-admin/
 ├── backend/           # Java 17 + Spring Boot（模块化单体）
 │   ├── tide-bootstrap/# 可运行主服务
 │   ├── interfaces/    # tide-web、open-api

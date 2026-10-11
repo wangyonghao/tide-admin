@@ -27,6 +27,7 @@ package-lock.json
 # local env files
 .env.local
 .env.*.local
+backend/docker/.env
 .eslintcache
 
 logs
