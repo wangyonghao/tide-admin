@@ -28,8 +28,8 @@ Cursor 同步加载 [`.cursor/skills/`](.cursor/skills/) 同名技能；编码�
 ```bash
 # 后端
 cd backend && mvn -pl tide-bootstrap -am spring-boot:run
-# 单元测试（默认开启；临时跳过 -DskipUnitTests=true）
-cd backend && mvn -pl platform/job,platform/iam -am test
+# 单元测试（默认开启；临时跳过 -DskipUnitTests=true）。范围与 .github/workflows/backend-build.yml 一致
+cd backend && mvn -pl platform/job,platform/iam,platform/cmn-crypto -am test
 
 # 前端产品后台（@tide/admin）。pnpm dev 与 pnpm dev:admin 相同
 cd frontend && pnpm install && pnpm dev
@@ -38,7 +38,9 @@ cd frontend && pnpm dev:docs
 cd frontend && pnpm dev:ds
 ```
 
-配置：`backend/tide-bootstrap/src/main/resources/config/`；环境变量示例：`backend/scripts/env.example.sh`  
+配置：`backend/tide-bootstrap/src/main/resources/config/`  
+环境变量示例：`backend/scripts/env.example.sh`（复制为 `backend/scripts/env.sh`，已被 `backend/.gitignore` 忽略）  
+本地基础设施：`backend/docker/`（Compose 与 `.env.example`；不要用 `backend/scripts/docker/`）  
 DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 
 ## Hard boundaries
