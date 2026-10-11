@@ -11,6 +11,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    timeout-minutes: 30
     strategy:
       matrix:
         jdk-version:
@@ -24,8 +25,11 @@ jobs:
           distribution: "temurin"
           java-version: ${{ matrix.jdk-version }}
           cache: "maven"
-      - name: Compile
+      - name: Use Maven Central
         run: |
           sed -i.bak '/<repositories>/,/<\/repositories>/d' ./backend/pom.xml
           sed -i.bak '/<pluginRepositories>/,/<\/pluginRepositories>/d' ./backend/pom.xml
-          mvn -B compile --file ./backend/pom.xml
+      - name: Compile
+        run: mvn -B compile --file ./backend/pom.xml
+      - name: Unit tests
+        run: mvn -B -pl platform/job,platform/iam,platform/cmn-crypto -am test --file ./backend/pom.xml
