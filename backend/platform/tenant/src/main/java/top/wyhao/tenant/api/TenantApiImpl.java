@@ -4,6 +4,7 @@ package top.wyhao.tenant.api;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.tenant.mapper.SysTenantMapper;
+import top.wyhao.tenant.model.entity.Tenant;
 import top.wyhao.tenant.client.TenantApi;
 
 /**
@@ -20,10 +21,6 @@ public class TenantApiImpl implements TenantApi {
 
     @Override
     public void bindAdminUser(Long tenantId, Long userId) {
-//        baseMapper.lambdaUpdate().set(Tenant::getAdminUser, userId).eq(Tenant::getId, tenantId).update();
-//        // 更新租户缓存
-//        Tenant entity = baseMapper.selectById(tenantId);
-//        RedisUtils.set(TenantConstants.TENANT_KEY_PREFIX + tenantId, entity);
-        // todo 计划删除TenantApiImpl
+        baseMapper.lambdaUpdate().set(Tenant::getAdminUser, userId).eq(Tenant::getId, tenantId).update();
     }
 }

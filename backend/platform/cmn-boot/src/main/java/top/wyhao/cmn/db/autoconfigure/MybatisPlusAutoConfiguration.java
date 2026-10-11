@@ -1,7 +1,6 @@
 
 package top.wyhao.cmn.db.autoconfigure;
 
-import cn.hutool.extra.spring.SpringUtil;
 import com.baomidou.mybatisplus.autoconfigure.ConfigurationCustomizer;
 import com.baomidou.mybatisplus.autoconfigure.MybatisPlusPropertiesCustomizer;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
@@ -17,6 +16,7 @@ import org.apache.ibatis.session.AutoMappingUnknownColumnBehavior;
 import org.mybatis.spring.annotation.MapperScan;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.AutoConfiguration;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
@@ -28,7 +28,6 @@ import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
 import top.wyhao.cmn.db.handler.CompositeBaseEnumTypeHandler;
 import top.wyhao.cmn.db.handler.MyBatisPlusMetaObjectHandler;
 
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 import static com.baomidou.mybatisplus.annotation.DbType.POSTGRE_SQL;
@@ -72,18 +71,15 @@ public class MybatisPlusAutoConfiguration {
      */
     @Bean
     @ConditionalOnMissingBean
-    public MybatisPlusInterceptor mybatisPlusInterceptor() {
+    public MybatisPlusInterceptor mybatisPlusInterceptor(
+            DataPermissionInterceptor dataPermissionInterceptor,
+            ObjectProvider<TenantLineInnerInterceptor> tenantLineInnerInterceptor) {
         MybatisPlusInterceptor interceptor = new MybatisPlusInterceptor();
-        // 其他拦截器
-        Map<String, InnerInterceptor> innerInterceptors = SpringUtil.getBeansOfType(InnerInterceptor.class);
-        if (!innerInterceptors.isEmpty()) {
-            innerInterceptors.values().forEach(interceptor::addInnerInterceptor);
-        }
-        // 分页插件
+        // 租户行条件要先于分页和数据权限，否则分页 count 与权限 SQL 看不到租户谓词
+        tenantLineInnerInterceptor.ifAvailable(interceptor::addInnerInterceptor);
+        interceptor.addInnerInterceptor(dataPermissionInterceptor);
         interceptor.addInnerInterceptor(this.paginationInnerInterceptor());
-        // 乐观锁插件
         interceptor.addInnerInterceptor(new OptimisticLockerInnerInterceptor());
-        // 防全表更新与删除插件
         interceptor.addInnerInterceptor(new BlockAttackInnerInterceptor());
         return interceptor;
     }

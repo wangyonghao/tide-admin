@@ -39,4 +39,12 @@ public class TenantException extends BizException {
     public static TenantException expired() {
         return of("TENANT_EXPIRED", "租户已过期");
     }
+
+    public static TenantException notFound() {
+        return of("TENANT_NOT_FOUND", "租户不存在");
+    }
+
+    public static TenantException invalidId() {
+        return of("TENANT_ID_INVALID", "租户 ID 不正确");
+    }
 }

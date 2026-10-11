@@ -24,14 +24,16 @@ import top.wyhao.tenant.servlet.TenantInterceptor;
 public class TenantWebMvcAutoConfiguration implements WebMvcConfigurer {
 
     private final TenantProvider tenantProvider;
+    private final TenantProperties tenantProperties;
 
-    public TenantWebMvcAutoConfiguration(TenantProvider tenantProvider) {
+    public TenantWebMvcAutoConfiguration(TenantProvider tenantProvider, TenantProperties tenantProperties) {
         this.tenantProvider = tenantProvider;
+        this.tenantProperties = tenantProperties;
     }
 
     @Override
     public void addInterceptors(InterceptorRegistry registry) {
-        registry.addInterceptor(new TenantInterceptor(tenantProvider))
+        registry.addInterceptor(new TenantInterceptor(tenantProvider, tenantProperties))
             .order(OrderedConstants.Interceptor.TENANT_INTERCEPTOR);
     }
 }

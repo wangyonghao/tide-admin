@@ -7,6 +7,7 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
+import top.wyhao.tenant.core.TenantedEntity;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -18,7 +19,7 @@ import java.time.LocalDateTime;
  */
 @Data
 @TableName(value = "sys_user", autoResultMap = true)
-public class SysUser {
+public class SysUser implements TenantedEntity {
 
     @TableId
     private Long id;
@@ -81,6 +82,10 @@ public class SysUser {
      * 部门 ID
      */
     private Long departmentId;
+    /**
+     * 租户 ID。行级隔离列，与当前登录租户一致。
+     */
+    private Long tenantId;
     /**
      * 创建人
      */

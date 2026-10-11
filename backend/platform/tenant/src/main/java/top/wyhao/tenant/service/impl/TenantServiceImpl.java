@@ -3,7 +3,6 @@ package top.wyhao.tenant.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
-import cn.hutool.core.util.ObjectUtil;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alicp.jetcache.anno.Cached;
 import lombok.RequiredArgsConstructor;
@@ -55,7 +54,6 @@ public class TenantServiceImpl implements TenantService {
     public static final String CODE_GENERATOR_KEY = "tenant-code";
     public static final String TENANT_KEY_PREFIX = "TENANT:";
 
-    private final Map<String, TenantDataApi> tenantDataApiMap = SpringUtil.getBeansOfType(TenantDataApi.class);
     private final PackageService packageService;
     private final IdGeneratorProvider idGeneratorProvider;
     private final RoleMenuApi roleMenuApi;
@@ -65,6 +63,7 @@ public class TenantServiceImpl implements TenantService {
     private final TenantAssembler tenantAssembler;
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public Long create(TenantRequest req) {
         this.checkNameRepeat(req.getName(), null);
         this.checkDomainRepeat(req.getDomain(), null);
@@ -72,12 +71,15 @@ public class TenantServiceImpl implements TenantService {
         packageService.checkStatus(req.getPackageId());
         // 生成租户编码
         req.setCode(this.generateCode());
-        // 新增信息
+        // 新增信息。请求可以不带状态，缺省启用，避免写入空状态。
         Tenant entity = tenantAssembler.toEntity(req);
+        if (entity.getStatus() == null) {
+            entity.setStatus(StatusEnum.ENABLE);
+        }
         baseMapper.insert(entity);
-        // 初始化租户数据
+        // 初始化租户数据。运行时再取 TenantDataApi，避免构造期 Spring 容器尚未注册完实现类。
         req.setId(entity.getId());
-        tenantDataApiMap.forEach((key, value) -> value.init(tenantAssembler.toBO(req)));
+        tenantDataApis().forEach((key, value) -> value.init(tenantAssembler.toBO(req)));
         return entity.getId();
     }
 
@@ -86,7 +88,7 @@ public class TenantServiceImpl implements TenantService {
     public void beforeDelete(List<Long> ids) {
         // 在租户中执行数据清除
         for (Long id : ids) {
-            TenantUtils.execute(id, () -> tenantDataApiMap.forEach((key, value) -> value.clear()));
+            TenantUtils.execute(id, () -> tenantDataApis().forEach((key, value) -> value.clear()));
         }
     }
 
@@ -111,7 +113,7 @@ public class TenantServiceImpl implements TenantService {
     public Long getIdByCode(String code) {
         return baseMapper.lambdaQuery()
             .select(Tenant::getId)
-            .eq(Tenant::getDisplayID, code)
+            .eq(Tenant::getCode, code)
             .oneOpt()
             .map(Tenant::getId)
             .orElse(null);
@@ -124,7 +126,10 @@ public class TenantServiceImpl implements TenantService {
             return;
         }
         Tenant tenant = baseMapper.selectById(id);
-        if (ObjectUtil.equal(StatusEnum.DISABLE, tenant.getStatus())) {
+        if (tenant == null) {
+            throw TenantException.notFound();
+        }
+        if (StatusEnum.DISABLE.equals(tenant.getStatus())) {
             throw TenantException.disabled();
         }
         if (tenant.getExpireTime() != null && tenant.getExpireTime().isBefore(LocalDateTime.now())) {
@@ -198,7 +203,7 @@ public class TenantServiceImpl implements TenantService {
         String code;
         do {
             code = idGeneratorProvider.getRequired(CODE_GENERATOR_KEY).generateAsString();
-        } while (baseMapper.lambdaQuery().eq(Tenant::getDisplayID, code).exists());
+        } while (baseMapper.lambdaQuery().eq(Tenant::getCode, code).exists());
         return code;
     }
 
@@ -209,14 +214,17 @@ public class TenantServiceImpl implements TenantService {
      * @return 租户 ID 列表
      */
     private List<Long> listIdByPackageId(Long id) {
-//        return baseMapper.lambdaQuery()
-//            .select(Tenant::getId)
-//            .eq(Tenant::getPackageId, id)
-//            .list()
-//            .stream()
-//            .map(Tenant::getId)
-//            .toList();
-        return null; // todo 待实现
+        return baseMapper.lambdaQuery()
+            .select(Tenant::getId)
+            .eq(Tenant::getPackageId, id)
+            .list()
+            .stream()
+            .map(Tenant::getId)
+            .toList();
+    }
+
+    private Map<String, TenantDataApi> tenantDataApis() {
+        return SpringUtil.getBeansOfType(TenantDataApi.class);
     }
 
     @Override
