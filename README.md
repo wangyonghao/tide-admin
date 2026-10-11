@@ -39,7 +39,7 @@
 
 ## 快速开始
 
-本地基础设施在 [`backend/docker`](backend/docker/README.md)（Postgres、Redis、Inbucket、MinIO，以及可选的前端容器）。不要使用已废弃的 `backend/scripts/docker/`。
+本地开发用 [`backend/docker`](backend/docker/README.md) 一条命令拉起 Postgres、Redis、Inbucket、MinIO、Spring Boot API 和 Vite。不要使用已废弃的 `backend/scripts/docker/`。
 
 ### 1. 克隆
 
@@ -48,55 +48,41 @@ git clone https://github.com/wangyonghao/tide-admin.git
 cd tide-admin
 ```
 
-### 2. 启动依赖
+### 2. 启动
 
 ```bash
 cd backend/docker
 cp .env.example .env
-# 编辑 .env，替换 POSTGRES_PASSWORD、REDIS_PWD、MINIO_ROOT_PASSWORD
+# 编辑 .env，替换 POSTGRES_PASSWORD、REDIS_PWD、MINIO_ROOT_PASSWORD、AES_KEY
 # openssl rand -hex 24
+# AES_KEY 必须是 16、24 或 32 字节
 
 docker compose --env-file .env -f docker-compose.dev.yml up
 ```
 
-端口与连法见 [`backend/docker/README.md`](backend/docker/README.md)。数据库名是 `postgres`，用户是 `postgres`。
+浏览器打开 http://localhost:5888 。API 在 http://localhost:8000 。端口、邮件 host 和改代码后怎么热更新，见 [`backend/docker/README.md`](backend/docker/README.md)。
 
-### 3. 配置后端环境变量
+数据库名是 `postgres`，用户是 `postgres`。`application-dev.yml` 已开启 Liquibase，空库会自动建表。
 
-开发配置没有给数据库、Redis 和 AES 密钥默认值，不导出变量后端起不来。
+### 3. 只在宿主机跑后端（可选）
+
+Compose 已经包含 API 时不必再执行。宿主机 Maven 或 IDE 运行 `top.wyhao.admin.AdminApplication` 时，先只起依赖和前端，避免占用 8000，并把 `VITE_GLOB_API_URL` 改成 `http://host.docker.internal:8000`：
+
+```bash
+cd backend/docker
+docker compose --env-file .env -f docker-compose.dev.yml up db redis mail minio minio-init web
+```
 
 ```bash
 cp backend/scripts/env.example.sh backend/scripts/env.sh
-# DB_PWD、REDIS_PWD 与 backend/docker/.env 一致，并更换 AES_KEY
+# DB_PWD、REDIS_PWD、AES_KEY 与 backend/docker/.env 一致
 set -a && source backend/scripts/env.sh && set +a
+cd backend && mvn -pl tide-bootstrap -am spring-boot:run
 ```
 
-`backend/scripts/env.sh` 已被忽略，不要提交。
+`backend/scripts/env.sh` 已被忽略，不要提交。开发 profile 的 JWT / RSA 写在 `application-dev.yml`。生产配置另要 `WYH_JWT_SECRET`、`WYH_RSA_PUBLIC_KEY`、`WYH_RSA_PRIVATE_KEY`。宿主机上的文件目录是 `application-dev.yml` 的 `file.local.root-path`。
 
-默认 profile 是 `dev`（`application.yml`）。`application-dev.yml` 里 **Liquibase 默认关闭**，空库不会自动建表。第一次对着空库启动时：
-
-```bash
-export SPRING_LIQUIBASE_ENABLED=true
-```
-
-生产配置 `application-prod.yml` 默认开启 Liquibase，并额外要求 `WYH_JWT_SECRET`、`WYH_RSA_PUBLIC_KEY`、`WYH_RSA_PRIVATE_KEY`。开发 profile 的 JWT / RSA 写在 `application-dev.yml`，不必设这三项。
-
-开发环境文件落在 `application-dev.yml` 的 `file.local.root-path`，按本机目录修改。
-
-### 4. 启动后端
-
-IDE 运行 `top.wyhao.admin.AdminApplication`，或：
-
-```bash
-cd backend
-mvn -pl tide-bootstrap -am spring-boot:run
-```
-
-开发端口 **8000**。启动日志会打印服务地址和接口文档（`/doc.html`）。
-
-### 5. 启动前端
-
-另开终端。前端开发端口与接口地址在 `frontend/apps/admin/.env.development`：页面 `http://localhost:5888`，接口 `http://127.0.0.1:8000`。
+宿主机前端（不要和 compose 里的 `web` 同时对同一份 `frontend/` 执行 `pnpm install`）：
 
 ```bash
 cd frontend
@@ -104,9 +90,7 @@ pnpm install
 pnpm dev
 ```
 
-文档站：`pnpm dev:docs`。组件演示：`pnpm dev:ds`。
-
-若第 2 步已经用 Compose 拉起了前端容器，浏览器访问 `http://localhost:5888` 即可，不必再在宿主机执行 `pnpm dev`。宿主机和容器不要同时对同一份 `frontend/` 执行 `pnpm install`。
+页面 `http://localhost:5888`，接口见 `frontend/apps/admin/.env.development`（`http://127.0.0.1:8000`）。文档站：`pnpm dev:docs`。组件演示：`pnpm dev:ds`。
 
 ### 常用命令
 

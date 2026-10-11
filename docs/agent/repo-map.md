@@ -63,7 +63,7 @@ tide-bootstrap
 | 字典 / 配置 | `backend/platform/ops/.../settings/` |
 | 操作日志 | `backend/platform/ops/.../audit/` |
 
-本地启动：`cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
+本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
 
 ### Frontend
 
