@@ -11,7 +11,7 @@ server:
 --- ### 数据源配置
 spring.datasource:
   type: com.zaxxer.hikari.HikariDataSource
-  # 请务必提前创建好名为 wyhao_admin 的数据库，如果使用其他数据库名请注意同步修改 DB_NAME 配置
+  # 库名来自 DB_NAME。本地 backend/docker 约定库名与用户都是 postgres。
   url: jdbc:p6spy:postgresql://${DB_HOST}:${DB_PORT}/${DB_NAME}?options=-c%20TimeZone=Asia/Shanghai&sslmode=prefer&channelBinding=disable&stringtype=unspecified
   username: ${DB_USER}
   password: ${DB_PWD}
@@ -31,8 +31,8 @@ spring.datasource:
     max-lifetime: 1800000
 ## Liquibase 配置
 spring.liquibase:
-  # 是否启用
-  enabled: false
+  # 空库启动需要 changelog 建出 Quartz 等表
+  enabled: true
   # 配置文件路径
   change-log: classpath:/db/changelog/postgresql/db.changelog-master.yaml
 
