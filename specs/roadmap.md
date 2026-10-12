@@ -21,7 +21,7 @@ Agent 每次会话读取本文件，从第一个非 `complete` 的阶段继续�
 - **Status:** `in-progress`
 - **Goal:** 完成 platform 模块化与分层治理收口，租户能力可随主路径交付；前后端与文档定位一致。
 - **Scope:**
-  - 后端域边界与 COLA/分层收口（iam、tenant、file、job、ops、coder、cmn-*）
+  - 后端域边界与 COLA/分层收口（iam、tenant、file、job、ops、cmn-*）
   - 消除半迁移模块与过时路径依赖；编译与 `tide-bootstrap` 启动全绿
   - 租户：changelog / 套餐与隔离等开箱路径打通（原独立「租户底座」阶段并入本阶段）
   - 前端 API、路由与后端域拆分对齐
