@@ -1,7 +1,10 @@
 import type { BaseEntity, PageQuery, PageResult } from '#/types/api';
-import type { Option } from '#/types/global';
 
 import http from '#/api/http';
+
+function toId(id: unknown) {
+  return id == null ? '' : String(id);
+}
 
 /** 租户套餐 */
 export interface TenantPackageResp extends BaseEntity {
@@ -17,7 +20,7 @@ export interface TenantPackageResp extends BaseEntity {
 
 export interface TenantPackageQuery {
   name?: string | undefined;
-  status?: string;
+  status?: number | string;
   description?: string;
   sort: Array<string> | string;
 }
@@ -25,15 +28,24 @@ export interface TenantPackageQuery {
 export interface TenantPackagePageQuery extends PageQuery, TenantPackageQuery {}
 
 /** 查询租户套餐列表 */
-export function listTenantPackage(query: TenantPackagePageQuery) {
-  return http.get<PageResult<TenantPackageResp[]>>('/tenant/package', {
+export async function listTenantPackage(query: TenantPackagePageQuery) {
+  const page = await http.get<PageResult<TenantPackageResp[]>>('/tenant/package', {
     params: query,
   });
+  return {
+    ...page,
+    records: (page.records ?? []).map((row) => ({ ...row, id: toId(row.id) })),
+  };
 }
 
 /** 查询租户套餐详情 */
-export function getTenantPackage(id: string) {
-  return http.get<TenantPackageResp>(`/tenant/package/${id}`);
+export async function getTenantPackage(id: string) {
+  const row = await http.get<TenantPackageResp>(`/tenant/package/${id}`);
+  return {
+    ...row,
+    id: toId(row.id),
+    menuIds: (row.menuIds ?? []).map((menuId) => toId(menuId)),
+  };
 }
 
 /** 新增租户套餐 */
@@ -51,31 +63,8 @@ export function deleteTenantPackage(id: string) {
   return http.delete(`/tenant/package/${id}`);
 }
 
-/** 导出租户套餐 */
-export function exportPackage(query: TenantPackagePageQuery) {
-  return http.download(`/tenant/package/export`, {
-    params: query,
-  });
-}
-
 /** 查询所有套餐 */
-export function listAllTenantPackage() {
-  return http.get<TenantPackageResp[]>(`/tenant/package/list`);
-}
-
-/** 查询套餐菜单 */
-export function listTenantPackageMenu() {
-  return http.get<TenantPackageResp[]>(`/tenant/package/menu/tree`, {
-    params: { isSimple: false },
-  });
-}
-
-/** 查询租户套餐字典 */
-export function listTenantPackageDict(query?: {
-  description: string;
-  status: number;
-}) {
-  return http.get<Option[]>(`/tenant/package/dict`, {
-    params: query,
-  });
+export async function listAllTenantPackage() {
+  const rows = await http.get<TenantPackageResp[]>(`/tenant/package/list`);
+  return (rows ?? []).map((row) => ({ ...row, id: toId(row.id) }));
 }

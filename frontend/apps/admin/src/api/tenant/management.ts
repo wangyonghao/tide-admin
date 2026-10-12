@@ -25,6 +25,8 @@ export interface TenantResp extends BaseEntity {
   adminPassword: string;
   /** 套餐ID */
   packageId: string;
+  /** 套餐名称 */
+  packageName?: string;
 }
 
 export interface TenantDetailResp extends BaseEntity {
@@ -46,21 +48,40 @@ export interface TenantQuery {
   code: string | undefined;
   domain: string | undefined;
   packageId: string | undefined;
+  status?: number;
   sort: Array<string> | string;
 }
 
 export interface TenantPageQuery extends PageQuery, TenantQuery {}
 
+function toId(id: unknown) {
+  return id == null ? '' : String(id);
+}
+
+function normalizeTenant(row: TenantResp): TenantResp {
+  return {
+    ...row,
+    id: toId(row.id),
+    packageId: toId(row.packageId),
+    adminUser: row.adminUser == null ? row.adminUser : toId(row.adminUser),
+  };
+}
+
 /** 查询租户列表 */
-export function listTenant(query: TenantPageQuery) {
-  return http.get<PageResult<TenantResp[]>>(`/tenant/management`, {
+export async function listTenant(query: TenantPageQuery) {
+  const page = await http.get<PageResult<TenantResp[]>>(`/tenant/management`, {
     params: query,
   });
+  return {
+    ...page,
+    records: (page.records ?? []).map((row) => normalizeTenant(row)),
+  };
 }
 
 /** 查询租户详情 */
-export function getTenant(id: string) {
-  return http.get<TenantResp>(`/tenant/management/${id}`);
+export async function getTenant(id: string) {
+  const row = await http.get<TenantResp>(`/tenant/management/${id}`);
+  return normalizeTenant(row);
 }
 
 /** 新增租户 */
@@ -76,16 +97,4 @@ export function updateTenant(data: any, id: string) {
 /** 删除租户 */
 export function deleteTenant(id: string) {
   return http.delete(`/tenant/management/${id}`);
-}
-
-/** 修改租户管理员密码 */
-export const updateTenantAdminUserPwd = (data: any, id: string) => {
-  return http.put(`/tenant/management/${id}/admin/pwd`, data);
-};
-
-/** 导出租户 */
-export function exportTenant(query: TenantQuery) {
-  return http.download(`/tenant/management/export`, {
-    params: query,
-  });
 }

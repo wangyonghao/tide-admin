@@ -35,4 +35,8 @@ public class PackageException extends BizException {
     public static PackageException disabled() {
         return of("PACKAGE_DISABLED", "套餐已被禁用");
     }
+
+    public static PackageException inUse() {
+        return of("PACKAGE_IN_USE", "套餐仍被租户使用，不能删除");
+    }
 }

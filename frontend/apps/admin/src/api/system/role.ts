@@ -1,5 +1,4 @@
 import type { BaseEntity, PageQuery, PageResult } from '#/types/api';
-import type { Option } from '#/types/global';
 
 import http from '#/api/http';
 
@@ -57,9 +56,18 @@ export const roleApi = {
   removeMember(id: string | undefined, userIds: string[]) {
     return http.delete(`/system/role/${id}/user`, { data: {userIds}, });
   },
-  /** 查询角色字典 */
-  listOption(query?: { name: string; status: number }) {
-    return http.get<Option[]>(`/system/role/option`, { params: query });
+  /** 角色下拉。后端没有 /option，用列表映射。 */
+  async listOption(query?: { name?: string; status?: number }) {
+    const roles = await roleApi.list({
+      description: undefined,
+      sort: [],
+      page: 1,
+      pageSize: 500,
+    });
+    const keyword = query?.name?.trim().toLowerCase();
+    return roles
+      .filter((role) => !keyword || role.name.toLowerCase().includes(keyword))
+      .map((role) => ({ label: role.name, value: role.id }));
   },
 };
 

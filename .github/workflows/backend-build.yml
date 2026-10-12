@@ -32,4 +32,4 @@ jobs:
       - name: Compile
         run: mvn -B compile --file ./backend/pom.xml
       - name: Unit tests
-        run: mvn -B -pl platform/job,platform/iam,platform/cmn-crypto -am test --file ./backend/pom.xml
+        run: mvn -B -pl platform/job,platform/iam,platform/tenant,platform/cmn-boot,platform/cmn-crypto -am test --file ./backend/pom.xml

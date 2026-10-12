@@ -14,6 +14,7 @@ import top.wyhao.identity.adapter.web.vo.UserImportParseResp;
 import top.wyhao.identity.adapter.web.vo.UserImportResp;
 import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.domain.model.SysUser;
+import top.wyhao.web.core.model.LabelValueResult;
 
 import java.util.List;
 
@@ -49,4 +50,6 @@ public interface UserAdminService {
     void update(Long id, @Valid UserRequest req);
 
     void delete(List<Long> ids);
+
+    List<LabelValueResult<Long>> dict(UserQuery query);
 }

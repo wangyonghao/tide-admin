@@ -6,6 +6,7 @@ import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Pattern;
+import jakarta.validation.groups.Default;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
 import top.wyhao.cmn.core.constant.RegexConstants;
@@ -23,6 +24,18 @@ import java.time.LocalDateTime;
 @Data
 @Schema(description = "租户创建或修改请求参数")
 public class TenantRequest{
+
+    /**
+     * 创建时校验管理员账号。修改租户不改管理员口令。
+     */
+    public interface Create extends Default {
+    }
+
+    /**
+     * 修改时只校验租户资料字段。
+     */
+    public interface Update extends Default {
+    }
     /**
      * 名称
      */
@@ -70,7 +83,7 @@ public class TenantRequest{
      * 管理员用户名
      */
     @Schema(description = "管理员用户名", example = "zhangsan")
-    @NotBlank(message = "管理员用户名不能为空")
+    @NotBlank(groups = Create.class, message = "管理员用户名不能为空")
     @Pattern(regexp = RegexConstants.USERNAME, message = "管理员用户名长度为 4-64 个字符，支持大小写字母、数字、下划线，以字母开头")
     private String adminUsername;
 
@@ -78,7 +91,7 @@ public class TenantRequest{
      * 管理员密码
      */
     @Schema(description = "管理员密码", example = "RSA 公钥加密的管理员密码")
-    @NotBlank(message = "管理员密码不能为空")
+    @NotBlank(groups = Create.class, message = "管理员密码不能为空")
     private String adminPassword;
 
     /**

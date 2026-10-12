@@ -7,6 +7,7 @@ import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 import top.wyhao.tenant.model.query.TenantQuery;
 import top.wyhao.tenant.model.req.TenantRequest;
@@ -81,7 +82,7 @@ public class TenantController {
     @Operation(summary = "创建数据", description = "创建数据")
     @SaCheckPermission("tenant:management:create")
     @PostMapping
-    public IdResult<Long> create(@RequestBody @Valid TenantRequest req) {
+    public IdResult<Long> create(@RequestBody @Validated(TenantRequest.Create.class) TenantRequest req) {
         return new IdResult<>(tenantService.create(req));
     }
 
@@ -95,7 +96,7 @@ public class TenantController {
     @Parameter(name = "id", description = "ID", example = "1", in = ParameterIn.PATH)
     @SaCheckPermission("tenant:management:update")
     @PutMapping("/{id}")
-    public void update(@RequestBody @Valid TenantRequest req, @PathVariable("id") Long id) {
+    public void update(@RequestBody @Validated(TenantRequest.Update.class) TenantRequest req, @PathVariable("id") Long id) {
         tenantService.update(req, id);
     }
 

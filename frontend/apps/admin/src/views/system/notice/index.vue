@@ -160,11 +160,6 @@ async function handleDelete(row: NoticeResp) {
   }
 }
 
-async function handleExport() {
-  const formValues = (await gridApi.formApi?.getValues?.()) ?? {};
-  noticeApi.export(noticeQuery(formValues));
-}
-
 function handleFormSuccess() {
   formDrawerApi.close();
   gridApi.query();
@@ -193,17 +188,6 @@ function methodItems(row: NoticeResp) {
               class="mr-1 size-4"
             />
             {{ $t('pages.common.add') }}
-          </Button>
-          <Button
-            type="button"
-            variant="outline"
-            @click="handleExport"
-          >
-            <IconifyIcon
-              icon="lucide:download"
-              class="mr-1 size-4"
-            />
-            {{ $t('pages.common.export') }}
           </Button>
         </ToolbarActions>
       </template>

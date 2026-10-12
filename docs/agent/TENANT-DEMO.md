@@ -2,47 +2,30 @@
 
 创建套餐并绑定菜单 → 创建两个租户 → 分别登录 → 用户和部门互不可见。
 
-管理页视图还没有落地。创建走 API；登录和核对数据可以走页面，也可以继续用 API。
+管理页在 `/tenant/package` 和 `/tenant/management`。下面的 curl 与页面走同一套接口。
 
 ## 环境
 
-与 `backend/scripts/docker/docker-compose.yml` 对齐。Postgres 用户是 `postgres`，应用库名用 **`DB_NAME=postgres`**（镜像总会有这个库）。Compose 另建了 `tide_admin`，不要指到那个库，除非你改了 `DB_NAME`。
-
-`backend/scripts/docker/.env.example` 和 `application-dev.yml` 注释里的 `wyhao_admin` 与当前 Compose 不一致，演示不要用它。
+用 `backend/docker`，不要用已废弃的 `backend/scripts/docker/`。口令只放在本地 `.env`（从 `.env.example` 复制后自行生成），不要写进仓库。
 
 ```bash
-export AES_KEY='0123456789abcdef'   # 16/24/32 字节，application.yml 必填
-
-export DB_HOST=localhost
-export DB_PORT=5432
-export DB_NAME=postgres
-export DB_USER=postgres
-export DB_PWD='<POSTGRES_PASSWORD>'
-
-export REDIS_HOST=127.0.0.1
-# 口令与 backend/docker/.env 里的 REDIS_PWD 相同，不要写进仓库。
-# 若 Redis 直接听 6379，把端口改成 6379。
-export REDIS_PORT=1379
-export REDIS_PWD='<REDIS_PWD>'
-export REDIS_DB=15
+cd backend/docker
+cp .env.example .env
+# 替换 POSTGRES_PASSWORD、REDIS_PWD、MINIO_ROOT_PASSWORD、AES_KEY、WYH_JWT_SECRET
+docker compose --env-file .env -f docker-compose.dev.yml up
 ```
 
-空库启动前把 `backend/tide-bootstrap/src/main/resources/config/application-dev.yml` 的 `spring.liquibase.enabled` 设为 `true`。当前 `main` 仍是 `false`；打开后才会执行 `db/changelog/postgresql/`（含 `tenant` 表和各业务表的 `tenant_id`）。这与未合入的 PR #21 相同，本清单不改那份配置。
+`application-dev.yml` 里 Liquibase 已开启，空库会执行 `db/changelog/postgresql/`（含 `tenant` 表和各业务表的 `tenant_id`）。
 
-```bash
-cd backend/scripts/docker && docker compose up -d db redis
-cd backend && mvn -pl tide-bootstrap -am spring-boot:run
-```
-
-API 根地址：`http://127.0.0.1:8000`。前端开发代理把 `/api` 转到这里并去掉前缀。
+浏览器 http://localhost:5888 ，API http://localhost:8000 。只在宿主机起后端时，库和 Redis 的地址、端口、口令、`WYH_JWT_SECRET` 与这份 `.env` 一致，主机名改为 `localhost`。口令不要写进仓库。
 
 ## 页面与接口
 
 | 步骤 | 路由 / 方法 | 说明 |
 |------|-------------|------|
 | 登录 | 页面 `/auth/login`，`POST /auth/login` | 登录页有「租户 ID」输入框，留空表示平台租户 `0`。只在登录请求上带 `X-Tenant-Id` |
-| 套餐 | `POST /tenant/package` | 菜单种子路径 `/tenant/package`，视图 `frontend/apps/admin/src/views/tenant/package/index.vue` **不存在**，打开是 404 |
-| 租户 | `POST /tenant/management` | 菜单种子路径 `/tenant/management`，视图 `frontend/apps/admin/src/views/tenant/management/index.vue` **不存在** |
+| 套餐 | 页面 `/tenant/package`，`POST /tenant/package` | 菜单绑定用 `GET /system/menu/all`。改菜单会回写该套餐下租户的管理员角色 |
+| 租户 | 页面 `/tenant/management`，`POST /tenant/management` | 创建时要管理员用户名和 RSA 加密后的密码。默认租户不能删 |
 | 用户 | 页面 `/system/user`，`GET /system/user` | 用来核对用户是否串租户 |
 | 部门 | `GET /system/department/tree` | 用来核对部门是否串租户 |
 
@@ -139,7 +122,7 @@ curl -s http://127.0.0.1:8000/system/department/tree \
 ## 还没打通
 
 - **数据源级隔离**（`TenantIsolationLevel.DATASOURCE`）只有枚举，没有第二数据源。
-- 租户 / 套餐的分页、详情、修改、删除仍是空实现。改套餐菜单不会回写已有租户（`listIdByPackageId` 已能查出租户，但 `PackageServiceImpl.update` 还没调用它）。
+- 修改租户管理员密码的接口不存在（菜单权限 `tenant:management:updateAdminUserPwd` 仍在种子里）。
+- 更新租户时，空的过期时间、描述不会被写成 null（MyBatis `NOT_NULL`）。
 - 下列表有 `tenant_id` 列，实体还没实现 `TenantedEntity`，列表仍可能串数据：成员关系、角色菜单、角色部门、社会化绑定、操作日志、消息、通知、文件、应用。登录日志实体已标记租户列，但写入是 `@Async`，异步线程可能拿不到上下文，失败只记错误日志。
-- 套餐删除未检查是否仍有租户引用。
 - 手机、邮箱登录会按当前租户查用户，演示路径只用账号登录。
