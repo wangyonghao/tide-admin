@@ -29,6 +29,7 @@
     "createUser": "Create User",
     "createTime": "Create Time",
     "updateUser": "Update User",
-    "updateTime": "Update Time"
+    "updateTime": "Update Time",
+    "menuIds": "Menus"
   }
 }

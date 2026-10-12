@@ -72,7 +72,7 @@ public class ConfigController {
     }
 
     @Operation(summary = "获取邮件配置")
-    @SaCheckPermission("system:config:mail")
+    @SaCheckPermission("system:config:get")
     @GetMapping("/system/config/mail")
     public MailConfigVO getMailConfig() {
         return configService.getMailConfig();
@@ -129,7 +129,7 @@ public class ConfigController {
     }
 
     @Operation(summary = "获取存储配置")
-    @SaCheckPermission("system:config:list")
+    @SaCheckPermission("system:config:get")
     @GetMapping("/system/config/storage")
     public StorageConfigVO getStorageConfig() {
         return configService.getStorageConfig();
@@ -143,7 +143,7 @@ public class ConfigController {
     }
 
     @Operation(summary = "根据键查询配置")
-    @SaCheckPermission("system:config:list")
+    @SaCheckPermission("system:config:get")
     @GetMapping("/key/{configKey}")
     public ConfigResult getByKey(@PathVariable String configKey) {
         return configService.getByKey(configKey);

@@ -47,4 +47,8 @@ public class TenantException extends BizException {
     public static TenantException invalidId() {
         return of("TENANT_ID_INVALID", "租户 ID 不正确");
     }
+
+    public static TenantException deleteNotAllowed() {
+        return of("TENANT_DELETE_NOT_ALLOWED", "默认租户不允许删除");
+    }
 }

@@ -16,11 +16,6 @@ export const smsLogApi = {
     return http.get<SmsLogResp>(`/system/sms/log/${id}`);
   },
 
-  /** 删除短信日志 */
-  delete: (id: string) => {
-    return http.delete(`/system/sms/log`, { data: { ids: [id] } });
-  },
-
   /** 导出短信日志 */
   export: (query: SmsLogQuery) => {
     return http.download(`/system/sms/log/export`, { params: query });

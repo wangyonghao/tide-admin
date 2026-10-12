@@ -14,11 +14,15 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.identity.adapter.web.vo.UserDetail;
 import top.wyhao.identity.adapter.web.dto.UserQuery;
 import top.wyhao.identity.adapter.web.dto.UserRequest;
 import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.adapter.web.dto.UserImportRequest;
+import top.wyhao.identity.adapter.web.dto.UserRoleUpdateReq;
+import top.wyhao.identity.adapter.web.vo.UserImportParseResp;
+import top.wyhao.identity.adapter.web.vo.UserImportResp;
 import top.wyhao.identity.app.service.UserAdminService;
 import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.cmn.db.query.PageParam;
@@ -27,6 +31,7 @@ import top.wyhao.identity.domain.exception.UserException;
 import top.wyhao.cmn.core.model.Result;
 import top.wyhao.web.core.model.IdResult;
 import top.wyhao.web.core.model.IdsRequest;
+import top.wyhao.web.core.model.LabelValueResult;
 import top.wyhao.web.util.HttpUtil;
 
 import java.io.IOException;
@@ -64,7 +69,7 @@ public class UserController {
      * @param id 用户id
      * @return 详情信息
      */
-    @SaCheckPermission("system:user:list")
+    @SaCheckPermission("system:user:get")
     @GetMapping("/{id}")
     public UserDetail get(@PathVariable Long id) {
         return userAdminService.detail(id);
@@ -88,7 +93,7 @@ public class UserController {
      * @param request 修改请求参数
      * @param id  ID
      */
-    @SaCheckPermission("system:user:edit")
+    @SaCheckPermission("system:user:update")
     @PatchMapping("/{id}")
     public void update(@PathVariable Long id, @RequestBody @Validated(UserRequest.Update.class) UserRequest request) {
         userAdminService.update(id, request);
@@ -124,6 +129,34 @@ public class UserController {
     public void importUsers(@Valid UserImportRequest userImportRequest) {
         userAdminService.importUser(userImportRequest);
     }
+
+    @Operation(summary = "解析导入文件", description = "解析导入文件")
+    @SaCheckPermission("system:user:import")
+    @PostMapping("/import/parse")
+    public UserImportParseResp parseImport(@RequestPart("file") MultipartFile file) {
+        return userAdminService.parseImport(file);
+    }
+
+    @Operation(summary = "导入用户", description = "导入用户")
+    @SaCheckPermission("system:user:import")
+    @PostMapping("/import")
+    public UserImportResp importUsersPost(@RequestBody @Valid UserImportRequest userImportRequest) {
+        return userAdminService.importUser(userImportRequest);
+    }
+
+    @Operation(summary = "用户字典", description = "下拉选项")
+    @SaCheckPermission("system:user:list")
+    @GetMapping("/dict")
+    public List<LabelValueResult<Long>> dict(UserQuery query) {
+        return userAdminService.dict(query);
+    }
+
+    @Operation(summary = "分配角色", description = "分配角色")
+    @SaCheckPermission("system:user:updateRole")
+    @PutMapping("/{id}/role")
+    public void updateRole(@PathVariable Long id, @RequestBody @Valid UserRoleUpdateReq request) {
+        userAdminService.updateRole(request, id);
+    }
     /**
      * 导出
      *
@@ -137,7 +170,7 @@ public class UserController {
     }
 
     @SaCheckPermission("system:user:export")
-    @GetMapping("/download-template")
+    @GetMapping({"/download-template", "/import/template"})
     public void downloadTemplate(HttpServletResponse response) {
         try {
             HttpUtil.writeAttachmentToResponse(ResourceUtil.getStream("templates/import/user.xlsx"), "用户导入模板.xlsx", response);

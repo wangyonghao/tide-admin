@@ -48,6 +48,7 @@ import top.wyhao.identity.app.service.UserSocialService;
 import top.wyhao.identity.client.PasswordPolicyConfig;
 import top.wyhao.identity.client.PasswordPolicyConfigApi;
 import top.wyhao.identity.domain.exception.UserException;
+import top.wyhao.web.core.model.LabelValueResult;
 import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.identity.domain.model.SysUser;
 import top.wyhao.identity.domain.service.UserImportPolicy;
@@ -328,6 +329,18 @@ public class UserAdminServiceImpl implements UserAdminService {
     @Override
     public SysUser getByEmail(String email) {
         return userRepository.findByEmail(email);
+    }
+
+    @Override
+    public List<LabelValueResult<Long>> dict(UserQuery query) {
+        UserQuery criteria = query == null ? new UserQuery() : query;
+        StatusEnum status = criteria.getStatus();
+        return userViewQuery.list(criteria).stream()
+            .filter(user -> status == null || status.equals(user.getStatus()))
+            .map(user -> new LabelValueResult<>(
+                CharSequenceUtil.blankToDefault(user.getDisplayName(), user.getUsername()),
+                user.getId()))
+            .toList();
     }
 
     @Override

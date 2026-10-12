@@ -22,6 +22,13 @@ public class PackageQuery {
     private String description;
 
     /**
+     * 名称
+     */
+    @Schema(description = "名称", example = "初级套餐")
+    @Query(type = Query.Type.LIKE)
+    private String name;
+
+    /**
      * 状态
      */
     @Schema(description = "状态", example = "1")
