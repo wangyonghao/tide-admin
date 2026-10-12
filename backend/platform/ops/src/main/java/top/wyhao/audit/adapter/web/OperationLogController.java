@@ -1,5 +1,5 @@
 
-package top.wyhao.audit.controller;
+package top.wyhao.audit.adapter.web;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;

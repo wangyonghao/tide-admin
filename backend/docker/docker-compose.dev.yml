@@ -135,6 +135,7 @@ services:
       FILE_LOCAL_ROOT_PATH: ${FILE_LOCAL_ROOT_PATH:-/data/files}
       APPLICATION_URL: http://localhost:${VITE_PORT:-5888}
       API_HOT_RELOAD: ${API_HOT_RELOAD:-true}
+      WYH_JWT_SECRET: ${WYH_JWT_SECRET:?set WYH_JWT_SECRET in .env}
       LOGGING_FILE_PATH: /tmp/logs
     depends_on:
       db:

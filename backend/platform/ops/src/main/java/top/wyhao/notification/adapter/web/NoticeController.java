@@ -1,4 +1,4 @@
-package top.wyhao.notification.controller;
+package top.wyhao.notification.adapter.web;
 
 import cn.dev33.satoken.annotation.SaCheckPermission;
 import io.swagger.v3.oas.annotations.Operation;

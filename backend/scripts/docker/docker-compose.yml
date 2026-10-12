@@ -1,3 +1,5 @@
+# 已废弃。本地开发用 backend/docker/docker-compose.dev.yml。
+# 口令只写 ${VAR}，真实值放同目录 .env，不要写回本文件。
 services:
   db:
   #    image: mysql:8.0.42
@@ -29,7 +31,7 @@ services:
     environment:
       TZ: Asia/Shanghai
       POSTGRES_USER: postgres
-      POSTGRES_PASSWORD: postgres@2026
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?set POSTGRES_PASSWORD in .env}
       POSTGRES_DB: tide_admin
     volumes:
       - ./postgresql/data/:/var/lib/postgresql/data/
@@ -45,7 +47,7 @@ services:
       - ./redis/conf/redis.conf:/usr/local/redis/config/redis.conf
       - ./redis/data/:/data/
       - ./redis/logs/:/logs/
-    command: 'redis-server /usr/local/redis/config/redis.conf --appendonly yes --requirepass redis12#'
+    command: 'redis-server /usr/local/redis/config/redis.conf --appendonly yes --requirepass ${REDIS_PWD:?set REDIS_PWD in .env}'
   # 本地邮件黑洞：SMTP 收信，不外发；Web UI 查看验证码等测试邮件
   mail:
     image: inbucket/inbucket:3.0.3
@@ -84,11 +86,11 @@ services:
       DB_HOST: postgresql
       DB_PORT: 5432
       DB_USER: tide
-      DB_PWD: AeMW6BafcXQT4pe2
+      DB_PWD: ${DB_PWD:?set DB_PWD in .env}
       DB_NAME: tide
       REDIS_HOST: redis
       REDIS_PORT: 6379
-      REDIS_PWD: redis_nAaBHh
+      REDIS_PWD: ${REDIS_PWD:?set REDIS_PWD in .env}
       REDIS_DB: 15
       # 密钥从同目录 .env 文件或宿主机环境变量读取，不要写入仓库
       WYH_JWT_SECRET: ${WYH_JWT_SECRET:?WYH_JWT_SECRET is required}

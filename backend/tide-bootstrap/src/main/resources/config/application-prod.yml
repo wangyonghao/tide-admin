@@ -168,6 +168,9 @@ web:
       - /*/*.css
       - /*/*.js
       - /websocket/**
+      - /actuator/health
+      - /actuator/health/**
+      - /actuator/info
 --- ### Just Auth 配置
 justauth:
   enabled: true

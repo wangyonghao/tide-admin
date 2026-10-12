@@ -1,5 +1,5 @@
 
-package top.wyhao.notification.controller;
+package top.wyhao.notification.adapter.web;
 
 import cn.hutool.core.collection.CollUtil;
 import io.swagger.v3.oas.annotations.Operation;

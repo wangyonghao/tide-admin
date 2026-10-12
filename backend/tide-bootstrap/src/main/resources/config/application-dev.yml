@@ -115,8 +115,8 @@ logging:
   file:
     path: ./logs
 
---- ### Sa-Token JWT 秘钥（仅限本地开发）
-sa-token.jwt-secret-key: asdasdasifhueuiwyurfewbfjsdafjk
+--- ### Sa-Token JWT 秘钥（本地也从环境变量读，不要写进仓库）
+sa-token.jwt-secret-key: ${WYH_JWT_SECRET}
 
 --- ### 加密配置：字段加/解密配置
 wyhao-starter.encrypt.field:
@@ -188,6 +188,9 @@ web:
       - /swagger-ui/**
       - /swagger-resources/**
       - /*/api-docs/**
+      - /actuator/health
+      - /actuator/health/**
+      - /actuator/info
 --- ### Just Auth 配置
 justauth:
   enabled: true

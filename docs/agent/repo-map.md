@@ -59,9 +59,10 @@ tide-bootstrap
 | 租户 | `backend/platform/tenant/` |
 | 文件 | `backend/platform/file/` |
 | 任务 | `backend/platform/job/` |
-| 通知 / 公告 | `backend/platform/ops/.../notification/` |
+| 通知 / 公告 | `backend/platform/ops/.../notification/`（Web 在 `adapter/web`） |
 | 字典 / 配置 | `backend/platform/ops/.../settings/` |
-| 操作日志 | `backend/platform/ops/.../audit/` |
+| 操作日志 | `backend/platform/ops/.../audit/`（Web 在 `adapter/web`） |
+| ops 分层说明 | `docs/agent/ops-layout.md` |
 
 本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
 

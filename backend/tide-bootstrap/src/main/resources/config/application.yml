@@ -184,6 +184,19 @@ sa-token:
   is-read-cookie: false
   token-prefix: Bearer
 
+### Actuator：只放开健康检查和 info。metrics 未暴露。
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health,info
+      base-path: /actuator
+  endpoint:
+    health:
+      probes:
+        enabled: true
+      show-details: never
+
 
 ### MyBatis Plus 配置 https://baomidou.com/reference/#spring-boot-%E9%85%8D%E7%BD%AE
 mybatis-plus:

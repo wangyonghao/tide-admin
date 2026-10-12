@@ -17,13 +17,13 @@ export DB_HOST=localhost
 export DB_PORT=5432
 export DB_NAME=postgres
 export DB_USER=postgres
-export DB_PWD='postgres@2026'
+export DB_PWD='<POSTGRES_PASSWORD>'
 
 export REDIS_HOST=127.0.0.1
-# Compose 把容器 6379 映射到宿主机 1379，密码是 redis12#
-# 若 Redis 直接听 6379，改成 6379，密码以你的实例为准
+# 口令与 backend/docker/.env 里的 REDIS_PWD 相同，不要写进仓库。
+# 若 Redis 直接听 6379，把端口改成 6379。
 export REDIS_PORT=1379
-export REDIS_PWD='redis12#'
+export REDIS_PWD='<REDIS_PWD>'
 export REDIS_DB=15
 ```
 

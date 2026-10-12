@@ -64,6 +64,7 @@ docker compose --env-file .env -f docker-compose.dev.yml down -v
 | `REDIS_HOST` | `redis` | 容器内端口固定 6379 |
 | `REDIS_PWD` / `REDIS_DB` | 见 `.env` | `REDIS_DB` 默认 15 |
 | `AES_KEY` | 必填 | 16、24 或 32 字节 |
+| `WYH_JWT_SECRET` | 必填 | `sa-token.jwt-secret-key`，开发环境也不再写死 |
 | `FILE_STORAGE_TYPE` | `MINIO` | 端点 `http://minio:9000` |
 | `FILE_MINIO_*` | 跟 `MINIO_ROOT_*`、`MINIO_BUCKET` | 可在 `.env` 覆盖 |
 
@@ -99,7 +100,7 @@ docker compose --env-file .env -f docker-compose.dev.yml up db redis mail minio 
 mvn -pl tide-bootstrap -am spring-boot:run
 ```
 
-宿主机环境变量见 `backend/scripts/env.example.sh`（`DB_HOST=localhost` 等）。`DB_PWD`、`REDIS_PWD`、`AES_KEY` 要和这份 `.env` 一致，否则连不上，或者解不开已加密字段。
+宿主机环境变量见 `backend/scripts/env.example.sh`（`DB_HOST=localhost` 等）。`DB_PWD`、`REDIS_PWD`、`AES_KEY`、`WYH_JWT_SECRET` 要和这份 `.env` 一致，否则连不上，或者解不开已加密字段、签不出登录令牌。
 
 ```bash
 export DB_HOST=localhost
@@ -112,6 +113,18 @@ export REDIS_HOST=127.0.0.1
 export REDIS_PORT=6379
 export REDIS_PWD='<REDIS_PWD>'
 export REDIS_DB=15
+export WYH_JWT_SECRET='<WYH_JWT_SECRET>'
 ```
 
 数据库名是 `postgres`，不是 `wyhao_admin`。宿主机上的邮件 host 用 `127.0.0.1`，端口 `2500`。文件存储在宿主机上仍是 `application-dev.yml` 的本地路径，除非自己改成 MinIO（端点 `http://127.0.0.1:9002`）。
+
+## 健康检查
+
+Actuator 已在 `tide-bootstrap` 里。`application.yml` 只暴露 `health` 和 `info`，`metrics` 没有打开。
+
+未登录可以访问（`web.security.excludes`）：
+
+- `GET http://localhost:8000/actuator/health`：存活状态。`show-details` 是 `never`，响应里没有库和磁盘明细。另有 `/actuator/health/liveness`、`/actuator/health/readiness`。
+- `GET http://localhost:8000/actuator/info`：默认几乎是空对象。没有打开 env 信息。
+
+Compose 里 `api` 的健康检查仍是探测 8000 端口是否能连上，没有改成打 `/actuator/health`。
