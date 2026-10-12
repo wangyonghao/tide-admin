@@ -30,13 +30,6 @@ export const noticeApi = {
   delete: (id: string) => {
     return http.delete('/system/notice', { data: { ids: [id] } });
   },
-
-  /** 导出公告 */
-  export: (query: NoticeQuery) => {
-    return http.download(`/system/notice/export`, {
-      params: query,
-    });
-  },
 };
 
 /* ==================== Schema 定义 ==================== */

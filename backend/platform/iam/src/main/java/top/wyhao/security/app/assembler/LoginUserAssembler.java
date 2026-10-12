@@ -8,6 +8,7 @@ import top.wyhao.cmn.core.model.RoleDataScope;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.LoginUser;
 import top.wyhao.department.client.DepartmentApi;
+import top.wyhao.security.domain.RoleDataScopeRules;
 import top.wyhao.security.domain.gateway.RoleDepartmentRepository;
 import top.wyhao.security.domain.gateway.RoleRepository;
 import top.wyhao.security.domain.model.SysRole;
@@ -61,24 +62,15 @@ public class LoginUserAssembler {
             scope.setId(role.getId());
             scope.setCode(role.getCode());
             scope.setDataScope(dataScope);
-            scope.setVisibleDepartmentIds(resolveVisibleDepartmentIds(dataScope, role.getId(), departmentId, departmentAndDescendants));
+            scope.setVisibleDepartmentIds(RoleDataScopeRules.visibleDepartmentIds(
+                    dataScope,
+                    departmentId,
+                    departmentAndDescendants,
+                    dataScope == DataScopeEnum.CUSTOM_DEPARTMENT
+                            ? roleDepartmentRepository.listDepartmentIdsByRoleId(role.getId())
+                            : null));
             scopes.add(scope);
         }
         return scopes;
-    }
-
-    private List<Long> resolveVisibleDepartmentIds(DataScopeEnum dataScope,
-                                             Long roleId,
-                                             Long userDepartmentId,
-                                             List<Long> departmentAndDescendants) {
-        if (dataScope == null) {
-            return null;
-        }
-        return switch (dataScope) {
-            case DEPARTMENT_AND_CHILD -> CollUtil.emptyIfNull(departmentAndDescendants);
-            case DEPARTMENT -> userDepartmentId == null ? Collections.emptyList() : List.of(userDepartmentId);
-            case CUSTOM_DEPARTMENT -> roleDepartmentRepository.listDepartmentIdsByRoleId(roleId);
-            case ALL, SELF -> null;
-        };
     }
 }

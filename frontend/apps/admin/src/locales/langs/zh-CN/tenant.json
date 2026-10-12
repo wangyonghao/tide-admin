@@ -29,6 +29,7 @@
     "createUser": "创建人",
     "createTime": "创建时间",
     "updateUser": "修改人",
-    "updateTime": "修改时间"
+    "updateTime": "修改时间",
+    "menuIds": "关联菜单"
   }
 }

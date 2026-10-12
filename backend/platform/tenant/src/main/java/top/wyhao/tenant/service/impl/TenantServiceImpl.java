@@ -5,6 +5,9 @@ import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
 import cn.hutool.extra.spring.SpringUtil;
 import com.alicp.jetcache.anno.Cached;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import me.ahoo.cosid.provider.IdGeneratorProvider;
 import org.springframework.stereotype.Service;
@@ -13,12 +16,18 @@ import top.wyhao.tenant.assembler.TenantAssembler;
 import top.wyhao.tenant.exception.TenantException;
 import top.wyhao.tenant.mapper.SysTenantMapper;
 import top.wyhao.tenant.model.entity.Tenant;
+import top.wyhao.tenant.model.query.PackageQuery;
 import top.wyhao.tenant.model.query.TenantQuery;
 import top.wyhao.tenant.model.req.TenantRequest;
+import top.wyhao.tenant.model.resp.PackageResp;
 import top.wyhao.tenant.model.resp.TenantDetailResp;
 import top.wyhao.tenant.model.resp.TenantResp;
+import top.wyhao.tenant.domain.PackageMenuBinding;
+import top.wyhao.tenant.domain.TenantLifecycleRules;
+import top.wyhao.tenant.service.PackageMenuService;
 import top.wyhao.tenant.service.PackageService;
 import top.wyhao.tenant.service.TenantService;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
 import top.wyhao.redisson.util.RedisUtils;
 import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.cmn.core.constant.StringConstants;
@@ -34,9 +43,11 @@ import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.cmn.db.query.PageResult;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 /**
  * 租户业务实现
@@ -55,6 +66,7 @@ public class TenantServiceImpl implements TenantService {
     public static final String TENANT_KEY_PREFIX = "TENANT:";
 
     private final PackageService packageService;
+    private final PackageMenuService packageMenuService;
     private final IdGeneratorProvider idGeneratorProvider;
     private final RoleMenuApi roleMenuApi;
     private final RoleApi roleApi;
@@ -229,40 +241,152 @@ public class TenantServiceImpl implements TenantService {
 
     @Override
     public PageResult<TenantResp> findPage(TenantQuery query, PageQuery pageQuery) {
-        return null;
+        long page = pageQuery.getPage() == null ? 1L : pageQuery.getPage();
+        long pageSize = pageQuery.getPageSize() == null ? 10L : pageQuery.getPageSize();
+        LambdaQueryWrapper<Tenant> wrapper = QueryWrapperBuilder.build(query, Tenant.class);
+        wrapper.orderByDesc(Tenant::getId);
+        IPage<Tenant> result = baseMapper.selectPage(new Page<>(page, pageSize), wrapper);
+        Map<Long, String> packageNames = packageNames();
+        return PageResult.of(result).map(entity -> toResp(entity, packageNames));
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(TenantRequest req, Long id) {
+        Tenant tenant = baseMapper.selectById(id);
+        if (tenant == null) {
+            throw TenantException.notFound();
+        }
         this.checkNameRepeat(req.getName(), id);
         this.checkDomainRepeat(req.getDomain(), id);
-        Tenant tenant = baseMapper.selectById(id);
-
+        Long previousPackageId = tenant.getPackageId();
+        if (req.getPackageId() != null && !req.getPackageId().equals(previousPackageId)) {
+            packageService.checkStatus(req.getPackageId());
+        }
+        tenant.setName(req.getName());
+        tenant.setDomain(req.getDomain());
+        tenant.setExpireTime(req.getExpireTime());
+        tenant.setDescription(req.getDescription());
+        if (req.getStatus() != null) {
+            tenant.setStatus(req.getStatus());
+        }
+        if (req.getPackageId() != null) {
+            tenant.setPackageId(req.getPackageId());
+        }
+        baseMapper.updateById(tenant);
+        if (req.getPackageId() != null && !req.getPackageId().equals(previousPackageId)) {
+            syncAdminMenus(id, req.getPackageId());
+        }
         RedisUtils.deleteByPattern(TENANT_KEY_PREFIX + StringConstants.ASTERISK);
     }
 
     @Override
     public List<LabelValueResult> dict(TenantQuery query) {
-        return List.of();
+        List<LabelValueResult> options = new ArrayList<>();
+        for (TenantResp item : list(query)) {
+            options.add(new LabelValueResult<>(item.getName(), item.getId()));
+        }
+        return options;
     }
 
     @Override
     public TenantDetailResp get(Long id) {
-        return null;
+        Tenant tenant = baseMapper.selectById(id);
+        if (tenant == null) {
+            throw TenantException.notFound();
+        }
+        TenantResp base = toResp(tenant, packageNames());
+        TenantDetailResp detail = new TenantDetailResp();
+        detail.setId(base.getId());
+        detail.setName(base.getName());
+        detail.setCode(base.getCode());
+        detail.setDomain(base.getDomain());
+        detail.setExpireTime(base.getExpireTime());
+        detail.setDescription(base.getDescription());
+        detail.setStatus(base.getStatus());
+        detail.setAdminUser(base.getAdminUser());
+        detail.setAdminUsername(base.getAdminUsername());
+        detail.setPackageId(base.getPackageId());
+        detail.setPackageName(base.getPackageName());
+        detail.setCreateTime(base.getCreateTime());
+        detail.setUpdateTime(base.getUpdateTime());
+        return detail;
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void delete(List<Long> ids) {
-
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        for (Long id : ids) {
+            if (!TenantLifecycleRules.deletable(id, tenantProperties.getDefaultTenantId())) {
+                throw TenantException.deleteNotAllowed();
+            }
+            if (baseMapper.selectById(id) == null) {
+                throw TenantException.notFound();
+            }
+        }
+        beforeDelete(ids);
+        ids.forEach(baseMapper::deleteById);
+        afterDelete(ids);
     }
 
     @Override
     public List<TenantResp> list(TenantQuery query) {
-        return List.of();
+        LambdaQueryWrapper<Tenant> wrapper = QueryWrapperBuilder.build(query, Tenant.class);
+        wrapper.orderByDesc(Tenant::getId);
+        Map<Long, String> packageNames = packageNames();
+        return baseMapper.selectList(wrapper).stream()
+            .map(entity -> toResp(entity, packageNames))
+            .toList();
     }
 
     @Override
     public List<Tree<Long>> tree(TenantQuery query, boolean b) {
         return List.of();
+    }
+
+    private Map<Long, String> packageNames() {
+        return packageService.list(new PackageQuery()).stream()
+            .filter(item -> item.getId() != null)
+            .collect(Collectors.toMap(PackageResp::getId, PackageResp::getName, (left, right) -> left));
+    }
+
+    private TenantResp toResp(Tenant entity, Map<Long, String> packageNames) {
+        TenantResp resp = new TenantResp();
+        resp.setId(entity.getId());
+        resp.setName(entity.getName());
+        resp.setCode(entity.getCode());
+        resp.setDomain(entity.getDomain());
+        resp.setExpireTime(entity.getExpireTime());
+        resp.setDescription(entity.getDescription());
+        resp.setStatus(entity.getStatus());
+        resp.setAdminUser(entity.getAdminUser());
+        resp.setAdminUsername(entity.getAdminUsername());
+        resp.setPackageId(entity.getPackageId());
+        resp.setPackageName(packageNames.get(entity.getPackageId()));
+        resp.setCreateUser(entity.getCreateUser());
+        resp.setCreateTime(entity.getCreateTime());
+        resp.setUpdateUser(entity.getUpdateUser());
+        resp.setUpdateTime(entity.getUpdateTime());
+        return resp;
+    }
+
+    private void syncAdminMenus(Long tenantId, Long packageId) {
+        List<Long> menuIds = PackageMenuBinding.menusForTenantAdmin(packageMenuService.listMenuIdsByPackageId(packageId));
+        if (menuIds.isEmpty()) {
+            return;
+        }
+        TenantUtils.execute(tenantId, () -> {
+            Long roleId = roleApi.getIdByCode(RoleCodeEnum.TENANT_ADMIN.getCode());
+            if (roleId == null) {
+                return;
+            }
+            roleMenuApi.deleteByNotInMenuIds(menuIds);
+            roleMenuApi.add(menuIds, roleId);
+            roleApi.updateUserContext(roleId);
+        });
+        RedisUtils.deleteByPattern(CacheConstants.ROLE_MENU_KEY_PREFIX + StringConstants.ASTERISK);
     }
 }

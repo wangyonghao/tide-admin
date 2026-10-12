@@ -24,7 +24,7 @@ public class SmsConfigController {
     private final SmsConfigApi smsConfigApi;
 
     @Operation(summary = "获取短信配置")
-    @SaCheckPermission("system:config:list")
+    @SaCheckPermission("system:config:get")
     @GetMapping("/system/config/sms")
     public SmsConfig getSmsConfig() {
         return smsConfigApi.getSmsConfig();

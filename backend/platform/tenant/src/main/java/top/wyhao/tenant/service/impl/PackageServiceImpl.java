@@ -1,14 +1,24 @@
 
 package top.wyhao.tenant.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.lang.tree.Tree;
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.ObjectProvider;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.cmn.core.enums.StatusEnum;
+import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.cmn.db.query.QueryWrapperBuilder;
+import top.wyhao.tenant.domain.PackageMenuBinding;
 import top.wyhao.tenant.exception.PackageException;
+import top.wyhao.tenant.mapper.SysTenantMapper;
 import top.wyhao.tenant.mapper.TenantPackageMapper;
+import top.wyhao.tenant.model.entity.Tenant;
 import top.wyhao.tenant.model.entity.TenantPackage;
 import top.wyhao.tenant.model.query.PackageQuery;
 import top.wyhao.tenant.model.req.PackageRequest;
@@ -16,8 +26,8 @@ import top.wyhao.tenant.model.resp.PackageDetailResp;
 import top.wyhao.tenant.model.resp.PackageResp;
 import top.wyhao.tenant.service.PackageMenuService;
 import top.wyhao.tenant.service.PackageService;
+import top.wyhao.tenant.service.TenantService;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
 
 import java.util.List;
 
@@ -33,6 +43,8 @@ import java.util.List;
 public class PackageServiceImpl implements PackageService {
     private final TenantPackageMapper baseMapper;
     private final PackageMenuService packageMenuService;
+    private final SysTenantMapper tenantMapper;
+    private final ObjectProvider<TenantService> tenantService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -50,8 +62,27 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
+    @Transactional(rollbackFor = Exception.class)
     public void update(PackageRequest req, Long id) {
-
+        TenantPackage entity = require(id);
+        checkNameRepeat(req.getName(), id);
+        entity.setName(req.getName());
+        if (req.getSort() != null) {
+            entity.setSort(req.getSort());
+        }
+        if (req.getMenuCheckStrictly() != null) {
+            entity.setMenuCheckStrictly(req.getMenuCheckStrictly());
+        }
+        entity.setDescription(req.getDescription());
+        if (req.getStatus() != null) {
+            entity.setStatus(req.getStatus());
+        }
+        baseMapper.updateById(entity);
+        boolean changed = packageMenuService.add(req.getMenuIds(), id);
+        if (changed) {
+            tenantService.getObject().updateTenantMenu(
+                PackageMenuBinding.menusForTenantAdmin(req.getMenuIds()), id);
+        }
     }
 
     @Override
@@ -67,12 +98,19 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public PageResult<PackageResp> findPage(PackageQuery query, PageQuery pageQuery) {
-        return null;
+        long page = pageQuery.getPage() == null ? 1L : pageQuery.getPage();
+        long pageSize = pageQuery.getPageSize() == null ? 10L : pageQuery.getPageSize();
+        LambdaQueryWrapper<TenantPackage> wrapper = QueryWrapperBuilder.build(query, TenantPackage.class);
+        wrapper.orderByAsc(TenantPackage::getSort).orderByDesc(TenantPackage::getId);
+        IPage<TenantPackage> result = baseMapper.selectPage(new Page<>(page, pageSize), wrapper);
+        return PageResult.of(result).map(this::toResp);
     }
 
     @Override
     public List<PackageResp> list(PackageQuery query) {
-        return List.of();
+        LambdaQueryWrapper<TenantPackage> wrapper = QueryWrapperBuilder.build(query, TenantPackage.class);
+        wrapper.orderByAsc(TenantPackage::getSort).orderByDesc(TenantPackage::getId);
+        return baseMapper.selectList(wrapper).stream().map(this::toResp).toList();
     }
 
     @Override
@@ -81,7 +119,21 @@ public class PackageServiceImpl implements PackageService {
     }
 
     @Override
-    public void delete(List<Long> id) {
+    @Transactional(rollbackFor = Exception.class)
+    public void delete(List<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return;
+        }
+        for (Long id : ids) {
+            require(id);
+            if (tenantMapper.lambdaQuery().eq(Tenant::getPackageId, id).exists()) {
+                throw PackageException.inUse();
+            }
+        }
+        for (Long id : ids) {
+            packageMenuService.add(List.of(), id);
+            baseMapper.deleteById(id);
+        }
     }
 
     @Override
@@ -91,7 +143,38 @@ public class PackageServiceImpl implements PackageService {
 
     @Override
     public PackageDetailResp get(Long id) {
-        return null;
+        TenantPackage entity = require(id);
+        PackageDetailResp detail = new PackageDetailResp();
+        copy(entity, detail);
+        detail.setMenuIds(packageMenuService.listMenuIdsByPackageId(id));
+        return detail;
+    }
+
+    private TenantPackage require(Long id) {
+        TenantPackage entity = baseMapper.selectById(id);
+        if (entity == null) {
+            throw PackageException.notFound();
+        }
+        return entity;
+    }
+
+    private PackageResp toResp(TenantPackage entity) {
+        PackageResp resp = new PackageResp();
+        copy(entity, resp);
+        return resp;
+    }
+
+    private void copy(TenantPackage entity, PackageResp resp) {
+        resp.setId(entity.getId());
+        resp.setName(entity.getName());
+        resp.setSort(entity.getSort());
+        resp.setMenuCheckStrictly(entity.getMenuCheckStrictly());
+        resp.setDescription(entity.getDescription());
+        resp.setStatus(entity.getStatus());
+        resp.setCreateUser(entity.getCreateUser());
+        resp.setCreateTime(entity.getCreateTime());
+        resp.setUpdateUser(entity.getUpdateUser());
+        resp.setUpdateTime(entity.getUpdateTime());
     }
 
     /**

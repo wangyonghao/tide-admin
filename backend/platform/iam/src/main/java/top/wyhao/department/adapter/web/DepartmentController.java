@@ -131,4 +131,10 @@ public class DepartmentController {
     public Result<List<DepartmentResult>> treeDict(@Valid DepartmentQuery query) {
         return Result.ok(departmentService.tree(query));
     }
+
+    @Operation(summary = "查询部门字典树", description = "与部门树相同的列表，供下拉使用")
+    @GetMapping("/system/department/dict/tree")
+    public List<DepartmentResult> departmentDictTree(@Valid DepartmentQuery query) {
+        return departmentService.tree(query);
+    }
 }

@@ -3,10 +3,8 @@ package top.wyhao.tenant.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
+import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.cmn.db.query.Query;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * 租户查询条件
@@ -45,4 +43,18 @@ public class TenantQuery{
     @Schema(description = "套餐 ID", example = "1")
     @Query(type = Query.Type.EQ)
     private Long packageId;
+
+    /**
+     * 名称
+     */
+    @Schema(description = "名称", example = "Xxx租户")
+    @Query(type = Query.Type.LIKE)
+    private String name;
+
+    /**
+     * 状态
+     */
+    @Schema(description = "状态", example = "1")
+    @Query(type = Query.Type.EQ)
+    private StatusEnum status;
 }

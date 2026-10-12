@@ -74,7 +74,10 @@ tide-bootstrap
 | 路由 | `frontend/apps/admin/src/router/` |
 | 登录 | `frontend/apps/admin/src/views/_core/authentication/` |
 | 系统页 | `frontend/apps/admin/src/views/system/` |
+| 租户页 | `frontend/apps/admin/src/views/tenant/` |
 | API | `frontend/apps/admin/src/api/` |
+| 前后端对齐 | `docs/agent/API-ALIGNMENT.md` |
+| 代码生成去留 | `docs/agent/CODER.md`（宪法仍列 coder，未改） |
 | 壳 / 内核 | `frontend/apps/admin/src/vben/`（`@vben/*`）；`frontend/vendor/@core`（慎改） |
 | 原子 / 页面模式 | `frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）。应用导入仍可用 `#/ui`、`#/ui-patterns` |
 | 文档站 | `frontend/apps/docs`（`@tide/docs`，VitePress）。`pnpm dev:docs` / `pnpm build:docs` |
