@@ -72,7 +72,7 @@ biz/*                   # 业务插件（如 biz-system）
   ↓
 platform/*              # 平台能力
   ├── cmn-*             # 基础设施（core、boot、security、storage…）
-  ├── iam / tenant / file / job / ops / coder
+  ├── iam / tenant / file / job / ops
   └── spi
 ```
 
@@ -85,7 +85,6 @@ platform/*              # 平台能力
 - **file**：文件领域与存储适配
 - **job**：Quartz 任务管理
 - **ops**：运维 / 审计类能力
-- **coder**：代码生成
 
 ### Frontend package layout
 

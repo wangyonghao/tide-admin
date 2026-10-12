@@ -33,7 +33,9 @@ export REDIS_DB='15'
 # application-dev.yml 已开启 Liquibase。要临时关掉：
 # export SPRING_LIQUIBASE_ENABLED=false
 
-# 仅 application-prod.yml 需要（本地 dev 不用）：
-# export WYH_JWT_SECRET='change-me'
+# application-dev.yml / application-prod.yml：sa-token.jwt-secret-key
+export WYH_JWT_SECRET='change-me-jwt-secret'
+
+# 仅 application-prod.yml 需要：
 # export WYH_RSA_PUBLIC_KEY=''
 # export WYH_RSA_PRIVATE_KEY=''

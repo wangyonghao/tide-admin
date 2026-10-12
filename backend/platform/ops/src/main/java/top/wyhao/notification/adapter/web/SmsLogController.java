@@ -1,4 +1,4 @@
-package top.wyhao.notification.controller;
+package top.wyhao.notification.adapter.web;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;

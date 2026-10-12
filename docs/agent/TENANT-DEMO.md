@@ -11,13 +11,13 @@
 ```bash
 cd backend/docker
 cp .env.example .env
-# 替换 POSTGRES_PASSWORD、REDIS_PWD、MINIO_ROOT_PASSWORD、AES_KEY
+# 替换 POSTGRES_PASSWORD、REDIS_PWD、MINIO_ROOT_PASSWORD、AES_KEY、WYH_JWT_SECRET
 docker compose --env-file .env -f docker-compose.dev.yml up
 ```
 
 `application-dev.yml` 里 Liquibase 已开启，空库会执行 `db/changelog/postgresql/`（含 `tenant` 表和各业务表的 `tenant_id`）。
 
-浏览器 http://localhost:5888 ，API http://localhost:8000 。只在宿主机起后端时，库和 Redis 的地址、端口、口令与这份 `.env` 一致，主机名改为 `localhost`。
+浏览器 http://localhost:5888 ，API http://localhost:8000 。只在宿主机起后端时，库和 Redis 的地址、端口、口令、`WYH_JWT_SECRET` 与这份 `.env` 一致，主机名改为 `localhost`。口令不要写进仓库。
 
 ## 页面与接口
 

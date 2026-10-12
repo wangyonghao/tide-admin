@@ -59,9 +59,10 @@ tide-bootstrap
 | 租户 | `backend/platform/tenant/` |
 | 文件 | `backend/platform/file/` |
 | 任务 | `backend/platform/job/` |
-| 通知 / 公告 | `backend/platform/ops/.../notification/` |
+| 通知 / 公告 | `backend/platform/ops/.../notification/`（Web 在 `adapter/web`） |
 | 字典 / 配置 | `backend/platform/ops/.../settings/` |
-| 操作日志 | `backend/platform/ops/.../audit/` |
+| 操作日志 | `backend/platform/ops/.../audit/`（Web 在 `adapter/web`） |
+| ops 分层说明 | `docs/agent/ops-layout.md` |
 
 本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
 
@@ -77,7 +78,7 @@ tide-bootstrap
 | 租户页 | `frontend/apps/admin/src/views/tenant/` |
 | API | `frontend/apps/admin/src/api/` |
 | 前后端对齐 | `docs/agent/API-ALIGNMENT.md` |
-| 代码生成去留 | `docs/agent/CODER.md`（宪法仍列 coder，未改） |
+| 代码生成 | `docs/agent/CODER.md`（已从宪法删除，未实现） |
 | 壳 / 内核 | `frontend/apps/admin/src/vben/`（`@vben/*`）；`frontend/vendor/@core`（慎改） |
 | 原子 / 页面模式 | `frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）。应用导入仍可用 `#/ui`、`#/ui-patterns` |
 | 文档站 | `frontend/apps/docs`（`@tide/docs`，VitePress）。`pnpm dev:docs` / `pnpm build:docs` |
