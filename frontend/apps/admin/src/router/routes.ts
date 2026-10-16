@@ -135,6 +135,37 @@ const routes: RouteRecordRaw[] = [
       },
     ],
   },
+
+  {
+    name: 'OrgSetup',
+    path: '/org/setup',
+    component: () => import('#/views/org/setup.vue'),
+    meta: {
+      hideInMenu: true,
+      hideInTab: true,
+      title: '组织引导',
+    },
+  },
+  {
+    name: 'OrgInvite',
+    path: '/org/invite',
+    component: () => import('#/views/org/invite.vue'),
+    meta: {
+      hideInMenu: true,
+      hideInTab: true,
+      title: '组织邀请',
+    },
+  },
+  {
+    name: 'OrgInviteAdmin',
+    path: '/org/invite-admin',
+    component: () => import('#/views/org/invite-admin.vue'),
+    meta: {
+      hideInMenu: true,
+      title: '邀请成员',
+    },
+  },
+
   // User Center
   
 

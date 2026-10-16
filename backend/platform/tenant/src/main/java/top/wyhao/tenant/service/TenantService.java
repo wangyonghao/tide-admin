@@ -3,6 +3,7 @@ package top.wyhao.tenant.service;
 
 import cn.hutool.core.lang.tree.Tree;
 import jakarta.validation.Valid;
+import top.wyhao.tenant.model.entity.Tenant;
 import top.wyhao.tenant.model.query.TenantQuery;
 import top.wyhao.tenant.model.req.TenantRequest;
 import top.wyhao.tenant.model.resp.TenantDetailResp;
@@ -23,6 +24,23 @@ import java.util.List;
 public interface TenantService {
 
     Long create(TenantRequest req);
+
+    /**
+     * 用户自助创建组织并以自己为管理员。
+     */
+    Long createOwnedBy(String name, String description, Long ownerUserId);
+
+    /**
+     * 按 ID 查询实体（跨模块用）。
+     */
+    Tenant getEntity(Long id);
+
+    /**
+     * 按编码查询实体。
+     */
+    Tenant getEntityByCode(String code);
+
+    java.util.List<Tenant> listEntitiesByIds(java.util.Collection<Long> ids);
 
     /**
      * 根据域名查询

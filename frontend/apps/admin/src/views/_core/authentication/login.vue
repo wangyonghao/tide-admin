@@ -37,8 +37,6 @@ const captchaInfo = ref<ImageCaptchaResp>({
 const forceShowCaptcha = ref(false);
 const username = ref('');
 const password = ref('');
-/** 平台租户留空；登录其他租户时填写该租户 ID，只随本次登录请求发送 */
-const tenantId = ref('');
 const captcha = ref('');
 const rememberMe = ref(false);
 const loginLoading = ref(false);
@@ -159,7 +157,6 @@ const handleSubmit = async (event?: Event) => {
       password: password.value,
       captcha: captcha.value,
       uuid: captchaInfo.value.uuid,
-      tenantId: tenantId.value,
     };
 
     // Handle remember me
@@ -265,14 +262,6 @@ onMounted(() => {
           <div v-if="usernameError" class="text-sm text-red-500 mt-1">
             {{ usernameError }}
           </div>
-        </div>
-
-        <!-- Tenant Field：平台管理员留空 -->
-        <div class="mb-4">
-          <Input
-            v-model="tenantId"
-            :placeholder="$t('authentication.tenantIdTip')"
-          />
         </div>
 
         <!-- Password Field -->

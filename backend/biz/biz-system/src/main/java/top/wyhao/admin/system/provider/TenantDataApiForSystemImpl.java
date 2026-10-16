@@ -18,6 +18,7 @@ import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.cmn.core.util.ExceptionUtils;
 import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.identity.domain.exception.UserException;
+import top.wyhao.identity.app.service.MembershipService;
 import top.wyhao.identity.domain.gateway.UserRepository;
 import top.wyhao.identity.domain.gateway.UserSocialRepository;
 import top.wyhao.identity.domain.model.SysUser;
@@ -65,26 +66,27 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private final UserSocialRepository userSocialRepository;
     private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
+    private final MembershipService membershipService;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
     public void init(TenantBO tenant) {
         Long tenantId = tenant.getId();
         TenantUtils.execute(tenantId, () -> {
-            // 初始化部门
             Long departmentId = this.initDepartmentData(tenant);
-            // 初始化角色
             Long roleId = this.initRoleData(tenant);
-            // 角色绑定菜单：与套餐菜单一致，不多给也不少给
             List<Long> menuIds = PackageMenuBinding.menusForTenantAdmin(
                 packageMenuApi.listMenuIdsByPackageId(tenant.getPackageId()));
             roleMenuRepository.replaceByRoleId(roleId, menuIds);
-            // 初始化管理用户
-            Long userId = this.initUserData(tenant, departmentId);
-            // 用户绑定角色
+            Long userId;
+            if (tenant.getAdminUserId() != null) {
+                userId = tenant.getAdminUserId();
+            } else {
+                userId = this.initUserData(tenant, departmentId);
+            }
             roleService.assignToUsers(roleId, ListUtil.of(userId));
-            // 租户绑定用户
             tenantApi.bindAdminUser(tenantId, userId);
+            membershipService.ensureTenantMembership(userId, tenantId, true);
         });
     }
 

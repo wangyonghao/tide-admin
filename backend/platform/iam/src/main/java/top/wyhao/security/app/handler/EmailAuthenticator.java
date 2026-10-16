@@ -10,6 +10,7 @@ import top.wyhao.security.adapter.web.dto.EmailAuthenticationRequest;
 import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
 import top.wyhao.security.domain.model.GrantType;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
+import top.wyhao.identity.app.service.OrgService;
 import top.wyhao.security.app.assembler.LoginUserAssembler;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.UserApi;
@@ -26,6 +27,7 @@ import top.wyhao.web.http.ServletUtils;
 public class EmailAuthenticator implements Authenticator {
     private final UserApi userApi;
     private final LoginUserAssembler loginUserAssembler;
+    private final OrgService orgService;
 
     @Override
     public GrantType grantType() {
@@ -56,7 +58,8 @@ public class EmailAuthenticator implements Authenticator {
         AuthenticatorHelper.issueToken(user.id());
 
         // 8. 保存用户信息到会话
-        AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC");
+        Long orgId = orgService.resolveLoginTenantId(user.id());
+        AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC", orgId);
 
         // 9. 记录登录成功日志
         String ip = ServletUtils.getRequestIp();

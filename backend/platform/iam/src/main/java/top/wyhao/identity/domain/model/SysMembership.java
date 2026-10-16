@@ -10,7 +10,7 @@ import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
 
 /**
- * 成员关系（用户-部门 / 用户-角色）。
+ * 成员关系（用户-部门 / 用户-角色 / 用户-组织）。
  */
 @Data
 @NoArgsConstructor
@@ -56,6 +56,16 @@ public class SysMembership {
 
     public static SysMembership role(Long userId, Long roleId) {
         return of(userId, MembershipScopeType.ROLE, roleId);
+    }
+
+    public static SysMembership primaryTenant(Long userId, Long tenantId) {
+        SysMembership membership = of(userId, MembershipScopeType.TENANT, tenantId);
+        membership.setIsPrimary(true);
+        return membership;
+    }
+
+    public static SysMembership tenant(Long userId, Long tenantId) {
+        return of(userId, MembershipScopeType.TENANT, tenantId);
     }
 
     private static SysMembership of(Long userId, MembershipScopeType scopeType, Long scopeId) {

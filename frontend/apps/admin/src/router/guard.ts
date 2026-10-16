@@ -11,6 +11,7 @@ import { startProgress, stopProgress } from '@vben/utils';
 
 import { toast } from '#/ui-patterns/toast';
 import { useUserStore } from '#/store';
+import { orgApi } from '#/api/org';
 
 // 动态导入所有页面组件
 const pageMap: ComponentRecordType = import.meta.glob('/src/views/**/*.vue');
@@ -156,6 +157,15 @@ function setupAccessGuard(router: Router) {
     try {
       await userStore.fetchAuthInfo();
       addRoutes(router, userStore.menus);
+      const orgSession = await orgApi.session();
+      if (
+        orgSession.needsOrganization &&
+        to.path !== '/org/setup' &&
+        to.path !== '/org/invite'
+      ) {
+        userStore.isRouteAdded = true;
+        return { path: '/org/setup', replace: true };
+      }
     } catch (error) {
       toast.error(`用户菜单加载失败！！！ ${error}`);
       return {

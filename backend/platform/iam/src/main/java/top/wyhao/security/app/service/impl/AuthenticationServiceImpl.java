@@ -23,6 +23,7 @@ import top.wyhao.identity.domain.service.PasswordRules;
 import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
 import top.wyhao.security.adapter.web.dto.RegisterRequest;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
+import top.wyhao.identity.app.service.OrgService;
 import top.wyhao.security.app.assembler.LoginUserAssembler;
 import top.wyhao.security.app.handler.Authenticator;
 import top.wyhao.security.app.handler.AuthenticatorFactory;
@@ -49,6 +50,7 @@ public class AuthenticationServiceImpl implements AuthenticationService {
     private final PasswordPolicyConfigApi passwordPolicyConfigApi;
     private final PasswordRules passwordRules;
     private final LoginUserAssembler loginUserAssembler;
+    private final OrgService orgService;
 
     @Override
     public AuthenticationResult authenticate(@Valid AuthenticationRequest authenticationRequest) {
@@ -90,7 +92,8 @@ public class AuthenticationServiceImpl implements AuthenticationService {
 
         AuthenticatorHelper.checkUserStatus(user);
         AuthenticatorHelper.issueToken(user.id());
-        AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC");
+        Long orgId = orgService.resolveLoginTenantId(user.id());
+        AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC", orgId);
 
         String ip = ServletUtils.getRequestIp();
         String userAgent = ServletUtils.getRequest() != null
