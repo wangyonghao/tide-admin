@@ -13,6 +13,9 @@ import top.wyhao.tenant.assembler.TenantAssembler;
 import top.wyhao.tenant.exception.TenantException;
 import top.wyhao.tenant.mapper.SysTenantMapper;
 import top.wyhao.tenant.model.entity.Tenant;
+import top.wyhao.tenant.model.entity.TenantPackage;
+import top.wyhao.tenant.mapper.TenantPackageMapper;
+import top.wyhao.tenant.exception.TenantException;
 import top.wyhao.tenant.model.query.TenantQuery;
 import top.wyhao.tenant.model.req.TenantRequest;
 import top.wyhao.tenant.model.resp.TenantDetailResp;
@@ -26,6 +29,7 @@ import top.wyhao.cmn.core.enums.RoleCodeEnum;
 import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.security.client.RoleApi;
 import top.wyhao.security.client.RoleMenuApi;
+import top.wyhao.tenant.client.TenantBO;
 import top.wyhao.tenant.client.TenantDataApi;
 import top.wyhao.tenant.config.TenantProperties;
 import top.wyhao.tenant.util.TenantUtils;
@@ -61,6 +65,7 @@ public class TenantServiceImpl implements TenantService {
     private final TenantProperties tenantProperties;
     private final SysTenantMapper baseMapper;
     private final TenantAssembler tenantAssembler;
+    private final TenantPackageMapper tenantPackageMapper;
 
     @Override
     @Transactional(rollbackFor = Exception.class)
@@ -83,7 +88,62 @@ public class TenantServiceImpl implements TenantService {
         return entity.getId();
     }
 
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public Long createOwnedBy(String name, String description, Long ownerUserId) {
+        this.checkNameRepeat(name, null);
+        Long packageId = tenantPackageMapper.lambdaQuery()
+            .eq(TenantPackage::getStatus, StatusEnum.ENABLE)
+            .orderByAsc(TenantPackage::getSort)
+            .orderByAsc(TenantPackage::getId)
+            .last("LIMIT 1")
+            .oneOpt()
+            .map(TenantPackage::getId)
+            .orElseThrow(() -> TenantException.of("ORG_PACKAGE_MISSING", "系统尚未配置可用套餐，无法创建组织"));
+        packageService.checkStatus(packageId);
 
+        Tenant entity = new Tenant();
+        entity.setName(name);
+        entity.setDescription(description);
+        entity.setCode(this.generateCode());
+        entity.setPackageId(packageId);
+        entity.setStatus(StatusEnum.ENABLE);
+        entity.setAdminUser(ownerUserId);
+        baseMapper.insert(entity);
+
+        TenantBO bo = new TenantBO();
+        bo.setId(entity.getId());
+        bo.setName(entity.getName());
+        bo.setCode(entity.getCode());
+        bo.setPackageId(packageId);
+        bo.setAdminUserId(ownerUserId);
+        tenantDataApis().forEach((key, value) -> value.init(bo));
+        return entity.getId();
+    }
+
+    @Override
+    public Tenant getEntity(Long id) {
+        if (id == null) {
+            return null;
+        }
+        return baseMapper.selectById(id);
+    }
+
+    @Override
+    public Tenant getEntityByCode(String code) {
+        if (code == null || code.isBlank()) {
+            return null;
+        }
+        return baseMapper.lambdaQuery().eq(Tenant::getCode, code.trim()).one();
+    }
+
+    @Override
+    public List<Tenant> listEntitiesByIds(java.util.Collection<Long> ids) {
+        if (CollUtil.isEmpty(ids)) {
+            return List.of();
+        }
+        return baseMapper.selectByIds(ids);
+    }
 
     public void beforeDelete(List<Long> ids) {
         // 在租户中执行数据清除

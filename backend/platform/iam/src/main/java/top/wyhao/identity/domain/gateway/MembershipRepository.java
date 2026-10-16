@@ -26,4 +26,14 @@ public interface MembershipRepository {
     List<Long> listActiveUserIdsByScope(MembershipScopeType scopeType, Long scopeId);
 
     List<Long> listActiveScopeIdsByUser(Long userId, MembershipScopeType scopeType);
+
+    List<SysMembership> listByUserAndScopeType(Long userId, MembershipScopeType scopeType);
+
+    SysMembership findActive(Long userId, MembershipScopeType scopeType, Long scopeId);
+
+    SysMembership findPrimary(Long userId, MembershipScopeType scopeType);
+
+    void clearPrimary(Long userId, MembershipScopeType scopeType);
+
+    void update(SysMembership membership);
 }

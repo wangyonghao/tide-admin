@@ -1,5 +1,7 @@
 package top.wyhao.identity.app.service;
 
+import top.wyhao.identity.domain.model.SysMembership;
+
 import java.util.Collection;
 import java.util.List;
 
@@ -8,38 +10,36 @@ import java.util.List;
  */
 public interface MembershipService {
 
-    /**
-     * 替换用户主部门成员关系（恰好一条 DEPARTMENT + is_primary）。
-     */
     void replacePrimaryDepartment(Long userId, Long departmentId);
 
-    /**
-     * 批量替换用户主部门（导入等场景）。
-     */
     void replacePrimaryDepartments(List<long[]> userDepartmentPairs);
 
-    /**
-     * 替换用户全部角色成员关系。
-     */
     void replaceRoles(Long userId, List<Long> roleIds);
 
-    /**
-     * 为角色追加成员（已存在则跳过）。
-     */
     void addRoleMembers(Long roleId, Collection<Long> userIds);
 
-    /**
-     * 移除角色下指定成员。
-     */
     void removeRoleMembers(Long roleId, Collection<Long> userIds);
 
-    /**
-     * 移除用户的全部角色成员关系。
-     */
     void removeAllRolesByUserIds(Collection<Long> userIds);
 
-    /**
-     * 移除用户的全部成员关系（部门 + 角色）。
-     */
     void removeAllByUserIds(Collection<Long> userIds);
+
+    /**
+     * 确保用户加入组织；已存在则保持。primary=true 时设为主组织。
+     */
+    void ensureTenantMembership(Long userId, Long tenantId, boolean primary);
+
+    /**
+     * 将指定组织设为主组织（须已是成员）。
+     */
+    void setPrimaryTenant(Long userId, Long tenantId);
+
+    /**
+     * 解析登录应进入的主组织 ID；无组织返回 null。
+     */
+    Long resolvePrimaryTenantId(Long userId);
+
+    List<SysMembership> listEffectiveTenantMemberships(Long userId);
+
+    boolean isTenantMember(Long userId, Long tenantId);
 }

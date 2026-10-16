@@ -37,8 +37,11 @@ public class AuthenticatorHelper {
     }
 
     public static void createSession(LoginUser loginUser, String deviceType) {
+        createSession(loginUser, deviceType, TenantContextHolder.getTenantId());
+    }
+
+    public static void createSession(LoginUser loginUser, String deviceType, Long tenantId) {
         RequestMeta info = getRequestMeta();
-        // 写入Session
         SaSession session = StpUtil.getTokenSession();
         session.set("loginName", loginUser.getUsername());
         session.set("ipaddr", info.ip());
@@ -47,14 +50,13 @@ public class AuthenticatorHelper {
         session.set("os", info.os());
         session.set("loginTime", System.currentTimeMillis());
         session.set("deviceType", deviceType);
-        Long tenantId = TenantContextHolder.getTenantId();
         loginUser.setTenantId(tenantId);
         session.set("tenantId", tenantId);
         session.set(LoginUtil.LOGIN_USER_KEY, loginUser);
     }
 
     public static AuthenticationResult successResult() {
-        return new AuthenticationResult("200", LoginUtil.getTokenValue(), TenantContextHolder.getTenantId());
+        return new AuthenticationResult("200", LoginUtil.getTokenValue(), LoginUtil.getTenantId());
     }
 
 

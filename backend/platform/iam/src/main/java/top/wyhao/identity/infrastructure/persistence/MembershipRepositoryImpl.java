@@ -116,4 +116,62 @@ public class MembershipRepositoryImpl implements MembershipRepository {
                 .map(SysMembership::getScopeId)
                 .toList();
     }
+
+    @Override
+    public List<SysMembership> listByUserAndScopeType(Long userId, MembershipScopeType scopeType) {
+        if (userId == null) {
+            return Collections.emptyList();
+        }
+        return membershipMapper.lambdaQuery()
+                .eq(SysMembership::getUserId, userId)
+                .eq(SysMembership::getScopeType, scopeType)
+                .eq(SysMembership::getDeleted, 0)
+                .list();
+    }
+
+    @Override
+    public SysMembership findActive(Long userId, MembershipScopeType scopeType, Long scopeId) {
+        if (userId == null || scopeId == null) {
+            return null;
+        }
+        return membershipMapper.lambdaQuery()
+                .eq(SysMembership::getUserId, userId)
+                .eq(SysMembership::getScopeType, scopeType)
+                .eq(SysMembership::getScopeId, scopeId)
+                .eq(SysMembership::getDeleted, 0)
+                .one();
+    }
+
+    @Override
+    public SysMembership findPrimary(Long userId, MembershipScopeType scopeType) {
+        if (userId == null) {
+            return null;
+        }
+        return membershipMapper.lambdaQuery()
+                .eq(SysMembership::getUserId, userId)
+                .eq(SysMembership::getScopeType, scopeType)
+                .eq(SysMembership::getIsPrimary, true)
+                .eq(SysMembership::getDeleted, 0)
+                .one();
+    }
+
+    @Override
+    public void clearPrimary(Long userId, MembershipScopeType scopeType) {
+        if (userId == null) {
+            return;
+        }
+        membershipMapper.lambdaUpdate()
+                .eq(SysMembership::getUserId, userId)
+                .eq(SysMembership::getScopeType, scopeType)
+                .eq(SysMembership::getIsPrimary, true)
+                .eq(SysMembership::getDeleted, 0)
+                .set(SysMembership::getIsPrimary, false)
+                .set(SysMembership::getUpdateTime, LocalDateTime.now())
+                .update();
+    }
+
+    @Override
+    public void update(SysMembership membership) {
+        membershipMapper.updateById(membership);
+    }
 }

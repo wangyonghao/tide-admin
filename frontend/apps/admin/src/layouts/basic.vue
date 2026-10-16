@@ -20,6 +20,7 @@ import { openWindow } from '@vben/utils';
 import { $t } from '#/locales';
 import { useUserStore } from '#/store/user';
 import LoginForm from '#/views/_core/authentication/login.vue';
+import OrgSwitcher from '#/components/org-switcher.vue';
 import { resolveFilePreviewUrl } from '#/api/system/file';
 
 const notifications = ref<NotificationItem[]>([
@@ -200,6 +201,12 @@ watch(
 
 <template>
   <BasicLayout @clear-preferences-and-logout="handleLogout">
+    <template #logo-text>
+      <div class="flex items-center">
+        <span class="truncate">{{ preferences.app.name }}</span>
+        <OrgSwitcher />
+      </div>
+    </template>
     <template #user-dropdown>
       <UserDropdown
         :avatar

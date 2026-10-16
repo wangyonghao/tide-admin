@@ -15,6 +15,7 @@ import top.wyhao.security.adapter.web.dto.AccountAuthenticationRequest;
 import top.wyhao.security.adapter.web.dto.AuthenticationRequest;
 import top.wyhao.security.domain.model.GrantType;
 import top.wyhao.security.adapter.web.vo.AuthenticationResult;
+import top.wyhao.identity.app.service.OrgService;
 import top.wyhao.security.app.assembler.LoginUserAssembler;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.security.client.LoginConfigApi;
@@ -48,6 +49,7 @@ public class AccountAuthenticator implements Authenticator {
     private final UserApi userApi;
     private final LoginConfigApi loginConfigApi;
     private final LoginUserAssembler loginUserAssembler;
+    private final OrgService orgService;
 
     @Override
     public GrantType grantType() {
@@ -91,8 +93,9 @@ public class AccountAuthenticator implements Authenticator {
             // 7. 登录（创建会话、签发Token）
             AuthenticatorHelper.issueToken(user.id());
 
-            // 8. 保存用户信息到会话
-            AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC");
+            // 8. 进入主组织（无组织时 tenantId 为 null，前端引导创建/加入）
+            Long orgId = orgService.resolveLoginTenantId(user.id());
+            AuthenticatorHelper.createSession(loginUserAssembler.assemble(user, "PC"), "PC", orgId);
 
             // 9. 记录登录成功日志
             AuthenticatorHelper.recordSuccess(user.username(), ip, userAgent);

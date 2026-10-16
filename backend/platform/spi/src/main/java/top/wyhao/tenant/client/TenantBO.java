@@ -12,9 +12,14 @@ public class TenantBO {
 
     private String name;
 
+    private String code;
+
     private String adminUsername;
 
     private String adminPassword;
+
+    /** 已有用户作为管理员时使用；与 adminUsername/adminPassword 二选一 */
+    private Long adminUserId;
 
     private Long packageId;
 }

@@ -6,19 +6,20 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.identity.app.service.MembershipService;
+import top.wyhao.identity.domain.exception.OrgException;
 import top.wyhao.identity.domain.gateway.MembershipRepository;
 import top.wyhao.identity.domain.model.MembershipScopeType;
+import top.wyhao.identity.domain.model.MembershipStatus;
 import top.wyhao.identity.domain.model.SysMembership;
+import top.wyhao.identity.domain.service.MembershipRules;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-/**
- * 成员关系服务实现。
- */
 @Service
 @RequiredArgsConstructor
 public class MembershipServiceImpl implements MembershipService {
@@ -107,5 +108,73 @@ public class MembershipServiceImpl implements MembershipService {
     @Transactional(rollbackFor = Exception.class)
     public void removeAllByUserIds(Collection<Long> userIds) {
         membershipRepository.softDeleteByUserIds(userIds);
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void ensureTenantMembership(Long userId, Long tenantId, boolean primary) {
+        if (userId == null || tenantId == null) {
+            return;
+        }
+        SysMembership existing = membershipRepository.findActive(userId, MembershipScopeType.TENANT, tenantId);
+        if (existing != null) {
+            if (existing.getStatus() == null || existing.getStatus() != MembershipStatus.NORMAL.getValue()) {
+                existing.setStatus(MembershipStatus.NORMAL.getValue());
+                existing.setJoinedAt(LocalDateTime.now());
+                membershipRepository.update(existing);
+            }
+            if (primary && !Boolean.TRUE.equals(existing.getIsPrimary())) {
+                setPrimaryTenant(userId, tenantId);
+            }
+            return;
+        }
+        if (primary || membershipRepository.findPrimary(userId, MembershipScopeType.TENANT) == null) {
+            membershipRepository.clearPrimary(userId, MembershipScopeType.TENANT);
+            membershipRepository.insert(SysMembership.primaryTenant(userId, tenantId));
+        } else {
+            membershipRepository.insert(SysMembership.tenant(userId, tenantId));
+        }
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void setPrimaryTenant(Long userId, Long tenantId) {
+        SysMembership membership = membershipRepository.findActive(userId, MembershipScopeType.TENANT, tenantId);
+        if (membership == null || !MembershipRules.isEffective(membership, LocalDateTime.now())) {
+            throw OrgException.notMember();
+        }
+        membershipRepository.clearPrimary(userId, MembershipScopeType.TENANT);
+        membership.setIsPrimary(true);
+        membershipRepository.update(membership);
+    }
+
+    @Override
+    public Long resolvePrimaryTenantId(Long userId) {
+        if (userId == null) {
+            return null;
+        }
+        LocalDateTime now = LocalDateTime.now();
+        SysMembership primary = membershipRepository.findPrimary(userId, MembershipScopeType.TENANT);
+        if (MembershipRules.isEffective(primary, now)) {
+            return primary.getScopeId();
+        }
+        return listEffectiveTenantMemberships(userId).stream()
+                .map(SysMembership::getScopeId)
+                .findFirst()
+                .orElse(null);
+    }
+
+    @Override
+    public List<SysMembership> listEffectiveTenantMemberships(Long userId) {
+        LocalDateTime now = LocalDateTime.now();
+        return membershipRepository.listByUserAndScopeType(userId, MembershipScopeType.TENANT).stream()
+                .filter(m -> MembershipRules.isEffective(m, now))
+                .toList();
+    }
+
+    @Override
+    public boolean isTenantMember(Long userId, Long tenantId) {
+        SysMembership membership = membershipRepository.findActive(userId, MembershipScopeType.TENANT, tenantId);
+        return MembershipRules.isEffective(membership, LocalDateTime.now());
     }
 }
