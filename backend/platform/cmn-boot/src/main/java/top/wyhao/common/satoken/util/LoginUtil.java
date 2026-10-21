@@ -195,4 +195,21 @@ public final class LoginUtil {
             return null;
         }
     }
+
+    /**
+     * 更新当前会话中的租户 / 组织 ID。
+     */
+    public static void setTenantId(Long tenantId) {
+        LoginUser loginUser = getLoginUser();
+        if (loginUser == null) {
+            StpUtil.checkLogin();
+            return;
+        }
+        loginUser.setTenantId(tenantId);
+        SaSession session = StpUtil.getTokenSession();
+        if (session != null) {
+            session.set("tenantId", tenantId);
+            session.set(LOGIN_USER_KEY, loginUser);
+        }
+    }
 }

@@ -56,16 +56,12 @@ export const useUserStore = defineStore(
     ) {
       try {
         loginLoading.value = true;
-        const tenantId = String(params.tenantId ?? '').trim();
         delete params.tenantId;
         params.password = encryptByRsa(params.password) || '';
         params.clientId = import.meta.env.VITE_CLIENT_ID;
         params.grantType = AuthTypeConstants.ACCOUNT;
         delete params.authType;
-        const loginResult = await authApi.login(
-          params,
-          tenantId ? { headers: { 'X-Tenant-Id': tenantId } } : undefined,
-        );
+        const loginResult = await authApi.login(params);
 
         // 检查是否密码过期
         if (loginResult.code === 'PASSWORD_EXPIRED') {

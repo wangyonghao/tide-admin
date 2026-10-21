@@ -4,4 +4,6 @@ databaseChangeLog:
   - include:
       file: db/changelog/postgresql/platform/platform-data.sql
   - include:
+      file: db/changelog/postgresql/platform/platform-org.sql
+  - include:
       file: db/changelog/postgresql/platform/platform-test.sql
