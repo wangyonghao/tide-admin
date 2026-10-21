@@ -4,7 +4,7 @@ import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import top.wyhao.cmn.db.query.QueryWrapperBuilder;
+import top.wyhao.mybatis.query.QueryWrapperBuilder;
 import top.wyhao.department.domain.gateway.DepartmentRepository;
 import top.wyhao.department.domain.model.SysDepartment;
 import top.wyhao.department.infrastructure.persistence.mapper.SysDepartmentMapper;

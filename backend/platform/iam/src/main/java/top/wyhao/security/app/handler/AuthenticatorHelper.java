@@ -15,7 +15,7 @@ import top.wyhao.security.adapter.web.vo.AuthenticationResult;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.department.client.DepartmentApi;
 import top.wyhao.security.app.service.AuthenticationLogService;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.identity.client.LoginUser;
 import top.wyhao.cmn.core.util.ExceptionUtils;

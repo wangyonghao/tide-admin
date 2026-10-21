@@ -12,7 +12,7 @@ import top.wyhao.audit.entity.SysOperationLog;
 import top.wyhao.audit.model.result.dashboard.DashboardAccessTrendResp;
 import top.wyhao.audit.model.result.dashboard.DashboardChartCommonResp;
 import top.wyhao.audit.model.result.dashboard.DashboardOverviewCommonResp;
-import top.wyhao.cmn.db.model.BaseMapper;
+import top.wyhao.mybatis.model.BaseMapper;
 import top.wyhao.cmn.core.constant.CacheConstants;
 
 import java.util.Date;

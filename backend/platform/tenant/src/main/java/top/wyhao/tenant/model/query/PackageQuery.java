@@ -3,7 +3,7 @@ package top.wyhao.tenant.model.query;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.cmn.db.query.Query;
+import top.wyhao.mybatis.query.Query;
 import top.wyhao.cmn.core.enums.StatusEnum;
 
 /**

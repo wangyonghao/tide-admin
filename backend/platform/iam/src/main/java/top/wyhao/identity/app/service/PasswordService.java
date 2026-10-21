@@ -6,7 +6,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.identity.client.PasswordApi;
 import top.wyhao.identity.client.PasswordPolicyConfig;
 import top.wyhao.identity.client.PasswordPolicyConfigApi;

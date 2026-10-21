@@ -4,7 +4,7 @@ package top.wyhao.security.domain.model;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import top.wyhao.security.domain.model.MenuType;
-import top.wyhao.cmn.db.model.BaseEntity;
+import top.wyhao.mybatis.model.BaseEntity;
 import top.wyhao.cmn.core.enums.StatusEnum;
 
 /**

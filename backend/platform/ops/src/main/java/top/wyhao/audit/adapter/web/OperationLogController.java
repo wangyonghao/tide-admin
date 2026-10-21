@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.audit.service.OperationLogService;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.audit.model.vo.OperationLogDetailResult;
 import top.wyhao.audit.model.dto.OperationLogQuery;
 import top.wyhao.audit.model.vo.OperationLogResult;

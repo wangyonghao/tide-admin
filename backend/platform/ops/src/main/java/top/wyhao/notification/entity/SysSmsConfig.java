@@ -6,8 +6,8 @@ import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
-import top.wyhao.cmn.db.model.BaseEntity;
+import top.wyhao.mybatis.encrypt.EncryptTypeHandler;
+import top.wyhao.mybatis.model.BaseEntity;
 import top.wyhao.cmn.core.enums.StatusEnum;
 
 import java.time.LocalDateTime;

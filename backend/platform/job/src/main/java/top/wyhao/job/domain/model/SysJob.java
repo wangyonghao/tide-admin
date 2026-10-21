@@ -3,7 +3,7 @@ package top.wyhao.job.domain.model;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import top.wyhao.cmn.db.model.BaseEntity;
+import top.wyhao.mybatis.model.BaseEntity;
 
 /**
  * 定时任务定义

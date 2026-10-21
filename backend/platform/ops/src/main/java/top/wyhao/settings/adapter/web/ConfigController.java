@@ -18,7 +18,7 @@ import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.identity.client.LoginUser;
 import top.wyhao.settings.client.MailConfigVO;
 import top.wyhao.identity.client.UserProfileApi;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.identity.client.UserProfile;
 import top.wyhao.settings.client.SiteConfigApi;
 import top.wyhao.settings.client.SiteConfigVO;

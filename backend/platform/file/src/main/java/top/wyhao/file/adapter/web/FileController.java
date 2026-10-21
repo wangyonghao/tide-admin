@@ -15,10 +15,10 @@ import top.wyhao.file.adapter.web.vo.FileResponse;
 import top.wyhao.file.adapter.web.vo.FileUploadResponse;
 import top.wyhao.file.domain.model.File;
 import top.wyhao.file.app.service.FileService;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.web.core.model.IdsRequest;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.web.util.HttpUtil;
 
 import java.io.InputStream;

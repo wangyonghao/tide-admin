@@ -3,7 +3,7 @@ package top.wyhao.notification.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import top.wyhao.notification.entity.SysSmsLog;
-import top.wyhao.cmn.db.model.BaseMapper;
+import top.wyhao.mybatis.model.BaseMapper;
 
 /**
  * 短信日志 Mapper

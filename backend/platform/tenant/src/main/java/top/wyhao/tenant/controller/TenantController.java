@@ -17,7 +17,7 @@ import top.wyhao.tenant.service.TenantService;
 import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.web.core.model.IdResult;
 import top.wyhao.web.core.model.LabelValueResult;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 
 import java.util.List;
 

@@ -12,8 +12,8 @@ import top.wyhao.admin.open.model.query.AppQuery;
 import top.wyhao.admin.open.model.req.AppReq;
 import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.service.AppService;
-import top.wyhao.cmn.db.query.PageParam;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageParam;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.web.core.model.IdResult;
 import top.wyhao.web.core.model.IdsRequest;
 

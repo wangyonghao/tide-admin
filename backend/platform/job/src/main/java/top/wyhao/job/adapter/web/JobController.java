@@ -12,7 +12,7 @@ import top.wyhao.job.app.dto.JobStatusRequest;
 import top.wyhao.job.app.dto.vo.JobHandlerResponse;
 import top.wyhao.job.app.dto.vo.JobResponse;
 import top.wyhao.job.app.service.JobAdminService;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 
 import java.util.List;
 

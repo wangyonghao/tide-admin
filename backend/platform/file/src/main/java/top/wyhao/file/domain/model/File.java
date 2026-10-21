@@ -3,7 +3,7 @@ package top.wyhao.file.domain.model;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import top.wyhao.cmn.db.model.BaseEntity;
+import top.wyhao.mybatis.model.BaseEntity;
 import top.wyhao.file.domain.enums.FileStatus;
 import top.wyhao.storage.api.StorageType;
 

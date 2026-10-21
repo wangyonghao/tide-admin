@@ -6,7 +6,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.security.domain.gateway.AuthenticationLogRepository;
 import top.wyhao.security.domain.model.AuthenticationLogCriteria;
 import top.wyhao.security.domain.model.SysAuthenticationLog;

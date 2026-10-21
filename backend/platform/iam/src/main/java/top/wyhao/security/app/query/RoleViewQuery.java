@@ -1,6 +1,6 @@
 package top.wyhao.security.app.query;
 
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.security.adapter.web.dto.RoleMemberQuery;
 import top.wyhao.security.adapter.web.dto.RoleQuery;
 import top.wyhao.security.adapter.web.vo.RoleMemberResult;

@@ -7,7 +7,7 @@ import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Test;
 import top.wyhao.tenant.context.TenantContext;
 import top.wyhao.tenant.context.TenantContextHolder;
-import top.wyhao.tenant.db.DefaultTenantLineHandler;
+import top.wyhao.tenant.isolation.DefaultTenantLineHandler;
 import top.wyhao.tenant.config.TenantTableRegistry;
 import top.wyhao.tenant.exception.TenantException;
 

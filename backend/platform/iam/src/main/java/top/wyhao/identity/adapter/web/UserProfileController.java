@@ -26,7 +26,7 @@ import top.wyhao.identity.domain.model.SocialSource;
 import top.wyhao.identity.adapter.web.vo.UserSocialBindResp;
 import top.wyhao.identity.app.service.UserProfileService;
 import top.wyhao.identity.app.service.UserSocialService;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.security.client.ContactCaptchaApi;
 import top.wyhao.cmn.core.util.CollUtils;

@@ -2,7 +2,7 @@ package top.wyhao.security.adapter.web.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
-import top.wyhao.cmn.db.query.Query;
+import top.wyhao.mybatis.query.Query;
 
 import java.util.List;
 

@@ -5,7 +5,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Repository;
-import top.wyhao.cmn.db.query.QueryWrapperBuilder;
+import top.wyhao.mybatis.query.QueryWrapperBuilder;
 import top.wyhao.settings.domain.gateway.ConfigRepository;
 import top.wyhao.settings.domain.model.SysConfig;
 import top.wyhao.settings.infrastructure.persistence.mapper.SysConfigMapper;

@@ -13,7 +13,7 @@ import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.cmn.core.enums.DataScopeEnum;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
 import top.wyhao.cmn.core.util.CollUtils;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.security.adapter.web.dto.RoleMemberQuery;
 import top.wyhao.security.adapter.web.dto.RolePermissionUpdateRequest;
 import top.wyhao.security.adapter.web.dto.RoleQuery;

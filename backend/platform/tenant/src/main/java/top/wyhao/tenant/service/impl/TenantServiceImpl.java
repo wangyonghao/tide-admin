@@ -29,7 +29,7 @@ import top.wyhao.tenant.domain.TenantLifecycleRules;
 import top.wyhao.tenant.service.PackageMenuService;
 import top.wyhao.tenant.service.PackageService;
 import top.wyhao.tenant.service.TenantService;
-import top.wyhao.cmn.db.query.QueryWrapperBuilder;
+import top.wyhao.mybatis.query.QueryWrapperBuilder;
 import top.wyhao.redisson.util.RedisUtils;
 import top.wyhao.cmn.core.constant.CacheConstants;
 import top.wyhao.cmn.core.constant.StringConstants;
@@ -43,7 +43,7 @@ import top.wyhao.tenant.config.TenantProperties;
 import top.wyhao.tenant.util.TenantUtils;
 import top.wyhao.web.core.model.LabelValueResult;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

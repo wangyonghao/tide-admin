@@ -22,7 +22,7 @@ import top.wyhao.security.client.LoginConfigApi;
 import top.wyhao.security.client.config.LoginConfigVO;
 import top.wyhao.identity.client.UserApi;
 import top.wyhao.redisson.util.RedisUtils;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.constant.RegexConstants;
 import top.wyhao.cmn.core.exception.BizException;
 import top.wyhao.cmn.core.util.ExceptionUtils;

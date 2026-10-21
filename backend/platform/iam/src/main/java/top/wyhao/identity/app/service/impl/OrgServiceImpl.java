@@ -9,7 +9,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.identity.adapter.web.dto.OrgApplyRequest;
 import top.wyhao.identity.adapter.web.dto.OrgCreateRequest;
 import top.wyhao.identity.adapter.web.dto.OrgInviteRequest;

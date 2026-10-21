@@ -15,7 +15,7 @@ import top.wyhao.tenant.model.resp.PackageDetailResp;
 import top.wyhao.tenant.model.resp.PackageResp;
 import top.wyhao.tenant.service.PackageService;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.web.core.model.IdsRequest;
 import top.wyhao.web.core.model.IdResult;
 

@@ -14,11 +14,11 @@ import top.wyhao.notification.mapper.SysSmsLogMapper;
 import top.wyhao.security.client.otp.OtpScene;
 import top.wyhao.settings.client.SmsConfigApi;
 import top.wyhao.notification.service.SmsService;
-import top.wyhao.cmn.db.query.QueryWrapperBuilder;
+import top.wyhao.mybatis.query.QueryWrapperBuilder;
 import top.wyhao.notification.exception.SmsException;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 
 import java.util.LinkedHashMap;
 import java.util.List;

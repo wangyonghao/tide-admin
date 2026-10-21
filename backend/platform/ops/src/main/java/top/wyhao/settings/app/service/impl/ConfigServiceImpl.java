@@ -9,7 +9,7 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.settings.client.MailConfigVO;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.settings.adapter.web.dto.ConfigQuery;
 import top.wyhao.settings.adapter.web.dto.ConfigRequest;
 import top.wyhao.settings.adapter.web.vo.ConfigResult;

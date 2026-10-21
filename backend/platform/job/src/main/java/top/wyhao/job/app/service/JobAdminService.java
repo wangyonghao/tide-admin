@@ -9,7 +9,7 @@ import org.springframework.transaction.support.TransactionSynchronization;
 import org.springframework.transaction.support.TransactionSynchronizationManager;
 import org.springframework.util.StringUtils;
 import top.wyhao.cmn.core.exception.BizException;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.job.app.dto.JobLogQuery;
 import top.wyhao.job.app.dto.JobQuery;
 import top.wyhao.job.app.dto.JobSaveRequest;

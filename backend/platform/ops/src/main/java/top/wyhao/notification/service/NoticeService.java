@@ -5,7 +5,7 @@ import top.wyhao.notification.model.enums.NoticeMethods;
 import top.wyhao.notification.entity.SysNotice;
 import top.wyhao.notification.model.result.dashboard.DashboardNoticeResp;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotEmpty;
 
