@@ -1,6 +1,6 @@
 # GitHub Actions
 
-GitHub 只执行仓库根目录 `.github/workflows/` 下的文件。`frontend/.github/workflows/` 来自上游 Vben 脚手架，**不会**在本仓库运行；其中 `ci.yml` 的 `github.repository == 'vbenjs/vue-vben-admin'` 因此不会挡住 Tide Admin。本仓库的前端单测在 `frontend-build.yml`。
+GitHub 只执行仓库根目录 `.github/workflows/` 下的文件。`frontend/.github/workflows/` 来自上游 Vben 脚手架，**不会**在本仓库运行；其中 `ci.yml` 的 `github.repository == 'vbenjs/vue-vben-admin'` 因此不会挡住 wyh-admin。本仓库的前端单测在 `frontend-build.yml`。
 
 默认分支是 `main`。
 

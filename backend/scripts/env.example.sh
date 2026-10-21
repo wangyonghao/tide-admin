@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Tide Admin — 宿主机后端环境变量示例
+# wyh-admin — 宿主机后端环境变量示例
 #
 # 与 backend/tide-bootstrap/src/main/resources/config 里的 ${VAR} 对应。
 # 只在宿主机跑后端时需要。Compose 里的 api 直接读 backend/docker/.env。

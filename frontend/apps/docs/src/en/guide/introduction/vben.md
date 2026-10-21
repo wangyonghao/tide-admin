@@ -11,7 +11,7 @@
 
 ::: tip This repository
 
-Tide Admin’s product UI is shadcn-vue / Vben atoms (`#/ui`, `#/ui-patterns`). The rest of this page follows upstream Vben’s multi-library overview.
+wyh-admin’s product UI is shadcn-vue / Vben atoms (`#/ui`, `#/ui-patterns`). The rest of this page follows upstream Vben’s multi-library overview.
 
 :::
 
