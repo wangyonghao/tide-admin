@@ -1,5 +1,5 @@
 
-package top.wyhao.admin.controller;
+package top.wyhao.admin.system.controller;
 
 import com.alicp.jetcache.anno.CachePenetrationProtect;
 import com.alicp.jetcache.anno.CacheRefresh;

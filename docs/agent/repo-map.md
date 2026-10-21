@@ -32,7 +32,7 @@ tide-bootstrap
 |------|------|
 | `tide-bootstrap` | 启动、配置、Liquibase、装配 |
 | `interfaces/open-api` | 开放 API / 签名 |
-| `biz/biz-system` | 系统壳、仪表盘等残留/编排 |
+| `biz/biz-system` | 系统壳、仪表盘（含 `DashboardController`）、跨域编排残留 |
 | `platform/iam` | identity、department、security |
 | `platform/tenant` | 租户、套餐 |
 | `platform/file` | 文件领域与存储适配 |
@@ -62,6 +62,7 @@ tide-bootstrap
 | 通知 / 公告 | `backend/platform/ops/.../notification/`（Web 在 `adapter/web`） |
 | 字典 / 配置 | `backend/platform/ops/.../settings/` |
 | 操作日志 | `backend/platform/ops/.../audit/`（Web 在 `adapter/web`） |
+| 仪表盘 | `backend/biz/biz-system/.../controller/DashboardController`（服务同模块） |
 | ops 分层说明 | `docs/agent/ops-layout.md` |
 
 本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
