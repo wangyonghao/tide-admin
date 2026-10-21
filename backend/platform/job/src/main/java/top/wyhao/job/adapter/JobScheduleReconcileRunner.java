@@ -1,4 +1,4 @@
-package top.wyhao.job.app.service;
+package top.wyhao.job.adapter;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -6,6 +6,7 @@ import org.springframework.boot.ApplicationArguments;
 import org.springframework.boot.ApplicationRunner;
 import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
+import top.wyhao.job.app.service.JobAdminService;
 
 /**
  * 启动时把 sys_job 与集群 JobStore 对齐，避免某实例漏注册。

@@ -1,4 +1,4 @@
-package top.wyhao.job.adapter.web.vo;
+package top.wyhao.job.app.dto.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;

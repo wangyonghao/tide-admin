@@ -3,7 +3,7 @@ package top.wyhao.job.app.service;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.quartz.CronExpression;
-import top.wyhao.job.adapter.web.dto.ScheduleSpec;
+import top.wyhao.job.app.dto.ScheduleSpec;
 import top.wyhao.cmn.core.exception.BizException;
 
 import java.text.ParseException;
