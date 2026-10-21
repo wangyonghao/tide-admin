@@ -10,11 +10,12 @@
 |----|------|
 | JDK **17** | 宿主机跑 Maven / IDE 时必须。先 `export JAVA_HOME="$(/usr/libexec/java_home -v 17)"`（或 Homebrew `openjdk@17`）。默认若是 JDK 26 会踩坑。 |
 | `.env` | `cp .env.example .env` 后改掉所有占位密码、`AES_KEY`、`WYH_JWT_SECRET`。`.env` 已 gitignore，勿提交。 |
-| 容器运行时 | **Docker Compose**（完整一键），或 **Apple Container**（仅中间件；本机无 Docker 时的官方备选）。没有任一运行时时，不要把「compose up」标成已绿。 |
+| 中间件 | Postgres + Redis 必须可达（Apple Container、本机安装、或其它）。 |
+| Docker Compose | **可选**（全栈一键 / CI）。本机无 Docker **不挡**启动验收；勿把未跑的 compose 标成已绿。 |
 
 生成口令示例：`openssl rand -hex 24`。`AES_KEY` 须为 16/24/32 字节（可用 `openssl rand -hex 16`）。
 
-## 启动（Docker Compose）
+## Docker Compose（可选 / CI）
 
 ```bash
 cd backend/docker
@@ -39,7 +40,7 @@ docker compose --env-file .env -f docker-compose.dev.yml down -v
 只 `stop` 再 `up` 会沿用当前数据卷。Postgres 使用匿名卷，数据不进仓库。
 
 
-## Apple Container / 无 Docker（官方备选）
+## 宿主机启动（推荐）+ Apple Container
 
 本机若**没有** `docker` / Compose 插件，不要执行上面的 `docker compose ... up`。可用 [Apple Container](https://github.com/apple/container)（`container` CLI）只跑中间件，API 与前端在宿主机启动。
 
@@ -88,7 +89,7 @@ curl -s http://127.0.0.1:8000/actuator/health
 
 说明：
 
-- Compose 全栈（含容器内 API / Vite / MinIO / Inbucket）仍以 **Docker Compose** 为准；Apple Container 路径只保证「中间件 + 宿主机 API」可重复启动。
+- **本机验收**以「中间件 + 宿主机 API + `/actuator/health=UP`」为准；Compose 全栈仅可选。
 - 已有同名容器时用 `container list` / `container start <name>`，不要重复 `run`。
 - 前端：`cd frontend && pnpm install && pnpm dev`（API 在 `http://127.0.0.1:8000`）。
 

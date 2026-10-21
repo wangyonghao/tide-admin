@@ -30,13 +30,13 @@ Cursor 同步加载 [`.cursor/skills/`](.cursor/skills/) 同名技能；编码�
 export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
 export PATH="$JAVA_HOME/bin:$PATH"
 
-# 本地全套（需 Docker Compose；先 cp backend/docker/.env.example → .env）
-cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up
-# 无 Docker：用 Apple Container 起 Postgres/Redis，再 source backend/scripts/env.sh 后宿主机启动（见 backend/docker/README.md）
-# 只在宿主机起后端
+# 推荐：中间件（Apple Container / 本机）+ env.sh + 宿主机 API（见 backend/docker/README.md）
+cp backend/scripts/env.example.sh backend/scripts/env.sh   # 首次
+set -a && source backend/scripts/env.sh && set +a
 cd backend && mvn -pl tide-bootstrap -am spring-boot:run
-# 健康检查
 curl -s http://127.0.0.1:8000/actuator/health
+# 可选 / CI：Docker Compose 全栈（非本机验收必选）
+# cd backend/docker && cp .env.example .env && docker compose --env-file .env -f docker-compose.dev.yml up
 # 单元测试（默认开启；临时跳过 -DskipUnitTests=true）。范围与 .github/workflows/backend-build.yml 一致
 cd backend && mvn -pl platform/job,platform/iam,platform/cmn-crypto -am test
 
