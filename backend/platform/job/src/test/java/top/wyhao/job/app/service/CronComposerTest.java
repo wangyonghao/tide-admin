@@ -2,7 +2,7 @@ package top.wyhao.job.app.service;
 
 import org.junit.jupiter.api.Test;
 import top.wyhao.cmn.core.exception.BizException;
-import top.wyhao.job.adapter.web.dto.ScheduleSpec;
+import top.wyhao.job.app.dto.ScheduleSpec;
 
 import java.util.List;
 

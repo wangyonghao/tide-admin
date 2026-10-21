@@ -564,24 +564,24 @@ CREATE TABLE IF NOT EXISTS "sys_file"
     "update_time"  TIMESTAMP             DEFAULT CURRENT_TIMESTAMP
 );
 -- 创建索引
-CREATE INDEX IF NOT EXISTS "idx_file_sha256" ON "file" ("sha256");
-CREATE INDEX IF NOT EXISTS "idx_file_storage_key" ON "file" ("storage_key");
-CREATE INDEX IF NOT EXISTS "idx_file_status" ON "file" ("status");
-CREATE INDEX IF NOT EXISTS "idx_file_create_time" ON "file" ("create_time");
+CREATE INDEX IF NOT EXISTS "idx_file_sha256" ON "sys_file" ("sha256");
+CREATE INDEX IF NOT EXISTS "idx_file_storage_key" ON "sys_file" ("storage_key");
+CREATE INDEX IF NOT EXISTS "idx_file_status" ON "sys_file" ("status");
+CREATE INDEX IF NOT EXISTS "idx_file_create_time" ON "sys_file" ("create_time");
 -- 添加注释
-COMMENT ON TABLE "file" IS '文件表（物理文件元数据）';
-COMMENT ON COLUMN "file"."id" IS '文件 ID';
-COMMENT ON COLUMN "file"."file_name" IS '文件名（原始文件名）';
-COMMENT ON COLUMN "file"."content_type" IS '内容类型（MIME Type）';
-COMMENT ON COLUMN "file"."file_size" IS '文件大小（字节）';
-COMMENT ON COLUMN "file"."sha256" IS 'SHA-256 哈希值（用于完整性校验和去重）';
-COMMENT ON COLUMN "file"."storage_type" IS '存储类型（1-本地存储；2-OSS 对象存储）';
-COMMENT ON COLUMN "file"."storage_key" IS '存储键（全局唯一，格式：[{key-prefix}/]{yyyy}/{MM}/{dd}/{uuid}[.ext]）';
-COMMENT ON COLUMN "file"."status" IS '文件状态（1-正常；2-已删除；3-已清除）';
-COMMENT ON COLUMN "file"."create_user" IS '创建人';
-COMMENT ON COLUMN "file"."create_time" IS '创建时间';
-COMMENT ON COLUMN "file"."update_user" IS '更新人';
-COMMENT ON COLUMN "file"."update_time" IS '更新时间';
+COMMENT ON TABLE "sys_file" IS '文件表（物理文件元数据）';
+COMMENT ON COLUMN "sys_file"."id" IS '文件 ID';
+COMMENT ON COLUMN "sys_file"."file_name" IS '文件名（原始文件名）';
+COMMENT ON COLUMN "sys_file"."content_type" IS '内容类型（MIME Type）';
+COMMENT ON COLUMN "sys_file"."file_size" IS '文件大小（字节）';
+COMMENT ON COLUMN "sys_file"."sha256" IS 'SHA-256 哈希值（用于完整性校验和去重）';
+COMMENT ON COLUMN "sys_file"."storage_type" IS '存储类型（1-本地存储；2-OSS 对象存储）';
+COMMENT ON COLUMN "sys_file"."storage_key" IS '存储键（全局唯一，格式：[{key-prefix}/]{yyyy}/{MM}/{dd}/{uuid}[.ext]）';
+COMMENT ON COLUMN "sys_file"."status" IS '文件状态（1-正常；2-已删除；3-已清除）';
+COMMENT ON COLUMN "sys_file"."create_user" IS '创建人';
+COMMENT ON COLUMN "sys_file"."create_time" IS '创建时间';
+COMMENT ON COLUMN "sys_file"."update_user" IS '更新人';
+COMMENT ON COLUMN "sys_file"."update_time" IS '更新时间';
 
 -- =============================================================================
 -- schedule
@@ -976,9 +976,9 @@ ALTER TABLE "sys_notice_log" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
 COMMENT ON COLUMN "sys_notice_log"."tenant_id" IS '租户ID';
 CREATE INDEX "idx_notice_log_tenant_id" ON "sys_notice_log" ("tenant_id");
 
-ALTER TABLE "file" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
-COMMENT ON COLUMN "file"."tenant_id" IS '租户ID';
-CREATE INDEX "idx_file_tenant_id" ON "file" ("tenant_id");
+ALTER TABLE "sys_file" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
+COMMENT ON COLUMN "sys_file"."tenant_id" IS '租户ID';
+CREATE INDEX "idx_file_tenant_id" ON "sys_file" ("tenant_id");
 
 ALTER TABLE "sys_app" ADD COLUMN "tenant_id" int8 NOT NULL DEFAULT 0;
 COMMENT ON COLUMN "sys_app"."tenant_id" IS '租户ID';

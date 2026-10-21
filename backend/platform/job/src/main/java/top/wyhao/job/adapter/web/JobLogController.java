@@ -8,8 +8,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.job.adapter.web.dto.JobLogQuery;
-import top.wyhao.job.adapter.web.vo.JobLogResponse;
+import top.wyhao.job.app.dto.JobLogQuery;
+import top.wyhao.job.app.dto.vo.JobLogResponse;
 import top.wyhao.job.app.service.JobAdminService;
 import top.wyhao.cmn.db.query.PageResult;
 

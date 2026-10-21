@@ -6,8 +6,11 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.job.adapter.web.dto.*;
-import top.wyhao.job.adapter.web.vo.*;
+import top.wyhao.job.app.dto.JobQuery;
+import top.wyhao.job.app.dto.JobSaveRequest;
+import top.wyhao.job.app.dto.JobStatusRequest;
+import top.wyhao.job.app.dto.vo.JobHandlerResponse;
+import top.wyhao.job.app.dto.vo.JobResponse;
 import top.wyhao.job.app.service.JobAdminService;
 import top.wyhao.cmn.db.query.PageResult;
 

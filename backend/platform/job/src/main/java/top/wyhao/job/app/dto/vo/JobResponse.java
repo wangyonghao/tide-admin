@@ -1,7 +1,7 @@
-package top.wyhao.job.adapter.web.vo;
+package top.wyhao.job.app.dto.vo;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import top.wyhao.job.adapter.web.dto.ScheduleSpec;
+import top.wyhao.job.app.dto.ScheduleSpec;
 import lombok.Data;
 
 import java.time.LocalDateTime;
