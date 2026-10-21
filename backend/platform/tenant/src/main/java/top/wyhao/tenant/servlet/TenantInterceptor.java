@@ -3,7 +3,7 @@ package top.wyhao.tenant.servlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.web.servlet.HandlerInterceptor;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.tenant.config.TenantProperties;
 import top.wyhao.tenant.config.TenantProvider;
 import top.wyhao.tenant.context.TenantContextHolder;

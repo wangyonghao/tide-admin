@@ -18,10 +18,10 @@ import top.wyhao.admin.open.model.resp.AppDetailResp;
 import top.wyhao.admin.open.model.resp.AppResult;
 import top.wyhao.admin.open.model.resp.AppSecretResp;
 import top.wyhao.admin.open.service.AppService;
-import top.wyhao.cmn.db.query.PageFactory;
-import top.wyhao.cmn.db.query.PageParam;
-import top.wyhao.cmn.db.query.PageResult;
-import top.wyhao.cmn.db.query.QueryWrapperBuilder;
+import top.wyhao.mybatis.query.PageFactory;
+import top.wyhao.mybatis.query.PageParam;
+import top.wyhao.mybatis.query.PageResult;
+import top.wyhao.mybatis.query.QueryWrapperBuilder;
 import top.wyhao.cmn.core.constant.StringConstants;
 import top.wyhao.starter.excel.util.ExcelUtils;
 

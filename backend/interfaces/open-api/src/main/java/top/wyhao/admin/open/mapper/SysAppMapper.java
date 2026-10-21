@@ -5,7 +5,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import top.wyhao.admin.open.model.entity.SysApp;
-import top.wyhao.cmn.db.model.BaseMapper;
+import top.wyhao.mybatis.model.BaseMapper;
 
 /**
  * 应用 Mapper

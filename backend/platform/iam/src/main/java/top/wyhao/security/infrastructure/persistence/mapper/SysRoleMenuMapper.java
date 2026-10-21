@@ -3,7 +3,7 @@ package top.wyhao.security.infrastructure.persistence.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import top.wyhao.security.domain.model.SysRoleMenu;
-import top.wyhao.cmn.db.model.BaseMapper;
+import top.wyhao.mybatis.model.BaseMapper;
 
 import java.util.List;
 

@@ -30,7 +30,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.redisson.util.RedisUtils;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.web.http.ServletUtils;
 
 import java.time.Duration;

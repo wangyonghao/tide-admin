@@ -4,8 +4,8 @@ package top.wyhao.admin.open.model.entity;
 import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.cmn.db.encrypt.EncryptTypeHandler;
-import top.wyhao.cmn.db.model.BaseEntity;
+import top.wyhao.mybatis.encrypt.EncryptTypeHandler;
+import top.wyhao.mybatis.model.BaseEntity;
 
 import java.time.LocalDateTime;
 

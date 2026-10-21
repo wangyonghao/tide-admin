@@ -3,7 +3,7 @@ package top.wyhao.tenant.context;
 
 import lombok.Getter;
 import lombok.Setter;
-import top.wyhao.tenant.db.TenantIsolationLevel;
+import top.wyhao.tenant.isolation.TenantIsolationLevel;
 
 /**
  * 租户上下文

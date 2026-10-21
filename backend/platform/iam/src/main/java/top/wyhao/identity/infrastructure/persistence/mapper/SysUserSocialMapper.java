@@ -4,7 +4,7 @@ package top.wyhao.identity.infrastructure.persistence.mapper;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.identity.domain.model.SysUserSocial;
-import top.wyhao.cmn.db.model.BaseMapper;
+import top.wyhao.mybatis.model.BaseMapper;
 
 /**
  * 用户绑定的每三方平台账号 Mapper

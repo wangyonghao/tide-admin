@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
 import top.wyhao.security.client.otp.OtpScene;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 
 import java.util.List;
 import top.wyhao.notification.model.dto.SmsLogQuery;

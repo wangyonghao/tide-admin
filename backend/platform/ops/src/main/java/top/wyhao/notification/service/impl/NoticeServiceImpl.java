@@ -14,10 +14,10 @@ import top.wyhao.notification.model.result.dashboard.DashboardNoticeResp;
 import top.wyhao.notification.service.MessageService;
 import top.wyhao.notification.service.NoticeLogService;
 import top.wyhao.notification.service.NoticeService;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.notification.exception.NoticeException;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.List;

@@ -1,7 +1,7 @@
 package top.wyhao.settings.app.service;
 
-import top.wyhao.cmn.db.query.PageParam;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageParam;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.settings.adapter.web.dto.OptionQuery;
 import top.wyhao.settings.adapter.web.dto.OptionRequest;
 import top.wyhao.settings.adapter.web.vo.OptionResult;

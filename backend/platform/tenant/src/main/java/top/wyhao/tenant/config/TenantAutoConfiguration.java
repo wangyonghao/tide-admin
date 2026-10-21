@@ -13,7 +13,7 @@ import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
 import org.springframework.core.ResolvableType;
 import top.wyhao.cmn.core.constant.PropertiesConstants;
-import top.wyhao.tenant.db.DefaultTenantLineHandler;
+import top.wyhao.tenant.isolation.DefaultTenantLineHandler;
 
 /**
  * 租户自动配置

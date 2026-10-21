@@ -12,7 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.cmn.core.constant.SystemConstants;
 import top.wyhao.cmn.core.util.ExceptionUtils;
 import top.wyhao.cmn.core.util.RsaUtils;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.identity.client.CredentialUser;
 import top.wyhao.identity.client.PasswordPolicyConfig;
 import top.wyhao.identity.client.PasswordPolicyConfigApi;

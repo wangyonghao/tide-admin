@@ -1,7 +1,7 @@
 package top.wyhao.identity.app.query;
 
-import top.wyhao.cmn.db.query.PageParam;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageParam;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.identity.adapter.web.dto.UserQuery;
 import top.wyhao.identity.adapter.web.vo.UserDetail;
 import top.wyhao.identity.adapter.web.vo.UserResult;

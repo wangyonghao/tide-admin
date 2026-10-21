@@ -1,8 +1,8 @@
 package top.wyhao.settings.domain.gateway;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import top.wyhao.cmn.db.query.PageParam;
-import top.wyhao.cmn.db.query.SortableQuery;
+import top.wyhao.mybatis.query.PageParam;
+import top.wyhao.mybatis.query.SortableQuery;
 import top.wyhao.settings.domain.model.SysOption;
 
 import java.util.List;

@@ -5,7 +5,7 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Async;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.web.log.OperationLog;
 import top.wyhao.audit.model.vo.OperationLogDetailResult;
 import top.wyhao.audit.model.dto.OperationLogQuery;

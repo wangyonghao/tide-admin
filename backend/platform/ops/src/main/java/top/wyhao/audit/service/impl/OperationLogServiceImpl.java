@@ -13,11 +13,11 @@ import top.wyhao.audit.assembler.OperationLogAssembler;
 import top.wyhao.audit.entity.SysOperationLog;
 import top.wyhao.audit.mapper.SysOperationLogMapper;
 import top.wyhao.audit.service.OperationLogService;
-import top.wyhao.cmn.db.query.QueryWrapperBuilder;
+import top.wyhao.mybatis.query.QueryWrapperBuilder;
 import top.wyhao.audit.exception.OperationLogException;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.web.log.OperationLog;
 
 import java.util.List;

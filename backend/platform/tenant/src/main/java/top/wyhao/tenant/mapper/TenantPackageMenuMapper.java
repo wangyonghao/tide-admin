@@ -3,7 +3,7 @@ package top.wyhao.tenant.mapper;
 
 import org.apache.ibatis.annotations.Mapper;
 import top.wyhao.tenant.model.entity.TenantPackageMenu;
-import top.wyhao.cmn.db.model.BaseMapper;
+import top.wyhao.mybatis.model.BaseMapper;
 
 /**
  * 套餐和菜单关联 Mapper

@@ -10,8 +10,8 @@ import org.apache.ibatis.annotations.Select;
 import top.wyhao.identity.adapter.web.vo.UserDetail;
 import top.wyhao.identity.adapter.web.vo.UserResult;
 import top.wyhao.identity.domain.model.SysUser;
-import top.wyhao.cmn.db.datapermission.annotation.DataScope;
-import top.wyhao.cmn.db.datapermission.mapper.DataPermissionMapper;
+import top.wyhao.mybatis.datapermission.annotation.DataScope;
+import top.wyhao.mybatis.datapermission.mapper.DataPermissionMapper;
 
 import java.util.List;
 

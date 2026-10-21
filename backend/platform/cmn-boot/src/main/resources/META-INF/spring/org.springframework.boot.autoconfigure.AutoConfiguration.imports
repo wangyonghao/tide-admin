@@ -6,7 +6,7 @@ top.wyhao.web.config.JacksonAutoConfiguration
 top.wyhao.web.config.CorsConfig
 top.wyhao.web.config.SensitiveWordsConfig
 top.wyhao.web.config.RateLimiterConfig
-top.wyhao.cmn.db.autoconfigure.MybatisPlusAutoConfiguration
+top.wyhao.mybatis.autoconfigure.MybatisPlusAutoConfiguration
 top.wyhao.redisson.autoconfigure.RedissonAutoConfiguration
 top.wyhao.redisson.autoconfigure.JetCacheAutoConfiguration
 top.wyhao.apidoc.autoconfigure.SpringDocAutoConfiguration

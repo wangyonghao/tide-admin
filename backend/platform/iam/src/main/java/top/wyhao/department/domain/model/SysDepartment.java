@@ -3,7 +3,7 @@ package top.wyhao.department.domain.model;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.Data;
-import top.wyhao.cmn.db.model.BaseEntity;
+import top.wyhao.mybatis.model.BaseEntity;
 import top.wyhao.tenant.core.TenantedEntity;
 
 /**

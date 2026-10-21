@@ -1,6 +1,6 @@
 package top.wyhao.security.domain.gateway;
 
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.security.domain.model.AuthenticationLogCriteria;
 import top.wyhao.security.domain.model.SysAuthenticationLog;
 

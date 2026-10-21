@@ -8,7 +8,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.security.app.assembler.AuthenticationLogAssembler;
 import top.wyhao.security.app.service.AuthenticationLogService;
 import top.wyhao.security.domain.gateway.AuthenticationLogRepository;
@@ -18,7 +18,7 @@ import top.wyhao.security.domain.model.SysAuthenticationLog;
 import top.wyhao.cmn.core.util.IpUtils;
 import top.wyhao.starter.excel.util.ExcelUtils;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.List;

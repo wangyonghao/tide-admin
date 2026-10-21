@@ -33,11 +33,11 @@ import top.wyhao.identity.client.UserApi;
 import top.wyhao.security.app.service.AuthenticationLogService;
 import top.wyhao.security.client.MenuApi;
 import top.wyhao.security.client.PermissionApi;
-import top.wyhao.common.satoken.util.LoginUtil;
+import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.security.client.AuthenticationException;
 import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;

@@ -3,8 +3,8 @@ package top.wyhao.settings.adapter.web.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.EqualsAndHashCode;
-import top.wyhao.cmn.db.query.Query;
-import top.wyhao.cmn.db.query.SortableQuery;
+import top.wyhao.mybatis.query.Query;
+import top.wyhao.mybatis.query.SortableQuery;
 
 /**
  * 选项查询条件

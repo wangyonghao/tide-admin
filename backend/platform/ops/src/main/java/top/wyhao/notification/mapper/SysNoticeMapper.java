@@ -7,7 +7,7 @@ import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import top.wyhao.notification.entity.SysNotice;
 import top.wyhao.notification.model.result.dashboard.DashboardNoticeResp;
-import top.wyhao.cmn.db.model.BaseMapper;
+import top.wyhao.mybatis.model.BaseMapper;
 
 import java.util.List;
 import top.wyhao.notification.model.dto.NotificationQuery;

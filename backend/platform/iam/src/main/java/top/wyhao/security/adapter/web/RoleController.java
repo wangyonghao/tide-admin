@@ -16,7 +16,7 @@ import top.wyhao.security.app.service.MenuService;
 import top.wyhao.security.app.service.RoleService;
 import top.wyhao.cmn.core.model.Result;
 import top.wyhao.web.core.model.PageQuery;
-import top.wyhao.cmn.db.query.PageResult;
+import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.web.core.model.IdResult;
 
 import java.util.List;
