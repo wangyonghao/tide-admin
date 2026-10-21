@@ -72,7 +72,9 @@ function generateMenus(
       badgeVariants,
       icon,
       name,
-      query,
+      query: (typeof query === 'string' || query == null
+        ? undefined
+        : query) as MenuRecordRaw['query'],
       order,
       parent: route.parent,
       parents: route.parents,

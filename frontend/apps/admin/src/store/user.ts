@@ -149,7 +149,16 @@ export const useUserStore = defineStore(
       permissions.value = info.permissions;
       menus.value = info.menus;
 
-      userStore.setUserInfo(info.user);
+      userStore.setUserInfo(
+        info.user
+          ? {
+              ...info.user,
+              userId: String(info.user.userId ?? ''),
+              realName: info.user.displayName,
+              avatar: info.user.avatar,
+            }
+          : null,
+      );
       accessStore.setAccessMenus(toAccessMenus(info.menus));
       accessStore.setAccessCodes(info.permissions);
     }

@@ -173,11 +173,11 @@ const [Modal, modalApi] = useVbenModal({
       ...values,
       id: editingId.value,
       icon: values.icon == null ? '' : String(values.icon),
-    });
+    }) as import('#/api/system/menu').MenuWrite;
     modalApi.lock();
     try {
       if (editingId.value) {
-        await menuApi.update(payload, editingId.value);
+        await menuApi.update(editingId.value, payload);
         toast.success('更新成功');
       } else {
         await menuApi.create(payload);
