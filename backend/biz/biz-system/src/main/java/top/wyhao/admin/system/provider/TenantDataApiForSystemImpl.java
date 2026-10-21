@@ -26,12 +26,12 @@ import top.wyhao.notification.mapper.SysMessageMapper;
 import top.wyhao.notification.mapper.SysNoticeMapper;
 import top.wyhao.department.domain.gateway.DepartmentRepository;
 import top.wyhao.department.domain.model.SysDepartment;
-import top.wyhao.security.app.service.RoleService;
 import top.wyhao.security.domain.gateway.RoleDepartmentRepository;
 import top.wyhao.security.domain.gateway.RoleMenuRepository;
 import top.wyhao.security.domain.gateway.RoleRepository;
 import top.wyhao.security.domain.gateway.UserRoleRepository;
 import top.wyhao.security.domain.model.SysRole;
+import top.wyhao.security.domain.model.SysUserRole;
 import top.wyhao.tenant.client.PackageMenuApi;
 import top.wyhao.tenant.client.TenantApi;
 import top.wyhao.tenant.client.TenantBO;
@@ -64,7 +64,6 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
     private final UserRepository userRepository;
     private final UserRoleRepository userRoleRepository;
     private final UserSocialRepository userSocialRepository;
-    private final RoleService roleService;
     private final PasswordEncoder passwordEncoder;
     private final MembershipService membershipService;
 
@@ -84,7 +83,9 @@ public class TenantDataApiForSystemImpl implements TenantDataApi {
             } else {
                 userId = this.initUserData(tenant, departmentId);
             }
-            roleService.assignToUsers(roleId, ListUtil.of(userId));
+            // 租户管理员角色是内置角色：UI 侧 assignToUsers 会拒绝分配，初始化必须直写关联。
+            userRoleRepository.insertBatch(ListUtil.of(new SysUserRole(userId, roleId)));
+            membershipService.addRoleMembers(roleId, ListUtil.of(userId));
             tenantApi.bindAdminUser(tenantId, userId);
             membershipService.ensureTenantMembership(userId, tenantId, true);
         });
