@@ -8,7 +8,7 @@ Agent 按需阅读。完整目录树不必背诵；以本表与 `ls` / 搜索为
 wyh-admin/
 ├── backend/           # Java 17 + Spring Boot（模块化单体）
 │   ├── tide-bootstrap/# 可运行主服务
-│   ├── interfaces/    # tide-web、open-api
+│   ├── interfaces/    # open-api
 │   ├── biz/           # 业务插件（如 biz-system）
 │   └── platform/      # cmn-* 基础设施 + 平台域
 ├── frontend/          # 产品后台（src/）+ apps + packages/ui + vendor 壳

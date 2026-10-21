@@ -23,7 +23,6 @@
         <module>cmn-messaging</module>
         <module>cmn-crypto</module>
         <module>cmn-fastexcel</module>
-        <module>cmn-poi</module>
         <module>cmn-license-core</module>
         <module>cmn-license-generator</module>
         <module>cmn-license-verifier</module>

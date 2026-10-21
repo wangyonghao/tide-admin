@@ -6,7 +6,7 @@
 
 ## 环境
 
-用 `backend/docker`，不要用已废弃的 `backend/scripts/docker/`。口令只放在本地 `.env`（从 `.env.example` 复制后自行生成），不要写进仓库。
+用 `backend/docker`（旧 `backend/scripts/docker/` 已删除）。口令只放在本地 `.env`（从 `.env.example` 复制后自行生成），不要写进仓库。
 
 ```bash
 cd backend/docker

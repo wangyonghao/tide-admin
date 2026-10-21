@@ -13,7 +13,6 @@
   <packaging>pom</packaging>
   <description>聚合接口模块</description>
   <modules>
-    <module>tide-web</module>
     <module>open-api</module>
   </modules>
 
