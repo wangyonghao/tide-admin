@@ -4,7 +4,17 @@
 
 `backend/scripts/docker/` 已废弃，不要再往那里加服务。
 
-## 启动
+## 前置条件
+
+| 项 | 说明 |
+|----|------|
+| JDK **17** | 宿主机跑 Maven / IDE 时必须。先 `export JAVA_HOME="$(/usr/libexec/java_home -v 17)"`（或 Homebrew `openjdk@17`）。默认若是 JDK 26 会踩坑。 |
+| `.env` | `cp .env.example .env` 后改掉所有占位密码、`AES_KEY`、`WYH_JWT_SECRET`。`.env` 已 gitignore，勿提交。 |
+| 容器运行时 | **Docker Compose**（完整一键），或 **Apple Container**（仅中间件；本机无 Docker 时的官方备选）。没有任一运行时时，不要把「compose up」标成已绿。 |
+
+生成口令示例：`openssl rand -hex 24`。`AES_KEY` 须为 16/24/32 字节（可用 `openssl rand -hex 16`）。
+
+## 启动（Docker Compose）
 
 ```bash
 cd backend/docker
@@ -27,6 +37,60 @@ docker compose --env-file .env -f docker-compose.dev.yml down -v
 ```
 
 只 `stop` 再 `up` 会沿用当前数据卷。Postgres 使用匿名卷，数据不进仓库。
+
+
+## Apple Container / 无 Docker（官方备选）
+
+本机若**没有** `docker` / Compose 插件，不要执行上面的 `docker compose ... up`。可用 [Apple Container](https://github.com/apple/container)（`container` CLI）只跑中间件，API 与前端在宿主机启动。
+
+当前 Apple Container **没有**与本仓库 `docker-compose.dev.yml` 对等的一键 compose 插件时，按服务分别起容器即可。最小可启动后端所需：**Postgres 17** + **Redis**（邮件 / MinIO 可按需再加）。
+
+示例（口令自行替换；端口与 `.env.example` 默认一致）：
+
+```bash
+# 先：container system start（若 apiserver 未运行）
+
+container run -d --name postgres \
+  -p 5432:5432 \
+  -e POSTGRES_USER=postgres \
+  -e POSTGRES_PASSWORD='<POSTGRES_PASSWORD>' \
+  -e POSTGRES_DB=postgres \
+  -e TZ=Asia/Shanghai \
+  docker.io/library/postgres:17
+
+container run -d --name redis \
+  -p 6379:6379 \
+  docker.io/library/redis:7-alpine \
+  redis-server --appendonly yes --requirepass '<REDIS_PWD>'
+```
+
+然后准备宿主机环境并编译 / 启动：
+
+```bash
+cd <repo>/backend/docker && cp .env.example .env   # 仍建议保留，便于对照变量
+cd <repo>
+cp backend/scripts/env.example.sh backend/scripts/env.sh
+# 编辑 env.sh：DB_PWD / REDIS_PWD 与上面容器口令一致；AES_KEY、WYH_JWT_SECRET 自备
+set -a && source backend/scripts/env.sh && set +a
+java -version   # 必须是 17.x
+
+cd backend
+mvn -pl tide-bootstrap -am compile
+mvn -pl tide-bootstrap -am spring-boot:run
+```
+
+验收：
+
+```bash
+curl -s http://127.0.0.1:8000/actuator/health
+# 期望含 "status":"UP"
+```
+
+说明：
+
+- Compose 全栈（含容器内 API / Vite / MinIO / Inbucket）仍以 **Docker Compose** 为准；Apple Container 路径只保证「中间件 + 宿主机 API」可重复启动。
+- 已有同名容器时用 `container list` / `container start <name>`，不要重复 `run`。
+- 前端：`cd frontend && pnpm install && pnpm dev`（API 在 `http://127.0.0.1:8000`）。
 
 ## 端口
 
@@ -97,6 +161,8 @@ docker compose --env-file .env -f docker-compose.dev.yml up db redis mail minio 
 把 `.env` 里的 `VITE_GLOB_API_URL` 改成 `http://host.docker.internal:8000`，然后在仓库的 `backend/`：
 
 ```bash
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+export PATH="$JAVA_HOME/bin:$PATH"
 mvn -pl tide-bootstrap -am spring-boot:run
 ```
 

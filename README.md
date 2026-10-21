@@ -8,12 +8,27 @@
 
 | 环境 | 要求 |
 |------|------|
-| Java | 17+ |
+| Java | **17**（必须；本机若默认是 JDK 21/26 会编译或启动失败） |
 | Maven | 3.6+ |
 | PostgreSQL | 17+ |
 | Redis | 6+ |
 | Node.js | ^20.19.0 \|\| ^22.18.0 \|\| ^24.0.0 |
 | pnpm | >= 10（当前 `packageManager`：10.33.4） |
+| 容器（可选） | Docker Compose **或** Apple Container（仅中间件） |
+
+### 钉死 JDK 17
+
+Homebrew 的 `openjdk` 可能是 21/26。每次开终端先固定 17，再跑 Maven：
+
+```bash
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+# Apple Silicon Homebrew 备选：
+# export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+export PATH="$JAVA_HOME/bin:$PATH"
+java -version   # 应显示 17.x
+```
+
+`backend/scripts/env.example.sh` 已包含同样的 `JAVA_HOME` 导出；复制为 `env.sh` 后 `source` 即可。
 
 ## 核心技术栈
 
@@ -39,7 +54,9 @@
 
 ## 快速开始
 
-本地开发用 [`backend/docker`](backend/docker/README.md) 一条命令拉起 Postgres、Redis、Inbucket、MinIO、Spring Boot API 和 Vite。不要使用已废弃的 `backend/scripts/docker/`。
+本地开发优先用 [`backend/docker`](backend/docker/README.md)：有 **Docker Compose** 时可一条命令拉起 Postgres、Redis、Inbucket、MinIO、API 和 Vite。
+
+**没有 Docker**（例如本机只用 **Apple Container**）时：用 Apple Container（或其它方式）只起中间件，再在宿主机用 JDK 17 + Maven 跑 API。步骤见同文档「Apple Container / 无 Docker」一节。不要使用已废弃的 `backend/scripts/docker/`。
 
 ### 1. 克隆
 
@@ -48,17 +65,21 @@ git clone https://github.com/wangyonghao/tide-admin.git
 cd tide-admin
 ```
 
-### 2. 启动
+### 2. 启动（Docker Compose）
+
+先确认 `java -version` 是 17（见上）。然后：
 
 ```bash
 cd backend/docker
 cp .env.example .env
-# 编辑 .env，替换 POSTGRES_PASSWORD、REDIS_PWD、MINIO_ROOT_PASSWORD、AES_KEY
+# 编辑 .env，替换 POSTGRES_PASSWORD、REDIS_PWD、MINIO_ROOT_PASSWORD、AES_KEY、WYH_JWT_SECRET
 # openssl rand -hex 24
-# AES_KEY 必须是 16、24 或 32 字节
+# AES_KEY 必须是 16、24 或 32 字节（可用 openssl rand -hex 16）
 
 docker compose --env-file .env -f docker-compose.dev.yml up
 ```
+
+没有 `docker` 命令时，不要假装这条已绿：改走 [`backend/docker/README.md`](backend/docker/README.md) 的 Apple Container / 宿主机路径。
 
 浏览器打开 http://localhost:5888 。API 在 http://localhost:8000 。端口、邮件 host 和改代码后怎么热更新，见 [`backend/docker/README.md`](backend/docker/README.md)。
 
@@ -75,10 +96,14 @@ docker compose --env-file .env -f docker-compose.dev.yml up db redis mail minio 
 
 ```bash
 cp backend/scripts/env.example.sh backend/scripts/env.sh
-# DB_PWD、REDIS_PWD、AES_KEY 与 backend/docker/.env 一致
+# DB_PWD、REDIS_PWD、AES_KEY、WYH_JWT_SECRET 与中间件实际口令一致
+# （若用 backend/docker/.env，则与其中 POSTGRES_PASSWORD / REDIS_PWD 等对齐）
 set -a && source backend/scripts/env.sh && set +a
+java -version   # 须为 17.x（env.sh 会导出 JAVA_HOME）
 cd backend && mvn -pl tide-bootstrap -am spring-boot:run
 ```
+
+就绪后：`curl -s http://127.0.0.1:8000/actuator/health` 应返回 `"status":"UP"`。
 
 `backend/scripts/env.sh` 已被忽略，不要提交。开发 profile 的 JWT / RSA 写在 `application-dev.yml`。生产配置另要 `WYH_JWT_SECRET`、`WYH_RSA_PUBLIC_KEY`、`WYH_RSA_PRIVATE_KEY`。宿主机上的文件目录是 `application-dev.yml` 的 `file.local.root-path`。
 
