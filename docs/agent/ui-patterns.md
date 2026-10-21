@@ -2,16 +2,16 @@
 
 > 与 [`frontend/DESIGN.md`](../../frontend/DESIGN.md) 配套。  
 > **目的：** 用固定页面骨架消灭「每页一种写法」。视觉细节以 DESIGN.md 为准。  
-> **主应用：** `frontend/apps/admin`（`@tide/admin`）
+> **主应用：** `frontend/apps/admin`（`@wyh/admin`）
 
 ## 组件分层
 
 | 层 | 路径 | 导入 |
 |----|------|------|
-| 原子 | `frontend/packages/ui`（`@tide/ui`） | `import { Button } from '#/ui/button'` |
-| 模式 | `frontend/packages/ui-patterns`（`@tide/ui-patterns`） | `import { ToolbarActions } from '#/ui-patterns/toolbar-actions'` |
+| 原子 | `frontend/packages/ui`（`@wyh/ui`） | `import { Button } from '#/ui/button'` |
+| 模式 | `frontend/packages/ui-patterns`（`@wyh/ui-patterns`） | `import { ToolbarActions } from '#/ui-patterns/toolbar-actions'` |
 
-`#/ui` 与 `#/ui-patterns` 是应用侧别名，源码在上面的包里。也可以直接写 `@tide/ui/<atom>`、`@tide/ui-patterns/<pattern>`。不从包根桶整包引入，也不要再包一层 `Foo` / `FooShadcn`。
+`#/ui` 与 `#/ui-patterns` 是应用侧别名，源码在上面的包里。也可以直接写 `@wyh/ui/<atom>`、`@wyh/ui-patterns/<pattern>`。不从包根桶整包引入，也不要再包一层 `Foo` / `FooShadcn`。
 
 组件活文档在 `frontend/apps/design-system`，只演示原子和模式，不放业务页。
 

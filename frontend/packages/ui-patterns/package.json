@@ -1,5 +1,5 @@
 {
-  "name": "@tide/ui-patterns",
+  "name": "@wyh/ui-patterns",
   "version": "5.7.0",
   "private": true,
   "type": "module",
@@ -10,7 +10,7 @@
     }
   },
   "dependencies": {
-    "@tide/ui": "workspace:*",
+    "@wyh/ui": "workspace:*",
     "vue": "catalog:"
   }
 }

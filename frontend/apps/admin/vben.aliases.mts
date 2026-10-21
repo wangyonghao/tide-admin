@@ -12,7 +12,7 @@ export function adminPath(...parts: string[]) {
 
 /**
  * `#/ui` and `#/ui-patterns` stay as app import paths for this release.
- * The source of truth is `@tide/ui` and `@tide/ui-patterns`.
+ * The source of truth is `@wyh/ui` and `@wyh/ui-patterns`.
  * `#/ui-patterns` must be matched before `#/ui`.
  */
 export function createTideUiAliases() {

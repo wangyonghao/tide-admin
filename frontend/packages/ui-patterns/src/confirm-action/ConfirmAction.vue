@@ -6,8 +6,8 @@ import {
   AlertDialogContent,
   AlertDialogDescription,
   AlertDialogTitle,
-} from '@tide/ui/alert-dialog';
-import { Button } from '@tide/ui/button';
+} from '@wyh/ui/alert-dialog';
+import { Button } from '@wyh/ui/button';
 
 export interface ConfirmActionOptions {
   cancelText?: string;
