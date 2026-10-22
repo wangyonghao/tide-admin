@@ -1,0 +1,10 @@
+top.wyhao.application.autoconfigure.ApplicationAutoConfiguration
+top.wyhao.threadpool.autoconfigure.ThreadPoolAutoConfiguration
+top.wyhao.web.config.UndertowConfig
+top.wyhao.web.config.WebMvcConfig
+top.wyhao.web.config.JacksonAutoConfiguration
+top.wyhao.web.config.CorsConfig
+top.wyhao.web.config.SensitiveWordsConfig
+top.wyhao.web.config.RateLimiterConfig
+top.wyhao.apidoc.autoconfigure.SpringDocAutoConfiguration
+top.wyhao.trace.autoconfigure.TraceAutoConfiguration

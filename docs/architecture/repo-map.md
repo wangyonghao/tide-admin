@@ -7,7 +7,7 @@ Agent 按需阅读。完整目录树不必背诵；以本表与 `ls` / 搜索为
 ```
 wyh-admin/
 ├── backend/           # Java 17 + Spring Boot（模块化单体）
-│   ├── wyh-bootstrap/# 可运行主服务
+│   ├── admin-start/# 可运行主服务
 │   ├── interfaces/    # open-api
 │   ├── biz/           # 业务插件（如 biz-system）
 │   └── platform/      # cmn-* 基础设施 + 平台域
@@ -22,7 +22,7 @@ wyh-admin/
 ## Backend modules
 
 ```
-wyh-bootstrap
+admin-start
   → interfaces/* , biz/*
     → platform/{iam,tenant,file,job,ops,spi}
       → platform/cmn-*
@@ -30,8 +30,8 @@ wyh-bootstrap
 
 | 模块 | 职责 |
 |------|------|
-| `wyh-bootstrap` | 启动、配置、Liquibase、装配 |
-| `interfaces/open-api` | 开放 API / 签名 |
+| `admin-start` | 启动、配置、Liquibase、装配 |
+| `admin-openapi` | 开放 API / 签名 |
 | `biz/biz-system` | 系统壳、仪表盘（含 `DashboardController`）、跨域编排残留 |
 | `platform/iam` | identity、department、security |
 | `platform/tenant` | 租户、套餐 |
@@ -39,7 +39,7 @@ wyh-bootstrap
 | `platform/job` | Quartz 任务管理 |
 | `platform/ops` | audit、notification、settings |
 | `platform/cmn-core` | 共享内核：枚举、异常、常量、工具 |
-| `platform/cmn-boot` | 运行时聚合：Web / DB / Cache / API 文档 |
+| `admin-commons/cmn-web(+db/cache)` | 运行时聚合：Web / DB / Cache / API 文档 |
 | `platform/cmn-*` | 其余：security、messaging、crypto、storage 等 |
 
 平台域代码常见 COLA 分包：`adapter` / `app` / `domain` / `infrastructure`。
@@ -50,9 +50,9 @@ wyh-bootstrap
 
 | 用途 | 路径 |
 |------|------|
-| 启动类 | `backend/wyh-bootstrap/src/main/java/top/wyhao/admin/AdminApplication.java` |
-| 开发配置 | `backend/wyh-bootstrap/src/main/resources/config/application-dev.yml` |
-| Liquibase | `backend/wyh-bootstrap/src/main/resources/db/changelog/postgresql/` |
+| 启动类 | `backend/admin-start/src/main/java/top/wyhao/admin/AdminApplication.java` |
+| 开发配置 | `backend/admin-start/src/main/resources/config/application-dev.yml` |
+| Liquibase | `backend/admin-start/src/main/resources/db/changelog/postgresql/` |
 | 用户 / 认证 | `backend/platform/iam/.../identity/` |
 | 角色 / 菜单 | `backend/platform/iam/.../security/` |
 | 部门 | `backend/platform/iam/.../department/` |
@@ -65,7 +65,7 @@ wyh-bootstrap
 | 仪表盘 | `backend/biz/biz-system/.../controller/DashboardController`（服务同模块） |
 | ops 分层说明 | `docs/architecture/repo-map.md` |
 
-本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl wyh-bootstrap -am spring-boot:run`
+本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl admin-start -am spring-boot:run`
 
 ### Frontend
 
