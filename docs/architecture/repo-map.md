@@ -63,7 +63,7 @@ wyh-bootstrap
 | 字典 / 配置 | `backend/platform/ops/.../settings/` |
 | 操作日志 | `backend/platform/ops/.../audit/`（Web 在 `adapter/web`） |
 | 仪表盘 | `backend/biz/biz-system/.../controller/DashboardController`（服务同模块） |
-| ops 分层说明 | `docs/agent/ops-layout.md` |
+| ops 分层说明 | `docs/architecture/repo-map.md` |
 
 本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl wyh-bootstrap -am spring-boot:run`
 
@@ -78,8 +78,8 @@ wyh-bootstrap
 | 系统页 | `frontend/apps/admin/src/views/system/` |
 | 租户页 | `frontend/apps/admin/src/views/tenant/` |
 | API | `frontend/apps/admin/src/api/` |
-| 前后端对齐 | `docs/agent/API-ALIGNMENT.md` |
-| 代码生成 | `docs/agent/CODER.md`（已从宪法删除，未实现） |
+| 前后端对齐 | `docs/architecture/repo-map.md` |
+| 代码生成 | `AGENTS.md`（已从宪法删除，未实现） |
 | 壳 / 内核 | `frontend/apps/admin/src/vben/`（`@vben/*`）；`frontend/vendor/@core`（慎改） |
 | 原子 / 页面模式 | `frontend/packages/ui`（`@wyh/ui`）、`frontend/packages/ui-patterns`（`@wyh/ui-patterns`）。应用导入仍可用 `#/ui`、`#/ui-patterns` |
 | 文档站 | `frontend/apps/docs`（`@wyh/docs`，VitePress）。`pnpm dev:docs` / `pnpm build:docs` |

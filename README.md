@@ -140,7 +140,7 @@ wyh-admin/
 
 依赖方向：`wyh-bootstrap` → `interfaces` / `biz` → `platform` 域 → `cmn-*`。
 
-产品页在 `frontend/apps/admin/src/views`：工作台、个人中心与消息、用户 / 角色 / 菜单 / 部门、通知公告、字典、系统配置、文件、在线用户、登录与操作日志、短信日志、开放应用、定时任务、租户与套餐。租户后端在 `platform/tenant`。代码生成未实现，见 `docs/agent/CODER.md`。
+产品页在 `frontend/apps/admin/src/views`：工作台、个人中心与消息、用户 / 角色 / 菜单 / 部门、通知公告、字典、系统配置、文件、在线用户、登录与操作日志、短信日志、开放应用、定时任务、租户与套餐。租户后端在 `platform/tenant`。代码生成未实现，见 `AGENTS.md`。
 
 ## 参与贡献
 

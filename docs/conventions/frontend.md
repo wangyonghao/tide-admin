@@ -5,8 +5,8 @@
 **UI 风格与页面骨架（写页面必读）：**
 
 - [`frontend/DESIGN.md`](../../frontend/DESIGN.md) — 视觉 token、Do/Don't、Agent 提示
-- [`docs/agent/ui-patterns.md`](ui-patterns.md) — CRUD / 树表等范式与黄金样板
-- [`docs/agent/naive-migration-inventory.md`](naive-migration-inventory.md) — 迁移记录。`naive-ui` 已从依赖去掉
+- [`docs/conventions/ui-patterns.md`](ui-patterns.md) — CRUD / 树表等范式与黄金样板
+- [`docs/conventions/frontend-naive-migration.md`](naive-migration-inventory.md) — 迁移记录。`naive-ui` 已从依赖去掉
 
 ## UI atoms
 
@@ -21,7 +21,7 @@ import { ToolbarActions } from '#/ui-patterns/toolbar-actions';
 - 源码：`frontend/packages/ui`（`@wyh/ui`）、`frontend/packages/ui-patterns`（`@wyh/ui-patterns`）
 - 应用在这一版仍可写 `#/ui/<atom>`、`#/ui-patterns/<pattern>`。这两条路径是别名，指向包源码，不是第二套实现
 - 原子底子：`@vben-core/shadcn-ui/src/ui`（`cn` + CVA + reka-ui）。颜色用现有 HSL token，经 `apps/admin/src/styles/theme.css` 的 `--color-*`（`@source` 包含 `packages/`、`vendor/` 和 `apps/`）
-- 新组件不要导入 `naive-ui`。表格用 Vxe。清单见 [`docs/agent/naive-migration-inventory.md`](naive-migration-inventory.md)。
+- 新组件不要导入 `naive-ui`。表格用 Vxe。清单见 [`docs/conventions/frontend-naive-migration.md`](naive-migration-inventory.md)。
 - 壳层可以继续用 `@vben-core/shadcn-ui` 根导出里的 `Vben*` 封装；业务页不要再复制一套同名原子
 
 ## Layout

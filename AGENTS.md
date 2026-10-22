@@ -15,13 +15,15 @@
 
 Cursor 同步加载 [`.cursor/skills/`](.cursor/skills/) 同名技能；编码约束见 [`.cursor/rules/`](.cursor/rules/)。
 
+文档目录契约见 [`docs/README.md`](docs/README.md)。
+
 地图与详细约定（按需打开，非每次必读）：
 
-- [`docs/agent/repo-map.md`](docs/agent/repo-map.md) — 模块地图与快速定位
+- [`docs/architecture/repo-map.md`](docs/architecture/repo-map.md) — 模块地图与快速定位
 - [`docs/conventions/backend-java.md`](docs/conventions/backend-java.md)
-- [`docs/agent/frontend-conventions.md`](docs/agent/frontend-conventions.md)
+- [`docs/conventions/frontend.md`](docs/conventions/frontend.md)
 - [`frontend/DESIGN.md`](frontend/DESIGN.md) — 前端视觉宪法（UI 风格）
-- [`docs/agent/ui-patterns.md`](docs/agent/ui-patterns.md) — 页面范式与样板清单
+- [`docs/conventions/ui-patterns.md`](docs/conventions/ui-patterns.md) — 页面范式与样板清单
 
 ## Commands
 
@@ -74,13 +76,13 @@ DB 变更：`backend/wyh-bootstrap/src/main/resources/db/changelog/postgresql/`
 | 任务 | `backend/platform/job` |
 | 审计 / 通知 / 设置 | `backend/platform/ops` |
 | 开放 API | `backend/interfaces/open-api` |
-| 系统壳 / 仪表盘等 | `backend/biz/biz-system`（半迁移收口见 `docs/agent/p1a-half-migrate.md`） |
+| 系统壳 / 仪表盘等 | `backend/biz/biz-system`（半迁移收口见 `docs/architecture/repo-map.md`） |
 | 前端页面 / API | `frontend/apps/admin/src/views`、`frontend/apps/admin/src/api` |
 | 文档站 | `frontend/apps/docs`（`@wyh/docs`） |
 | 组件演示 | `frontend/apps/design-system`（只演示 `@wyh/ui` / `@wyh/ui-patterns`） |
 | UI 原子 / 页面模式 | `frontend/packages/ui`（`@wyh/ui`）、`frontend/packages/ui-patterns`（`@wyh/ui-patterns`）。应用仍可用 `#/ui`、`#/ui-patterns` |
 
-完整表见 [`docs/agent/repo-map.md`](docs/agent/repo-map.md)。
+完整表见 [`docs/architecture/repo-map.md`](docs/architecture/repo-map.md)。
 
 ## Delivery
 
