@@ -4,7 +4,7 @@ layout: home
 sidebar: false
 
 hero:
-  name: Tide Admin
+  name: wyh-admin
   text: 企业级管理系统
   tagline: 全新升级，开箱即用，简单高效
   image:

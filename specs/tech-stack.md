@@ -1,4 +1,4 @@
-# Tide Admin — Tech Stack
+# wyh-admin — Tech Stack
 
 版本以仓库依赖声明为准：后端 `backend/pom.xml`，前端 `frontend/pnpm-workspace.yaml` catalog。本文约束架构选择与 Agent 不可擅自违背的规则。
 

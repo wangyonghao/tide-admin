@@ -2,29 +2,23 @@
 package top.wyhao.tenant.config;
 
 import org.springdoc.core.models.GroupedOpenApi;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import top.wyhao.tenant.service.TenantService;
 import top.wyhao.tenant.annotation.ConditionalOnEnabledTenant;
-import top.wyhao.tenant.config.TenantProperties;
-import top.wyhao.tenant.config.TenantProvider;
+import top.wyhao.tenant.service.TenantService;
 
 /**
  * 租户配置
  *
-
+ * <p>{@link TenantProperties} 仅由 {@code @EnableConfigurationProperties} 注册一份，
+ * 避免与自动配置重复导致 {@code NoUniqueBeanDefinitionException}。
+ *
  * @since 2025/7/12 13:30
  */
 @Configuration
+@EnableConfigurationProperties(TenantProperties.class)
 public class TenantConfiguration {
-
-    /**
-     * 租户扩展配置属性
-     */
-    @Bean
-    public TenantProperties tenantProperties() {
-        return new TenantProperties();
-    }
 
     /**
      * 租户提供者

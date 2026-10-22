@@ -1,8 +1,8 @@
-# Tide Admin
+# wyh-admin
 
 前后端分离的多租户中后台。后端是 Spring Boot 3 模块化单体，前端是 Vue 3 + shadcn-vue / Vben 原子。技术选型以 [`specs/tech-stack.md`](specs/tech-stack.md) 和依赖声明为准。
 
-仓库：<https://github.com/wangyonghao/tide-admin>
+仓库：<https://github.com/wangyonghao/wyh-admin>
 
 ## 环境要求
 
@@ -62,8 +62,8 @@ java -version   # 应显示 17.x
 ### 1. 克隆
 
 ```bash
-git clone https://github.com/wangyonghao/tide-admin.git
-cd tide-admin
+git clone https://github.com/wangyonghao/wyh-admin.git
+cd wyh-admin
 ```
 
 ### 2. 宿主机启动（推荐 / 本机验收）
@@ -121,7 +121,7 @@ cd frontend && pnpm test:unit
 ## 项目结构
 
 ```
-tide-admin/
+wyh-admin/
 ├── backend/
 │   ├── tide-bootstrap/     # 启动、配置、Liquibase
 │   ├── interfaces/         # tide-web、open-api

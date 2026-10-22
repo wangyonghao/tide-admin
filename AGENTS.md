@@ -1,4 +1,4 @@
-# Tide Admin — Agent Guide
+# wyh-admin — Agent Guide
 
 面向 AI Agent 的**短索引**。细则按需阅读链接；勿把本文件当百科全书扩写。
 
