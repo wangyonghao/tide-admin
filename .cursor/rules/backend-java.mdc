@@ -1,5 +1,5 @@
 ---
-description: 后端 Java 分层、API、DB、事务与依赖约定
+description: 后端 Java 分层、API、DB、事务、依赖与测试硬规则
 globs: backend/**/*.java
 alwaysApply: false
 ---
@@ -15,4 +15,13 @@ alwaysApply: false
 - `@Transactional` 仅 service/app 层；事务内不做远程/长耗时。
 - 新依赖先登记根 `pom.xml` `dependencyManagement`。
 
-细节：`docs/agent/backend-conventions.md`；异常：同目录 `biz-exception.mdc`；栈：`specs/tech-stack.md`。
+## 测试
+
+- 必测：`domain` / 纯规则、可 Mock 的 app 决策与编排、手写含分支的转换器——改逻辑须同步 `XxxTest`，不起 Spring。
+- 不强制：Controller / DTO 组装、MapStruct `*Assembler`、MVC / Excel 脚手架 Converter；基础设施重的 app 只要求抽纯决策测透，不要求整段主路径测满。
+- 禁止在 domain / 可测 app 路径**新增** `SpringUtil.getBean`（存量 getBean 分支可先不单测）。
+- 不设覆盖率百分比门禁；修 bug 先写失败用例；禁删断言；异常断言具体 `XxxException`+错误码。
+- 完成前 `mvn test`，不得带 `-DskipUnitTests=true`。
+- 必测表与细则：`docs/conventions/backend-java.md` → Testing。
+
+细节：`docs/conventions/backend-java.md`；异常：同目录 `biz-exception.mdc`；栈：`specs/tech-stack.md`。

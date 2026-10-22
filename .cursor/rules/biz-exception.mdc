@@ -41,4 +41,4 @@ throw new BizException("USER_NOT_FOUND", "用户不存在");
 
 `Check` / `ValidationUtils` 已废弃，禁止新增调用；业务规则失败一律 `if (...) throw XxxException.xxx()`；入参格式优先 Bean Validation。
 
-细节：`docs/agent/backend-conventions.md`。
+细节：`docs/conventions/backend-java.md`。

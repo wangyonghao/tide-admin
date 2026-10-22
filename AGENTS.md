@@ -18,7 +18,7 @@ Cursor 同步加载 [`.cursor/skills/`](.cursor/skills/) 同名技能；编码�
 地图与详细约定（按需打开，非每次必读）：
 
 - [`docs/agent/repo-map.md`](docs/agent/repo-map.md) — 模块地图与快速定位
-- [`docs/agent/backend-conventions.md`](docs/agent/backend-conventions.md)
+- [`docs/conventions/backend-java.md`](docs/conventions/backend-java.md)
 - [`docs/agent/frontend-conventions.md`](docs/agent/frontend-conventions.md)
 - [`frontend/DESIGN.md`](frontend/DESIGN.md) — 前端视觉宪法（UI 风格）
 - [`docs/agent/ui-patterns.md`](docs/agent/ui-patterns.md) — 页面范式与样板清单
@@ -83,4 +83,4 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 - 向用户说明变更时，与正文分离，用独立 Changelog 要点（仓库变更日志走 `changelog` skill）。
 - 默认中文回复；未要求不 commit / 不 push。
 - 需求不清先问；重要结论尽量用仓库内多源交叉验证。
-- **后端单测**：`domain`/规则类高覆盖；`adapter` 不强制。细则见 [`docs/agent/backend-conventions.md`](docs/agent/backend-conventions.md#testing)。
+- **后端单测**：`domain`/规则与可 Mock 的 app 决策高覆盖；`adapter` 不强制。细则见 [`docs/conventions/backend-java.md`](docs/conventions/backend-java.md#testing)。
