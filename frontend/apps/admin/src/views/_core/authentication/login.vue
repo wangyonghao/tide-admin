@@ -16,7 +16,7 @@ import {
   VbenInputPassword,
 } from '@vben-core/shadcn-ui';
 
-import { authApi, captchaApi } from '#/api';
+import { captchaApi } from '#/api';
 import { useUserStore } from '#/store';
 
 import ForceChangePassword from './force-change-password.vue';
@@ -199,7 +199,7 @@ const handlePasswordChangeSuccess = async (token: string) => {
 
     // Fetch user info and redirect
     const userInfo = await userStore.fetchAuthInfo();
-    await router.push(userInfo?.homePath || '/dashboard');
+    await router.push((userInfo as { homePath?: string } | null | undefined)?.homePath || '/dashboard');
   } catch (error) {
     console.error('Failed to complete login after password change:', error);
   }

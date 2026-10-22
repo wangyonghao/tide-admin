@@ -34,9 +34,6 @@ const currentNotice = computed(() => {
   return noticeId ? noticeCache.value.get(noticeId) : null;
 });
 
-const currentNoticeContent = computed(() => {
-  return currentNotice.value?.content || '';
-});
 
 // 获取未读公告ID列表
 const fetchNoticeDetail = async (index: number) => {

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, computed } from 'vue';
+import { ref } from 'vue';
 
 import FormRadioGroup from '#/adapter/component/FormRadioGroup.vue';
 import { Input } from '#/ui/input';
@@ -59,17 +59,16 @@ const settings = ref({
 
 // 保存设置
 const handleSave = () => {
-  // 更新语言
-  locale.value = settings.value.language;
-
-  // 更新主题
-  preferences.theme.mode = settings.value.themeMode as any;
+  // 更新主题 / 布局（通过 preferences 可变对象写回）
+  preferences.theme.mode = settings.value.themeMode as typeof preferences.theme.mode;
   preferences.theme.colorPrimary = settings.value.colorScheme;
 
-  // 更新布局
-  preferences.app.layout = settings.value.layout as any;
-  preferences.app.contentCompact = settings.value.contentWidth === 'fixed';
+  preferences.app.layout = settings.value.layout as typeof preferences.app.layout;
+  preferences.app.contentCompact = (
+    settings.value.contentWidth === 'fixed' ? 'compact' : 'wide'
+  ) as typeof preferences.app.contentCompact;
   preferences.app.compact = settings.value.compactMode;
+  preferences.app.locale = settings.value.language as typeof preferences.app.locale;
 
   // 更新显示设置
   preferences.breadcrumb.enable = settings.value.showBreadcrumb;
