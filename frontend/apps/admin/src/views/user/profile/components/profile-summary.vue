@@ -66,7 +66,7 @@ const maskedPhone = computed(() => {
 const maskedEmail = computed(() => {
   if (!props.userInfo?.email) return $t('page.profile.summary.emailUnbound');
   const email = props.userInfo.email;
-  const [name, domain] = email.split('@');
+  const [name = '', domain = ''] = email.split('@');
   if (name.length <= 2) return email;
   return `${name.slice(0, 2)}***@${domain}`;
 });
@@ -77,8 +77,8 @@ const maskedEmail = computed(() => {
     <div class="text-center">
       <!-- 头像 -->
       <VbenAvatar
-        :src="resolveFilePreviewUrl(userInfo?.avatar)"
-        :alt="userInfo?.displayName || 'User'"
+        :src="resolveFilePreviewUrl(userInfo?.avatar ?? undefined) ?? ''"
+        :alt="userInfo?.displayName ?? 'User'"
         :size="100"
         class="mb-4 mx-auto"
       />

@@ -1,4 +1,4 @@
-# Tide Admin — Roadmap
+# wyh-admin — Roadmap
 
 状态：`pending` | `in-progress` | `complete`  
 Agent 每次会话读取本文件，从第一个非 `complete` 的阶段继续；阶段变更须经人工确认。

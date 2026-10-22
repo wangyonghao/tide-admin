@@ -128,8 +128,8 @@ const userInfo = computed(() => userStore.user);
       <div class="flex items-center gap-6">
         <!-- 头像 -->
         <VbenAvatar
-          :src="resolveFilePreviewUrl(userInfo?.avatar)"
-          :alt="userInfo?.displayName || 'User'"
+          :src="resolveFilePreviewUrl(userInfo?.avatar ?? undefined) ?? ''"
+          :alt="userInfo?.displayName ?? 'User'"
           :size="100"
           class="mb-4 mx-auto"
           @click="avatarModalApi.open()"

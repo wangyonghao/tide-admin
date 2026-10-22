@@ -46,7 +46,7 @@ jobs:
           context: ./backend/tide-bootstrap/target/
           push: true
           platforms: linux/amd64,linux/arm64
-          tags: wangyonghao/tide-admin:latest
+          tags: wangyonghao/wyh-admin:latest
           # 若Dockerfile不在根目录/有自定义名称，添加：
           file: ./backend/tide-bootstrap/Dockerfile
       # # 8. 拷贝到服务器

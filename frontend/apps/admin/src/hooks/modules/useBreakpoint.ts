@@ -1,5 +1,3 @@
-import type { ComputedRef } from 'vue';
-
 import { computed } from 'vue';
 
 import { useBreakpoints } from '@vueuse/core';

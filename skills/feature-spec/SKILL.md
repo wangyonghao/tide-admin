@@ -1,7 +1,7 @@
 ---
 name: feature-spec
 description: >-
-  Starts or refreshes a Tide Admin roadmap phase by interviewing for intent,
+  Starts or refreshes a wyh-admin roadmap phase by interviewing for intent,
   then writing specs/YYYY-MM-DD-<slug>/{requirements,plan,validation}.md.
   Use when starting a phase, writing a feature spec, before implementing a
   roadmap item, or when the user says feature-spec / 写规格 / 开阶段.
@@ -25,7 +25,7 @@ description: >-
 ### 1. Size check（两句话内说明路径）
 
 - **可逆 / 小改**（文档、单点修复、无边界变动）：可轻量——在聊天记录意图，roadmap 备注即可；不强制三件套。
-- **单向门 / 跨模块 / 租户·权限·API 契约**：完整规格。默认 Tide Admin 平台域工作走完整规格。
+- **单向门 / 跨模块 / 租户·权限·API 契约**：完整规格。默认 wyh-admin 平台域工作走完整规格。
 
 用户可用一词覆盖：`full` / `light`。
 

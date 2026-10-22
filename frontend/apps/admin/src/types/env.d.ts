@@ -13,3 +13,8 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+declare module 'crypto-js';
+declare module 'crypto-js/enc-base64';
+declare module 'crypto-js/enc-utf8';
+declare module 'crypto-js/md5';

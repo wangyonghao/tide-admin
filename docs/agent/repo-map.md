@@ -1,11 +1,11 @@
-# Tide Admin — Repo map
+# wyh-admin — Repo map
 
 Agent 按需阅读。完整目录树不必背诵；以本表与 `ls` / 搜索为准。
 
 ## Layout
 
 ```
-tide-admin/
+wyh-admin/
 ├── backend/           # Java 17 + Spring Boot（模块化单体）
 │   ├── tide-bootstrap/# 可运行主服务
 │   ├── interfaces/    # tide-web、open-api

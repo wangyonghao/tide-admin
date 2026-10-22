@@ -275,7 +275,7 @@ Naive 包不删。
 
 - **技术栈**：`specs/tech-stack.md` 的主 UI 改为 shadcn-vue / Vben 原子。应用入口是 `#/ui`、`#/ui-patterns`，实现是 `@vben-core/shadcn-ui` 5.7.0（catalog：reka-ui 2.9.5、CVA 0.7.1、vue-sonner 2.0.9）。不再把 Naive UI 写成当前界面。
 - **演示目录**：`views/demos/naive/` 改为 `views/demos/atoms/`。页面仍是原子按钮和 Sonner。`routes.ts` 里挂上的演示只有 `/demos/form`，没有旧路径。语言包 `demos.naive` 改为 `demos.atoms`，`demos.vben.naive-ui` 改为 `demos.vben.atoms`，文案不变。后端菜单里没有 `demos/naive`。
-- **文档站**：`frontend/apps/docs` 仍保留上游 Vben 的多组件库正文。中英文「关于」和「组件库切换」页首加了一句：Tide Admin 的产品界面是 shadcn-vue / Vben 原子。没有改写那些上游列表。
+- **文档站**：`frontend/apps/docs` 仍保留上游 Vben 的多组件库正文。中英文「关于」和「组件库切换」页首加了一句：wyh-admin 的产品界面是 shadcn-vue / Vben 原子。没有改写那些上游列表。
 
 还留着：
 

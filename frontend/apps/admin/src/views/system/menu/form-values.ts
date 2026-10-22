@@ -46,7 +46,7 @@ export function resolveMenuComponent(values: MenuFormValues): string {
 }
 
 export function menuPayload(values: MenuFormValues) {
-  const type = values.type ?? 1;
+  const type = (values.type ?? 1) as 1 | 2 | 3;
   const isButton = type === 3;
   return {
     component: isButton ? '' : resolveMenuComponent({ ...values, type }),
