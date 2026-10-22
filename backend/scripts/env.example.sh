@@ -1,14 +1,14 @@
 #!/usr/bin/env bash
 # wyh-admin — 宿主机后端环境变量示例
 #
-# 与 backend/tide-bootstrap/src/main/resources/config 里的 ${VAR} 对应。
+# 与 backend/wyh-bootstrap/src/main/resources/config 里的 ${VAR} 对应。
 # 只在宿主机跑后端时需要。Compose 里的 api 直接读 backend/docker/.env。
 # 本地 Postgres / Redis 等由 backend/docker 的 Compose 提供，口令以该目录 .env 为准。
 #
 #   cp backend/scripts/env.example.sh backend/scripts/env.sh
 #   # 编辑 env.sh：DB_PWD、REDIS_PWD、AES_KEY 与 backend/docker/.env 一致
 #   set -a && source backend/scripts/env.sh && set +a
-#   cd backend && mvn -pl tide-bootstrap -am spring-boot:run
+#   cd backend && mvn -pl wyh-bootstrap -am spring-boot:run
 #
 # env.sh 已被 backend/.gitignore 忽略，不要提交。
 # IDEA：Run Configuration → Environment variables，填同名变量。

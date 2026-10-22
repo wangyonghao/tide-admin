@@ -7,7 +7,7 @@ Agent 按需阅读。完整目录树不必背诵；以本表与 `ls` / 搜索为
 ```
 wyh-admin/
 ├── backend/           # Java 17 + Spring Boot（模块化单体）
-│   ├── tide-bootstrap/# 可运行主服务
+│   ├── wyh-bootstrap/# 可运行主服务
 │   ├── interfaces/    # open-api
 │   ├── biz/           # 业务插件（如 biz-system）
 │   └── platform/      # cmn-* 基础设施 + 平台域
@@ -22,7 +22,7 @@ wyh-admin/
 ## Backend modules
 
 ```
-tide-bootstrap
+wyh-bootstrap
   → interfaces/* , biz/*
     → platform/{iam,tenant,file,job,ops,spi}
       → platform/cmn-*
@@ -30,7 +30,7 @@ tide-bootstrap
 
 | 模块 | 职责 |
 |------|------|
-| `tide-bootstrap` | 启动、配置、Liquibase、装配 |
+| `wyh-bootstrap` | 启动、配置、Liquibase、装配 |
 | `interfaces/open-api` | 开放 API / 签名 |
 | `biz/biz-system` | 系统壳、仪表盘（含 `DashboardController`）、跨域编排残留 |
 | `platform/iam` | identity、department、security |
@@ -50,9 +50,9 @@ tide-bootstrap
 
 | 用途 | 路径 |
 |------|------|
-| 启动类 | `backend/tide-bootstrap/src/main/java/top/wyhao/admin/AdminApplication.java` |
-| 开发配置 | `backend/tide-bootstrap/src/main/resources/config/application-dev.yml` |
-| Liquibase | `backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/` |
+| 启动类 | `backend/wyh-bootstrap/src/main/java/top/wyhao/admin/AdminApplication.java` |
+| 开发配置 | `backend/wyh-bootstrap/src/main/resources/config/application-dev.yml` |
+| Liquibase | `backend/wyh-bootstrap/src/main/resources/db/changelog/postgresql/` |
 | 用户 / 认证 | `backend/platform/iam/.../identity/` |
 | 角色 / 菜单 | `backend/platform/iam/.../security/` |
 | 部门 | `backend/platform/iam/.../department/` |
@@ -65,7 +65,7 @@ tide-bootstrap
 | 仪表盘 | `backend/biz/biz-system/.../controller/DashboardController`（服务同模块） |
 | ops 分层说明 | `docs/agent/ops-layout.md` |
 
-本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl tide-bootstrap -am spring-boot:run`
+本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl wyh-bootstrap -am spring-boot:run`
 
 ### Frontend
 

@@ -14,7 +14,7 @@
   <url>https://github.com/wangyonghao/wyh-admin</url>
 
   <modules>
-    <module>tide-bootstrap</module>
+    <module>wyh-bootstrap</module>
     <module>biz</module>
     <module>platform</module>
     <module>interfaces</module>
@@ -425,7 +425,7 @@
       <!-- API 模块（存放 Controller 层代码，打包部署的模块） -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>tide-bootstrap</artifactId>
+        <artifactId>wyh-bootstrap</artifactId>
         <version>${revision}</version>
       </dependency>
 

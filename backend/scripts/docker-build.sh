@@ -11,8 +11,8 @@ mvn -f ../pom.xml clean package -DskipTests
 # 2. 构建 Docker 镜像
 echo "Building Docker images..."
 
-# 构建 tide-admin 镜像
-echo "Building tide-admin image..."
-container build -f ../tide-admin-server/Dockerfile -t wangyonghao/tide-admin ../tide-admin-server
+# 构建 wyh-admin 镜像
+echo "Building wyh-admin image..."
+container build -f ../wyh-admin-server/Dockerfile -t wangyonghao/wyh-admin ../wyh-admin-server
 
 echo "Docker images built successfully."

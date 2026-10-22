@@ -118,7 +118,7 @@ description: >-
 # Validation — <title>
 
 ## Executable checks（优先）
-- [ ] `mvn -pl tide-bootstrap -am …` 或约定编译命令
+- [ ] `mvn -pl wyh-bootstrap -am …` 或约定编译命令
 - [ ] 关键 API / 页面行为：…
 - [ ] Liquibase / 迁移（如有）：…
 

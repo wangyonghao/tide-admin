@@ -29,7 +29,7 @@ docker compose --env-file .env -f docker-compose.dev.yml up
 
 浏览器打开 http://localhost:5888 。API 监听 http://localhost:8000 （`/doc.html`）。
 
-第一次启动会构建 `tide-dev-api` 镜像（只含 Temurin 17 JDK 和 Maven），然后在容器里下载依赖并编译。Maven 仓库在卷 `api_m2`，之后会快一些。改 Java 源码不用重建镜像。改了 `backend/docker/api/` 里的 Dockerfile 或入口脚本后，加上 `--build`。
+第一次启动会构建 `wyh-dev-api` 镜像（只含 Temurin 17 JDK 和 Maven），然后在容器里下载依赖并编译。Maven 仓库在卷 `api_m2`，之后会快一些。改 Java 源码不用重建镜像。改了 `backend/docker/api/` 里的 Dockerfile 或入口脚本后，加上 `--build`。
 
 停掉并清掉卷（空库、空桶、前端依赖卷、Maven 仓库、本地文件卷）：
 
@@ -76,8 +76,8 @@ set -a && source backend/scripts/env.sh && set +a
 java -version   # 必须是 17.x
 
 cd backend
-mvn -pl tide-bootstrap -am compile
-mvn -pl tide-bootstrap -am spring-boot:run
+mvn -pl wyh-bootstrap -am compile
+mvn -pl wyh-bootstrap -am spring-boot:run
 ```
 
 验收：
@@ -141,7 +141,7 @@ curl -s http://127.0.0.1:8000/actuator/health
 
 ## 改后端代码
 
-`backend/` 挂在容器 `/src`，入口是 `mvn -pl tide-bootstrap -am spring-boot:run`（profile `docker-dev`，带 Spring Boot DevTools）。
+`backend/` 挂在容器 `/src`，入口是 `mvn -pl wyh-bootstrap -am spring-boot:run`（profile `docker-dev`，带 Spring Boot DevTools）。
 
 - `API_HOT_RELOAD=true`（默认）：`src/main` 变更后，容器再执行一次 `mvn compile`，DevTools 重启 JVM。这是多模块编译，不是 IDE 的增量编译，一次可能要几十秒到几分钟。
 - `API_HOT_RELOAD=false`：不监听文件。改完后执行 `docker compose --env-file .env -f docker-compose.dev.yml restart api`。依赖仍在 `api_m2`，不必重新下载。
@@ -164,7 +164,7 @@ docker compose --env-file .env -f docker-compose.dev.yml up db redis mail minio 
 ```bash
 export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
 export PATH="$JAVA_HOME/bin:$PATH"
-mvn -pl tide-bootstrap -am spring-boot:run
+mvn -pl wyh-bootstrap -am spring-boot:run
 ```
 
 宿主机环境变量见 `backend/scripts/env.example.sh`（`DB_HOST=localhost` 等）。`DB_PWD`、`REDIS_PWD`、`AES_KEY`、`WYH_JWT_SECRET` 要和这份 `.env` 一致，否则连不上，或者解不开已加密字段、签不出登录令牌。
@@ -187,7 +187,7 @@ export WYH_JWT_SECRET='<WYH_JWT_SECRET>'
 
 ## 健康检查
 
-Actuator 已在 `tide-bootstrap` 里。`application.yml` 只暴露 `health` 和 `info`，`metrics` 没有打开。
+Actuator 已在 `wyh-bootstrap` 里。`application.yml` 只暴露 `health` 和 `info`，`metrics` 没有打开。
 
 未登录可以访问（`web.security.excludes`）：
 

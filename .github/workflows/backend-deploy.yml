@@ -43,12 +43,12 @@ jobs:
       - name: 6.Build & Push Image
         uses: docker/build-push-action@v7
         with:
-          context: ./backend/tide-bootstrap/target/
+          context: ./backend/wyh-bootstrap/target/
           push: true
           platforms: linux/amd64,linux/arm64
           tags: wangyonghao/wyh-admin:latest
           # 若Dockerfile不在根目录/有自定义名称，添加：
-          file: ./backend/tide-bootstrap/Dockerfile
+          file: ./backend/wyh-bootstrap/Dockerfile
       # # 8. 拷贝到服务器
       # - name: Copy artifacts for tide-api
       #   uses: appleboy/scp-action@v1
