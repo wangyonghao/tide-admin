@@ -24,7 +24,7 @@ permissions:
 jobs:
   unit-and-build:
     name: Unit tests and build
-    if: github.repository == 'wangyonghao/tide-admin'
+    if: github.repository == 'wangyonghao/wyh-admin'
     runs-on: ubuntu-latest
     timeout-minutes: 30
     defaults:

@@ -7,7 +7,7 @@ on:
 
 jobs:
   release:
-    if: github.repository == 'wangyonghao/tide-admin'
+    if: github.repository == 'wangyonghao/wyh-admin'
     runs-on: ubuntu-latest
     steps:
       - name: Checkout
