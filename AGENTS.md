@@ -26,10 +26,17 @@ Cursor 同步加载 [`.cursor/skills/`](.cursor/skills/) 同名技能；编码�
 ## Commands
 
 ```bash
-# 本地全套（Postgres、Redis、邮件、MinIO、Vite、API）
-cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up
-# 只在宿主机起后端
+# JDK 必须 17（本机默认若为 26 会失败）
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+export PATH="$JAVA_HOME/bin:$PATH"
+
+# 推荐：中间件（Apple Container / 本机）+ env.sh + 宿主机 API（见 backend/docker/README.md）
+cp backend/scripts/env.example.sh backend/scripts/env.sh   # 首次
+set -a && source backend/scripts/env.sh && set +a
 cd backend && mvn -pl tide-bootstrap -am spring-boot:run
+curl -s http://127.0.0.1:8000/actuator/health
+# 可选 / CI：Docker Compose 全栈（非本机验收必选）
+# cd backend/docker && cp .env.example .env && docker compose --env-file .env -f docker-compose.dev.yml up
 # 单元测试（默认开启；临时跳过 -DskipUnitTests=true）。范围与 .github/workflows/backend-build.yml 一致
 cd backend && mvn -pl platform/job,platform/iam,platform/cmn-crypto -am test
 
@@ -42,7 +49,7 @@ cd frontend && pnpm dev:ds
 
 配置：`backend/tide-bootstrap/src/main/resources/config/`  
 环境变量示例：`backend/scripts/env.example.sh`（复制为 `backend/scripts/env.sh`，已被 `backend/.gitignore` 忽略）  
-本地基础设施：`backend/docker/`（Compose 与 `.env.example`；不要用 `backend/scripts/docker/`）  
+本地基础设施：`backend/docker/`（Compose 与 `.env.example`；无 Docker 时用 Apple Container 起中间件 + `backend/scripts/env.sh`；不要用 `backend/scripts/docker/`）。JDK **17**。  
 DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 
 ## Hard boundaries

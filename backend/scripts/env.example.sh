@@ -39,3 +39,13 @@ export WYH_JWT_SECRET='change-me-jwt-secret'
 # 仅 application-prod.yml 需要：
 # export WYH_RSA_PUBLIC_KEY=''
 # export WYH_RSA_PRIVATE_KEY=''
+
+# JDK 17（必填）。Homebrew 默认 openjdk 可能是 21/26，不钉死会编译/启动失败。
+export JAVA_HOME="$(/usr/libexec/java_home -v 17 2>/dev/null || true)"
+if [[ -z "${JAVA_HOME}" && -d /opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home ]]; then
+  export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+fi
+if [[ -n "${JAVA_HOME}" ]]; then
+  export PATH="${JAVA_HOME}/bin:${PATH}"
+fi
+

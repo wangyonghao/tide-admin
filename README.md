@@ -8,12 +8,28 @@
 
 | 环境 | 要求 |
 |------|------|
-| Java | 17+ |
+| Java | **17**（必须；本机若默认是 JDK 21/26 会编译或启动失败） |
 | Maven | 3.6+ |
 | PostgreSQL | 17+ |
 | Redis | 6+ |
 | Node.js | ^20.19.0 \|\| ^22.18.0 \|\| ^24.0.0 |
 | pnpm | >= 10（当前 `packageManager`：10.33.4） |
+| 中间件 | Postgres 17 + Redis（本机进程、**Apple Container**、或其它均可） |
+| Docker Compose | **可选**（全栈一键 / CI）；本机无 Docker 不挡本地启动验收 |
+
+### 钉死 JDK 17
+
+Homebrew 的 `openjdk` 可能是 21/26。每次开终端先固定 17，再跑 Maven：
+
+```bash
+export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
+# Apple Silicon Homebrew 备选：
+# export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
+export PATH="$JAVA_HOME/bin:$PATH"
+java -version   # 应显示 17.x
+```
+
+`backend/scripts/env.example.sh` 已包含同样的 `JAVA_HOME` 导出；复制为 `env.sh` 后 `source` 即可。
 
 ## 核心技术栈
 
@@ -39,7 +55,9 @@
 
 ## 快速开始
 
-本地开发用 [`backend/docker`](backend/docker/README.md) 一条命令拉起 Postgres、Redis、Inbucket、MinIO、Spring Boot API 和 Vite。不要使用已废弃的 `backend/scripts/docker/`。
+**推荐验收路径（非 Compose）**：中间件（Postgres + Redis）用本机已有服务或 **Apple Container** 拉起 → 复制 `backend/scripts/env.example.sh` 为 `env.sh` → `JAVA_HOME=17` → 宿主机 `mvn -pl tide-bootstrap -am spring-boot:run` → `curl /actuator/health` 为 UP。细则见 [`backend/docker/README.md`](backend/docker/README.md)「宿主机启动（推荐）」与「Apple Container」。
+
+**Docker Compose** 仅作可选全栈 / CI 路径，不是本机验收必选项。不要使用已废弃的 `backend/scripts/docker/`。
 
 ### 1. 克隆
 
@@ -48,37 +66,35 @@ git clone https://github.com/wangyonghao/wyh-admin.git
 cd wyh-admin
 ```
 
-### 2. 启动
+### 2. 宿主机启动（推荐 / 本机验收）
+
+先确认中间件已监听（默认 Postgres `5432`、Redis `6379`），且 `java -version` 是 17：
+
+```bash
+cp backend/scripts/env.example.sh backend/scripts/env.sh
+# 编辑 env.sh：DB_PWD、REDIS_PWD、AES_KEY、WYH_JWT_SECRET 与中间件口令一致
+set -a && source backend/scripts/env.sh && set +a
+java -version   # 须为 17.x
+cd backend && mvn -pl tide-bootstrap -am compile
+cd backend && mvn -pl tide-bootstrap -am spring-boot:run
+```
+
+就绪后：`curl -s http://127.0.0.1:8000/actuator/health` 应返回 `"status":"UP"`。数据库名约定为 `postgres`。`application-dev.yml` 已开启 Liquibase，空库会自动建表。
+
+中间件可用 Apple Container 起（见 [`backend/docker/README.md`](backend/docker/README.md)）；也可用已有本机 Postgres/Redis。
+
+### 3. Docker Compose（可选 / CI）
+
+有 Docker 时可用全栈一键（含容器内 API / Vite）。**不是**本机 W2 验收必选项：
 
 ```bash
 cd backend/docker
 cp .env.example .env
-# 编辑 .env，替换 POSTGRES_PASSWORD、REDIS_PWD、MINIO_ROOT_PASSWORD、AES_KEY
-# openssl rand -hex 24
-# AES_KEY 必须是 16、24 或 32 字节
-
+# 编辑 .env，替换占位密码与 AES_KEY、WYH_JWT_SECRET
 docker compose --env-file .env -f docker-compose.dev.yml up
 ```
 
-浏览器打开 http://localhost:5888 。API 在 http://localhost:8000 。端口、邮件 host 和改代码后怎么热更新，见 [`backend/docker/README.md`](backend/docker/README.md)。
-
-数据库名是 `postgres`，用户是 `postgres`。`application-dev.yml` 已开启 Liquibase，空库会自动建表。
-
-### 3. 只在宿主机跑后端（可选）
-
-Compose 已经包含 API 时不必再执行。宿主机 Maven 或 IDE 运行 `top.wyhao.admin.AdminApplication` 时，先只起依赖和前端，避免占用 8000，并把 `VITE_GLOB_API_URL` 改成 `http://host.docker.internal:8000`：
-
-```bash
-cd backend/docker
-docker compose --env-file .env -f docker-compose.dev.yml up db redis mail minio minio-init web
-```
-
-```bash
-cp backend/scripts/env.example.sh backend/scripts/env.sh
-# DB_PWD、REDIS_PWD、AES_KEY 与 backend/docker/.env 一致
-set -a && source backend/scripts/env.sh && set +a
-cd backend && mvn -pl tide-bootstrap -am spring-boot:run
-```
+没有 `docker` 时跳过本节，勿标成已绿。
 
 `backend/scripts/env.sh` 已被忽略，不要提交。开发 profile 的 JWT / RSA 写在 `application-dev.yml`。生产配置另要 `WYH_JWT_SECRET`、`WYH_RSA_PUBLIC_KEY`、`WYH_RSA_PRIVATE_KEY`。宿主机上的文件目录是 `application-dev.yml` 的 `file.local.root-path`。
 
