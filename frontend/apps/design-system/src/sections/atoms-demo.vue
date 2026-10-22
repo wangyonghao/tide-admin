@@ -1,37 +1,37 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import { Badge } from '@tide/ui/badge';
-import { Button } from '@tide/ui/button';
+import { Badge } from '@wyh/ui/badge';
+import { Button } from '@wyh/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@tide/ui/card';
-import { Checkbox } from '@tide/ui/checkbox';
+} from '@wyh/ui/card';
+import { Checkbox } from '@wyh/ui/checkbox';
 import {
   Dialog,
   DialogContent,
   DialogDescription,
   DialogTitle,
   DialogTrigger,
-} from '@tide/ui/dialog';
-import { Input } from '@tide/ui/input';
-import { Label } from '@tide/ui/label';
-import { RadioGroup, RadioGroupItem } from '@tide/ui/radio-group';
+} from '@wyh/ui/dialog';
+import { Input } from '@wyh/ui/input';
+import { Label } from '@wyh/ui/label';
+import { RadioGroup, RadioGroupItem } from '@wyh/ui/radio-group';
 import {
   Select,
   SelectContent,
   SelectItem,
   SelectTrigger,
   SelectValue,
-} from '@tide/ui/select';
-import { Separator } from '@tide/ui/separator';
-import { Skeleton } from '@tide/ui/skeleton';
-import { Switch, type SwitchScalar } from '@tide/ui/switch';
-import { Textarea } from '@tide/ui/textarea';
+} from '@wyh/ui/select';
+import { Separator } from '@wyh/ui/separator';
+import { Skeleton } from '@wyh/ui/skeleton';
+import { Switch, type SwitchScalar } from '@wyh/ui/switch';
+import { Textarea } from '@wyh/ui/textarea';
 
 defineOptions({ name: 'AtomsDemo' });
 
@@ -58,7 +58,7 @@ const buttonVariants = [
   <Card>
     <CardHeader>
       <CardTitle>原子</CardTitle>
-      <CardDescription>来自 @tide/ui。颜色走同一套 HSL token。</CardDescription>
+      <CardDescription>来自 @wyh/ui。颜色走同一套 HSL token。</CardDescription>
     </CardHeader>
     <CardContent class="flex flex-col gap-6">
       <section class="flex flex-col gap-3">

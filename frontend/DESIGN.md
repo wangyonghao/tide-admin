@@ -1,7 +1,7 @@
 # wyh-admin — DESIGN.md
 
 > **Status:** draft outline（九段齐，token 对齐现仓库；视觉微调待确认后升为正式版）  
-> **Scope:** 主应用 `frontend/apps/admin`（`@tide/admin`，shadcn-vue / Vben 原子 + Vben 壳）中后台产品 UI  
+> **Scope:** 主应用 `frontend/apps/admin`（`@wyh/admin`，shadcn-vue / Vben 原子 + Vben 壳）中后台产品 UI  
 > **Token source of truth:** `vendor/@core/base/design/src/design-tokens/{default,dark}.css`  
 > **Page patterns:** [`docs/agent/ui-patterns.md`](../docs/agent/ui-patterns.md)  
 > **Not for:** 营销落地页 / 盲目套用 Linear·Stripe 等品牌 DESIGN.md
@@ -107,7 +107,7 @@ wyh-admin 是**企业中后台脚手架**：信息密度偏高、结构清晰、
 
 实现以 **Vben 封装**（`Page`、`useVbenForm`、`useVbenDrawer`、`useVbenVxeGrid`）和 `#/ui` 原子为准。颜色走本文件 token，经 `apps/admin/src/styles/theme.css` 的 `--color-*` 接到 Tailwind。
 
-**原子层：** 新代码按路径导入 `@tide/ui/<atom>` 或别名 `#/ui/<atom>`（Button、Input、Label、Checkbox、Switch、Dialog、AlertDialog、Badge、Skeleton、Sonner、Select、Popover、Card、Tabs 等）。源码在 `frontend/packages/ui`；底子留在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA + `cn`）。页面组合放 `frontend/packages/ui-patterns`（`@tide/ui-patterns`，别名 `#/ui-patterns`），按目录路径导入，不建总桶。组件演示在 `frontend/apps/design-system`，只消费这两个包。`naive-ui` 已从依赖里去掉。清单见 [`docs/agent/naive-migration-inventory.md`](../docs/agent/naive-migration-inventory.md)。
+**原子层：** 新代码按路径导入 `@wyh/ui/<atom>` 或别名 `#/ui/<atom>`（Button、Input、Label、Checkbox、Switch、Dialog、AlertDialog、Badge、Skeleton、Sonner、Select、Popover、Card、Tabs 等）。源码在 `frontend/packages/ui`；底子留在 `@vben-core/shadcn-ui/src/ui`（reka-ui + CVA + `cn`）。页面组合放 `frontend/packages/ui-patterns`（`@wyh/ui-patterns`，别名 `#/ui-patterns`），按目录路径导入，不建总桶。组件演示在 `frontend/apps/design-system`，只消费这两个包。`naive-ui` 已从依赖里去掉。清单见 [`docs/agent/naive-migration-inventory.md`](../docs/agent/naive-migration-inventory.md)。
 
 ### Buttons
 
@@ -270,7 +270,7 @@ stack:         Vue3 + shadcn-vue / Vben 原子 + Page + useVbenVxeGrid + useVben
 | 页面骨架 | `docs/agent/ui-patterns.md` |
 | Token CSS | `frontend/vendor/@core/base/design/src/design-tokens/` |
 | 工程约定 | `docs/agent/frontend-conventions.md` |
-| 原子 / 模式 | `frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`） |
+| 原子 / 模式 | `frontend/packages/ui`（`@wyh/ui`）、`frontend/packages/ui-patterns`（`@wyh/ui-patterns`） |
 | Naive 迁移清单 | `docs/agent/naive-migration-inventory.md` |
 
 ---

@@ -690,12 +690,6 @@ importers:
       '@intlify/core-base':
         specifier: 'catalog:'
         version: 11.3.2
-      '@tide/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@tide/ui-patterns':
-        specifier: workspace:*
-        version: link:../../packages/ui-patterns
       '@tiptap/core':
         specifier: 'catalog:'
         version: 3.22.3(@tiptap/pm@3.22.3)
@@ -777,6 +771,12 @@ importers:
       '@vueuse/motion':
         specifier: 'catalog:'
         version: 3.0.3(magicast@0.5.2)(vue@3.5.32(typescript@6.0.2))
+      '@wyh/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@wyh/ui-patterns':
+        specifier: workspace:*
+        version: link:../../packages/ui-patterns
       axios:
         specifier: 'catalog:'
         version: 1.15.0
@@ -925,15 +925,15 @@ importers:
 
   apps/design-system:
     dependencies:
-      '@tide/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
-      '@tide/ui-patterns':
-        specifier: workspace:*
-        version: link:../../packages/ui-patterns
       '@vben-core/design':
         specifier: workspace:*
         version: link:../../vendor/@core/base/design
+      '@wyh/ui':
+        specifier: workspace:*
+        version: link:../../packages/ui
+      '@wyh/ui-patterns':
+        specifier: workspace:*
+        version: link:../../packages/ui-patterns
       vue:
         specifier: ^3.5.32
         version: 3.5.32(typescript@6.0.2)
@@ -1011,7 +1011,7 @@ importers:
 
   packages/ui-patterns:
     dependencies:
-      '@tide/ui':
+      '@wyh/ui':
         specifier: workspace:*
         version: link:../ui
       vue:

@@ -12,7 +12,7 @@ GitHub 只执行仓库根目录 `.github/workflows/` 下的文件。`frontend/.g
 | ~~`backend-scan.yml`~~ | — | **临时移除**：Sonar token 已失效，避免 CI 失败。`backend/pom.xml` 的 `-Psonar` profile 仍保留，token 恢复后可重建 workflow |
 | `backend-deploy.yml` | push → `main`（`backend/**`）或手动 | 打包并推送镜像 `wangyonghao/wyh-admin:latest`，再 SSH 到服务器拉起。Secret：`DOCKERHUB_USERNAME`、`DOCKERHUB_TOKEN`、`SSH_HOST`、`SSH_PORT`、`SSH_USER`、`SSH_KEY` |
 | `frontend-build.yml` | PR → `main`，且改了 `frontend/**` 或该文件 | 在 `frontend/` 执行 `pnpm test:unit`（Vitest）和 `pnpm run build`。不跑 Playwright |
-| `frontend-deploy.yml` | push → `main`，且改了 `frontend/**` 或该文件 | 构建 `@tide/admin` 并上传到服务器。Secret：`SSH_HOST`、`SSH_PORT`、`SSH_USER`、`SSH_KEY` |
+| `frontend-deploy.yml` | push → `main`，且改了 `frontend/**` 或该文件 | 构建 `@wyh/admin` 并上传到服务器。Secret：`SSH_HOST`、`SSH_PORT`、`SSH_USER`、`SSH_KEY` |
 | `release-tag.yml` | 推送 `v*` 标签 | 仅当 `github.repository == 'wangyonghao/wyh-admin'` 时创建 GitHub Release，正文指向 `main` 上的 `CHANGELOG.md` |
 
 ## 路径过滤
