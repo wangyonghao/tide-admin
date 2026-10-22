@@ -58,12 +58,12 @@ export const shared = defineConfig({
       },
       provider: 'local',
     },
-    siteTitle: 'Tide Admin',
+    siteTitle: 'wyh-admin',
     socialLinks: [
       { icon: 'github', link: 'https://github.com/vbenjs/vue-vben-admin' },
     ],
   },
-  title: 'Tide Admin',
+  title: 'wyh-admin',
   vite: {
     build: {
       chunkSizeWarningLimit: Infinity,

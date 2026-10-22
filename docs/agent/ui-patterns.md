@@ -1,4 +1,4 @@
-# Tide Admin — UI page patterns
+# wyh-admin — UI page patterns
 
 > 与 [`frontend/DESIGN.md`](../../frontend/DESIGN.md) 配套。  
 > **目的：** 用固定页面骨架消灭「每页一种写法」。视觉细节以 DESIGN.md 为准。  

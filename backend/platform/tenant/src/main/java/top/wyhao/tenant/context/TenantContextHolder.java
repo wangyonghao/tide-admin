@@ -87,7 +87,12 @@ public class TenantContextHolder {
      * @return 是否启用了租户
      */
     public static boolean isTenantEnabled() {
-        TenantProperties tenantProperties = SpringUtil.getBean(TenantProperties.class);
+        // Prefer getBeansOfType: historical configs sometimes registered TenantProperties twice.
+        java.util.Map<String, TenantProperties> beans = SpringUtil.getBeansOfType(TenantProperties.class);
+        if (beans == null || beans.isEmpty()) {
+            return false;
+        }
+        TenantProperties tenantProperties = beans.values().iterator().next();
         return tenantProperties != null && tenantProperties.isEnabled();
     }
 

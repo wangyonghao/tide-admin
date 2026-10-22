@@ -5,7 +5,7 @@ import { defineConfig } from 'vitepress';
 import { version } from '../../../../package.json';
 
 export const zh = defineConfig({
-  description: 'Tide Admin & 企业级管理系统',
+  description: 'wyh-admin & 企业级管理系统',
   lang: 'zh-Hans',
   themeConfig: {
     darkModeSwitchLabel: '主题',
