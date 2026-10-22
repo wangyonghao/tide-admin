@@ -1,4 +1,4 @@
-# Tide Admin — DESIGN.md
+# wyh-admin — DESIGN.md
 
 > **Status:** draft outline（九段齐，token 对齐现仓库；视觉微调待确认后升为正式版）  
 > **Scope:** 主应用 `frontend/apps/admin`（`@tide/admin`，shadcn-vue / Vben 原子 + Vben 壳）中后台产品 UI  
@@ -12,7 +12,7 @@
 
 ## 1. Visual Theme & Atmosphere
 
-Tide Admin 是**企业中后台脚手架**：信息密度偏高、结构清晰、克制用色。默认 **light-first**（灰蓝内容底 + 白表面），完整支持 **dark**；气质接近「可靠的运营控制台」，不是营销站、不是极简 IDE。
+wyh-admin 是**企业中后台脚手架**：信息密度偏高、结构清晰、克制用色。默认 **light-first**（灰蓝内容底 + 白表面），完整支持 **dark**；气质接近「可靠的运营控制台」，不是营销站、不是极简 IDE。
 
 | 维度 | 取向 |
 |------|------|

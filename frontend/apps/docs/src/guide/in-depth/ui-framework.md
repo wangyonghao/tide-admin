@@ -2,7 +2,7 @@
 
 ::: tip 本仓库
 
-Tide Admin 的产品界面是 shadcn-vue / Vben 原子（`#/ui`、`#/ui-patterns`）。本节是上游 Vben 的组件库切换说明。
+wyh-admin 的产品界面是 shadcn-vue / Vben 原子（`#/ui`、`#/ui-patterns`）。本节是上游 Vben 的组件库切换说明。
 
 :::
 
