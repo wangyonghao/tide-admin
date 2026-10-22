@@ -56,7 +56,7 @@ description: >-
 
 ## wyh-admin-specific guards
 
-- 依赖方向：`tide-bootstrap` → `interfaces` / `biz` → `platform` 域 → `cmn-*`。
+- 依赖方向：`wyh-bootstrap` → `interfaces` / `biz` → `platform` 域 → `cmn-*`。
 - P1 收口期间：优先 A/C/D（编译启动、租户可交付、前后端对齐），避免无关新功能膨胀。
 - DB：Liquibase + PostgreSQL changelog；任务：Quartz / `platform-job`。
 

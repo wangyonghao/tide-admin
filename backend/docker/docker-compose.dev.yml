@@ -5,7 +5,7 @@
 #
 # 本文件只写 ${VAR}。真实密码放 .env，且不要提交。
 
-name: tide-dev
+name: wyh-dev
 
 services:
   db:
@@ -105,7 +105,7 @@ services:
     build:
       context: .
       dockerfile: api/Dockerfile
-    image: tide-dev-api:dev
+    image: wyh-dev-api:dev
     restart: "no"
     init: true
     ports:

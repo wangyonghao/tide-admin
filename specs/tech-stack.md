@@ -23,7 +23,7 @@
 | Web 容器 | Undertow | 随 Spring Boot |
 | ORM | MyBatis Plus | 3.5.16 |
 | SQL 分析 | P6Spy | 3.9.1（开发期） |
-| DB 迁移 | Liquibase | changelog 在 `tide-bootstrap/.../db/changelog/postgresql/` |
+| DB 迁移 | Liquibase | changelog 在 `wyh-bootstrap/.../db/changelog/postgresql/` |
 | 主库 | PostgreSQL | JDBC 默认；生产配置以 Postgres 为准 |
 | 缓存 | Redisson + JetCache | 3.52.0 / 2.7.8（二级缓存） |
 | 认证授权 | Sa-Token | 1.44.0 |
@@ -65,7 +65,7 @@
 ### Backend module layout
 
 ```
-tide-bootstrap          # 可运行主服务（打包 / spring-boot:run）
+wyh-bootstrap          # 可运行主服务（打包 / spring-boot:run）
   ↓
 interfaces/*            # open-api 等接口层
 biz/*                   # 业务插件（如 biz-system）
@@ -85,7 +85,7 @@ platform/*              # 平台能力
 - **file**：文件领域与存储适配
 - **job**：Quartz 任务管理
 - **ops**：运维 / 审计类能力（settings 已 COLA；notification / audit 保持经典分层，见 `docs/agent/ops-layout.md`）
-- **cmn-license-***：可选许可证生成 / 校验；**未**接入 `tide-bootstrap`（半迁移收口：保留模块、主路径不依赖）
+- **cmn-license-***：可选许可证生成 / 校验；**未**接入 `wyh-bootstrap`（半迁移收口：保留模块、主路径不依赖）
 - **biz-system**：系统壳与仪表盘等薄编排；业务 Web 不放进 bootstrap；密码哈希等基础设施在 `cmn-*`
 
 半迁移收口说明：`docs/agent/p1a-half-migrate.md`。
@@ -117,7 +117,7 @@ vendor/@core                    # UI 内核（慎改）
 5. **任务调度以 Quartz（platform-job）为准**：勿回退或并行引入另一套分布式调度框架，除非宪法与 roadmap 明确变更。
 6. **前端主 UI 为 shadcn-vue / Vben 原子**：源码在 `@tide/ui`、`@tide/ui-patterns`（`frontend/packages/*`）。业务页用别名 `#/ui`、`#/ui-patterns`，或直接写包名。组件演示是 `frontend/apps/design-system`，只消费这两个包，不放业务页。勿默认再开平行产品应用，也不要再引入 `naive-ui`。
 7. **慎改 `@core`**：共享核心包变更影响面大；应用特有逻辑放 `frontend/apps/admin/src`，共享原子放 `frontend/packages/ui`，页面模式放 `frontend/packages/ui-patterns`，壳层封装在 `frontend/apps/admin/src/vben`。
-8. **配置集中**：运行配置以 `tide-bootstrap/src/main/resources/config/` 为准；敏感项用环境变量覆盖。
+8. **配置集中**：运行配置以 `wyh-bootstrap/src/main/resources/config/` 为准；敏感项用环境变量覆盖。
 
 ## Deliberate exclusions
 

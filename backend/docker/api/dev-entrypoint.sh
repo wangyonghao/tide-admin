@@ -75,7 +75,7 @@ watch_sources() {
       # 先拨快时间戳，编译期间的新保存留到下一轮。
       touch "${stamp}"
       echo "api: 源码已变更，正在编译以便 DevTools 重启（${changed}）" >&2
-      if ! mvn -B -pl tide-bootstrap -am compile -DskipTests -o -q; then
+      if ! mvn -B -pl wyh-bootstrap -am compile -DskipTests -o -q; then
         echo "api: 增量编译失败。若刚改过 pom 或依赖，请 restart api 容器。" >&2
       fi
     fi
@@ -88,7 +88,7 @@ if command -v stdbuf >/dev/null 2>&1; then
   mvn_cmd=(stdbuf -oL -eL mvn)
 fi
 
-"${mvn_cmd[@]}" -B -pl tide-bootstrap -am spring-boot:run \
+"${mvn_cmd[@]}" -B -pl wyh-bootstrap -am spring-boot:run \
   -Pdocker-dev \
   -DskipTests \
   -Dspring-boot.run.profiles=dev \

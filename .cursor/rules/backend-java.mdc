@@ -6,7 +6,7 @@ alwaysApply: false
 
 # Backend Java
 
-- 依赖方向：`tide-bootstrap` → `interfaces`/`biz-*` → `platform` 域 → `cmn-*`；禁止反向依赖。
+- 依赖方向：`wyh-bootstrap` → `interfaces`/`biz-*` → `platform` 域 → `cmn-*`；禁止反向依赖。
 - platform 域优先 COLA（`adapter`/`app`/`domain`/`infrastructure`）；简单模块可用经典分层。
 - Controller：方法级完整路径；组装 Result/VO；逻辑在 service/app。
 - Service 命名：`detail`/`list`/`page`/`create`/`update`/`delete` 等。

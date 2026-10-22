@@ -33,7 +33,7 @@ export PATH="$JAVA_HOME/bin:$PATH"
 # 推荐：中间件（Apple Container / 本机）+ env.sh + 宿主机 API（见 backend/docker/README.md）
 cp backend/scripts/env.example.sh backend/scripts/env.sh   # 首次
 set -a && source backend/scripts/env.sh && set +a
-cd backend && mvn -pl tide-bootstrap -am spring-boot:run
+cd backend && mvn -pl wyh-bootstrap -am spring-boot:run
 curl -s http://127.0.0.1:8000/actuator/health
 # 可选 / CI：Docker Compose 全栈（非本机验收必选）
 # cd backend/docker && cp .env.example .env && docker compose --env-file .env -f docker-compose.dev.yml up
@@ -47,15 +47,15 @@ cd frontend && pnpm dev:docs
 cd frontend && pnpm dev:ds
 ```
 
-配置：`backend/tide-bootstrap/src/main/resources/config/`  
+配置：`backend/wyh-bootstrap/src/main/resources/config/`  
 环境变量示例：`backend/scripts/env.example.sh`（复制为 `backend/scripts/env.sh`，已被 `backend/.gitignore` 忽略）  
 本地基础设施：`backend/docker/`（Compose 与 `.env.example`；无 Docker 时用 Apple Container 起中间件 + `backend/scripts/env.sh`；旧 `backend/scripts/docker/` 已删除）。JDK **17**。  
-DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
+DB 变更：`backend/wyh-bootstrap/src/main/resources/db/changelog/postgresql/`
 
 ## Hard boundaries
 
 1. **不做微服务拆分**；保持模块化单体（见 mission / tech-stack）。
-2. **依赖方向**：`tide-bootstrap` → `interfaces` / `biz-*` → `platform` 域 → `cmn-*`。禁止下层依赖上层。
+2. **依赖方向**：`wyh-bootstrap` → `interfaces` / `biz-*` → `platform` 域 → `cmn-*`。禁止下层依赖上层。
 3. **新依赖**：后端进根 `pom.xml` 的 `dependencyManagement`；前端进 `pnpm-workspace.yaml` catalog。
 4. **DB**：PostgreSQL + Liquibase；禁止只改库不改 changelog。
 5. **调度**：Spring Quartz / `platform-job`；勿并行引入另一套调度内核。
@@ -67,7 +67,7 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 
 | 意图 | 位置 |
 |------|------|
-| 启动 / 打包 | `backend/tide-bootstrap` |
+| 启动 / 打包 | `backend/wyh-bootstrap` |
 | 身份 / 组织 / 授权 | `backend/platform/iam`（`identity` / `department` / `security`） |
 | 租户 | `backend/platform/tenant` |
 | 文件 | `backend/platform/file` |
