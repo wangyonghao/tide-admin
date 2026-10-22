@@ -1,22 +1,22 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import { Button } from '@tide/ui/button';
+import { Button } from '@wyh/ui/button';
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@tide/ui/card';
-import { Separator } from '@tide/ui/separator';
+} from '@wyh/ui/card';
+import { Separator } from '@wyh/ui/separator';
 import {
   ConfirmAction,
   type ConfirmActionExpose,
-} from '@tide/ui-patterns/confirm-action';
-import { FilterInput } from '@tide/ui-patterns/filter-input';
-import { toast } from '@tide/ui-patterns/toast';
-import { ToolbarActions } from '@tide/ui-patterns/toolbar-actions';
+} from '@wyh/ui-patterns/confirm-action';
+import { FilterInput } from '@wyh/ui-patterns/filter-input';
+import { toast } from '@wyh/ui-patterns/toast';
+import { ToolbarActions } from '@wyh/ui-patterns/toolbar-actions';
 
 defineOptions({ name: 'PatternsDemo' });
 
@@ -31,7 +31,7 @@ function showToast(kind: 'error' | 'info' | 'success' | 'warning') {
     success: '已保存',
     warning: '名称重复',
   }[kind];
-  toast[kind](text, { description: '这条提示来自 @tide/ui-patterns/toast。' });
+  toast[kind](text, { description: '这条提示来自 @wyh/ui-patterns/toast。' });
 }
 
 async function askConfirm() {
@@ -51,7 +51,7 @@ async function askConfirm() {
     <CardHeader>
       <CardTitle>页面模式</CardTitle>
       <CardDescription>
-        来自 @tide/ui-patterns。确认和 toast 都停在这一页。
+        来自 @wyh/ui-patterns。确认和 toast 都停在这一页。
       </CardDescription>
     </CardHeader>
     <CardContent class="flex flex-col gap-6">

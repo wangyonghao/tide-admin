@@ -1,8 +1,8 @@
 import { execSync } from 'node:child_process';
 
 const allowedScopes = [
-  'tide-admin',
-  '@tide/docs',
+  'wyh-admin',
+  '@wyh/docs',
   'project',
   'style',
   'lint',

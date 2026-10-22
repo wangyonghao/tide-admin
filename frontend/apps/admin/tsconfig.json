@@ -21,10 +21,10 @@
       "#/*": [
         "./src/*"
       ],
-      "@tide/ui-patterns/*": [
+      "@wyh/ui-patterns/*": [
         "../../packages/ui-patterns/src/*"
       ],
-      "@tide/ui/*": [
+      "@wyh/ui/*": [
         "../../packages/ui/src/*"
       ],
       "@vben/tailwind-config/theme": [

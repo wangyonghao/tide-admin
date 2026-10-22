@@ -5,8 +5,8 @@ import {
   CardDescription,
   CardHeader,
   CardTitle,
-} from '@tide/ui/card';
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@tide/ui/tabs';
+} from '@wyh/ui/card';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from '@wyh/ui/tabs';
 
 defineOptions({ name: 'NotesDemo' });
 </script>
@@ -37,9 +37,9 @@ defineOptions({ name: 'NotesDemo' });
           <p>按路径导入，不从包根一次性取出全部组件。</p>
           <pre
             class="bg-muted mt-3 overflow-x-auto rounded-md p-3 text-xs"
-          ><code>import { Button } from '@tide/ui/button';
-import { toast } from '@tide/ui-patterns/toast';
-import { ConfirmAction } from '@tide/ui-patterns/confirm-action';</code></pre>
+          ><code>import { Button } from '@wyh/ui/button';
+import { toast } from '@wyh/ui-patterns/toast';
+import { ConfirmAction } from '@wyh/ui-patterns/confirm-action';</code></pre>
         </TabsContent>
         <TabsContent
           value="avoid"

@@ -1,14 +1,14 @@
 {
-  "name": "@tide/admin",
+  "name": "@wyh/admin",
   "version": "5.7.0",
   "private": true,
   "type": "module",
   "imports": {
-    "#/ui/badge/variant": "@tide/ui/badge/variant",
-    "#/ui/checkbox/group": "@tide/ui/checkbox/group",
-    "#/ui/date-picker/date-value": "@tide/ui/date-picker/date-value",
-    "#/ui-patterns/*": "@tide/ui-patterns/*",
-    "#/ui/*": "@tide/ui/*",
+    "#/ui/badge/variant": "@wyh/ui/badge/variant",
+    "#/ui/checkbox/group": "@wyh/ui/checkbox/group",
+    "#/ui/date-picker/date-value": "@wyh/ui/date-picker/date-value",
+    "#/ui-patterns/*": "@wyh/ui-patterns/*",
+    "#/ui/*": "@wyh/ui/*",
     "#/*": "./src/*"
   },
   "scripts": {
@@ -31,8 +31,8 @@
     "@tiptap/extension-underline": "catalog:",
     "@tiptap/starter-kit": "catalog:",
     "@tiptap/vue-3": "catalog:",
-    "@tide/ui": "workspace:*",
-    "@tide/ui-patterns": "workspace:*",
+    "@wyh/ui": "workspace:*",
+    "@wyh/ui-patterns": "workspace:*",
     "@vben-core/composables": "workspace:*",
     "@vben-core/design": "workspace:*",
     "@vben-core/form-ui": "workspace:*",

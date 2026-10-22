@@ -1,5 +1,5 @@
 {
-  "name": "@tide/design-system",
+  "name": "@wyh/design-system",
   "version": "5.7.0",
   "private": true,
   "type": "module",
@@ -9,8 +9,8 @@
     "preview": "vite preview"
   },
   "dependencies": {
-    "@tide/ui": "workspace:*",
-    "@tide/ui-patterns": "workspace:*",
+    "@wyh/ui": "workspace:*",
+    "@wyh/ui-patterns": "workspace:*",
     "@vben-core/design": "workspace:*",
     "vue": "catalog:"
   },

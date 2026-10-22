@@ -40,7 +40,7 @@ java -version   # 应显示 17.x
 | 语言 / 框架 | Java、Spring Boot 3 | 17、3.4.13 |
 | Web 容器 | Undertow | 随 Spring Boot |
 | 前端 | Vue、TypeScript、Vite | 3.5.32、6.0.2、8.0.8 |
-| UI | shadcn-vue / Vben 原子（`@tide/ui`、`@tide/ui-patterns`） | 5.7.0 |
+| UI | shadcn-vue / Vben 原子（`@wyh/ui`、`@wyh/ui-patterns`） | 5.7.0 |
 | 路由 / 状态 | Vue Router、Pinia | 5.0.4、3.0.4 |
 | 样式 | Tailwind CSS | 4.2.2 |
 | 认证 | Sa-Token、JustAuth | 1.44.0、1.16.7 |
@@ -51,7 +51,7 @@ java -version   # 应显示 17.x
 | 接口文档 | NextDoc4j、Swagger Annotations | 1.1.7、2.2.36 |
 | 其他 | FastExcel、CosId、X-File-Storage | 1.3.0、2.13.3、2.2.1 |
 
-主应用是 `frontend/apps/admin`（`@tide/admin`）。`pnpm dev` 与 `pnpm dev:admin` 相同。
+主应用是 `frontend/apps/admin`（`@wyh/admin`）。`pnpm dev` 与 `pnpm dev:admin` 相同。
 
 ## 快速开始
 
@@ -130,9 +130,9 @@ wyh-admin/
 │   ├── docker/             # 本地 Compose
 │   └── scripts/env.example.sh
 ├── frontend/
-│   ├── apps/admin/         # @tide/admin 产品后台
-│   ├── apps/docs/          # @tide/docs
-│   ├── apps/design-system/ # 只演示 @tide/ui、@tide/ui-patterns
+│   ├── apps/admin/         # @wyh/admin 产品后台
+│   ├── apps/docs/          # @wyh/docs
+│   ├── apps/design-system/ # 只演示 @wyh/ui、@wyh/ui-patterns
 │   └── packages/           # ui、ui-patterns
 ├── specs/                  # 技术栈与路线图
 └── AGENTS.md               # 给 Agent 的短索引

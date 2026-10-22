@@ -40,7 +40,7 @@ curl -s http://127.0.0.1:8000/actuator/health
 # 单元测试（默认开启；临时跳过 -DskipUnitTests=true）。范围与 .github/workflows/backend-build.yml 一致
 cd backend && mvn -pl platform/job,platform/iam,platform/cmn-crypto -am test
 
-# 前端产品后台（@tide/admin）。pnpm dev 与 pnpm dev:admin 相同
+# 前端产品后台（@wyh/admin）。pnpm dev 与 pnpm dev:admin 相同
 cd frontend && pnpm install && pnpm dev
 # 文档站 / 组件演示
 cd frontend && pnpm dev:docs
@@ -60,7 +60,7 @@ DB 变更：`backend/wyh-bootstrap/src/main/resources/db/changelog/postgresql/`
 4. **DB**：PostgreSQL + Liquibase；禁止只改库不改 changelog。
 5. **调度**：Spring Quartz / `platform-job`；勿并行引入另一套调度内核。
 6. **领域错误**：`XxxException` 静态工厂；禁止业务里直接 `new BizException` / `BadRequestException`；禁止新增 `Check` / `ValidationUtils`。
-7. **前端**：产品后台在 `frontend/apps/admin`（`@tide/admin`）+ shadcn-vue / Vben 原子；壳在 `apps/admin/src/vben`；慎改 `vendor/@core`。
+7. **前端**：产品后台在 `frontend/apps/admin`（`@wyh/admin`）+ shadcn-vue / Vben 原子；壳在 `apps/admin/src/vben`；慎改 `vendor/@core`。
 8. **宪法**：改 mission / tech-stack / roadmap 须用户显式确认，禁止作实现副作用修改。
 
 ## Where to change what
@@ -76,9 +76,9 @@ DB 变更：`backend/wyh-bootstrap/src/main/resources/db/changelog/postgresql/`
 | 开放 API | `backend/interfaces/open-api` |
 | 系统壳 / 仪表盘等 | `backend/biz/biz-system`（半迁移收口见 `docs/agent/p1a-half-migrate.md`） |
 | 前端页面 / API | `frontend/apps/admin/src/views`、`frontend/apps/admin/src/api` |
-| 文档站 | `frontend/apps/docs`（`@tide/docs`） |
-| 组件演示 | `frontend/apps/design-system`（只演示 `@tide/ui` / `@tide/ui-patterns`） |
-| UI 原子 / 页面模式 | `frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）。应用仍可用 `#/ui`、`#/ui-patterns` |
+| 文档站 | `frontend/apps/docs`（`@wyh/docs`） |
+| 组件演示 | `frontend/apps/design-system`（只演示 `@wyh/ui` / `@wyh/ui-patterns`） |
+| UI 原子 / 页面模式 | `frontend/packages/ui`（`@wyh/ui`）、`frontend/packages/ui-patterns`（`@wyh/ui-patterns`）。应用仍可用 `#/ui`、`#/ui-patterns` |
 
 完整表见 [`docs/agent/repo-map.md`](docs/agent/repo-map.md)。
 

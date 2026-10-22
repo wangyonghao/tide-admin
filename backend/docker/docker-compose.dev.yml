@@ -1,4 +1,4 @@
-# 本地开发：Postgres、Redis、Inbucket、MinIO、Spring Boot API、@tide/admin 的 Vite。
+# 本地开发：Postgres、Redis、Inbucket、MinIO、Spring Boot API、@wyh/admin 的 Vite。
 #
 #   cp .env.example .env   # 改掉占位密码和 AES_KEY
 #   docker compose --env-file .env -f docker-compose.dev.yml up
@@ -176,7 +176,7 @@ services:
         PNPM_SPEC=$$(node -p 'require("./package.json").packageManager')
         corepack prepare "$$PNPM_SPEC" --activate
         CI=true pnpm install
-        exec pnpm -F @tide/admin run dev -- --host 0.0.0.0 --port 5888
+        exec pnpm -F @wyh/admin run dev -- --host 0.0.0.0 --port 5888
     ports:
       - "${VITE_PORT:-5888}:5888"
     environment:

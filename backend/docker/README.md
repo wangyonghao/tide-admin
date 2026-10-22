@@ -1,6 +1,6 @@
 # 本地开发 Compose
 
-一条命令启动 Postgres、Redis、Inbucket、MinIO、Spring Boot API，以及 `@tide/admin` 的 Vite 热更新。
+一条命令启动 Postgres、Redis、Inbucket、MinIO、Spring Boot API，以及 `@wyh/admin` 的 Vite 热更新。
 
 旧路径 `backend/scripts/docker/` 已删除；本地入口仅本目录。
 

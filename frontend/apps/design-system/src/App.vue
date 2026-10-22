@@ -1,8 +1,8 @@
 <script lang="ts" setup>
 import { ref } from 'vue';
 
-import { Button } from '@tide/ui/button';
-import { Toaster } from '@tide/ui/sonner';
+import { Button } from '@wyh/ui/button';
+import { Toaster } from '@wyh/ui/sonner';
 
 import AtomsDemo from './sections/atoms-demo.vue';
 import NotesDemo from './sections/notes-demo.vue';
@@ -26,7 +26,7 @@ function toggleTheme() {
       >
         <div>
           <p class="text-muted-foreground text-xs tracking-wide uppercase">
-            @tide/ui · @tide/ui-patterns
+            @wyh/ui · @wyh/ui-patterns
           </p>
           <h1 class="text-xl font-semibold">
             Tide Design System

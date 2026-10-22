@@ -71,7 +71,7 @@ wyh-bootstrap
 
 | 用途 | 路径 |
 |------|------|
-| 产品后台 | `frontend/apps/admin`（`@tide/admin`）。`pnpm dev` / `pnpm build` 与 `pnpm dev:admin` / `pnpm build:admin` 相同 |
+| 产品后台 | `frontend/apps/admin`（`@wyh/admin`）。`pnpm dev` / `pnpm build` 与 `pnpm dev:admin` / `pnpm build:admin` 相同 |
 | 入口 | `frontend/apps/admin/src/main.ts` |
 | 路由 | `frontend/apps/admin/src/router/` |
 | 登录 | `frontend/apps/admin/src/views/_core/authentication/` |
@@ -81,9 +81,9 @@ wyh-bootstrap
 | 前后端对齐 | `docs/agent/API-ALIGNMENT.md` |
 | 代码生成 | `docs/agent/CODER.md`（已从宪法删除，未实现） |
 | 壳 / 内核 | `frontend/apps/admin/src/vben/`（`@vben/*`）；`frontend/vendor/@core`（慎改） |
-| 原子 / 页面模式 | `frontend/packages/ui`（`@tide/ui`）、`frontend/packages/ui-patterns`（`@tide/ui-patterns`）。应用导入仍可用 `#/ui`、`#/ui-patterns` |
-| 文档站 | `frontend/apps/docs`（`@tide/docs`，VitePress）。`pnpm dev:docs` / `pnpm build:docs` |
-| 组件演示 | `frontend/apps/design-system`（`@tide/design-system`）。只演示上述两个包，不放业务页。`pnpm dev:ds` / `pnpm build:ds` |
+| 原子 / 页面模式 | `frontend/packages/ui`（`@wyh/ui`）、`frontend/packages/ui-patterns`（`@wyh/ui-patterns`）。应用导入仍可用 `#/ui`、`#/ui-patterns` |
+| 文档站 | `frontend/apps/docs`（`@wyh/docs`，VitePress）。`pnpm dev:docs` / `pnpm build:docs` |
+| 组件演示 | `frontend/apps/design-system`（`@wyh/design-system`）。只演示上述两个包，不放业务页。`pnpm dev:ds` / `pnpm build:ds` |
 | 工程配置 | 应用：`frontend/apps/admin` 的 `vite.config.ts`、env、`tsconfig.json`。仓库级：`frontend/eslint.config.mjs`、`frontend/tsconfig.json` |
 
 开发：`cd frontend && pnpm dev`（产品后台，源码在 `apps/admin`）
