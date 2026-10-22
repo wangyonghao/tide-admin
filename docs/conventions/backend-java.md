@@ -52,6 +52,19 @@
 ## Testing
 
 - 工具：JUnit 5 + Mockito + AssertJ（`platform` 父 POM 已统一 `test` 依赖）；默认执行 Surefire（`-DskipUnitTests=true` 可临时跳过）。
-- 命名：`XxxTest`（单元）；`XxxIT` / `*ApplicationTests` 不进单元套件（Surefire exclude）。
-- **覆盖目标（脚手架）**：`domain` / 纯规则类（策略、解析器、校验器、工具）高覆盖；`adapter`（Controller/DTO 组装）不纳入强制；Repository/Mapper 偏集成测试。
-- 优先测无 Spring 的规则与可 Mock Gateway 的 App Service；示范见 `CronComposerTest`、`PasswordRulesTest`。
+- 命名：`XxxTest`（单元）；`XxxIT` / `*ApplicationTests` 不进单元套件（Surefire exclude）。单元测**不起 Spring**。
+- **必测 / 不强制**：
+
+  | 范围 | 要求 |
+  |------|------|
+  | `domain` / 纯规则（策略、解析器、校验器、工具） | 改逻辑必须同步 `XxxTest` |
+  | 可 Mock 的 app 决策与编排（Gateway / API 可注入） | 同上 |
+  | 基础设施重的 app（Redis / Sa-Token / Servlet 等静态依赖） | 抽纯决策函数测透；**不要求**整段主路径（如完整 `authenticate()`）在单元套件测满 |
+  | 手写、含分支的转换器 | 改逻辑必须同步 `XxxTest` |
+  | MapStruct `*Assembler`、Spring MVC Converter、FastExcel `Excel*Converter` | **不强制**（脚手架 / adapter）；仅非平凡自写分支可作次要补测 |
+  | `adapter`（Controller / Web DTO 组装） | 不强制 |
+  | Repository / Mapper | 偏集成测试（`XxxIT`） |
+
+- **`SpringUtil.getBean`**：存量可只测无 getBean 路径，getBean 分支标待抽依赖或 IT；**禁止**在 domain / 可测 app 路径新增 `SpringUtil.getBean`，应构造注入或方法参数传入协作接口。
+- **覆盖率**：不设 jacoco / 百分比门禁。「高覆盖」= 改动同步有用例，并以当前补测清单 P0 为实践底线。
+- 示范：`CronComposerTest`、`PasswordRulesTest`。
