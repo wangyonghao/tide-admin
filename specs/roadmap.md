@@ -27,7 +27,7 @@ Agent 每次会话读取本文件，从第一个非 `complete` 的阶段继续�
   - 前端 API、路由与后端域拆分对齐
   - `AGENTS.md` 等导航文档与真实目录一致（支撑收口，不单列为成功标准时可并行）
 - **Done when:**
-  - [ ] **A.** 编译 / 启动全绿，无半迁移模块（tenant / ops / license / biz-system 边界已钉死，见 `docs/agent/p1a-half-migrate.md`；启动可重复与死代码清理另见 W2-①②）
+  - [ ] **A.** 编译 / 启动全绿，无半迁移模块（tenant / ops / license / biz-system 边界已钉死，见 `docs/architecture/repo-map.md`；启动可重复与死代码清理另见 W2-①②）
   - [x] **C.** 租户相关纳入本阶段并达到可交付（含 Liquibase 等主路径启用与闭环）（#35）
   - [ ] **D.** 前端 API / 路由与后端域拆分对齐
 - **Notes:** 不引入微服务拆分。本阶段完成前，避免大面积新开与边界冲突的业务能力。P1-A 四域收口不以「全部 COLA 化」为完成标准；ops notification/audit 与 tenant 经典分层为已接受边界。

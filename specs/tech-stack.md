@@ -84,11 +84,11 @@ platform/*              # 平台能力
 - **tenant**：租户与套餐；经典 `controller` / `service` / `mapper`（允许，不强制再拆 COLA）
 - **file**：文件领域与存储适配
 - **job**：Quartz 任务管理
-- **ops**：运维 / 审计类能力（settings 已 COLA；notification / audit 保持经典分层，见 `docs/agent/ops-layout.md`）
+- **ops**：运维 / 审计类能力（settings 已 COLA；notification / audit 保持经典分层，见 `docs/architecture/repo-map.md`）
 - **cmn-license-***：可选许可证生成 / 校验；**未**接入 `wyh-bootstrap`（半迁移收口：保留模块、主路径不依赖）
 - **biz-system**：系统壳与仪表盘等薄编排；业务 Web 不放进 bootstrap；密码哈希等基础设施在 `cmn-*`
 
-半迁移收口说明：`docs/agent/p1a-half-migrate.md`。
+半迁移收口说明：`docs/architecture/repo-map.md`。
 
 ### Frontend package layout
 

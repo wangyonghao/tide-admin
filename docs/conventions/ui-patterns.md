@@ -209,6 +209,6 @@ Page 或纯容器
 |------|------|
 | `frontend/DESIGN.md` | 看起来怎样（色、字、Do/Don't） |
 | **本文件** | 页面怎样搭（骨架、样板、清单） |
-| `docs/agent/frontend-conventions.md` | 工程约定（目录、命名、依赖） |
+| `docs/conventions/frontend.md` | 工程约定（目录、命名、依赖） |
 
 新建或大改 UI 时顺序：DESIGN.md → 本文件选型 → 复制样板 → 填 API/列。

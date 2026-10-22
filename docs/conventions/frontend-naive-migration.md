@@ -254,7 +254,7 @@ Naive 包不删。
 - **主题 hook**：删掉 `vben/hooks/use-design-tokens.ts`，壳层 `hooks/index.ts` 不再导出。`useNaiveDesignTokens` 在卸掉 `NConfigProvider` 之后没有调用方。同文件里的 `useAntdDesignTokens`、`useElementPlusDesignTokens` 应用也不调用，一并去掉。
 - **演示文案**：`locales` 里 `demos.naive` 从 “Naive UI” 改为 “原子控件” / “Atoms”。`demos.vben.naive-ui` 从 “Naive UI 版本” 改为 “shadcn-vue / Vben 原子”（英文 “shadcn-vue / Vben atoms”）。键名没改。这两句目前没有路由引用。同组里的 Ant Design Vue、Antdv Next、TDesign 文案仍是上游模板留下的，页面没有用到。
 - **脚本名**：`frontend/package.json` 去掉 `dev:naive`、`build:naive`。它们只是转到现有的 `dev` / `build`。
-- **指向当前 UI 的说明**：`DESIGN.md`、`AGENTS.md`、`README.md`、`docs/agent/frontend-conventions.md`、`.cursor/rules/frontend-vue.mdc` 里把当前界面写成 Naive 的句子，改成 shadcn-vue / Vben 原子。没有改控件实现。
+- **指向当前 UI 的说明**：`DESIGN.md`、`AGENTS.md`、`README.md`、`docs/conventions/frontend.md`、`.cursor/rules/frontend-vue.mdc` 里把当前界面写成 Naive 的句子，改成 shadcn-vue / Vben 原子。没有改控件实现。
 
 `frontend/src` 里没有 `from 'naive-ui'`，也没有已删除适配器（例如 `adapter/naive.ts`）的导入。
 
