@@ -119,8 +119,6 @@ logging:
   level:
     top.wyhao: DEBUG
     top.wyhao.starter: DEBUG
-  file:
-    path: ./logs
 
 --- ### Sa-Token JWT 秘钥（本地也从环境变量读，不要写进仓库）
 sa-token.jwt-secret-key: ${WYH_JWT_SECRET}

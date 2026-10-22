@@ -4,32 +4,7 @@
 
 仓库：<https://github.com/wangyonghao/wyh-admin>
 
-## 环境要求
 
-| 环境 | 要求 |
-|------|------|
-| Java | **17**（必须；本机若默认是 JDK 21/26 会编译或启动失败） |
-| Maven | 3.6+ |
-| PostgreSQL | 17+ |
-| Redis | 6+ |
-| Node.js | ^20.19.0 \|\| ^22.18.0 \|\| ^24.0.0 |
-| pnpm | >= 10（当前 `packageManager`：10.33.4） |
-| 中间件 | Postgres 17 + Redis（本机进程、**Apple Container**、或其它均可） |
-| Docker Compose | **可选**（全栈一键 / CI）；本机无 Docker 不挡本地启动验收 |
-
-### 钉死 JDK 17
-
-Homebrew 的 `openjdk` 可能是 21/26。每次开终端先固定 17，再跑 Maven：
-
-```bash
-export JAVA_HOME="$(/usr/libexec/java_home -v 17)"
-# Apple Silicon Homebrew 备选：
-# export JAVA_HOME=/opt/homebrew/opt/openjdk@17/libexec/openjdk.jdk/Contents/Home
-export PATH="$JAVA_HOME/bin:$PATH"
-java -version   # 应显示 17.x
-```
-
-`backend/scripts/env.example.sh` 已包含同样的 `JAVA_HOME` 导出；复制为 `env.sh` 后 `source` 即可。
 
 ## 核心技术栈
 
@@ -55,6 +30,17 @@ java -version   # 应显示 17.x
 
 ## 快速开始
 
+### 环境要求
+
+| 环境 | 要求 |
+|------|------|
+| Java | **17**（必须；本机若默认是 JDK 21/26 会编译或启动失败） |
+| Maven | 3.6+ |
+| PostgreSQL | 17+ |
+| Redis | 6+ |
+| Node.js | ^20.19.0 \|\| ^22.18.0 \|\| ^24.0.0 |
+| pnpm | >= 10（当前 `packageManager`：10.33.4） |
+
 **推荐验收路径（非 Compose）**：中间件（Postgres + Redis）用本机已有服务或 **Apple Container** 拉起 → 复制 `backend/scripts/env.example.sh` 为 `env.sh` → `JAVA_HOME=17` → 宿主机 `mvn -pl wyh-bootstrap -am spring-boot:run` → `curl /actuator/health` 为 UP。细则见 [`backend/docker/README.md`](backend/docker/README.md)「宿主机启动（推荐）」与「Apple Container」。
 
 **Docker Compose** 仅作可选全栈 / CI 路径，不是本机验收必选项。旧路径 `backend/scripts/docker/` 已删除；勿再引用。
@@ -66,14 +52,11 @@ git clone https://github.com/wangyonghao/wyh-admin.git
 cd wyh-admin
 ```
 
-### 2. 宿主机启动（推荐 / 本机验收）
+### 2. 启动
 
 先确认中间件已监听（默认 Postgres `5432`、Redis `6379`），且 `java -version` 是 17：
 
 ```bash
-cp backend/scripts/env.example.sh backend/scripts/env.sh
-# 编辑 env.sh：DB_PWD、REDIS_PWD、AES_KEY、WYH_JWT_SECRET 与中间件口令一致
-set -a && source backend/scripts/env.sh && set +a
 java -version   # 须为 17.x
 cd backend && mvn -pl wyh-bootstrap -am compile
 cd backend && mvn -pl wyh-bootstrap -am spring-boot:run

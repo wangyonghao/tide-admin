@@ -1,7 +1,5 @@
 # wyh-admin — Mission
 
-> 曾用名 Tide Admin / tide-admin；对外与文档逐步统一为 **wyh-admin**。
-
 ## Purpose
 
 wyh-admin 是一套经实践沉淀、可二开的 **B 端工程底座**——不是再堆一个功能大全模板。
