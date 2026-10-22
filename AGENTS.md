@@ -74,7 +74,7 @@ DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 | 任务 | `backend/platform/job` |
 | 审计 / 通知 / 设置 | `backend/platform/ops` |
 | 开放 API | `backend/interfaces/open-api` |
-| 系统壳 / 仪表盘等 | `backend/biz/biz-system` |
+| 系统壳 / 仪表盘等 | `backend/biz/biz-system`（半迁移收口见 `docs/agent/p1a-half-migrate.md`） |
 | 前端页面 / API | `frontend/apps/admin/src/views`、`frontend/apps/admin/src/api` |
 | 文档站 | `frontend/apps/docs`（`@tide/docs`） |
 | 组件演示 | `frontend/apps/design-system`（只演示 `@tide/ui` / `@tide/ui-patterns`） |

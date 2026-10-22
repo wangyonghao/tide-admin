@@ -15,3 +15,7 @@
 ## 没有继续做的
 
 notification 和 audit 的领域服务没有按 iam 再拆一遍。那样要改事务边界和 Mapper 调用，超出这次对齐。不要在 `controller` 包下再加新的 Web 类；新接口放 `adapter/web`。
+
+## 与 P1-A 的关系
+
+本页描述即 ops 的半迁移**收口态**（不再把 notification/audit 拆成 COLA）。总表见 [`p1a-half-migrate.md`](p1a-half-migrate.md)。
