@@ -23,7 +23,7 @@ body:
           required: true
         - label: 搜索了 [吐槽广场](https://wyhao.top/docs/admin/issue-hub.html)，没有其他人提交过类似的 Bug（如果对应 Bug 尚未解决，您可以先订阅关注该 Issue，为了方便后来者查找问题解决方法，请避免创建重复的 Issue）
           required: true
-        - label: 问过 [DeepWiki](https://deepwiki.com/wangyonghao/tide-admin) 及知名 AI 大模型，仍无解决方法
+        - label: 问过 [DeepWiki](https://deepwiki.com/wangyonghao/wyh-admin) 及知名 AI 大模型，仍无解决方法
           required: true
         - label: 【后端】确认不是依赖组件相关的问题，例如：sa-token、mybatis-plus、snail-job、crane4j、cosid等（如有此类组件相关的问题，请提交至对应组件仓库）
           required: true
