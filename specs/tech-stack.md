@@ -67,7 +67,7 @@
 ```
 tide-bootstrap          # 可运行主服务（打包 / spring-boot:run）
   ↓
-interfaces/*            # tide-web、open-api 等接口层
+interfaces/*            # open-api 等接口层
 biz/*                   # 业务插件（如 biz-system）
   ↓
 platform/*              # 平台能力

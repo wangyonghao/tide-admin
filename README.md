@@ -57,7 +57,7 @@ java -version   # 应显示 17.x
 
 **推荐验收路径（非 Compose）**：中间件（Postgres + Redis）用本机已有服务或 **Apple Container** 拉起 → 复制 `backend/scripts/env.example.sh` 为 `env.sh` → `JAVA_HOME=17` → 宿主机 `mvn -pl tide-bootstrap -am spring-boot:run` → `curl /actuator/health` 为 UP。细则见 [`backend/docker/README.md`](backend/docker/README.md)「宿主机启动（推荐）」与「Apple Container」。
 
-**Docker Compose** 仅作可选全栈 / CI 路径，不是本机验收必选项。不要使用已废弃的 `backend/scripts/docker/`。
+**Docker Compose** 仅作可选全栈 / CI 路径，不是本机验收必选项。旧路径 `backend/scripts/docker/` 已删除；勿再引用。
 
 ### 1. 克隆
 
@@ -124,7 +124,7 @@ cd frontend && pnpm test:unit
 wyh-admin/
 ├── backend/
 │   ├── tide-bootstrap/     # 启动、配置、Liquibase
-│   ├── interfaces/         # tide-web、open-api
+│   ├── interfaces/         # open-api
 │   ├── biz/biz-system/     # 系统壳、仪表盘等
 │   ├── platform/           # iam、tenant、file、job、ops 与 cmn-*
 │   ├── docker/             # 本地 Compose

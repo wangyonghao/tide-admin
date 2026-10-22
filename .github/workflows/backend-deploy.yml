@@ -77,7 +77,7 @@ jobs:
       #     port: ${{ secrets.SSH_PORT }}
       #     username: ${{ secrets.SSH_USER }}
       #     key: ${{ secrets.SSH_KEY }}
-      #     source: ./backend/scripts/docker/*
+      #     source: ./backend/docker/*  # was scripts/docker; removed
       #     target: /opt/tide-admin/
       #     strip_components: 2
       # 8. 远程服务器执行部署脚本

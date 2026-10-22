@@ -49,7 +49,7 @@ cd frontend && pnpm dev:ds
 
 配置：`backend/tide-bootstrap/src/main/resources/config/`  
 环境变量示例：`backend/scripts/env.example.sh`（复制为 `backend/scripts/env.sh`，已被 `backend/.gitignore` 忽略）  
-本地基础设施：`backend/docker/`（Compose 与 `.env.example`；无 Docker 时用 Apple Container 起中间件 + `backend/scripts/env.sh`；不要用 `backend/scripts/docker/`）。JDK **17**。  
+本地基础设施：`backend/docker/`（Compose 与 `.env.example`；无 Docker 时用 Apple Container 起中间件 + `backend/scripts/env.sh`；旧 `backend/scripts/docker/` 已删除）。JDK **17**。  
 DB 变更：`backend/tide-bootstrap/src/main/resources/db/changelog/postgresql/`
 
 ## Hard boundaries

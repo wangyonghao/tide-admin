@@ -513,13 +513,7 @@
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-fastexcel</artifactId>
         <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>cmn-poi</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
+      </dependency>      <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-storage-core</artifactId>
         <version>${revision}</version>
