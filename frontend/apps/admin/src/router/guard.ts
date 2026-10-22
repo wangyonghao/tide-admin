@@ -156,7 +156,7 @@ function setupAccessGuard(router: Router) {
     // 生成路由表
     try {
       await userStore.fetchAuthInfo();
-      addRoutes(router, userStore.menus);
+      addRoutes(router, userStore.menus as RouteItem[]);
       const orgSession = await orgApi.session();
       if (
         orgSession.needsOrganization &&

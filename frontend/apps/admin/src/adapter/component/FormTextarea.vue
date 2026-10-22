@@ -13,6 +13,14 @@ defineProps<{
 const emit = defineEmits<{
   'update:value': [value: null | string];
 }>();
+
+function onUpdate(value: null | string | [string, string]) {
+  if (Array.isArray(value)) {
+    emit('update:value', value.join('\n'));
+    return;
+  }
+  emit('update:value', value);
+}
 </script>
 
 <template>
@@ -20,6 +28,6 @@ const emit = defineEmits<{
     textarea
     v-bind="$attrs"
     :value="value"
-    @update:value="emit('update:value', $event)"
+    @update:value="onUpdate"
   />
 </template>

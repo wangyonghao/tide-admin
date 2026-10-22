@@ -1,7 +1,7 @@
 ---
 name: sdd-continue
 description: >-
-  Continues Tide Admin Spec-Driven Development from the next unfinished
+  Continues wyh-admin Spec-Driven Development from the next unfinished
   roadmap phase: re-read constitution, resume or start specs, then implement
   confirmed task groups. Use when the user says continue, what's next, 继续,
   下一步, 当前阶段, or wants to resume SDD without restating context.
@@ -54,7 +54,7 @@ description: >-
 - 禁止把「实现方便」写成对 mission / tech-stack / roadmap 的悄悄改写。
 - 若实现证明宪法过时：提出变更建议并 **等待确认**，再改宪法文件。
 
-## Tide-specific guards
+## wyh-admin-specific guards
 
 - 依赖方向：`tide-bootstrap` → `interfaces` / `biz` → `platform` 域 → `cmn-*`。
 - P1 收口期间：优先 A/C/D（编译启动、租户可交付、前后端对齐），避免无关新功能膨胀。

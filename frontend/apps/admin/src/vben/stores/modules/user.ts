@@ -3,13 +3,17 @@ import { acceptHMRUpdate, defineStore } from 'pinia';
 interface BasicUserInfo {
   [key: string]: any;
   /**
-   * 头像文件 ID
+   * 头像（文件 ID 或 URL）
    */
-  avatar: number | null;
+  avatar: number | string | null;
   /**
    * 显示名称
    */
-  displayName: string;
+  displayName?: string;
+  /**
+   * 兼容 Vben Profile 的 realName
+   */
+  realName?: string;
   /**
    * 用户角色
    */

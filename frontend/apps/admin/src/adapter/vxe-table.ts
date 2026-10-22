@@ -1,3 +1,4 @@
+import type { Recordable } from '@vben/types';
 import type { VxeTableGridOptions } from '@vben/plugins/vxe-table';
 
 import type { ComponentPropsMap, ComponentType } from './component';
@@ -80,3 +81,12 @@ export const useVbenVxeGrid = <T extends Record<string, any>>(
 ) => useGrid<T, ComponentType, ComponentPropsMap>(...rest);
 
 export type * from '@vben/plugins/vxe-table';
+
+export interface OnActionClickParams<T = Recordable<any>> {
+  code: string;
+  row: T;
+}
+
+export type OnActionClickFn<T = Recordable<any>> = (
+  params: OnActionClickParams<T>,
+) => void;

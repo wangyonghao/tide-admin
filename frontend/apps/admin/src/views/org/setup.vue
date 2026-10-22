@@ -82,6 +82,8 @@ async function acceptInvite(invite: OrgInviteResult) {
   await router.replace('/dashboard');
 }
 
+defineExpose({ acceptInvite });
+
 onMounted(refresh);
 </script>
 

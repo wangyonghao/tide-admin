@@ -18,9 +18,6 @@ const contentLoading = ref(false);
 
 const currentMessage = ref<MessageResp>();
 
-const currentNoticeContent = computed(() => {
-  return currentMessage.value?.content || '';
-});
 
 const [Modal, modalApi] = useVbenModal({
   centered: true,

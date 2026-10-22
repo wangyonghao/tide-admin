@@ -1,6 +1,6 @@
 # Changelog
 
-本文件记录 Tide Admin 对用户与集成方有意义的变更。
+本文件记录 wyh-admin 对用户与集成方有意义的变更。
 
 格式基于 Keep a Changelog，版本遵循 Semantic Versioning。
 
