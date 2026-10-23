@@ -22,9 +22,9 @@ import top.wyhao.mybatis.query.PageResult;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationLogExcelResult;
-import top.wyhao.admin.system.security.adapter.web.dto.AuthenticationLogQuery;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationLogResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogExcelResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogQuery;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogResult;
 
 /**
  * 登录日志 Service 实现

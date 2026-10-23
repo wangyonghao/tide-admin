@@ -5,8 +5,8 @@ import top.wyhao.admin.system.security.domain.model.SysAuthenticationLog;
 import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationLogExcelResult;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationLogResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogExcelResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogResult;
 
 /**
  * 登录日志对象转换

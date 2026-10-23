@@ -1,9 +1,9 @@
 package top.wyhao.admin.system.security.app.query;
 
 import top.wyhao.mybatis.query.PageResult;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleMemberQuery;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleQuery;
-import top.wyhao.admin.system.security.adapter.web.vo.RoleMemberResult;
+import top.wyhao.admin.system.security.app.dto.RoleMemberQuery;
+import top.wyhao.admin.system.security.app.dto.RoleQuery;
+import top.wyhao.admin.system.security.app.dto.RoleMemberResult;
 import top.wyhao.admin.system.security.domain.model.SysRole;
 
 import java.util.List;

@@ -15,9 +15,9 @@ import top.wyhao.web.core.model.IdResult;
 import top.wyhao.web.core.model.IdsRequest;
 
 import java.util.List;
-import top.wyhao.admin.system.department.adapter.web.dto.DepartmentQuery;
-import top.wyhao.admin.system.department.adapter.web.dto.DepartmentRequest;
-import top.wyhao.admin.system.department.adapter.web.vo.DepartmentResult;
+import top.wyhao.admin.system.department.app.dto.DepartmentQuery;
+import top.wyhao.admin.system.department.app.dto.DepartmentRequest;
+import top.wyhao.admin.system.department.app.dto.DepartmentResult;
 
 /**
  * 部门管理 API

@@ -4,7 +4,7 @@ import cn.hutool.core.text.CharSequenceUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import top.wyhao.cmn.core.constant.CacheConstants;
-import top.wyhao.admin.system.security.client.AuthenticationException;
+import top.wyhao.admin.system.security.domain.exception.AuthenticationException;
 import top.wyhao.admin.system.security.client.ContactCaptchaApi;
 import top.wyhao.redisson.util.RedisUtils;
 

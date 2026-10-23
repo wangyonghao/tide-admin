@@ -10,8 +10,8 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.security.adapter.web.dto.RolePermissionUpdateRequest;
-import top.wyhao.admin.system.security.adapter.web.vo.MenuTreeVO;
+import top.wyhao.admin.system.security.app.dto.RolePermissionUpdateRequest;
+import top.wyhao.admin.system.security.app.dto.MenuTreeVO;
 import top.wyhao.admin.system.security.app.service.MenuService;
 import top.wyhao.admin.system.security.app.service.RoleService;
 import top.wyhao.cmn.core.model.Result;
@@ -20,13 +20,13 @@ import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.web.core.model.IdResult;
 
 import java.util.List;
-import top.wyhao.admin.system.security.adapter.web.vo.RoleDetailResult;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleMemberQuery;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleMemberRemoveRequest;
-import top.wyhao.admin.system.security.adapter.web.vo.RoleMemberResult;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleQuery;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleRequest;
-import top.wyhao.admin.system.security.adapter.web.vo.RoleResult;
+import top.wyhao.admin.system.security.app.dto.RoleDetailResult;
+import top.wyhao.admin.system.security.app.dto.RoleMemberQuery;
+import top.wyhao.admin.system.security.app.dto.RoleMemberRemoveRequest;
+import top.wyhao.admin.system.security.app.dto.RoleMemberResult;
+import top.wyhao.admin.system.security.app.dto.RoleQuery;
+import top.wyhao.admin.system.security.app.dto.RoleRequest;
+import top.wyhao.admin.system.security.app.dto.RoleResult;
 
 /**
  * 角色管理 API

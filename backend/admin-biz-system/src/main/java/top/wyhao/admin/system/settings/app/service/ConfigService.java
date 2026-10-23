@@ -3,11 +3,11 @@ package top.wyhao.settings.app.service;
 import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.settings.client.MailConfigVO;
 import top.wyhao.mybatis.query.PageResult;
-import top.wyhao.settings.adapter.web.dto.ConfigQuery;
-import top.wyhao.settings.adapter.web.dto.ConfigRequest;
-import top.wyhao.settings.adapter.web.vo.config.RegisterConfigVO;
-import top.wyhao.settings.adapter.web.vo.config.StorageConfigVO;
-import top.wyhao.settings.adapter.web.vo.ConfigResult;
+import top.wyhao.settings.app.dto.ConfigQuery;
+import top.wyhao.settings.app.dto.ConfigRequest;
+import top.wyhao.settings.app.dto.config.RegisterConfigVO;
+import top.wyhao.settings.app.dto.config.StorageConfigVO;
+import top.wyhao.settings.app.dto.ConfigResult;
 import top.wyhao.web.core.model.PageQuery;
 
 import java.util.List;

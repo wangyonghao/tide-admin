@@ -21,12 +21,12 @@ import me.zhyd.oauth.config.AuthConfig;
 import me.zhyd.oauth.request.AuthRequest;
 import me.zhyd.oauth.utils.AuthStateUtils;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.security.adapter.web.dto.AuthenticationRequest;
-import top.wyhao.admin.system.security.adapter.web.dto.RegisterRequest;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationInfoResult;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationResult;
-import top.wyhao.admin.system.security.adapter.web.vo.OnlineUserResult;
-import top.wyhao.admin.system.security.adapter.web.vo.SocialAuthorizeUrlResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationRequest;
+import top.wyhao.admin.system.security.app.dto.RegisterRequest;
+import top.wyhao.admin.system.security.app.dto.AuthenticationInfoResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationResult;
+import top.wyhao.admin.system.security.app.dto.OnlineUserResult;
+import top.wyhao.admin.system.security.app.dto.SocialAuthorizeUrlResult;
 import top.wyhao.admin.system.security.app.service.AuthenticationService;
 import top.wyhao.admin.system.identity.client.PasswordApi;
 import top.wyhao.admin.system.identity.client.UserApi;
@@ -34,7 +34,7 @@ import top.wyhao.admin.system.security.app.service.AuthenticationLogService;
 import top.wyhao.admin.system.security.client.MenuApi;
 import top.wyhao.security.client.PermissionApi;
 import top.wyhao.satoken.util.LoginUtil;
-import top.wyhao.admin.system.security.client.AuthenticationException;
+import top.wyhao.admin.system.security.domain.exception.AuthenticationException;
 import top.wyhao.cmn.core.util.RsaUtils;
 import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.mybatis.query.PageResult;
@@ -43,8 +43,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-import top.wyhao.admin.system.security.adapter.web.dto.AuthenticationLogQuery;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationLogResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogQuery;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogResult;
 
 /**
  * 用户认证 API
