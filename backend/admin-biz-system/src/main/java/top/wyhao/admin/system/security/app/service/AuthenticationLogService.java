@@ -3,8 +3,8 @@ package top.wyhao.admin.system.security.app.service;
 import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.mybatis.query.PageResult;
-import top.wyhao.admin.system.security.adapter.web.dto.AuthenticationLogQuery;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationLogResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogQuery;
+import top.wyhao.admin.system.security.app.dto.AuthenticationLogResult;
 
 /**
  * 登录日志 Service

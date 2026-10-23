@@ -10,15 +10,15 @@ import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-import top.wyhao.admin.system.security.adapter.web.vo.MenuTreeVO;
-import top.wyhao.admin.system.security.adapter.web.vo.MenuVO;
+import top.wyhao.admin.system.security.app.dto.MenuTreeVO;
+import top.wyhao.admin.system.security.app.dto.MenuVO;
 import top.wyhao.admin.system.security.app.service.MenuService;
 import top.wyhao.web.core.model.IdResult;
 
 import java.util.List;
-import top.wyhao.admin.system.security.adapter.web.dto.MenuQuery;
-import top.wyhao.admin.system.security.adapter.web.dto.MenuRequest;
-import top.wyhao.admin.system.security.adapter.web.dto.MenuSortRequest;
+import top.wyhao.admin.system.security.app.dto.MenuQuery;
+import top.wyhao.admin.system.security.app.dto.MenuRequest;
+import top.wyhao.admin.system.security.app.dto.MenuSortRequest;
 
 /**
  * 菜单管理 API

@@ -3,19 +3,19 @@ package top.wyhao.admin.system.security.app.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import top.wyhao.admin.system.security.adapter.web.dto.RolePermissionUpdateRequest;
+import top.wyhao.admin.system.security.app.dto.RolePermissionUpdateRequest;
 import top.wyhao.admin.system.security.domain.model.SysRole;
-import top.wyhao.admin.system.security.adapter.web.vo.MenuVO;
+import top.wyhao.admin.system.security.app.dto.MenuVO;
 import top.wyhao.web.core.model.PageQuery;
 import top.wyhao.mybatis.query.PageResult;
 
 import java.util.List;
-import top.wyhao.admin.system.security.adapter.web.vo.RoleDetailResult;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleMemberQuery;
-import top.wyhao.admin.system.security.adapter.web.vo.RoleMemberResult;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleQuery;
-import top.wyhao.admin.system.security.adapter.web.dto.RoleRequest;
-import top.wyhao.admin.system.security.adapter.web.vo.RoleResult;
+import top.wyhao.admin.system.security.app.dto.RoleDetailResult;
+import top.wyhao.admin.system.security.app.dto.RoleMemberQuery;
+import top.wyhao.admin.system.security.app.dto.RoleMemberResult;
+import top.wyhao.admin.system.security.app.dto.RoleQuery;
+import top.wyhao.admin.system.security.app.dto.RoleRequest;
+import top.wyhao.admin.system.security.app.dto.RoleResult;
 
 /**
  * 角色业务接口

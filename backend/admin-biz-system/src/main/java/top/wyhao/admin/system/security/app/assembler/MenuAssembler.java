@@ -4,12 +4,12 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.MappingTarget;
 import top.wyhao.admin.system.security.domain.model.SysMenu;
-import top.wyhao.admin.system.security.adapter.web.vo.MenuTreeVO;
-import top.wyhao.admin.system.security.adapter.web.vo.MenuVO;
+import top.wyhao.admin.system.security.app.dto.MenuTreeVO;
+import top.wyhao.admin.system.security.app.dto.MenuVO;
 import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
-import top.wyhao.admin.system.security.adapter.web.dto.MenuRequest;
+import top.wyhao.admin.system.security.app.dto.MenuRequest;
 
 /**
  * 菜单对象转换

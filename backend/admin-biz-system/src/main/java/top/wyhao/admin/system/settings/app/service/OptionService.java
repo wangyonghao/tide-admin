@@ -2,9 +2,9 @@ package top.wyhao.settings.app.service;
 
 import top.wyhao.mybatis.query.PageParam;
 import top.wyhao.mybatis.query.PageResult;
-import top.wyhao.settings.adapter.web.dto.OptionQuery;
-import top.wyhao.settings.adapter.web.dto.OptionRequest;
-import top.wyhao.settings.adapter.web.vo.OptionResult;
+import top.wyhao.settings.app.dto.OptionQuery;
+import top.wyhao.settings.app.dto.OptionRequest;
+import top.wyhao.settings.app.dto.OptionResult;
 import top.wyhao.web.core.model.LabelValueResult;
 
 import java.util.List;

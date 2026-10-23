@@ -5,9 +5,9 @@ import jakarta.servlet.http.HttpServletResponse;
 import top.wyhao.admin.system.department.domain.model.SysDepartment;
 
 import java.util.List;
-import top.wyhao.admin.system.department.adapter.web.dto.DepartmentQuery;
-import top.wyhao.admin.system.department.adapter.web.dto.DepartmentRequest;
-import top.wyhao.admin.system.department.adapter.web.vo.DepartmentResult;
+import top.wyhao.admin.system.department.app.dto.DepartmentQuery;
+import top.wyhao.admin.system.department.app.dto.DepartmentRequest;
+import top.wyhao.admin.system.department.app.dto.DepartmentResult;
 
 /**
  * 部门业务接口

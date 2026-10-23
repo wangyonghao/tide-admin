@@ -10,12 +10,12 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
 import top.wyhao.satoken.util.LoginUtil;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgApplyRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgCreateRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgInviteRequest;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgInviteResult;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgResult;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgSessionResult;
+import top.wyhao.admin.system.identity.app.dto.OrgApplyRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgCreateRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgInviteRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgInviteResult;
+import top.wyhao.admin.system.identity.app.dto.OrgResult;
+import top.wyhao.admin.system.identity.app.dto.OrgSessionResult;
 import top.wyhao.admin.system.identity.app.service.MembershipService;
 import top.wyhao.admin.system.identity.app.service.OrgService;
 import top.wyhao.admin.system.identity.domain.gateway.UserRepository;
@@ -27,8 +27,8 @@ import top.wyhao.admin.system.identity.domain.model.OrgInviteStatus;
 import top.wyhao.admin.system.identity.domain.model.SysMembership;
 import top.wyhao.admin.system.identity.domain.model.SysOrgApplication;
 import top.wyhao.admin.system.identity.domain.model.SysOrgInvite;
-import top.wyhao.admin.system.identity.infrastructure.persistence.mapper.SysOrgApplicationMapper;
-import top.wyhao.admin.system.identity.infrastructure.persistence.mapper.SysOrgInviteMapper;
+import top.wyhao.admin.system.identity.domain.gateway.OrgApplicationRepository;
+import top.wyhao.admin.system.identity.domain.gateway.OrgInviteRepository;
 import top.wyhao.tenant.client.TenantApi;
 import top.wyhao.tenant.client.TenantBO;
 import top.wyhao.tenant.config.TenantProperties;
@@ -52,8 +52,8 @@ public class OrgServiceImpl implements OrgService {
     private final TenantApi tenantApi;
     private final TenantProperties tenantProperties;
     private final OrgProperties orgProperties;
-    private final SysOrgInviteMapper inviteMapper;
-    private final SysOrgApplicationMapper applicationMapper;
+    private final OrgInviteRepository inviteRepository;
+    private final OrgApplicationRepository applicationRepository;
     private final MailClient mailClient;
     private final UserRepository userRepository;
 
@@ -150,12 +150,7 @@ public class OrgServiceImpl implements OrgService {
         if (membershipService.isTenantMember(userId, tenant.getId())) {
             throw OrgException.alreadyMember();
         }
-        boolean pending = applicationMapper.lambdaQuery()
-                .eq(SysOrgApplication::getTenantId, tenant.getId())
-                .eq(SysOrgApplication::getUserId, userId)
-                .eq(SysOrgApplication::getStatus, OrgApplicationStatus.PENDING.getValue())
-                .eq(SysOrgApplication::getDeleted, 0)
-                .exists();
+        boolean pending = applicationRepository.existsPending(tenant.getId(), userId);
         if (pending) {
             throw OrgException.applicationPending();
         }
@@ -165,7 +160,7 @@ public class OrgServiceImpl implements OrgService {
         application.setMessage(request.getMessage());
         application.setStatus(OrgApplicationStatus.PENDING.getValue());
         application.setDeleted(0);
-        applicationMapper.insert(application);
+        applicationRepository.insert(application);
     }
 
     @Override
@@ -181,12 +176,7 @@ public class OrgServiceImpl implements OrgService {
         }
         String email = normalizeEmail(request.getEmail());
         // 幂等：同组织同邮箱的待处理邀请复用
-        SysOrgInvite existing = inviteMapper.lambdaQuery()
-                .eq(SysOrgInvite::getTenantId, tenantId)
-                .eq(SysOrgInvite::getEmail, email)
-                .eq(SysOrgInvite::getStatus, OrgInviteStatus.PENDING.getValue())
-                .eq(SysOrgInvite::getDeleted, 0)
-                .one();
+        SysOrgInvite existing = inviteRepository.findPendingByTenantAndEmail(tenantId, email);
         String rawToken;
         SysOrgInvite invite;
         if (existing != null && existing.getExpireTime() != null && existing.getExpireTime().isAfter(LocalDateTime.now())) {
@@ -195,11 +185,11 @@ public class OrgServiceImpl implements OrgService {
             rawToken = IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID();
             invite.setTokenHash(DigestUtil.sha256Hex(rawToken));
             invite.setExpireTime(LocalDateTime.now().plusDays(orgProperties.getInviteExpireDays()));
-            inviteMapper.updateById(invite);
+            inviteRepository.updateById(invite);
         } else {
             if (existing != null) {
                 existing.setStatus(OrgInviteStatus.EXPIRED.getValue());
-                inviteMapper.updateById(existing);
+                inviteRepository.updateById(existing);
             }
             rawToken = IdUtil.fastSimpleUUID() + IdUtil.fastSimpleUUID();
             invite = new SysOrgInvite();
@@ -210,7 +200,7 @@ public class OrgServiceImpl implements OrgService {
             invite.setInvitedBy(userId);
             invite.setExpireTime(LocalDateTime.now().plusDays(orgProperties.getInviteExpireDays()));
             invite.setDeleted(0);
-            inviteMapper.insert(invite);
+            inviteRepository.insert(invite);
         }
 
         TenantBO tenant = tenantApi.get(tenantId);
@@ -259,7 +249,7 @@ public class OrgServiceImpl implements OrgService {
         invite.setStatus(OrgInviteStatus.ACCEPTED.getValue());
         invite.setAcceptedUserId(userId);
         invite.setRespondedAt(LocalDateTime.now());
-        inviteMapper.updateById(invite);
+        inviteRepository.updateById(invite);
         switchOrg(invite.getTenantId());
     }
 
@@ -275,7 +265,7 @@ public class OrgServiceImpl implements OrgService {
         }
         invite.setStatus(OrgInviteStatus.REJECTED.getValue());
         invite.setRespondedAt(LocalDateTime.now());
-        inviteMapper.updateById(invite);
+        inviteRepository.updateById(invite);
     }
 
     @Override
@@ -284,7 +274,7 @@ public class OrgServiceImpl implements OrgService {
         if (!LoginUtil.isSuperadmin() && !LoginUtil.hasRole(RoleCodeEnum.TENANT_ADMIN.getCode())) {
             throw OrgException.forbidden();
         }
-        SysOrgApplication application = applicationMapper.selectById(applicationId);
+        SysOrgApplication application = applicationRepository.findById(applicationId);
         if (application == null || application.getDeleted() != null && application.getDeleted() != 0) {
             throw OrgException.applicationNotFound();
         }
@@ -302,7 +292,7 @@ public class OrgServiceImpl implements OrgService {
         } else {
             application.setStatus(OrgApplicationStatus.REJECTED.getValue());
         }
-        applicationMapper.updateById(application);
+        applicationRepository.updateById(application);
     }
 
     private List<OrgInviteResult> listPendingInvitesForCurrentUser() {
@@ -311,12 +301,7 @@ public class OrgServiceImpl implements OrgService {
             return List.of();
         }
         String email = normalizeEmail(user.getEmail());
-        List<SysOrgInvite> invites = inviteMapper.lambdaQuery()
-                .eq(SysOrgInvite::getEmail, email)
-                .eq(SysOrgInvite::getStatus, OrgInviteStatus.PENDING.getValue())
-                .eq(SysOrgInvite::getDeleted, 0)
-                .gt(SysOrgInvite::getExpireTime, LocalDateTime.now())
-                .list();
+        List<SysOrgInvite> invites = inviteRepository.listPendingByEmail(email, LocalDateTime.now());
         Map<Long, TenantBO> tenants = tenantApi.listByIds(invites.stream().map(SysOrgInvite::getTenantId).toList())
                 .stream().collect(Collectors.toMap(TenantBO::getId, Function.identity(), (a, b) -> a));
         return invites.stream().map(i -> toInviteResult(i, tenants.get(i.getTenantId()))).toList();
@@ -327,10 +312,7 @@ public class OrgServiceImpl implements OrgService {
             throw OrgException.inviteNotFound();
         }
         String hash = DigestUtil.sha256Hex(rawToken.trim());
-        SysOrgInvite invite = inviteMapper.lambdaQuery()
-                .eq(SysOrgInvite::getTokenHash, hash)
-                .eq(SysOrgInvite::getDeleted, 0)
-                .one();
+        SysOrgInvite invite = inviteRepository.findByTokenHash(hash);
         if (invite == null) {
             throw OrgException.inviteNotFound();
         }
@@ -339,7 +321,7 @@ public class OrgServiceImpl implements OrgService {
         }
         if (invite.getExpireTime() != null && invite.getExpireTime().isBefore(LocalDateTime.now())) {
             invite.setStatus(OrgInviteStatus.EXPIRED.getValue());
-            inviteMapper.updateById(invite);
+            inviteRepository.updateById(invite);
             throw OrgException.inviteExpired();
         }
         return invite;

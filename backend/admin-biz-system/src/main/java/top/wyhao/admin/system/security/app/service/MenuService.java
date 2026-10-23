@@ -3,13 +3,13 @@ package top.wyhao.admin.system.security.app.service;
 
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.Valid;
-import top.wyhao.admin.system.security.adapter.web.vo.MenuTreeVO;
-import top.wyhao.admin.system.security.adapter.web.vo.MenuVO;
+import top.wyhao.admin.system.security.app.dto.MenuTreeVO;
+import top.wyhao.admin.system.security.app.dto.MenuVO;
 
 import java.util.List;
-import top.wyhao.admin.system.security.adapter.web.dto.MenuQuery;
-import top.wyhao.admin.system.security.adapter.web.dto.MenuRequest;
-import top.wyhao.admin.system.security.adapter.web.dto.MenuSortRequest;
+import top.wyhao.admin.system.security.app.dto.MenuQuery;
+import top.wyhao.admin.system.security.app.dto.MenuRequest;
+import top.wyhao.admin.system.security.app.dto.MenuSortRequest;
 
 /**
  * 菜单业务接口

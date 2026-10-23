@@ -23,10 +23,10 @@ import top.wyhao.identity.client.UserProfile;
 import top.wyhao.settings.client.SiteConfigApi;
 import top.wyhao.settings.client.SiteConfigVO;
 import top.wyhao.settings.domain.exception.ConfigException;
-import top.wyhao.settings.adapter.web.dto.ConfigQuery;
-import top.wyhao.settings.adapter.web.vo.config.RegisterConfigVO;
-import top.wyhao.settings.adapter.web.vo.config.StorageConfigVO;
-import top.wyhao.settings.adapter.web.vo.ConfigResult;
+import top.wyhao.settings.app.dto.ConfigQuery;
+import top.wyhao.settings.app.dto.config.RegisterConfigVO;
+import top.wyhao.settings.app.dto.config.StorageConfigVO;
+import top.wyhao.settings.app.dto.ConfigResult;
 import top.wyhao.settings.app.service.ConfigService;
 
 /**
