@@ -2,8 +2,8 @@ package top.wyhao.settings.app.assembler;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import top.wyhao.settings.adapter.web.dto.ConfigRequest;
-import top.wyhao.settings.adapter.web.vo.ConfigResult;
+import top.wyhao.settings.app.dto.ConfigRequest;
+import top.wyhao.settings.app.dto.ConfigResult;
 import top.wyhao.settings.domain.model.SysConfig;
 import top.wyhao.web.convert.MapStructConfig;
 

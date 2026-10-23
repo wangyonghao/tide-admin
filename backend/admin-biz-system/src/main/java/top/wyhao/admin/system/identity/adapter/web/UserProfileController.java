@@ -27,7 +27,7 @@ import top.wyhao.admin.system.identity.app.dto.UserSocialBindResp;
 import top.wyhao.admin.system.identity.app.service.UserProfileService;
 import top.wyhao.admin.system.identity.app.service.UserSocialService;
 import top.wyhao.satoken.util.LoginUtil;
-import top.wyhao.admin.system.security.client.AuthenticationException;
+import top.wyhao.admin.system.security.domain.exception.AuthenticationException;
 import top.wyhao.admin.system.security.client.ContactCaptchaApi;
 import top.wyhao.cmn.core.util.CollUtils;
 import top.wyhao.cmn.core.util.RsaUtils;

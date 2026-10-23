@@ -9,7 +9,7 @@ import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import top.wyhao.admin.system.security.domain.model.SysUserRole;
 import top.wyhao.mybatis.model.BaseMapper;
-import top.wyhao.admin.system.security.adapter.web.vo.RoleMemberResult;
+import top.wyhao.admin.system.security.app.dto.RoleMemberResult;
 
 import java.util.List;
 

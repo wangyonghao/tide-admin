@@ -5,7 +5,7 @@ import top.wyhao.admin.system.department.domain.model.SysDepartment;
 import top.wyhao.web.convert.MapStructConfig;
 
 import java.util.List;
-import top.wyhao.admin.system.department.adapter.web.vo.DepartmentResult;
+import top.wyhao.admin.system.department.app.dto.DepartmentResult;
 
 /**
  * 部门对象转换

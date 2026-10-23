@@ -1,9 +1,9 @@
 
 package top.wyhao.admin.system.security.app.handler;
 
-import top.wyhao.admin.system.security.adapter.web.dto.AuthenticationRequest;
+import top.wyhao.admin.system.security.app.dto.AuthenticationRequest;
 import top.wyhao.admin.system.security.domain.model.GrantType;
-import top.wyhao.admin.system.security.adapter.web.vo.AuthenticationResult;
+import top.wyhao.admin.system.security.app.dto.AuthenticationResult;
 
 /**
  * 认证处理器。按 grantType 校验凭证并建立会话。

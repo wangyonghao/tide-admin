@@ -2,8 +2,8 @@ package top.wyhao.admin.system.file.app.assembler;
 
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import top.wyhao.admin.system.file.adapter.web.vo.FileResponse;
-import top.wyhao.admin.system.file.adapter.web.vo.FileUploadResponse;
+import top.wyhao.admin.system.file.app.dto.FileResponse;
+import top.wyhao.admin.system.file.app.dto.FileUploadResponse;
 import top.wyhao.admin.system.file.domain.model.File;
 import top.wyhao.web.convert.MapStructConfig;
 
