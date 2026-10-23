@@ -4,7 +4,7 @@ package top.wyhao.tenant.service.impl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import top.wyhao.tenant.domain.PackageMenuBinding;
+import top.wyhao.admin.system.tenant.domain.PackageMenuBinding;
 import top.wyhao.tenant.mapper.TenantPackageMenuMapper;
 import top.wyhao.tenant.model.entity.TenantPackageMenu;
 import top.wyhao.tenant.service.PackageMenuService;

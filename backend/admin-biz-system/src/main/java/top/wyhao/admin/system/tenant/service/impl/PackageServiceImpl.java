@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.mybatis.query.PageResult;
 import top.wyhao.mybatis.query.QueryWrapperBuilder;
-import top.wyhao.tenant.domain.PackageMenuBinding;
+import top.wyhao.admin.system.tenant.domain.PackageMenuBinding;
 import top.wyhao.tenant.exception.PackageException;
 import top.wyhao.tenant.mapper.SysTenantMapper;
 import top.wyhao.tenant.mapper.TenantPackageMapper;

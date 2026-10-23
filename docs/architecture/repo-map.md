@@ -71,14 +71,14 @@ admin-commons/cmn-*
 
 `cmn-web`、`cmn-db`、`cmn-cache` 替代原来的 `cmn-boot`。
 
-`admin-biz-system` 内优先 COLA（`adapter` / `app` / `domain` / `infrastructure`）：`identity`、`department`、`security`、`file`、`settings`、`job`。`tenant`、`dashboard` 仍是经典 `controller` / `service` / `mapper`。`notification`、`audit` 的 Web 在 `adapter/web`，其余仍是 `service` / `mapper`。模块内部的 `client` 包与 `adapter/client` 实现供本模块使用；给其它模块调用的契约放在 `admin-biz-system-client`。
+`admin-biz-system` 内优先 COLA（`adapter` / `app` / `domain` / `infrastructure`）：`identity`、`department`、`security`、`file`、`settings`、`job`。`tenant` 的套餐菜单与生命周期规则在 `domain`，CRUD 仍是经典 `controller` / `service` / `mapper`；`dashboard` 仍是经典分层。`notification`、`audit` 的 Web 在 `adapter/web`，其余仍是 `service` / `mapper`。模块内部的 `client` 包与 `adapter/client` 实现供本模块使用；给其它模块调用的契约放在 `admin-biz-system-client`。
 
 `admin-commons` 按技术适配分包，不套 COLA。
 
-边界现状（本次只记录位置）：
+边界：
 
-- 会话模型 `LoginUser` 在 `admin-commons/cmn-core` 的 `top.wyhao.identity.client`，供 `cmn-security` / `cmn-web` / `cmn-db` 读取登录会话。
-- `PackageMenuBinding`、`TenantLifecycleRules` 仍在 `cmn-tenant` 的 `domain` 包。该模块的职责是隔离与上下文。
+- 会话模型 `LoginUser` 在 `admin-commons/cmn-core` 的 `top.wyhao.cmn.identity`，供 `cmn-security` / `cmn-web` / `cmn-db` 读取登录会话。`top.wyhao.identity.client` 只放 `admin-biz-system-client` 的出站契约（`UserProfile`、`UserProfileApi`）。
+- `PackageMenuBinding`、`TenantLifecycleRules` 在 `admin-biz-system` 的 `tenant.domain`。`cmn-tenant` 只保留上下文、行隔离、租户选择与 SPI。
 
 ## Quick locate
 

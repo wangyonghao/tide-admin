@@ -1,4 +1,4 @@
-package top.wyhao.tenant.domain;
+package top.wyhao.admin.system.tenant.domain;
 
 /**
  * 平台默认租户保留，不能从租户列表删掉。

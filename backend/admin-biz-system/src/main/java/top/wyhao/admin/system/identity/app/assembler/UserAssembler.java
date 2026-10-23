@@ -5,7 +5,7 @@ import org.mapstruct.Mapping;
 import top.wyhao.admin.system.identity.app.dto.UserDetail;
 import top.wyhao.admin.system.identity.app.dto.UserRequest;
 import top.wyhao.admin.system.identity.domain.model.SysUser;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.cmn.identity.LoginUser;
 import top.wyhao.web.convert.BaseEnumConverters;
 import top.wyhao.web.convert.MapStructConfig;
 

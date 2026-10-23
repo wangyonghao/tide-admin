@@ -4,7 +4,7 @@ package top.wyhao.mybatis.handler;
 import com.baomidou.mybatisplus.core.handlers.MetaObjectHandler;
 import org.apache.ibatis.reflection.MetaObject;
 import top.wyhao.satoken.util.LoginUtil;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.cmn.identity.LoginUser;
 
 import java.time.LocalDateTime;
 

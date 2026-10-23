@@ -1,4 +1,4 @@
-package top.wyhao.tenant.domain;
+package top.wyhao.admin.system.tenant.domain;
 
 import org.junit.jupiter.api.Test;
 

@@ -6,7 +6,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.sf.jsqlparser.expression.Expression;
 import net.sf.jsqlparser.schema.Table;
 import top.wyhao.mybatis.datapermission.annotation.DataScope;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.cmn.identity.LoginUser;
 import top.wyhao.satoken.util.LoginUtil;
 
 import java.lang.reflect.Method;

@@ -6,7 +6,7 @@ import cn.dev33.satoken.session.SaSession;
 import cn.dev33.satoken.stp.StpUtil;
 import cn.hutool.core.util.ObjectUtil;
 import top.wyhao.cmn.core.enums.RoleCodeEnum;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.cmn.identity.LoginUser;
 
 import java.util.ArrayList;
 import java.util.Collections;

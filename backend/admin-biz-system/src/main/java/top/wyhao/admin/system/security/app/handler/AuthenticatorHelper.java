@@ -17,7 +17,7 @@ import top.wyhao.admin.system.department.client.DepartmentApi;
 import top.wyhao.admin.system.security.app.service.AuthenticationLogService;
 import top.wyhao.satoken.util.LoginUtil;
 import top.wyhao.cmn.core.enums.StatusEnum;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.cmn.identity.LoginUser;
 import top.wyhao.cmn.core.util.ExceptionUtils;
 import top.wyhao.cmn.core.util.IpUtils;
 import top.wyhao.tenant.context.TenantContextHolder;
