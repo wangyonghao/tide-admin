@@ -14,10 +14,12 @@
   <url>https://github.com/wangyonghao/wyh-admin</url>
 
   <modules>
-    <module>wyh-bootstrap</module>
-    <module>biz</module>
-    <module>platform</module>
-    <module>interfaces</module>
+    <module>admin-biz-system</module>
+    <module>admin-biz-system-client</module>
+    <module>admin-openapi</module>
+    <module>admin-start</module>
+    <module>admin-commons</module>
+
   </modules>
 
   <properties>
@@ -425,61 +427,39 @@
       <!-- API 模块（存放 Controller 层代码，打包部署的模块） -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>wyh-bootstrap</artifactId>
+        <artifactId>admin-start</artifactId>
         <version>${revision}</version>
       </dependency>
 
       <!-- 系统管理模块（存放系统管理模块相关功能，例如：部门管理、角色管理、用户管理等） -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>biz-system</artifactId>
-        <version>${revision}</version>
-      </dependency>
-
-      <!-- 公共模块（存放公共工具类，公共配置等） -->
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>biz-base</artifactId>
+        <artifactId>admin-biz-system</artifactId>
         <version>${revision}</version>
       </dependency>
 
       <!-- 开放 API（interfaces/open-api） -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>open-api</artifactId>
+        <artifactId>admin-openapi</artifactId>
         <version>${revision}</version>
       </dependency>
 
 
-      <!-- 平台模块 -->
+      <!-- 业务契约 -->
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>platform-spi</artifactId>
+        <artifactId>admin-biz-system-client</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>platform-iam</artifactId>
+        <artifactId>cmn-tenant</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>platform-ops</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>platform-file</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>platform-job</artifactId>
-        <version>${revision}</version>
-      </dependency>
-      <dependency>
-        <groupId>top.wyhao</groupId>
-        <artifactId>platform-tenant</artifactId>
+        <artifactId>cmn-job</artifactId>
         <version>${revision}</version>
       </dependency>
 
@@ -491,7 +471,17 @@
       </dependency>
       <dependency>
         <groupId>top.wyhao</groupId>
-        <artifactId>cmn-boot</artifactId>
+        <artifactId>cmn-web</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>cmn-db</artifactId>
+        <version>${revision}</version>
+      </dependency>
+      <dependency>
+        <groupId>top.wyhao</groupId>
+        <artifactId>cmn-cache</artifactId>
         <version>${revision}</version>
       </dependency>
       <dependency>
@@ -513,7 +503,8 @@
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-fastexcel</artifactId>
         <version>${revision}</version>
-      </dependency>      <dependency>
+      </dependency>
+      <dependency>
         <groupId>top.wyhao</groupId>
         <artifactId>cmn-storage-core</artifactId>
         <version>${revision}</version>
