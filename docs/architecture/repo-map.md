@@ -79,6 +79,7 @@ admin-commons/cmn-*
 
 - 会话模型 `LoginUser` 在 `admin-commons/cmn-core` 的 `top.wyhao.cmn.identity`，供 `cmn-security` / `cmn-web` / `cmn-db` 读取登录会话。`top.wyhao.identity.client` 只放 `admin-biz-system-client` 的出站契约（`UserProfile`、`UserProfileApi`）。
 - `PackageMenuBinding`、`TenantLifecycleRules` 在 `admin-biz-system` 的 `tenant.domain`。`cmn-tenant` 只保留上下文、行隔离、租户选择与 SPI。
+- 邮件发送 `MailClient`、`MailConfig`、`MailConfigProvider`、`MailException` 在 `admin-commons/cmn-messaging` 的 `top.wyhao.admin.cmn.mail`。设置模块实现 `MailConfigProvider`，把库存的邮件配置映射成 SMTP 账户。设置接口的 `MailConfigVO` 仍在 `admin-biz-system-client`。
 
 ## Quick locate
 
@@ -100,6 +101,7 @@ admin-commons/cmn-*
 | Quartz 内核 | `backend/admin-commons/cmn-job/` |
 | 通知 / 公告 | `backend/admin-biz-system/.../system/notification/`（Web 在 `adapter/web`） |
 | 字典 / 配置 | `backend/admin-biz-system/.../system/settings/` |
+| 邮件发送 | `backend/admin-commons/cmn-messaging/.../cmn/mail/` |
 | 操作日志 | `backend/admin-biz-system/.../system/audit/`（Web 在 `adapter/web`） |
 | 仪表盘 | `backend/admin-biz-system/.../system/dashboard/controller/DashboardController` |
 | 随进程装配的 Job | `backend/admin-start/.../job/` |

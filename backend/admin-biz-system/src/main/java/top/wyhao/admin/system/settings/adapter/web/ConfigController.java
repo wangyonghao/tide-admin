@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.admin.cmn.mail.MailClient;
 import top.wyhao.cmn.identity.LoginUser;
+import top.wyhao.settings.adapter.client.MailAccounts;
 import top.wyhao.settings.client.MailConfigVO;
 import top.wyhao.identity.client.UserProfileApi;
 import top.wyhao.satoken.util.LoginUtil;
@@ -120,7 +121,7 @@ public class ConfigController {
         );
 
         try {
-            mailService.sendTestMail(mailConfig, profile.getEmail(), subject, content);
+            mailService.sendTestMail(MailAccounts.from(mailConfig), profile.getEmail(), subject, content);
             log.info("测试邮件发送成功，收件人：{}", profile.getEmail());
         } catch (Exception e) {
             log.error("测试邮件发送失败", e);
