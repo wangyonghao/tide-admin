@@ -1,14 +1,7 @@
-
-package top.wyhao.settings.client;
+package top.wyhao.admin.cmn.mail;
 
 /**
- * 邮件配置器
- * <p>
- * 由biz-system提供邮件配置
- * </p>
- *
-
- * @since 2026/5/10
+ * 读取当前发信账户。实现由系统设置模块提供。
  */
 public interface MailConfigApi {
 

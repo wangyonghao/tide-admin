@@ -1,10 +1,10 @@
-package top.wyhao.settings.client;
+package top.wyhao.admin.cmn.mail;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
 
 /**
- * 邮件配置（跨模块契约）
+ * SMTP 发信账户，同时作为邮件设置接口的读写载荷。
  */
 @Data
 public class MailConfigVO {

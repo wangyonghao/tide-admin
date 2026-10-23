@@ -2,10 +2,10 @@ package top.wyhao.settings.adapter.client;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
-import top.wyhao.settings.client.MailConfigVO;
+import top.wyhao.admin.cmn.mail.MailConfigApi;
+import top.wyhao.admin.cmn.mail.MailConfigVO;
 import top.wyhao.settings.client.ConfigKeys;
 import top.wyhao.settings.client.ConfigStoreApi;
-import top.wyhao.settings.client.MailConfigApi;
 
 @Component
 @RequiredArgsConstructor
