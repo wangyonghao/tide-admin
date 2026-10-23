@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 import top.wyhao.cmn.core.enums.DataScopeEnum;
 import top.wyhao.cmn.core.model.RoleDataScope;
 import top.wyhao.admin.system.identity.client.CredentialUser;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.cmn.identity.LoginUser;
 import top.wyhao.admin.system.department.client.DepartmentApi;
 import top.wyhao.admin.system.security.domain.RoleDataScopeRules;
 import top.wyhao.admin.system.security.domain.gateway.RoleDepartmentRepository;

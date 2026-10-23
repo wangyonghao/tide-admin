@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import top.wyhao.admin.cmn.mail.MailClient;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.cmn.identity.LoginUser;
 import top.wyhao.settings.client.MailConfigVO;
 import top.wyhao.identity.client.UserProfileApi;
 import top.wyhao.satoken.util.LoginUtil;

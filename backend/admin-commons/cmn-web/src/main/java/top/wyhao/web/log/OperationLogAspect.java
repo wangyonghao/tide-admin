@@ -25,7 +25,7 @@ import org.aspectj.lang.annotation.Aspect;
 import org.aspectj.lang.annotation.Before;
 import org.springframework.util.StopWatch;
 import top.wyhao.satoken.util.LoginUtil;
-import top.wyhao.identity.client.LoginUser;
+import top.wyhao.cmn.identity.LoginUser;
 import top.wyhao.web.http.ServletUtils;
 
 import java.time.LocalDateTime;

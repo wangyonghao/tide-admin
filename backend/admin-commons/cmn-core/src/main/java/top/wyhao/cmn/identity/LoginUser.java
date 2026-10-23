@@ -1,4 +1,4 @@
-package top.wyhao.identity.client;
+package top.wyhao.cmn.identity;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;

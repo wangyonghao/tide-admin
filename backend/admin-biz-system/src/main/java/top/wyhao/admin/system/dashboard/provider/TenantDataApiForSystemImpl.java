@@ -36,7 +36,7 @@ import top.wyhao.tenant.client.PackageMenuApi;
 import top.wyhao.tenant.client.TenantApi;
 import top.wyhao.tenant.client.TenantBO;
 import top.wyhao.tenant.client.TenantDataApi;
-import top.wyhao.tenant.domain.PackageMenuBinding;
+import top.wyhao.admin.system.tenant.domain.PackageMenuBinding;
 import top.wyhao.tenant.util.TenantUtils;
 
 import java.time.LocalDateTime;
