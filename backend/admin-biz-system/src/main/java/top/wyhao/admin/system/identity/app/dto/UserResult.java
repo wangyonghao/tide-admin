@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.identity.adapter.web.vo;
+package top.wyhao.admin.system.identity.app.dto;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;

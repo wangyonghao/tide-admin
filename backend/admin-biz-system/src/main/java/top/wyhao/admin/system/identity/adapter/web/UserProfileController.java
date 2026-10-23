@@ -21,9 +21,9 @@ import org.springframework.web.multipart.MultipartFile;
 import top.wyhao.admin.system.identity.app.service.PasswordService;
 import top.wyhao.admin.system.identity.domain.model.SysUserSocial;
 import top.wyhao.admin.system.identity.domain.exception.UserException;
-import top.wyhao.admin.system.identity.adapter.web.dto.UserBasicInfoUpdateReq;
+import top.wyhao.admin.system.identity.app.dto.UserBasicInfoUpdateReq;
 import top.wyhao.admin.system.identity.domain.model.SocialSource;
-import top.wyhao.admin.system.identity.adapter.web.vo.UserSocialBindResp;
+import top.wyhao.admin.system.identity.app.dto.UserSocialBindResp;
 import top.wyhao.admin.system.identity.app.service.UserProfileService;
 import top.wyhao.admin.system.identity.app.service.UserSocialService;
 import top.wyhao.satoken.util.LoginUtil;
@@ -34,10 +34,10 @@ import top.wyhao.cmn.core.util.RsaUtils;
 
 import java.io.IOException;
 import java.util.List;
-import top.wyhao.admin.system.identity.adapter.web.vo.ProfileAvatarResult;
-import top.wyhao.admin.system.identity.adapter.web.dto.ProfileEmailUpdateRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.ProfilePasswordUpdateRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.ProfilePhoneUpdateRequest;
+import top.wyhao.admin.system.identity.app.dto.ProfileAvatarResult;
+import top.wyhao.admin.system.identity.app.dto.ProfileEmailUpdateRequest;
+import top.wyhao.admin.system.identity.app.dto.ProfilePasswordUpdateRequest;
+import top.wyhao.admin.system.identity.app.dto.ProfilePhoneUpdateRequest;
 
 /**
  * 个人信息 API

@@ -15,7 +15,7 @@ import top.wyhao.cmn.core.enums.GenderEnum;
 import top.wyhao.cmn.core.enums.StatusEnum;
 import top.wyhao.admin.system.file.app.service.FileService;
 import top.wyhao.admin.system.file.domain.model.File;
-import top.wyhao.admin.system.identity.adapter.web.dto.UserBasicInfoUpdateReq;
+import top.wyhao.admin.system.identity.app.dto.UserBasicInfoUpdateReq;
 import top.wyhao.admin.system.identity.app.service.MembershipService;
 import top.wyhao.admin.system.identity.app.service.UserProfileService;
 import top.wyhao.admin.system.identity.client.PasswordApi;

@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.identity.adapter.web.dto;
+package top.wyhao.admin.system.identity.app.dto;
 
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
