@@ -6,43 +6,79 @@ Agent 按需阅读。完整目录树不必背诵；以本表与 `ls` / 搜索为
 
 ```
 wyh-admin/
-├── backend/           # Java 17 + Spring Boot（模块化单体）
-│   ├── admin-start/# 可运行主服务
-│   ├── interfaces/    # open-api
-│   ├── biz/           # 业务插件（如 biz-system）
-│   └── platform/      # cmn-* 基础设施 + 平台域
+├── backend/                         # Java 17 + Spring Boot（模块化单体）
+│   ├── admin-start/                 # 装配：启动、配置、Liquibase
+│   ├── admin-biz-system/            # 当前 COLA 业务单体
+│   ├── admin-biz-system-client/     # 跨模块契约
+│   ├── admin-openapi/               # 开放 API
+│   └── admin-commons/               # 基础设施（无 COLA 要求）
+│       ├── cmn-core
+│       ├── cmn-web / cmn-db / cmn-cache   # 替代原 cmn-boot
+│       ├── cmn-security / cmn-messaging / cmn-crypto / cmn-fastexcel
+│       ├── cmn-storage/             # core + local / minio / aliyun / cos
+│       ├── cmn-job                   # Quartz 内核
+│       ├── cmn-tenant                # 隔离与上下文
+│       └── cmn-license-*             # 未接入 admin-start
 ├── frontend/          # 产品后台（src/）+ apps + packages/ui + vendor 壳
 ├── specs/             # SDD 宪法
 ├── skills/            # Agent 工作流技能
-├── docs/agent/        # Agent 补充文档（本目录）
+├── docs/              # 架构、约定、runbook（见 docs/README.md）
 ├── frontend/DESIGN.md # 前端视觉宪法（中后台 UI）
 └── AGENTS.md          # 短索引
 ```
 
+仓库里已没有 `platform/`、`interfaces/`、`biz/` 目录，也没有 `cmn-boot` 模块。
+
 ## Backend modules
 
 ```
-admin-start
-  → interfaces/* , biz/*
-    → platform/{iam,tenant,file,job,ops,spi}
-      → platform/cmn-*
+admin-start                         # 只装配
+  → admin-biz-system
+  → admin-openapi
+  → 装配所需 cmn-*（web / db / cache / messaging / job / tenant）
+admin-biz-system                    # COLA 业务单体（当前）
+  → admin-biz-system-client
+  → admin-commons/cmn-*
+admin-openapi
+  → admin-biz-system-client
+  → admin-commons/cmn-*
+admin-biz-system-client             # 仅 cmn-core + 注解
+  → cmn-core
+admin-commons/cmn-*
+  → 其它 cmn-*
+  禁止依赖 admin-biz-*-client、admin-biz-*、admin-openapi、admin-start
 ```
 
 | 模块 | 职责 |
 |------|------|
-| `admin-start` | 启动、配置、Liquibase、装配 |
-| `admin-openapi` | 开放 API / 签名 |
-| `biz/biz-system` | 系统壳、仪表盘（含 `DashboardController`）、跨域编排残留 |
-| `platform/iam` | identity、department、security |
-| `platform/tenant` | 租户、套餐 |
-| `platform/file` | 文件领域与存储适配 |
-| `platform/job` | Quartz 任务管理 |
-| `platform/ops` | audit、notification、settings |
-| `platform/cmn-core` | 共享内核：枚举、异常、常量、工具 |
-| `admin-commons/cmn-web(+db/cache)` | 运行时聚合：Web / DB / Cache / API 文档 |
-| `platform/cmn-*` | 其余：security、messaging、crypto、storage 等 |
+| `admin-start` | 只做装配：启动类、运行配置、Liquibase、API 文档与全局异常等接线。不放业务域 |
+| `admin-biz-system` | 当前的 COLA 业务单体：身份、组织、授权、租户产品、文件、任务管理、设置、通知、审计、仪表盘 |
+| `admin-biz-system-client` | 跨模块契约（接口与 DTO）。依赖止于 `cmn-core` 以及 Swagger / Jackson 注解 |
+| `admin-openapi` | 开放 API：第三方应用接入与签名鉴权 |
+| `admin-commons` | 基础设施聚合。不要求 COLA。禁止依赖 `admin-biz-*-client` |
+| `cmn-core` | 共享内核：枚举、异常、常量、工具 |
+| `cmn-web` | Web：Undertow / MVC / JSON / 校验 / API 文档 / Trace |
+| `cmn-db` | 持久化：MyBatis-Plus / PostgreSQL / CosId / 数据权限 |
+| `cmn-cache` | 缓存：Redisson / JetCache |
+| `cmn-security` | Sa-Token / JustAuth / 图形验证码 / 密码哈希 |
+| `cmn-messaging` | 邮件 / 短信 / WebSocket |
+| `cmn-crypto` | 字段与 API 加密 |
+| `cmn-fastexcel` | Excel |
+| `cmn-storage` | 对象存储 SPI，以及 local / minio / aliyun / cos |
+| `cmn-job` | Quartz 内核：调度器、Dispatcher、`JobHandler` SPI。任务管理 API 在 `admin-biz-system` 的 `job` |
+| `cmn-tenant` | 租户隔离与上下文（上下文、行隔离、Web 拦截）。租户与套餐的产品 CRUD 在 `admin-biz-system` 的 `tenant` |
+| `cmn-license-*` | 许可证生成 / 校验。未接入 `admin-start` |
 
-平台域代码常见 COLA 分包：`adapter` / `app` / `domain` / `infrastructure`。
+`cmn-web`、`cmn-db`、`cmn-cache` 替代原来的 `cmn-boot`。
+
+`admin-biz-system` 内优先 COLA（`adapter` / `app` / `domain` / `infrastructure`）：`identity`、`department`、`security`、`file`、`settings`、`job`。`tenant`、`dashboard` 仍是经典 `controller` / `service` / `mapper`。`notification`、`audit` 的 Web 在 `adapter/web`，其余仍是 `service` / `mapper`。模块内部的 `client` 包与 `adapter/client` 实现供本模块使用；给其它模块调用的契约放在 `admin-biz-system-client`。
+
+`admin-commons` 按技术适配分包，不套 COLA。
+
+边界现状（本次只记录位置）：
+
+- 会话模型 `LoginUser` 在 `admin-commons/cmn-core` 的 `top.wyhao.identity.client`，供 `cmn-security` / `cmn-web` / `cmn-db` 读取登录会话。
+- `PackageMenuBinding`、`TenantLifecycleRules` 仍在 `cmn-tenant` 的 `domain` 包。该模块的职责是隔离与上下文。
 
 ## Quick locate
 
@@ -53,17 +89,22 @@ admin-start
 | 启动类 | `backend/admin-start/src/main/java/top/wyhao/admin/AdminApplication.java` |
 | 开发配置 | `backend/admin-start/src/main/resources/config/application-dev.yml` |
 | Liquibase | `backend/admin-start/src/main/resources/db/changelog/postgresql/` |
-| 用户 / 认证 | `backend/platform/iam/.../identity/` |
-| 角色 / 菜单 | `backend/platform/iam/.../security/` |
-| 部门 | `backend/platform/iam/.../department/` |
-| 租户 | `backend/platform/tenant/` |
-| 文件 | `backend/platform/file/` |
-| 任务 | `backend/platform/job/` |
-| 通知 / 公告 | `backend/platform/ops/.../notification/`（Web 在 `adapter/web`） |
-| 字典 / 配置 | `backend/platform/ops/.../settings/` |
-| 操作日志 | `backend/platform/ops/.../audit/`（Web 在 `adapter/web`） |
-| 仪表盘 | `backend/biz/biz-system/.../controller/DashboardController`（服务同模块） |
-| ops 分层说明 | `docs/architecture/repo-map.md` |
+| 用户 / 认证 | `backend/admin-biz-system/.../system/identity/` |
+| 角色 / 菜单 | `backend/admin-biz-system/.../system/security/` |
+| 部门 | `backend/admin-biz-system/.../system/department/` |
+| 租户产品 | `backend/admin-biz-system/.../system/tenant/` |
+| 租户隔离 / 上下文 | `backend/admin-commons/cmn-tenant/` |
+| 文件领域 | `backend/admin-biz-system/.../system/file/` |
+| 对象存储 | `backend/admin-commons/cmn-storage/` |
+| 任务管理 | `backend/admin-biz-system/.../system/job/` |
+| Quartz 内核 | `backend/admin-commons/cmn-job/` |
+| 通知 / 公告 | `backend/admin-biz-system/.../system/notification/`（Web 在 `adapter/web`） |
+| 字典 / 配置 | `backend/admin-biz-system/.../system/settings/` |
+| 操作日志 | `backend/admin-biz-system/.../system/audit/`（Web 在 `adapter/web`） |
+| 仪表盘 | `backend/admin-biz-system/.../system/dashboard/controller/DashboardController` |
+| 随进程装配的 Job | `backend/admin-start/.../job/` |
+| 开放 API | `backend/admin-openapi/` |
+| 跨模块契约 | `backend/admin-biz-system-client/` |
 
 本地全套：`cd backend/docker && docker compose --env-file .env -f docker-compose.dev.yml up`（含 API）。只在宿主机起后端：`cd backend && mvn -pl admin-start -am spring-boot:run`
 
