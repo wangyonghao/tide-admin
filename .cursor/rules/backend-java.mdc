@@ -6,8 +6,8 @@ alwaysApply: false
 
 # Backend Java
 
-- 依赖方向：`wyh-bootstrap` → `interfaces`/`biz-*` → `platform` 域 → `cmn-*`；禁止反向依赖。
-- platform 域优先 COLA（`adapter`/`app`/`domain`/`infrastructure`）；简单模块可用经典分层。
+- 依赖方向：`admin-start`（只装配）→ `admin-openapi` / `admin-biz-*` → `admin-biz-*-client` 与 `admin-commons`（`cmn-*`）。`admin-commons` 禁止依赖 `admin-biz-*-client`；禁止反向依赖。
+- `admin-biz-*` 优先 COLA（`adapter`/`app`/`domain`/`infrastructure`）。`admin-commons` 不要求 COLA。`admin-biz-*-client` 只放跨模块契约（`cmn-core` + 注解）。简单或遗留切片可用经典分层。
 - Controller：方法级完整路径；组装 Result/VO；逻辑在 service/app。
 - Service 命名：`detail`/`list`/`page`/`create`/`update`/`delete` 等。
 - 领域错误：`XxxException` 静态工厂；禁止 `new BizException` / `BadRequestException`；禁止新增 `Check`/`ValidationUtils`。

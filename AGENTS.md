@@ -40,7 +40,7 @@ curl -s http://127.0.0.1:8000/actuator/health
 # 可选 / CI：Docker Compose 全栈（非本机验收必选）
 # cd backend/docker && cp .env.example .env && docker compose --env-file .env -f docker-compose.dev.yml up
 # 单元测试（默认开启；临时跳过 -DskipUnitTests=true）。范围与 .github/workflows/backend-build.yml 一致
-cd backend && mvn -pl platform/job,platform/iam,platform/cmn-crypto -am test
+cd backend && mvn -pl admin-commons/cmn-job,admin-commons/cmn-web,admin-commons/cmn-db,admin-commons/cmn-cache,admin-commons/cmn-crypto,admin-biz-system-client -am test
 
 # 前端产品后台（@wyh/admin）。pnpm dev 与 pnpm dev:admin 相同
 cd frontend && pnpm install && pnpm dev
@@ -57,7 +57,7 @@ DB 变更：`backend/admin-start/src/main/resources/db/changelog/postgresql/`
 ## Hard boundaries
 
 1. **不做微服务拆分**；保持模块化单体（见 mission / tech-stack）。
-2. **依赖方向**：`admin-start` → `admin-openapi` / `admin-biz-*` → `admin-biz-*-client` → `cmn-*`。禁止下层依赖上层。
+2. **依赖方向**：`admin-start`（只装配）→ `admin-openapi` / `admin-biz-*` → `admin-biz-*-client` 与 `admin-commons`（`cmn-*`）。`admin-commons` 禁止依赖 `admin-biz-*-client`。禁止下层依赖上层。
 3. **新依赖**：后端进根 `pom.xml` 的 `dependencyManagement`；前端进 `pnpm-workspace.yaml` catalog。
 4. **DB**：PostgreSQL + Liquibase；禁止只改库不改 changelog。
 5. **调度**：Spring Quartz / `cmn-job`；勿并行引入另一套调度内核。
@@ -69,14 +69,18 @@ DB 变更：`backend/admin-start/src/main/resources/db/changelog/postgresql/`
 
 | 意图 | 位置 |
 |------|------|
-| 启动 / 打包 | `backend/admin-start` |
-| 身份 / 组织 / 授权 | `backend/platform/iam`（`identity` / `department` / `security`） |
-| 租户 | `backend/platform/tenant` |
-| 文件 | `backend/platform/file` |
-| 任务 | `backend/platform/job` |
-| 审计 / 通知 / 设置 | `backend/platform/ops` |
+| 启动 / 打包 | `backend/admin-start`（只装配） |
+| 身份 / 组织 / 授权 | `backend/admin-biz-system`（`identity` / `department` / `security`） |
+| 租户产品 | `backend/admin-biz-system` 的 `tenant` |
+| 租户隔离 / 上下文 | `backend/admin-commons/cmn-tenant` |
+| 文件领域 | `backend/admin-biz-system` 的 `file` |
+| 对象存储 | `backend/admin-commons/cmn-storage` |
+| 任务管理 | `backend/admin-biz-system` 的 `job` |
+| Quartz 内核 | `backend/admin-commons/cmn-job` |
+| 审计 / 通知 / 设置 | `backend/admin-biz-system`（`audit` / `notification` / `settings`） |
 | 开放 API | `backend/admin-openapi` |
-| 系统壳 / 仪表盘等 | `backend/biz/biz-system`（半迁移收口见 `docs/architecture/repo-map.md`） |
+| 跨模块契约 | `backend/admin-biz-system-client`（仅 `cmn-core` + 注解） |
+| 系统壳 / 仪表盘 | `backend/admin-biz-system` 的 `dashboard` |
 | 前端页面 / API | `frontend/apps/admin/src/views`、`frontend/apps/admin/src/api` |
 | 文档站 | `frontend/apps/docs`（`@wyh/docs`） |
 | 组件演示 | `frontend/apps/design-system`（只演示 `@wyh/ui` / `@wyh/ui-patterns`） |

@@ -4,9 +4,12 @@
 
 ## Module & packaging
 
-- 新业务进对应 `platform` 域或 `biz-*`；基础设施进 `cmn-*`。
-- **platform 域**优先 COLA：`adapter`（web/client）/ `app`（service、assembler）/ `domain` / `infrastructure`。
-- 遗留或简单模块可用经典分层：`controller` / `service` / `mapper` / `entity` / dto。
+- 业务进 `admin-biz-*`（当前是 `admin-biz-system` 这一 COLA 单体）。跨模块契约进 `admin-biz-*-client`。基础设施进 `admin-commons` 下的 `cmn-*`。
+- `admin-start` 只做装配，不放业务域。
+- `admin-commons` 不要求 COLA，且禁止依赖 `admin-biz-*-client`。
+- `admin-biz-system-client` 只放跨模块契约，依赖止于 `cmn-core` 与注解（Swagger / Jackson）。
+- **`admin-biz-*`** 优先 COLA：`adapter`（web/client）/ `app`（service、assembler）/ `domain` / `infrastructure`。
+- 模块内遗留或简单切片可用经典分层：`controller` / `service` / `mapper` / `entity` / dto（当前如 `tenant`、`dashboard`，以及 `notification` / `audit` 的非 Web 部分）。
 
 ## Naming
 
@@ -51,7 +54,7 @@
 
 ## Testing
 
-- 工具：JUnit 5 + Mockito + AssertJ（`platform` 父 POM 已统一 `test` 依赖）；默认执行 Surefire（`-DskipUnitTests=true` 可临时跳过）。
+- 工具：JUnit 5 + Mockito + AssertJ（`admin-commons` 父 POM 为 `cmn-*` 统一了 `test` 依赖）；默认执行 Surefire（`-DskipUnitTests=true` 可临时跳过）。
 - 命名：`XxxTest`（单元）；`XxxIT` / `*ApplicationTests` 不进单元套件（Surefire exclude）。单元测**不起 Spring**。
 - **必测 / 不强制**：
 
