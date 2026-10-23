@@ -1,7 +1,7 @@
 package top.wyhao.admin.system.identity.app.service;
 
 import org.springframework.web.multipart.MultipartFile;
-import top.wyhao.admin.system.identity.adapter.web.dto.UserBasicInfoUpdateReq;
+import top.wyhao.admin.system.identity.app.dto.UserBasicInfoUpdateReq;
 import top.wyhao.admin.system.identity.domain.model.SysUser;
 
 import java.util.List;

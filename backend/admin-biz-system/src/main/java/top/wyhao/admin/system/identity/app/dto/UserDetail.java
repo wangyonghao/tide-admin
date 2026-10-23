@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.identity.adapter.web.vo;
+package top.wyhao.admin.system.identity.app.dto;
 
 import cn.idev.excel.annotation.ExcelIgnoreUnannotated;
 import cn.idev.excel.annotation.ExcelProperty;

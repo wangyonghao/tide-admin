@@ -1,4 +1,4 @@
-package top.wyhao.admin.system.identity.adapter.web.dto;
+package top.wyhao.admin.system.identity.app.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.validation.constraints.NotBlank;

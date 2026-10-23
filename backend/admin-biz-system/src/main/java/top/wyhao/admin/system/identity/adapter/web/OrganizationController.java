@@ -11,14 +11,14 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgApplicationReviewRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgApplyRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgCreateRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgInviteRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgSwitchRequest;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgInviteResult;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgResult;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgSessionResult;
+import top.wyhao.admin.system.identity.app.dto.OrgApplicationReviewRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgApplyRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgCreateRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgInviteRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgSwitchRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgInviteResult;
+import top.wyhao.admin.system.identity.app.dto.OrgResult;
+import top.wyhao.admin.system.identity.app.dto.OrgSessionResult;
 import top.wyhao.admin.system.identity.app.service.OrgService;
 
 @Tag(name = "组织 API")

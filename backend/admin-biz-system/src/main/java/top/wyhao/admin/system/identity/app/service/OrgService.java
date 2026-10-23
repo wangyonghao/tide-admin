@@ -1,11 +1,11 @@
 package top.wyhao.admin.system.identity.app.service;
 
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgApplyRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgCreateRequest;
-import top.wyhao.admin.system.identity.adapter.web.dto.OrgInviteRequest;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgInviteResult;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgResult;
-import top.wyhao.admin.system.identity.adapter.web.vo.OrgSessionResult;
+import top.wyhao.admin.system.identity.app.dto.OrgApplyRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgCreateRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgInviteRequest;
+import top.wyhao.admin.system.identity.app.dto.OrgInviteResult;
+import top.wyhao.admin.system.identity.app.dto.OrgResult;
+import top.wyhao.admin.system.identity.app.dto.OrgSessionResult;
 
 public interface OrgService {
 

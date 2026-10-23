@@ -1,22 +1,22 @@
-package top.wyhao.admin.system.identity.adapter.web.dto;
+package top.wyhao.admin.system.identity.app.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import lombok.Data;
 import org.hibernate.validator.constraints.Length;
-import top.wyhao.web.validation.Mobile;
 
 /**
- * 手机号修改请求参数
+ * 邮箱修改请求参数
  */
 @Data
-@Schema(description = "手机号修改请求参数")
-public class ProfilePhoneUpdateRequest {
+@Schema(description = "邮箱修改请求参数")
+public class ProfileEmailUpdateRequest {
 
-    @Schema(description = "新手机号", example = "13811111111")
-    @NotBlank(message = "新手机号不能为空")
-    @Mobile(message = "新手机号格式不正确")
-    private String phone;
+    @Schema(description = "新邮箱", example = "123456789@qq.com")
+    @NotBlank(message = "新邮箱不能为空")
+    @Email(message = "新邮箱格式不正确")
+    private String email;
 
     @Schema(description = "验证码", example = "888888")
     @NotBlank(message = "验证码不能为空")
